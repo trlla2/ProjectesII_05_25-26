@@ -9,7 +9,6 @@ public class EnemyBehaviour : MonoBehaviour
     [Header("Setup")]
 
     [SerializeField]
-    [Tooltip("Type of enemy is based of")]
     private EnemyType enemyType;
 
     private SpriteRenderer spriteRenderer;
@@ -26,6 +25,10 @@ public class EnemyBehaviour : MonoBehaviour
 
         spriteRenderer.sprite = enemyType.GetSprite();
         health = enemyType.GetHealth();
+
+
+        GameManager.Instance.SetEnemyRef(this); // forced DELETE!@!!!!! 
+        InitBatle(); // forced DELETE!@!!!!! 
     }
 
 
@@ -45,7 +48,8 @@ public class EnemyBehaviour : MonoBehaviour
             }
             else
             {
-                Debug.Log("Enemy attacked to player dealing: " + enemyType.GetDamage());
+                attackTimer = 0f;
+                GameManager.Instance.AttackPlayer(enemyType.GetDamage());
             }
             yield return null;
         }
@@ -65,4 +69,8 @@ public class EnemyBehaviour : MonoBehaviour
         Debug.Log("Enemy " + enemyType.name + " has taken " + finalDamage + " damage points with " + health + " remaining health points");
     }
     
+    public void StopEnemy()
+    {
+        inBattle = false;
+    }
 }

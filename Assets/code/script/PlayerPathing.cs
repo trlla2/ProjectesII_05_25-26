@@ -144,7 +144,7 @@ public class PlayerPathing : MonoBehaviour
 
     public void OnSpellCast(Spell spell)
     {
-        
+        this.gameObject.GetComponent<PlayerStats>().Attack(spell);
     }
 
     void UpdateLineRenderer()

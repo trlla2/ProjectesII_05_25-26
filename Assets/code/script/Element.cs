@@ -9,6 +9,18 @@ public enum ElementType
     EMPTY
 }
 
+public struct DamageType
+{
+    public ElementType element;
+    public float damage;
+
+    public DamageType(ElementType element, float damage)
+    {
+        this.element = element;
+        this.damage = damage;
+    }
+}
+
 [CreateAssetMenu(fileName = "Element", menuName = "ScriptableObjects/Element", order = 1)]
 public class Element : ScriptableObject
 {

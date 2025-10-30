@@ -31,14 +31,14 @@ public class BoardConfiguration
     public void SpawnSlots(GameObject slotPrefab, float XdistanceBetween, float YdistanceBetween, Vector3 startPosition, Transform parent)
     {
         BoardWorldPosition = startPosition;
-
+        
         for (int i = 0; i < SlotNumber; i++)
         {
             for (int j = 0; j < SlotNumber; j++)
             {
                 Vector3 pos = startPosition + new Vector3(i * XdistanceBetween, j * YdistanceBetween, 0);
                 //the gameobject keyword is necessay bc we are outside monobehabiour context
-                GameObject slotObj = GameObject.Instantiate(slotPrefab, pos, Quaternion.identity, parent);
+                GameObject slotObj = GameObject.Instantiate(slotPrefab,pos, Quaternion.identity, parent);
                 slotObj.name = "Slot["+i+"] ["+j+"]";
 
                 if (slots[i, j] == null) { Debug.LogError("No valid slot"); return; }
@@ -261,6 +261,7 @@ public class Grid : MonoBehaviour
         newBoard.InsertSpell(randomSpell);
 
         Vector3 startPos = new Vector3(-XDistanceBetween * (SlotNumber - 1) / 2f, yPosition + -YDistanceBetween * (SlotNumber - 1) / 2f,0);
+        startPos += transform.position;//Debug 
         newBoard.SpawnSlots(slotPrefab, XDistanceBetween, YDistanceBetween, startPos, transform);
 
         newBoard.UpdateVisuals();

@@ -31,7 +31,7 @@ public class PlayerPathing : MonoBehaviour
         line = GetComponent<LineRenderer>();
         mainCam = Camera.main;
         line.positionCount = 0;
-        if (grid == null) Debug.LogError("No GRid reference!!");
+        if (grid == null) Debug.LogError("No Grid reference!!");
     }
 
     void Update()
@@ -66,6 +66,8 @@ public class PlayerPathing : MonoBehaviour
         currentPath.Clear();
         line.positionCount = 0;
         grid.IsPlayerPathing = true;
+        if (cursorVisual != null)
+            cursorVisual.gameObject.SetActive(true);
     }
 
     void ContinuePathing()
@@ -122,9 +124,7 @@ public class PlayerPathing : MonoBehaviour
         line.positionCount = 0;
         if (cursorVisual != null)
             cursorVisual.gameObject.SetActive(false);
-
     }
-
 
     void TryCastSpell()
     {
@@ -154,15 +154,21 @@ public class PlayerPathing : MonoBehaviour
 
     void UpdateLineRenderer()
     {
-        if (currentPath.Count == 0) return;
+        if (currentPath.Count == 0)
+        {
+            line.positionCount = 0;
+            return;
+        }
 
         line.positionCount = currentPath.Count;
 
         for (int i = 0; i < currentPath.Count; i++)
         {
-            Vector3 pos = currentPath[i].Holder.transform.position;
-            pos.y += grid.FallSpeed * grid.currentFallSpeedMultiplier * Time.deltaTime;
-            line.SetPosition(i, pos);
+            if (currentPath[i]?.Holder != null)
+            {
+                Vector3 pos = currentPath[i].Holder.transform.position;
+                line.SetPosition(i, pos);
+            }
         }
     }
 
@@ -171,9 +177,9 @@ public class PlayerPathing : MonoBehaviour
         if (!isPathing || currentPath.Count == 0 || cursorVisual == null)
             return;
 
-        cursorVisual.position = new Vector3(currentPath.LastOrDefault().Holder.transform.position.x, currentPath.LastOrDefault().Holder.transform.position.y, 0);
+        Vector3 targetPos = currentPath.Last().Holder.transform.position;
+        cursorVisual.position = Vector3.Lerp(cursorVisual.position, targetPos, cursorLerpSpeed * Time.deltaTime);
     }
-
 
     bool IsAdjacentWorld(Slot a, Slot b)
     {

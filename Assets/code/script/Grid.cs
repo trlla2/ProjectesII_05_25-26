@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -218,7 +219,11 @@ public class Grid : MonoBehaviour
     [SerializeField] private float boardYOffset = 8f;
     [SerializeField] private float yDisappearThreshold = -10f;
 
-    public float FallSpeed = 2f;
+    [Header("Falling Behavior")]
+    [SerializeField] private float PauseDuration = 2f; // how long to wait between movements
+    [SerializeField] private int RowStep = 2; // how many rows to move down each time
+    [SerializeField] private AnimationCurve FallCurve; // defines motion curve shape
+    [SerializeField] private float FallDuration = 1f; // how long each fall lasts
 
     [SerializeField] private List<Element> availableelements;
     public List<Spell> availableSpells = new List<Spell>();
@@ -227,6 +232,7 @@ public class Grid : MonoBehaviour
 
     [HideInInspector] public float currentFallSpeedMultiplier = 1f;
     private bool DrawingPath = false;
+    private bool falling = false;
 
     public bool IsPlayerPathing
     {
@@ -234,7 +240,7 @@ public class Grid : MonoBehaviour
         set
         {
             DrawingPath = value;
-            currentFallSpeedMultiplier = value ? 0.0f : 1.0f;
+            currentFallSpeedMultiplier = value ? 0.2f : 1f;
         }
     }
 
@@ -243,11 +249,12 @@ public class Grid : MonoBehaviour
         if (slotPrefab == null || availableelements.Count <= 0 || availableSpells.Count <= 0) return;
 
         InitializeBoards();
+        StartCoroutine(BoardFallRoutine());
     }
 
     void InitializeBoards()
     {
-        float BoardHeight = YDistanceBetween * (SlotNumber);
+        float BoardHeight = YDistanceBetween * (SlotNumber - 1);
         for (int i = 0; i < maxBoards; i++)
         {
             SpawnNewBoard(i * BoardHeight);
@@ -263,8 +270,10 @@ public class Grid : MonoBehaviour
         Spell randomSpell = availableSpells[Random.Range(0, availableSpells.Count)];
         newBoard.InsertSpell(randomSpell);
 
-        Vector3 startPos = new Vector3(-XDistanceBetween * (SlotNumber - 1) / 2f, yPosition + -YDistanceBetween * (SlotNumber - 1) / 2f,0);
-        startPos += transform.position;//Debug 
+        Vector3 startPos = new Vector3(-XDistanceBetween * (SlotNumber - 1) / 2f,
+                                       yPosition + -YDistanceBetween * (SlotNumber - 1) / 2f,
+                                       0);
+        startPos += transform.position;
         newBoard.SpawnSlots(slotPrefab, XDistanceBetween, YDistanceBetween, startPos, transform);
 
         newBoard.UpdateVisuals();
@@ -272,37 +281,50 @@ public class Grid : MonoBehaviour
         currentBoards.Add(newBoard);
     }
 
-    private void Update()
+    private IEnumerator BoardFallRoutine()
     {
-        GameLoop();
-    }
-
-    void GameLoop()
-    {
-        float moveAmount = -FallSpeed * currentFallSpeedMultiplier * Time.deltaTime;
-
-        for (int i = currentBoards.Count - 1; i >= 0; i--)
+        while (true)
         {
-            currentBoards[i].MoveBoard(moveAmount);
+            yield return new WaitForSeconds(PauseDuration);
 
-            //Check if moved below the threshhold and delete
-            if (currentBoards[i].BoardWorldPosition.y < yDisappearThreshold)
-            {
-                currentBoards[i].DestroyBoard();
-                currentBoards.RemoveAt(i);
-            }
-        }
-
-        //find current highest board and spawn above it
-        if (currentBoards.Count < maxBoards)
-        {
+            // Start fall
+            float elapsed = 0f;
+            float totalFallDistance = YDistanceBetween * RowStep;
             float highestY = 0;
-            for (int i = 0; i < currentBoards.Count; i++)
-            {
-                if (highestY < currentBoards[i].BoardWorldPosition.y) highestY = currentBoards[i].BoardWorldPosition.y;
-            }
 
-            SpawnNewBoard(highestY + boardYOffset);
+            while (elapsed < FallDuration)
+            {
+                elapsed += Time.deltaTime * currentFallSpeedMultiplier;
+                float t = Mathf.Clamp01(elapsed / FallDuration);
+                float curveValue = FallCurve.Evaluate(t);
+                float currentDisplacement = curveValue * totalFallDistance;
+                float moveAmount = -currentDisplacement * Time.deltaTime;
+
+                for (int i = currentBoards.Count - 1; i >= 0; i--)
+                {
+                    currentBoards[i].MoveBoard(moveAmount);
+
+                    if (currentBoards[i].BoardWorldPosition.y < yDisappearThreshold)
+                    {
+                        currentBoards[i].DestroyBoard();
+                        currentBoards.RemoveAt(i);
+                    }
+                }
+
+                // spawn new boards if needed
+                if (currentBoards.Count < maxBoards)
+                {
+                    for (int i = 0; i < currentBoards.Count; i++)
+                    {
+                        if (highestY < currentBoards[i].BoardWorldPosition.y)
+                            highestY = currentBoards[i].BoardWorldPosition.y;
+                    }
+
+                    SpawnNewBoard(highestY + boardYOffset);
+                }
+
+                yield return null;
+            }
         }
     }
 }

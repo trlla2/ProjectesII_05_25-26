@@ -231,7 +231,7 @@ public class Grid : MonoBehaviour
         set
         {
             DrawingPath = value;
-            currentFallSpeedMultiplier = value ? 0.2f : 1f;
+            currentFallSpeedMultiplier = value ? 0.0f : 1.0f;
         }
     }
 
@@ -244,7 +244,7 @@ public class Grid : MonoBehaviour
 
     void InitializeBoards()
     {
-        float BoardHeight = YDistanceBetween * (SlotNumber - 1);
+        float BoardHeight = YDistanceBetween * (SlotNumber);
         for (int i = 0; i < maxBoards; i++)
         {
             SpawnNewBoard(i * BoardHeight);

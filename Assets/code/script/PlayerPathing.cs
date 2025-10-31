@@ -70,6 +70,7 @@ public class PlayerPathing : MonoBehaviour
 
     void ContinuePathing()
     {
+        isPathing = true;
         Vector2 mousePos = mainCam.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
 

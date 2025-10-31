@@ -14,6 +14,9 @@ public class PlayerPathing : MonoBehaviour
     [Header("Pathing Settings")]
     public int maxPathLength = 6;
     public float cursorLerpSpeed = 5f;
+
+    public float SelectScaleAmmount = 0.2f;
+    public float SelectScaleTime = 0.2f;
     
     private float adjacencyDistance = 1.76776695297f; //es el resultao de 1.25*sqrt(2), 1.25 es la dist entre slots i raiz d 2 para las diagonales
 
@@ -63,18 +66,17 @@ public class PlayerPathing : MonoBehaviour
         currentPath.Clear();
         line.positionCount = 0;
         grid.IsPlayerPathing = true;
-        if (cursorVisual != null)
-            cursorVisual.gameObject.SetActive(true);
-
     }
 
     void ContinuePathing()
     {
-        isPathing = true;
         Vector2 mousePos = mainCam.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
 
         if (hit.collider == null) return;
+
+        if (cursorVisual != null)
+            cursorVisual.gameObject.SetActive(true);
 
         SlotHolder holder = hit.collider.GetComponent<SlotHolder>();
         if (holder == null) return;
@@ -89,6 +91,8 @@ public class PlayerPathing : MonoBehaviour
                 {
                     currentPath.Add(slot);
                     holder.Highlighter().Highlight();
+                    slot.scaleAnimator = holder.GetComponent<ScaleAnimator>();
+                    slot.scaleAnimator.PlayScale(SelectScaleAmmount, SelectScaleTime);
                     UpdateLineRenderer();
                 }
             }

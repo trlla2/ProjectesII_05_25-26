@@ -7,6 +7,9 @@ public class Slot
     public Vector2Int GridPosition;
     public GameObject Holder;
 
+    public ScaleAnimator scaleAnimator;
+    public bool Animated = false;
+
     public Slot(Element e, Vector2Int pos)
     {
         CurrentElement = e;

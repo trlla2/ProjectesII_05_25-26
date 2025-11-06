@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using UnityEngine;
-using UnityEngine.Events;
 
 [RequireComponent(typeof(SpriteRenderer))]
 public class EnemyBehaviour : MonoBehaviour
@@ -23,6 +21,9 @@ public class EnemyBehaviour : MonoBehaviour
 
     public delegate void GetOnHitRecived(float health);
     public event GetOnHitRecived OnHitRecived;
+    
+    public delegate void GetOnDamageList(List<DamageType> damageList);
+    public event GetOnDamageList OnDamageList;
 
     public delegate void GetOnAttackTimeChange(float attackTime);
     public event GetOnAttackTimeChange OnAttackTimeChange;
@@ -70,12 +71,15 @@ public class EnemyBehaviour : MonoBehaviour
     {
         float finalDamage = 0;
 
+
+
         foreach(DamageType damageType in damageList)
         {
             finalDamage += enemyType.CalculateDamageTaken(damageType.element, damageType.damage);
         }
 
         health -= finalDamage;
+        OnDamageList?.Invoke(damageList);
         OnHitRecived?.Invoke(health);
         Debug.Log("Enemy " + enemyType.name + " has taken " + finalDamage + " damage points with " + health + " remaining health points");
     }

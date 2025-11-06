@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7195436114484962885}
   - component: {fileID: -8834264525674198798}
   - component: {fileID: 9177006592333867128}
-  - component: {fileID: 3825004350148697003}
+  - component: {fileID: 1342581851594023797}
   m_Layer: 0
   m_Name: SLOT 1
   m_TagString: Untagged
@@ -106,7 +106,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   highlighter: {fileID: 7195436114484962885}
-  scaleAnimator: {fileID: 3825004350148697003}
 --- !u!114 &7195436114484962885
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -193,7 +192,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &3825004350148697003
+--- !u!114 &1342581851594023797
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -211,8 +210,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
+      inSlope: 2
+      outSlope: 2
       tangentMode: 0
       weightedMode: 0
       inWeight: 0

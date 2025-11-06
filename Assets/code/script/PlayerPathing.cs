@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
-
 [RequireComponent(typeof(LineRenderer))]
 public class PlayerPathing : MonoBehaviour
 {
@@ -66,7 +64,7 @@ public class PlayerPathing : MonoBehaviour
 
     void BeginPathing()
     {
-        if (grid.IsPlayerPathing) return; // Prevent pathing during gravity processing
+        if (grid.isScrolling) return;
 
         isPathing = true;
         currentPath.Clear();
@@ -95,7 +93,7 @@ public class PlayerPathing : MonoBehaviour
         if (holder == null) return;
 
         Slot slot = holder.LinkedSlot;
-        if (slot == null || slot.IsFalling) return; // Can't select falling slots
+        if (slot == null || slot.Animated) return; // Can't select animating slots
 
         if (!currentPath.Contains(slot))
         {
@@ -170,11 +168,10 @@ public class PlayerPathing : MonoBehaviour
         {
             if (spell.Matches(pathElements))
             {
-                Debug.Log($"Spell cast: {spell.Name}");
-                OnSpellCast(spell);
+                foreach(Slot s in currentPath) { s.DestroySlot(); }
 
-                // Destroy the selected slots
-                grid.DestroySlots(new List<Slot>(currentPath));
+                Debug.Log($"Spell cast: " + spell.Name);
+                OnSpellCast(spell);
                 return;
             }
         }
@@ -190,6 +187,14 @@ public class PlayerPathing : MonoBehaviour
             stats.Attack(spell);
         }
     }
+
+    public void ForceEndPathing()
+    {
+        isPathing = false;
+        grid.IsPlayerPathing = false;
+        line.positionCount = 0;
+        currentPath.Clear();
+    }    
 
     void UpdateLineRenderer()
     {
@@ -238,15 +243,5 @@ public class PlayerPathing : MonoBehaviour
         );
 
         return dist <= adjacencyDistance;
-    }
-
-    // Alternative: Check adjacency using grid positions (more reliable)
-    bool IsAdjacentGrid(Slot a, Slot b)
-    {
-        int colDiff = Mathf.Abs(a.GridPosition.x - b.GridPosition.x);
-        int rowDiff = Mathf.Abs(a.GridPosition.y - b.GridPosition.y);
-
-        // Adjacent if touching horizontally, vertically, or diagonally
-        return (colDiff <= 1 && rowDiff <= 1) && !(colDiff == 0 && rowDiff == 0);
     }
 }

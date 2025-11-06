@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(SpriteRenderer))]
 public class EnemyBehaviour : MonoBehaviour
@@ -11,13 +12,20 @@ public class EnemyBehaviour : MonoBehaviour
     [SerializeField]
     private EnemyType enemyType;
 
+
     private SpriteRenderer spriteRenderer;
 
     private bool inBattle = false;
 
     // Actual stats of the enemy
     private float health;
-    private float attackTimer = 0f;
+    private float attackTime = 0f;
+
+    public delegate void GetOnHitRecived(float health);
+    public event GetOnHitRecived OnHitRecived;
+
+    public delegate void GetOnAttackTimeChange(float attackTime);
+    public event GetOnAttackTimeChange OnAttackTimeChange;
 
     private void Start()
     {
@@ -42,15 +50,18 @@ public class EnemyBehaviour : MonoBehaviour
     {
         while (inBattle)
         {
-            if (attackTimer < enemyType.GetFireRate())
+
+            if (attackTime < enemyType.GetFireRate())
             {
-                attackTimer += Time.deltaTime;
+                attackTime += Time.deltaTime;
             }
             else
             {
-                attackTimer = 0f;
+                attackTime = 0f;
                 GameManager.Instance.AttackPlayer(enemyType.GetDamage());
             }
+            OnAttackTimeChange?.Invoke(attackTime);
+
             yield return null;
         }
     }
@@ -65,7 +76,7 @@ public class EnemyBehaviour : MonoBehaviour
         }
 
         health -= finalDamage;
-
+        OnHitRecived?.Invoke(health);
         Debug.Log("Enemy " + enemyType.name + " has taken " + finalDamage + " damage points with " + health + " remaining health points");
     }
     
@@ -73,4 +84,7 @@ public class EnemyBehaviour : MonoBehaviour
     {
         inBattle = false;
     }
+
+    public float GetMaxHP() { return enemyType.GetHealth(); }
+    public float GetFireRate() { return enemyType.GetFireRate(); }
 }

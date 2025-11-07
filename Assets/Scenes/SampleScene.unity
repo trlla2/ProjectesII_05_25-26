@@ -5072,20 +5072,45 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slotPrefab: {fileID: 5074324612046381537, guid: 728fae653c737824c92ab724d73cffd2, type: 3}
-  XDistanceBetween: 1.2
-  YDistanceBetween: 1.2
-  maxBoards: 4
-  boardYOffset: 6.6
-  yDisappearThreshold: -10
-  FallSpeed: 0.7
+  XDistanceBetween: 1.1
+  YDistanceBetween: 1.1
+  waitTime: 4
+  scrollDuration: 0.5
+  scrollCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: -1.1764706
+      outSlope: -1.1764706
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.07083333
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: -0.8372091
+      outSlope: -0.8372091
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.17916667
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   availableelements:
   - {fileID: 11400000, guid: 4be4989cbc43a4648915c11c96e324e5, type: 2}
   - {fileID: 11400000, guid: 8fd29fd89e0e2fc418ab8a117cefbbd4, type: 2}
-  - {fileID: 11400000, guid: 02288df98d810c14a8b97ec86fb6b86f, type: 2}
   - {fileID: 11400000, guid: 1ab200a2191b3a645a4c64114d4fc11a, type: 2}
+  - {fileID: 11400000, guid: 02288df98d810c14a8b97ec86fb6b86f, type: 2}
   availableSpells:
   - {fileID: 11400000, guid: d65283c45b7504446948b1b821bc9cb0, type: 2}
+  pathing: {fileID: 974940148}
   currentFallSpeedMultiplier: 1
+  isScrolling: 0
+  IsPlayerPathing: 0
 --- !u!224 &190367787
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5602,8 +5627,8 @@ MonoBehaviour:
   grid: {fileID: 190367786}
   cursorVisual: {fileID: 1468393346}
   maxPathLength: 6
-  cursorLerpSpeed: 5
-  SelectScaleAmmount: 0.2
+  cursorLerpSpeed: 10
+  SelectScaleAmount: 0.2
   SelectScaleTime: 0.2
 --- !u!120 &974940149
 LineRenderer:
@@ -6278,7 +6303,7 @@ Transform:
   m_GameObject: {fileID: 1758440759}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.5882, y: 3.7568, z: 0}
+  m_LocalPosition: {x: -5.56, y: 3.61, z: 0}
   m_LocalScale: {x: 10.583136, y: 2.7464, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

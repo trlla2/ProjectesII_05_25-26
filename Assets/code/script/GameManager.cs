@@ -9,6 +9,10 @@ public class GameManager : MonoBehaviour
     
     private PlayerStats playerStats;
 
+    public delegate void GetOnEndGame(bool isWin);
+    public event GetOnEndGame OnEndGame;
+
+
     private void Awake()
     {
         if (Instance != null)
@@ -36,7 +40,14 @@ public class GameManager : MonoBehaviour
 
     public void OnPlayerDead()
     {
-        enemyInCombat.StopEnemy();
+        enemyInCombat?.StopEnemy();
+        OnEndGame.Invoke(false);
+    }
+
+    public void OnEnemyDead()
+    {
+        DeleteEnemyRef();
+        OnEndGame.Invoke(true);
     }
 
     public void SetPlayerRef(PlayerStats playerRef) { playerStats = playerRef; Debug.Log("PlayerStats assinged"); }

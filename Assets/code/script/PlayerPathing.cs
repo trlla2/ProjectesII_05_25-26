@@ -22,6 +22,8 @@ public class PlayerPathing : MonoBehaviour
     private Camera mainCam;
     private bool isPathing = false;
 
+    Slot lastSlot;
+
     void Start()
     {
         line = GetComponent<LineRenderer>();
@@ -194,6 +196,7 @@ public class PlayerPathing : MonoBehaviour
         grid.IsPlayerPathing = false;
         line.positionCount = 0;
         currentPath.Clear();
+        cursorVisual.gameObject.SetActive(false);
     }    
 
     void UpdateLineRenderer()

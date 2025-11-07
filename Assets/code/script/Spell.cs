@@ -7,6 +7,9 @@ public class Spell : ScriptableObject
     public string Name;
     public List<Element> Recipe;
 
+    public delegate void GetOnCast();
+    public event GetOnCast OnCast;
+
     public bool Matches(List<Element> path)
     {
         if (path == null) {Debug.LogWarning("Be carful! tried to match an empty path"); return false; }

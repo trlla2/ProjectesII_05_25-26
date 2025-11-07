@@ -35,12 +35,15 @@ public class PlayerPathing : MonoBehaviour
             Debug.LogError("No Grid reference!");
         }
     }
+    private void FixedUpdate()
+    {
+        UpdateCursorPosition();
+    }
 
     void Update()
     {
         HandleMouseInput();
         UpdateLineRenderer();
-        UpdateCursorPosition();
 
         if (!isPathing && line.positionCount != 0)
         {
@@ -221,17 +224,22 @@ public class PlayerPathing : MonoBehaviour
 
     void UpdateCursorPosition()
     {
+        if (!isPathing)
+        {
+            cursorVisual.transform.position = mainCam.ScreenToWorldPoint(Input.mousePosition);
+            cursorVisual.transform.position = new Vector3(cursorVisual.transform.position.x, cursorVisual.transform.position.y, 0);
+        }
         if (!isPathing || currentPath.Count == 0 || cursorVisual == null)
             return;
 
         Slot lastSlot = currentPath.Last();
-        if (lastSlot?.Holder != null)
+        if (lastSlot.Holder != null)
         {
             Vector3 targetPos = lastSlot.Holder.transform.position;
             cursorVisual.position = Vector3.Lerp(
                 cursorVisual.position,
                 targetPos,
-                cursorLerpSpeed * Time.deltaTime
+                cursorLerpSpeed * Time.fixedDeltaTime
             );
         }
     }

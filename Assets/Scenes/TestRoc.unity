@@ -5114,7 +5114,7 @@ MonoBehaviour:
   XDistanceBetween: 1.2
   YDistanceBetween: 1.2
   waitTime: 4
-  scrollDuration: 0.6
+  scrollDuration: 0.5
   scrollCurve:
     serializedVersion: 2
     m_Curve:
@@ -6349,7 +6349,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 5096652739223892754, guid: 2133b4c36aa0ee046adb471b3c724e46, type: 3}
+  m_Sprite: {fileID: -1186871354, guid: 2133b4c36aa0ee046adb471b3c724e46, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -6746,14 +6746,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.25, b: 0.25, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 362720175, guid: 2133b4c36aa0ee046adb471b3c724e46, type: 3}
+  m_Sprite: {fileID: 7733618981889048754, guid: 2133b4c36aa0ee046adb471b3c724e46, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -7033,14 +7033,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.25, b: 0.25, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 362720175, guid: 2133b4c36aa0ee046adb471b3c724e46, type: 3}
+  m_Sprite: {fileID: 7733618981889048754, guid: 2133b4c36aa0ee046adb471b3c724e46, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8853,6 +8853,10 @@ PrefabInstance:
       propertyPath: cursorVisual
       value: 
       objectReference: {fileID: 1468393346}
+    - target: {fileID: 8454210317645414146, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
+      propertyPath: cursorLerpSpeed
+      value: 20
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

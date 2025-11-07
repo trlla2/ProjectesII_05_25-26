@@ -5,11 +5,12 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public class EnemyBehaviour : MonoBehaviour
 {
-    [Header("Setup")]
-
+    [Header("EnemyType")]
     [SerializeField]
     private EnemyType enemyType;
-
+    [Header("DeathParticles")]
+    [SerializeField]
+    private GameObject deathParticles;
 
     private SpriteRenderer spriteRenderer;
 
@@ -82,6 +83,14 @@ public class EnemyBehaviour : MonoBehaviour
         OnDamageList?.Invoke(damageList);
         OnHitRecived?.Invoke(health);
         Debug.Log("Enemy " + enemyType.name + " has taken " + finalDamage + " damage points with " + health + " remaining health points");
+
+        if(health <= 0)
+        {
+            GameObject part = Instantiate(deathParticles, transform.position, Quaternion.identity);
+            part.transform.DetachChildren();
+            GameManager.Instance.OnEnemyDead();
+            Destroy(this.gameObject);
+        }
     }
     
     public void StopEnemy()

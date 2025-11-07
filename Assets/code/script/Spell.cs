@@ -1,14 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 [CreateAssetMenu(fileName = "Spell", menuName = "ScriptableObjects/Spells", order = 2)]
 public class Spell : ScriptableObject
 {
     public string Name;
     public List<Element> Recipe;
-
-    public delegate void GetOnCast();
-    public event GetOnCast OnCast;
+    public UnityEvent OnCast;
 
     public bool Matches(List<Element> path)
     {

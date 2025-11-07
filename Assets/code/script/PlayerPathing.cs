@@ -75,19 +75,16 @@ public class PlayerPathing : MonoBehaviour
         currentPath.Clear();
         line.positionCount = 0;
         grid.IsPlayerPathing = true;
-
-        if (cursorVisual != null)
-        {
-            cursorVisual.gameObject.SetActive(true);
-        }
     }
 
     void ContinuePathing()
     {
-        Vector2 mousePos = mainCam.ScreenToWorldPoint(Input.mousePosition);
-        RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
+        Vector3 mousePos = mainCam.ScreenToWorldPoint(Input.mousePosition);
+        RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector3.forward);
 
         if (hit.collider == null) return;
+
+        print(hit.collider.name);
 
         if (cursorVisual != null)
         {
@@ -174,9 +171,14 @@ public class PlayerPathing : MonoBehaviour
             if (spell.Matches(pathElements))
             {
                 foreach(Slot s in currentPath) { s.DestroySlot(); }
+
                 cameraShake.Shake(0.15f);
+
                 Debug.Log($"Spell cast: " + spell.Name);
+
                 OnSpellCast(spell);
+                if(spell.OnCast != null) spell.OnCast.Invoke(); ;
+
                 return;
             }
         }

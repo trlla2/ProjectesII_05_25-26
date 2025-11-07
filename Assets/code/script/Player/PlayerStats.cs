@@ -10,6 +10,8 @@ public class PlayerStats : MonoBehaviour
     private float maxHp = 100.0f;
     private float hp;
 
+    public delegate void GetOnHitRecived(float health);
+    public event GetOnHitRecived OnHitRecived;
 
     // Add Crit and other stuff...
     private Dictionary<ElementType, float> elementDamages = new Dictionary<ElementType, float>() // forced DELETE!@!!!!
@@ -45,7 +47,7 @@ public class PlayerStats : MonoBehaviour
     {
         hp -= damage;
         Debug.Log("Player has taken " + damage + " damage points with " + hp + " remaining health points");
-
+        OnHitRecived?.Invoke(hp);
         if (hp <= 0)
         {
             Debug.Log("------------------------  PLAYER IS DEAD ---------------------------------");
@@ -53,4 +55,5 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
+    public float GetMaxHP() { return maxHp; }
 }

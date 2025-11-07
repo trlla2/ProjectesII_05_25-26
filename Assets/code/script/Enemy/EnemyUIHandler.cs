@@ -54,6 +54,8 @@ public class EnemyUIHandler : MonoBehaviour
     {
         foreach (DamageType damage in damageList)
         {
+            damageTextTranslator.ResetPosition();
+
             damageText.text = damage.damage.ToString();
             damageTextTranslator.ToTarget();
 

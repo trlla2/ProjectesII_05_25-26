@@ -49,11 +49,13 @@ public class TranslatorUI : MonoBehaviour
 
     public void ResetPosition()
     {
-        currentTime = 0f;
-
-        SetPositionForCurrentTime();
-
+        if (currentAnimation != null)
+        {
+            StopCoroutine(currentAnimation);
+        }
         currentAnimation = null;
+        currentTime = 0f;
+        SetPositionForCurrentTime();
     }
 
     private void ChangeAnimation(IEnumerator newAnimation)
@@ -69,7 +71,6 @@ public class TranslatorUI : MonoBehaviour
 
     private IEnumerator ToTargetAnimation()
     {
-        Debug.Log("a");
         while (currentTime < animationDuration)
         {
             currentTime += Time.deltaTime;

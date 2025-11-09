@@ -5074,8 +5074,9 @@ MonoBehaviour:
   slotPrefab: {fileID: 5074324612046381537, guid: 728fae653c737824c92ab724d73cffd2, type: 3}
   XDistanceBetween: 1.2
   YDistanceBetween: 1.2
-  waitTime: 4
+  waitTime: 8
   scrollDuration: 0.6
+  columnScrollDelay: 0.1
   scrollCurve:
     serializedVersion: 2
     m_Curve:
@@ -5089,17 +5090,52 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0.14583333
     - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: -1.0588235
-      outSlope: -1.0588235
+      time: 0.65497947
+      value: 0.9918796
+      inSlope: 0.11941284
+      outSlope: 0.11941284
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.14166665
+      inWeight: 0.26846606
+      outWeight: 0.2753256
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: -0.12386304
+      outSlope: -0.12386304
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.45107302
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  gravityCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  gravityDuration: 0.2
+  emptyElement: {fileID: 11400000, guid: 47f6aa33896c7cb63acb02ad374358fa, type: 2}
   availableelements:
   - {fileID: 11400000, guid: 4be4989cbc43a4648915c11c96e324e5, type: 2}
   - {fileID: 11400000, guid: 8fd29fd89e0e2fc418ab8a117cefbbd4, type: 2}
@@ -7288,8 +7324,8 @@ Transform:
   m_GameObject: {fileID: 1758440759}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.5118003, y: 3.7568, z: 0}
-  m_LocalScale: {x: 10.583136, y: 2.7464, z: 1}
+  m_LocalPosition: {x: 0.5118003, y: 3.7543, z: 0}
+  m_LocalScale: {x: 10.583136, y: 2.7414565, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

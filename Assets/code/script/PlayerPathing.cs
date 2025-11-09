@@ -84,8 +84,6 @@ public class PlayerPathing : MonoBehaviour
 
         if (hit.collider == null) return;
 
-        print(hit.collider.name);
-
         if (cursorVisual != null)
         {
             cursorVisual.gameObject.SetActive(true);
@@ -170,7 +168,10 @@ public class PlayerPathing : MonoBehaviour
         {
             if (spell.Matches(pathElements))
             {
-                foreach(Slot s in currentPath) { s.DestroySlot(); }
+                foreach(Slot s in currentPath) 
+                {
+                    grid.DeleteElement(s.GridPosition.x, s.GridPosition.y);
+                }
 
                 cameraShake.Shake(0.15f);
 

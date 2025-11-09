@@ -1,43 +1,56 @@
+using TMPro;
 using UnityEngine;
 
 public class EndPanelBehaviour : MonoBehaviour
 {
-    [Header("SETUP")]
-    [SerializeField]
-    private GameObject endPanel;
+    [Header("Panels")]
     [SerializeField]
     private GameObject winPanel;
     [SerializeField]
     private GameObject losePanel;
 
+    [Header("Text")]
+    [SerializeField]
+    private TMP_Text winText;
+
+    [Header("Translators")]
+    [SerializeField]
+    private TranslatorUI winTranslator;
+    [SerializeField]
+    private TranslatorUI loseTranslator;
+
 
     private void Start()
     {
-        GameManager.Instance.OnEndGame += SetWinLosePanel;
+        GameManager.Instance.OnEndBattle += SetWinLosePanel;
 
-        endPanel.SetActive(false);
         winPanel.SetActive(false);
         losePanel.SetActive(false);
     }
 
-    private void SetWinLosePanel(bool isWin)
+    private void SetWinLosePanel(bool isWin, int exp, int money)
     {
-        endPanel.SetActive(true);
-        
+
+
         if(isWin)
         {
+            winText.text = "You gain:\n" + exp + " Experience points \n" + money + " coins";
             winPanel.SetActive(true);
             losePanel.SetActive(false);
+
+            winTranslator.ToTarget();
         }
         else 
         {
             winPanel.SetActive(false);
             losePanel.SetActive(true);
+
+            loseTranslator.ToTarget();
         }
     }
 
     private void OnDestroy()
     {
-        GameManager.Instance.OnEndGame -= SetWinLosePanel;
+        GameManager.Instance.OnEndBattle -= SetWinLosePanel;
     }
 }

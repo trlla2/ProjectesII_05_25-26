@@ -209,6 +209,7 @@ public class Grid : MonoBehaviour
 
     [Header("Scroll Settings")]
     [SerializeField] private float waitTime = 4f;
+    private float waitTimer = 0;
     [SerializeField] private float scrollDuration = 1f;
     [SerializeField] private AnimationCurve scrollCurve;
 
@@ -267,7 +268,7 @@ public class Grid : MonoBehaviour
     {
         while (true)
         {
-            float waitTimer = 0f;
+            waitTimer = 0f;
             while (waitTimer < waitTime)
             {
                 waitTimer += Time.deltaTime;
@@ -315,4 +316,7 @@ public class Grid : MonoBehaviour
 
         isScrolling = false;
     }
+
+    public float GetCurrentScrollTimer() { return waitTimer; }
+    public float GetScrollTime() { return waitTime; }
 }

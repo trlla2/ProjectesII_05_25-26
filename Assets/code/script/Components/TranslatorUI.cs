@@ -31,7 +31,8 @@ public class TranslatorUI : MonoBehaviour
     {
         rectTransform = GetComponent<RectTransform>();
 
-        originPosition = rectTransform.localPosition;
+        originPosition = rectTransform.anchoredPosition;
+        Debug.Log(gameObject.name + "Origin Position: " + rectTransform.anchoredPosition);
         originScale = rectTransform.localScale;
         originRotation = rectTransform.localEulerAngles;
     }
@@ -114,9 +115,10 @@ public class TranslatorUI : MonoBehaviour
         float interpolatedValue = currentTime / animationDuration;
 
         interpolatedValue = curve.Evaluate(interpolatedValue);
-        rectTransform.localPosition = originPosition + (displacement * interpolatedValue); // interpolate position
-        rectTransform.localScale = originScale + (scale * interpolatedValue); // interpolate scale
-        rectTransform.localEulerAngles = originRotation + (rotation * interpolatedValue); // interpolate rotation
+        if(displacement != Vector3.zero)
+            rectTransform.localPosition = originPosition + (displacement * interpolatedValue);
+        rectTransform.localScale = originScale + (scale * interpolatedValue);
+        rectTransform.localEulerAngles = originRotation + (rotation * interpolatedValue);
         OnChange.Invoke(interpolatedValue);
     }
 }

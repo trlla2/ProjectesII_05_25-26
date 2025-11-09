@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -9,6 +10,10 @@ public class PlayerStats : MonoBehaviour
     [SerializeField]
     private float maxHp = 100.0f;
     private float hp;
+
+    private int experiencePoints = 0;
+    private int level = 1;
+    private int money = 0;
 
     public delegate void GetOnHitRecived(float health);
     public event GetOnHitRecived OnHitRecived;
@@ -55,5 +60,13 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
+    public void OnWinBattle(int exp, int m)
+    {
+        experiencePoints += exp;
+        money += m;
+    }
+
+    public int GetEXP() { return experiencePoints; }
+    public int GetMoney() { return money; }
     public float GetMaxHP() { return maxHp; }
 }

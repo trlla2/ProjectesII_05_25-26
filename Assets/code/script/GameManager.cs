@@ -4,13 +4,16 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+    [Header("Stage")]
+    [SerializeField]
+    private int stageLevel = 1;
 
     private EnemyBehaviour enemyInCombat;
     
     private PlayerStats playerStats;
 
-    public delegate void GetOnEndGame(bool isWin);
-    public event GetOnEndGame OnEndGame;
+    public delegate void GetOnEndBattle(bool isWin, int exp, int money);
+    public event GetOnEndBattle OnEndBattle;
 
     private CameraShake cameraShake;
     private void Awake()
@@ -47,14 +50,20 @@ public class GameManager : MonoBehaviour
     public void OnPlayerDead()
     {
         enemyInCombat?.StopEnemy();
-        OnEndGame?.Invoke(false);
+        OnEndBattle?.Invoke(false, 0, 0);
     }
 
     public void OnEnemyDead()
     {
+        int exp = stageLevel * 4;
+        int money = stageLevel * 4;
+
+        playerStats.OnWinBattle(exp, money);
         DeleteEnemyRef();
-        OnEndGame?.Invoke(true);
+        OnEndBattle?.Invoke(true, exp, money);
     }
 
     public void SetPlayerRef(PlayerStats playerRef) { playerStats = playerRef; Debug.Log("PlayerStats assinged"); }
+
+    
 }

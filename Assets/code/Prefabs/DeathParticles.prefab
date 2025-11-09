@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3662678338424898927}
   - component: {fileID: 5875889587266705184}
   - component: {fileID: 3829089990386203705}
+  - component: {fileID: 662252723384120064}
   m_Layer: 0
   m_Name: DeathParticles
   m_TagString: Untagged
@@ -4904,3 +4905,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30ca88f6515fb84fb9a3e84d825384e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  time: 1
+--- !u!210 &662252723384120064
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2264416520600353380}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 12
+  m_SortAtRoot: 0

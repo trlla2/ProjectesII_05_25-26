@@ -5,8 +5,6 @@ public class EndPanelBehaviour : MonoBehaviour
 {
     [Header("Panels")]
     [SerializeField]
-    private GameObject endPanel;
-    [SerializeField]
     private GameObject winPanel;
     [SerializeField]
     private GameObject losePanel;
@@ -26,7 +24,6 @@ public class EndPanelBehaviour : MonoBehaviour
     {
         GameManager.Instance.OnEndBattle += SetWinLosePanel;
 
-        endPanel.SetActive(false);
         winPanel.SetActive(false);
         losePanel.SetActive(false);
     }
@@ -35,7 +32,6 @@ public class EndPanelBehaviour : MonoBehaviour
     {
 
 
-        endPanel.SetActive(true);
         if(isWin)
         {
             winText.text = "You gain:\n" + exp + " Experience points \n" + money + " coins";

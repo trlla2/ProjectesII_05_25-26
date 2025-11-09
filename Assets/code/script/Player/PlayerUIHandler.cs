@@ -7,23 +7,18 @@ public class PlayerUIHandler : MonoBehaviour
     [SerializeField]
     private Slider healthBar;
 
-    private PlayerStats playerStats;
-
-
     private void Start()
     {
-        playerStats = GetComponentInParent<PlayerStats>();
-
-        playerStats.OnHitRecived += HitRecived;
+        PlayerStats.Instance.OnHitRecived += HitRecived;
     }
 
     private void HitRecived(float health)
     {
-        healthBar.value = health / playerStats.GetMaxHP();
+        healthBar.value = health / PlayerStats.Instance.GetMaxHP();
     }
 
     private void OnDestroy()
     {
-        playerStats.OnHitRecived -= HitRecived;
+        PlayerStats.Instance.OnHitRecived -= HitRecived;
     }
 }

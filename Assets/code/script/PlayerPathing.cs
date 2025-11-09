@@ -188,11 +188,7 @@ public class PlayerPathing : MonoBehaviour
 
     public void OnSpellCast(Spell spell)
     {
-        PlayerStats stats = GetComponent<PlayerStats>();
-        if (stats != null)
-        {
-            stats.Attack(spell);
-        }
+        PlayerStats.Instance.Attack(spell);
     }
 
     public void ForceEndPathing()

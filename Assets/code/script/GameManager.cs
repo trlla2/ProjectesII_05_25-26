@@ -9,13 +9,15 @@ public class GameManager : MonoBehaviour
     private int stageLevel = 1;
 
     private EnemyBehaviour enemyInCombat;
-    
-    private PlayerStats playerStats;
 
     public delegate void GetOnEndBattle(bool isWin, int exp, int money);
     public event GetOnEndBattle OnEndBattle;
 
     private CameraShake cameraShake;
+
+    private int expMultiplyer = 4;
+    private int moneyMultiplyer = 4;
+
     private void Awake()
     {
         if (Instance != null)
@@ -40,7 +42,7 @@ public class GameManager : MonoBehaviour
 
     public void AttackPlayer(float damage)
     {
-        playerStats?.DealDamage(damage);
+        PlayerStats.Instance.DealDamage(damage);
         cameraShake.Shake(0.2f);
     }
 
@@ -50,20 +52,16 @@ public class GameManager : MonoBehaviour
     public void OnPlayerDead()
     {
         enemyInCombat?.StopEnemy();
-        OnEndBattle?.Invoke(false, 0, 0);
+        OnEndBattle?.Invoke(false, 0, 0); // 0 cause player lose
     }
 
     public void OnEnemyDead()
     {
-        int exp = stageLevel * 4;
-        int money = stageLevel * 4;
+        int exp = stageLevel * expMultiplyer;
+        int money = stageLevel * moneyMultiplyer;
 
-        playerStats.OnWinBattle(exp, money);
+        PlayerStats.Instance.OnWinBattle(exp, money);
         DeleteEnemyRef();
         OnEndBattle?.Invoke(true, exp, money);
     }
-
-    public void SetPlayerRef(PlayerStats playerRef) { playerStats = playerRef; Debug.Log("PlayerStats assinged"); }
-
-    
 }

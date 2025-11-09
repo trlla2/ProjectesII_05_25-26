@@ -1,10 +1,12 @@
 using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
+    public static PlayerStats Instance { get; private set; }
     [Header("Stats")]
 
     [SerializeField]
@@ -19,20 +21,31 @@ public class PlayerStats : MonoBehaviour
     public event GetOnHitRecived OnHitRecived;
 
     // Add Crit and other stuff...
-    private Dictionary<ElementType, float> elementDamages = new Dictionary<ElementType, float>() // forced DELETE!@!!!!
+    private Dictionary<ElementType, int> elementalLevels = new Dictionary<ElementType, int>() // forced DELETE!@!!!!
     { 
-        { ElementType.Green, 4.0f}, 
-        { ElementType.Red, 4.0f}, 
-        { ElementType.Yellow, 4.0f}, 
-        { ElementType.Blue, 4.0f}, 
-        
+        { ElementType.Green, 1}, 
+        { ElementType.Red, 1}, 
+        { ElementType.Yellow, 1}, 
+        { ElementType.Blue, 1}
     };
 
-    private void Start()
+    private int elementalLevelMultiplyer = 4;
+
+    private void Awake()
+    {
+        if (Instance != null)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(this.gameObject);
+    }
+
+    private void Start() // FORCED DELETE !!@@!@!@!!
     {
         hp = maxHp;
-
-        GameManager.Instance.SetPlayerRef(this); // forced DELETE!@!!!!! 
     }
 
 
@@ -41,7 +54,7 @@ public class PlayerStats : MonoBehaviour
         List<DamageType> damages = new List<DamageType>();
         foreach (Element e in spell.Recipe)
         {
-            damages.Add(new DamageType(e.Type, elementDamages[e.Type]));
+            damages.Add(new DamageType(e.Type, elementalLevelMultiplyer * elementalLevels[e.Type]));
         }
 
 
@@ -62,8 +75,15 @@ public class PlayerStats : MonoBehaviour
 
     public void OnWinBattle(int exp, int m)
     {
-        experiencePoints += exp;
         money += m;
+
+        experiencePoints += exp;
+
+        if(experiencePoints >= Math.Pow(4, level))
+        {
+            level++;
+
+        }
     }
 
     public int GetEXP() { return experiencePoints; }

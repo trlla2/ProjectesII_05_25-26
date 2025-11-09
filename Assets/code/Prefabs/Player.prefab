@@ -5296,7 +5296,6 @@ GameObject:
   - component: {fileID: 4447280998866706708}
   - component: {fileID: 7811222588343090408}
   - component: {fileID: 8454210317645414146}
-  - component: {fileID: 273935642255969966}
   - component: {fileID: 710040041163105777}
   m_Layer: 0
   m_Name: Player
@@ -5446,19 +5445,6 @@ MonoBehaviour:
   cursorLerpSpeed: 5
   SelectScaleAmount: 0.2
   SelectScaleTime: 0.2
---- !u!114 &273935642255969966
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4902791056421607132}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a321e5494e50f1c4f8ed1254b0126e56, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHp: 100
 --- !u!212 &710040041163105777
 SpriteRenderer:
   m_ObjectHideFlags: 0

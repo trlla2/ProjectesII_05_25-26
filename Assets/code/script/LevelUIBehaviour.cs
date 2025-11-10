@@ -86,7 +86,6 @@ public class LevelUIBehaviour : MonoBehaviour
 
         while (animationLevelUp)
         {
-            breathingTime += Time.deltaTime;
 
             if(!breathingBackwards)
             {

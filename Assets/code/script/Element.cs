@@ -2,10 +2,10 @@ using UnityEngine;
 
 public enum ElementType
 {
-    Red,
-    Blue,
-    Green,
-    Yellow,
+    Red = 0,
+    Blue = 1,
+    Green = 2,
+    Yellow = 3,
     EMPTY
 }
 

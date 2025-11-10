@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -19,6 +18,9 @@ public class PlayerStats : MonoBehaviour
 
     public delegate void GetOnHitRecived(float health);
     public event GetOnHitRecived OnHitRecived;
+
+    public delegate void GetOnLevelUp();
+    public event GetOnLevelUp OnLevelUp;
 
     // Add Crit and other stuff...
     private Dictionary<ElementType, int> elementalLevels = new Dictionary<ElementType, int>() // forced DELETE!@!!!!
@@ -79,14 +81,26 @@ public class PlayerStats : MonoBehaviour
 
         experiencePoints += exp;
 
-        if(experiencePoints >= Math.Pow(4, level))
+        if(experiencePoints >= GetEXPForNextLevel())
         {
-            level++;
-
+            OnLevelUp.Invoke();
         }
+    }
+
+    public void UpgradeElement(ElementType type)
+    {
+        level++;
+
+        elementalLevels[type]++;
     }
 
     public int GetEXP() { return experiencePoints; }
     public int GetMoney() { return money; }
     public float GetMaxHP() { return maxHp; }
+    public int GetLevel() { return level; }
+    public int GetEXPForNextLevel () { return (int)Math.Pow(4, level); }
+
+    
+
+    
 }

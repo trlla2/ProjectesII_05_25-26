@@ -22,6 +22,9 @@ public class PlayerStats : MonoBehaviour
     public delegate void GetOnLevelUp();
     public event GetOnLevelUp OnLevelUp;
 
+    public delegate void GetOnEXPChange();
+    public event GetOnEXPChange OnEXPChange;
+
     // Add Crit and other stuff...
     private Dictionary<ElementType, int> elementalLevels = new Dictionary<ElementType, int>() // forced DELETE!@!!!!
     { 
@@ -80,8 +83,9 @@ public class PlayerStats : MonoBehaviour
         money += m;
 
         experiencePoints += exp;
+        OnEXPChange.Invoke();
 
-        if(experiencePoints >= GetEXPForNextLevel())
+        if (experiencePoints >= GetEXPForNextLevel())
         {
             OnLevelUp.Invoke();
         }

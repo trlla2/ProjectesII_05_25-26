@@ -41,6 +41,6 @@ public class MainMenuHandler : MonoBehaviour
 
     public void OnPlay()
     {
-        SceneManager.LoadScene(gameSceneName);
+        SceneTransition.Instance.LoadScene(gameSceneName, false);
     }
 }

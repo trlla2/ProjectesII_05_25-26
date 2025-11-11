@@ -326,47 +326,72 @@ public class Grid : MonoBehaviour
             }
 
             // Default to 1 scroll
-            yield return StartCoroutine(PerformScroll(1));
+            yield return StartCoroutine(PerformScroll(3));
         }
     }
 
     public IEnumerator PerformScroll(int times)
     {
+        isScrolling = true;
+        pathing.ForceEndPathing();
+
+        // Create all necessary boards before scrolling
+        List<BoardConfiguration> allBoards = new List<BoardConfiguration>();
+        allBoards.Add(currentBoard);
+        allBoards.Add(nextBoard);
+
+        for (int i = 2; i <= times; i++)
+        {
+            float Height = YDistanceBetween * SlotNumber * i;
+            BoardConfiguration newBoard = CreateBoard(Height);
+            allBoards.Add(newBoard);
+        }
+
         for (int scrollCount = 0; scrollCount < times; scrollCount++)
         {
-            isScrolling = true;
-            pathing.ForceEndPathing();
-
             // Scroll each column with delay
-            List<Coroutine> columnScrolls = new List<Coroutine>();
             for (int col = 0; col < SlotNumber; col++)
             {
                 int columnIndex = col;
                 yield return new WaitForSeconds(columnScrollDelay);
-                StartCoroutine(ScrollColumn(columnIndex));
+                StartCoroutine(ScrollColumnAllBoards(columnIndex, allBoards));
             }
 
-            // Wait for all columns to finish scrolling
-            yield return new WaitForSeconds(scrollDuration);
-
-            // Shift boards
-            currentBoard.DestroyBoard();
-            currentBoard = nextBoard;
-
-            float boardHeight = YDistanceBetween * SlotNumber;
-            nextBoard = CreateBoard(boardHeight);
-
-            isScrolling = false;
-
-            // Small delay between multiple scrolls
-            if (scrollCount < times - 1)
+            // Wait for all columns to finish scrolling 
+            // If more than 1 time we won't wait the full duration
+            if (scrollCount >= times - 1)
             {
-                yield return new WaitForSeconds(0.2f);
+                yield return new WaitForSeconds(scrollDuration);
             }
         }
+
+        // Now destroy old boards
+        for (int i = 0; i < times; i++)
+        {
+            allBoards[i].DestroyBoard();
+        }
+
+        // Assign the correct board as current
+        currentBoard = allBoards[times];
+
+        // Update BoardWorldPosition to match actual position after scrolls
+        // The board has scrolled down 'times' times, so it's now at position 0
+        Vector3 actualCurrentPos = new Vector3(
+            -XDistanceBetween * (SlotNumber - 1) / 2f,
+            -YDistanceBetween * (SlotNumber - 1) / 2f,
+            0
+        ) + transform.position;
+
+        currentBoard.BoardWorldPosition = actualCurrentPos;
+
+        // Create new next board at correct position
+        float boardHeight = YDistanceBetween * SlotNumber;
+        nextBoard = CreateBoard(boardHeight);
+
+        isScrolling = false;
     }
 
-    IEnumerator ScrollColumn(int columnIndex)
+    IEnumerator ScrollColumnAllBoards(int columnIndex, List<BoardConfiguration> boards)
     {
         float elapsed = 0f;
         float scrollDistance = -YDistanceBetween * SlotNumber;
@@ -380,13 +405,15 @@ public class Grid : MonoBehaviour
             float previousCurveValue = elapsed <= Time.deltaTime ? 0f : scrollCurve.Evaluate((elapsed - Time.deltaTime) / scrollDuration);
             float deltaMove = (curveValue - previousCurveValue) * scrollDistance;
 
-            currentBoard.MoveColumn(columnIndex, deltaMove);
-            nextBoard.MoveColumn(columnIndex, deltaMove);
+            // Move the column in ALL boards
+            foreach (BoardConfiguration board in boards)
+            {
+                board.MoveColumn(columnIndex, deltaMove);
+            }
 
             yield return null;
         }
     }
-
     public void DeleteElement(int columnIndex, int slotIndex)
     {
         if (columnIndex >= 0 && columnIndex < SlotNumber && emptyElement != null)

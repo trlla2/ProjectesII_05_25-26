@@ -16,14 +16,23 @@ public class PlayerStats : MonoBehaviour
     private int level = 1;
     private int money = 0;
 
+    [SerializeField]
+    private List<ItemsType> inventory = new List<ItemsType>();
+
     public delegate void GetOnHitRecived(float health);
     public event GetOnHitRecived OnHitRecived;
+
+    public delegate void GetOnHitEvaded();
+    public event GetOnHitEvaded OnHitEvaded;
 
     public delegate void GetOnLevelUp();
     public event GetOnLevelUp OnLevelUp;
 
     public delegate void GetOnEXPChange();
     public event GetOnEXPChange OnEXPChange;
+
+    public delegate void GetOnInventoryChange();
+    public event GetOnInventoryChange OnInventoryChange;
 
     // Add Crit and other stuff...
     private Dictionary<ElementType, int> elementalLevels = new Dictionary<ElementType, int>() // forced DELETE!@!!!!
@@ -68,12 +77,26 @@ public class PlayerStats : MonoBehaviour
 
     public void DealDamage(float damage)
     {
+        // --------------------------- FORCED DELETE
+        float evasionChance = 0;
+
+        foreach(ItemsType item in inventory)
+            evasionChance += item.evasionBonus;
+
+        if (UnityEngine.Random.Range(0f, 100f) < evasionChance)
+        {
+            OnHitEvaded?.Invoke();
+            return;
+        }
+
+        // -----------------------------------------
+
         hp -= damage;
-        Debug.Log("Player has taken " + damage + " damage points with " + hp + " remaining health points");
+        
         OnHitRecived?.Invoke(hp);
+        
         if (hp <= 0)
         {
-            Debug.Log("------------------------  PLAYER IS DEAD ---------------------------------");
             GameManager.Instance.OnPlayerDead();
         }
     }
@@ -98,13 +121,19 @@ public class PlayerStats : MonoBehaviour
         elementalLevels[type]++;
     }
 
+    public void AddItemToInventory(ItemsType item)
+    {
+        inventory.Add(item);
+        OnInventoryChange?.Invoke();
+    }
+
     public int GetEXP() { return experiencePoints; }
     public int GetMoney() { return money; }
     public float GetMaxHP() { return maxHp; }
     public int GetLevel() { return level; }
     public int GetEXPForNextLevel () { return (int)Math.Pow(4, level); }
+    public List<ItemsType> GetInventory() { return inventory; }
 
-    
 
-    
+
 }

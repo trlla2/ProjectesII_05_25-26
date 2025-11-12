@@ -30,5 +30,7 @@ public class PlayerUIHandler : MonoBehaviour
     private void OnDestroy()
     {
         PlayerStats.Instance.OnHitRecived -= HitRecived;
+        PlayerStats.Instance.OnHitEvaded -= HitEvaded;
+
     }
 }

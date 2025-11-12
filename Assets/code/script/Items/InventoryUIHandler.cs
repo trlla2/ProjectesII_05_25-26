@@ -14,7 +14,12 @@ public class InventoryUIHandler : MonoBehaviour
 
     private void RefreshInventoryUI()
     {
-        
+
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
+
         foreach (var item in PlayerStats.Instance.GetInventory())
         {
             GameObject itemUI = Instantiate(itemUIPrefab, transform);

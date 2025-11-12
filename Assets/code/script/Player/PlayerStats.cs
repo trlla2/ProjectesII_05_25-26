@@ -130,6 +130,7 @@ public class PlayerStats : MonoBehaviour
     public int GetEXP() { return experiencePoints; }
     public int GetMoney() { return money; }
     public float GetMaxHP() { return maxHp; }
+    public void Heal(int health) { Mathf.Clamp(hp += health, 0, maxHp); }
     public int GetLevel() { return level; }
     public int GetEXPForNextLevel () { return (int)Math.Pow(4, level); }
     public List<ItemsType> GetInventory() { return inventory; }

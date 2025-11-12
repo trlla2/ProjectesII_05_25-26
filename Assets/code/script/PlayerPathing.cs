@@ -22,7 +22,6 @@ public class PlayerPathing : MonoBehaviour
     private Camera mainCam;
     private CameraShake cameraShake;
     private bool isPathing = false;
-
     void Start()
     {
         line = GetComponent<LineRenderer>();
@@ -190,6 +189,10 @@ public class PlayerPathing : MonoBehaviour
     public void OnSpellCast(Spell spell)
     {
         PlayerStats.Instance.Attack(spell);
+        if(spell.Name == "HEAL")
+        {
+            PlayerStats.Instance.Heal(30);
+        }
     }
 
     public void ForceEndPathing()

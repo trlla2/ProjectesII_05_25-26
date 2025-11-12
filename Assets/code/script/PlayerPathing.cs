@@ -168,13 +168,11 @@ public class PlayerPathing : MonoBehaviour
         {
             if (spell.Matches(pathElements))
             {
-                foreach(Slot s in currentPath) 
-                {
-                    grid.DeleteElement(s.GridPosition.x, s.GridPosition.y);
-                }
+                grid.DeleteElements(currentPath);
 
                 cameraShake.Shake(0.15f);
 
+                grid.ResetWaitTimer();
                 Debug.Log($"Spell cast: " + spell.Name);
 
                 OnSpellCast(spell);

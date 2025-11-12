@@ -324,9 +324,7 @@ public class Grid : MonoBehaviour
                 waitTimer += Time.deltaTime;
                 yield return null;
             }
-
-            // Default to 1 scroll
-            yield return StartCoroutine(PerformScroll(3));
+            yield return StartCoroutine(PerformScroll(1));
         }
     }
 
@@ -335,7 +333,6 @@ public class Grid : MonoBehaviour
         isScrolling = true;
         pathing.ForceEndPathing();
 
-        // Create all necessary boards before scrolling
         List<BoardConfiguration> allBoards = new List<BoardConfiguration>();
         allBoards.Add(currentBoard);
         allBoards.Add(nextBoard);
@@ -349,33 +346,25 @@ public class Grid : MonoBehaviour
 
         for (int scrollCount = 0; scrollCount < times; scrollCount++)
         {
-            // Scroll each column with delay
             for (int col = 0; col < SlotNumber; col++)
             {
                 int columnIndex = col;
                 yield return new WaitForSeconds(columnScrollDelay);
                 StartCoroutine(ScrollColumnAllBoards(columnIndex, allBoards));
             }
-
-            // Wait for all columns to finish scrolling 
-            // If more than 1 time we won't wait the full duration
             if (scrollCount >= times - 1)
             {
                 yield return new WaitForSeconds(scrollDuration);
             }
         }
 
-        // Now destroy old boards
         for (int i = 0; i < times; i++)
         {
             allBoards[i].DestroyBoard();
         }
 
-        // Assign the correct board as current
         currentBoard = allBoards[times];
 
-        // Update BoardWorldPosition to match actual position after scrolls
-        // The board has scrolled down 'times' times, so it's now at position 0
         Vector3 actualCurrentPos = new Vector3(
             -XDistanceBetween * (SlotNumber - 1) / 2f,
             -YDistanceBetween * (SlotNumber - 1) / 2f,
@@ -384,7 +373,6 @@ public class Grid : MonoBehaviour
 
         currentBoard.BoardWorldPosition = actualCurrentPos;
 
-        // Create new next board at correct position
         float boardHeight = YDistanceBetween * SlotNumber;
         nextBoard = CreateBoard(boardHeight);
 
@@ -405,7 +393,6 @@ public class Grid : MonoBehaviour
             float previousCurveValue = elapsed <= Time.deltaTime ? 0f : scrollCurve.Evaluate((elapsed - Time.deltaTime) / scrollDuration);
             float deltaMove = (curveValue - previousCurveValue) * scrollDistance;
 
-            // Move the column in ALL boards
             foreach (BoardConfiguration board in boards)
             {
                 board.MoveColumn(columnIndex, deltaMove);
@@ -414,109 +401,87 @@ public class Grid : MonoBehaviour
             yield return null;
         }
     }
-    public void DeleteElement(int columnIndex, int slotIndex)
+
+    public void DeleteElements(List<Slot> slotsToDelete)
     {
-        if (columnIndex >= 0 && columnIndex < SlotNumber && emptyElement != null)
+        if (slotsToDelete == null || slotsToDelete.Count == 0 || emptyElement == null)
+            return;
+
+        List<int> affectedColumns = new List<int>();
+
+        foreach (Slot slot in slotsToDelete)
         {
-            currentBoard.columns[columnIndex].RemoveElement(slotIndex, emptyElement);
+            Vector2Int pos = slot.GridPosition;
+            if (pos.x >= 0 && pos.x < SlotNumber && pos.y >= 0 && pos.y < SlotNumber)
+            {
+                currentBoard.columns[pos.x].RemoveElement(pos.y, emptyElement);
+                affectedColumns.Add(pos.x);
+            }
+        }
+
+        currentBoard.UpdateVisuals();
+        nextBoard.UpdateVisuals();
+
+        foreach (int columnIndex in affectedColumns)
+        {
             StartCoroutine(ApplyGravityToColumn(columnIndex));
         }
     }
 
     IEnumerator ApplyGravityToColumn(int columnIndex)
     {
-        bool hasMoved = true;
+        if (columnIndex < 0 || columnIndex >= SlotNumber) yield break;
 
-        // Keep applying gravity until no more moves can be made
-        while (hasMoved)
+        //Merge both board columns into a single array
+        Slot[] mergedSlots = new Slot[SlotNumber * 2];
+
+        for (int i = 0; i < SlotNumber; i++)
         {
-            hasMoved = false;
-
-            // Check both boards as one continuous column (current board is bottom, next board is top)
-            // First handle movement within current board (bottom to top)
-            for (int i = 0; i < SlotNumber - 1; i++)
-            {
-                Slot currentSlot = currentBoard.columns[columnIndex].slots[i];
-                Slot aboveSlot = currentBoard.columns[columnIndex].slots[i + 1];
-
-                // If current slot is empty and slot above has an element
-                if (currentSlot.CurrentElement != null && 
-                    currentSlot.CurrentElement.Type == ElementType.EMPTY &&
-                    aboveSlot.CurrentElement != null &&
-                    aboveSlot.CurrentElement.Type != ElementType.EMPTY)
-                {
-                    // Animate the fall from i+1 to i
-                    yield return StartCoroutine(AnimateSlotFall(currentBoard, columnIndex, i + 1, i));
-
-                    // Swap elements
-                    currentSlot.SetElement(aboveSlot.CurrentElement);
-                    aboveSlot.SetElement(emptyElement);
-
-                    currentBoard.UpdateVisuals();
-                    hasMoved = true;
-                    // Continue to check for more moves - don't break here, but restart the whole gravity check
-                    break;
-                }
-            }
-
-            // If we moved something in current board, continue to next iteration to check again from bottom
-            if (hasMoved) continue;
-
-            // If we didn't move anything in current board, check the transition from next board to current board
-            Slot topCurrentSlot = currentBoard.columns[columnIndex].slots[SlotNumber - 1];
-            Slot bottomNextSlot = nextBoard.columns[columnIndex].slots[0];
-
-            if (topCurrentSlot.CurrentElement != null &&
-                topCurrentSlot.CurrentElement.Type == ElementType.EMPTY &&
-                bottomNextSlot.CurrentElement != null &&
-                bottomNextSlot.CurrentElement.Type != ElementType.EMPTY)
-            {
-                // Animate from next board bottom to current board top
-                yield return StartCoroutine(AnimateSlotFallBetweenBoards(columnIndex));
-
-                // Swap elements
-                topCurrentSlot.SetElement(bottomNextSlot.CurrentElement);
-                bottomNextSlot.SetElement(emptyElement);
-
-                currentBoard.UpdateVisuals();
-                nextBoard.UpdateVisuals();
-                hasMoved = true;
-                continue; // Check from bottom again
-            }
-
-            // If we still didn't move anything, check within next board
-            for (int i = 0; i < SlotNumber - 1; i++)
-            {
-                Slot currentSlot = nextBoard.columns[columnIndex].slots[i];
-                Slot aboveSlot = nextBoard.columns[columnIndex].slots[i + 1];
-
-                if (currentSlot.CurrentElement != null && 
-                    currentSlot.CurrentElement.Type == ElementType.EMPTY &&
-                    aboveSlot.CurrentElement != null &&
-                    aboveSlot.CurrentElement.Type != ElementType.EMPTY)
-                {
-                    // Animate the fall from i+1 to i
-                    yield return StartCoroutine(AnimateSlotFall(nextBoard, columnIndex, i + 1, i));
-
-                    // Swap elements
-                    currentSlot.SetElement(aboveSlot.CurrentElement);
-                    aboveSlot.SetElement(emptyElement);
-
-                    nextBoard.UpdateVisuals();
-                    hasMoved = true;
-                    break; // Restart from checking current board
-                }
-            }
+            mergedSlots[i] = currentBoard.columns[columnIndex].slots[i];
         }
 
-        // Spawn new elements at top of next board for any remaining empty slots
-        for (int i = SlotNumber - 1; i >= 0; i--)
+        for (int i = 0; i < SlotNumber; i++)
         {
-            Slot slot = nextBoard.columns[columnIndex].slots[i];
-            if (slot.CurrentElement != null && slot.CurrentElement.Type == ElementType.EMPTY)
+            mergedSlots[SlotNumber + i] = nextBoard.columns[columnIndex].slots[i];
+        }
+
+        bool changesMade;
+        do
+        {
+            changesMade = false;
+
+            for (int i = 0; i < mergedSlots.Length - 1; i++)
             {
-                Element newElement = availableelements[Random.Range(0, availableelements.Count)];
-                slot.SetElement(newElement);
+                Slot currentSlot = mergedSlots[i];
+                Slot aboveSlot = mergedSlots[i + 1];
+
+                // If current slot is empty 
+                if (currentSlot.CurrentElement != null &&
+                    currentSlot.CurrentElement.Type == ElementType.EMPTY &&
+                    aboveSlot.CurrentElement != null)
+                {
+
+                    Element fallingElement = aboveSlot.CurrentElement;
+
+                    yield return StartCoroutine(AnimateSlotFall(aboveSlot, currentSlot, fallingElement));
+
+                    currentSlot.SetElement(fallingElement);
+                    aboveSlot.SetElement(emptyElement);
+
+                    changesMade = true;
+                }
+            }
+
+        } while (changesMade);
+
+        //fill empty slots
+        for (int i = 0; i < mergedSlots.Length; i++)
+        {
+            if (mergedSlots[i].CurrentElement != null &&
+                mergedSlots[i].CurrentElement.Type == ElementType.EMPTY)
+            {
+                Element randomElement = availableelements[Random.Range(0, availableelements.Count)];
+                mergedSlots[i].SetElement(randomElement);
             }
         }
 
@@ -524,46 +489,75 @@ public class Grid : MonoBehaviour
         nextBoard.UpdateVisuals();
     }
 
-    IEnumerator AnimateSlotFall(BoardConfiguration board, int columnIndex, int fromSlot, int toSlot)
+    IEnumerator AnimateSlotFall(Slot fromSlot, Slot toSlot, Element fallingElement)
     {
-        GameObject holder = board.columns[columnIndex].slots[fromSlot].Holder;
-        Vector3 startPos = holder.transform.position;
-        Vector3 endPos = board.columns[columnIndex].slots[toSlot].Holder.transform.position;
+        if (fromSlot.Holder == null || toSlot.Holder == null) yield break;
+
+        Vector3 startPos = fromSlot.Holder.transform.position;
+        Vector3 endPos = toSlot.Holder.transform.position;
+
+        SpriteRenderer toRenderer = toSlot.Holder.GetComponent<SpriteRenderer>();
+        if (toRenderer != null)
+        {
+            toRenderer.enabled = false;
+        }
+
+        SpriteRenderer fromRenderer = fromSlot.Holder.GetComponent<SpriteRenderer>();
+        if (fromRenderer != null)
+        {
+            fromRenderer.sprite = fallingElement.Sprite;
+            fromRenderer.color = fallingElement.Color;
+            fromRenderer.enabled = true;
+        }
 
         float elapsed = 0f;
-        while (elapsed < gravityDuration)
+        float duration = gravityDuration * currentFallSpeedMultiplier;
+
+        while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / gravityDuration);
+            float t = Mathf.Clamp01(elapsed / duration);
             float curveValue = gravityCurve.Evaluate(t);
 
-            holder.transform.position = Vector3.Lerp(startPos, endPos, curveValue);
+            if (fromSlot.Holder != null)
+            {
+                fromSlot.Holder.transform.position = Vector3.Lerp(startPos, endPos, curveValue);
+            }
+
             yield return null;
         }
 
-        holder.transform.position = endPos;
-    }
 
-    IEnumerator AnimateSlotFallBetweenBoards(int columnIndex)
-    {
-        GameObject holder = nextBoard.columns[columnIndex].slots[0].Holder;
-        Vector3 startPos = holder.transform.position;
-        Vector3 endPos = currentBoard.columns[columnIndex].slots[SlotNumber - 1].Holder.transform.position;
 
-        float elapsed = 0f;
-        while (elapsed < gravityDuration)
+        if (fromSlot.Holder != null)
         {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / gravityDuration);
-            float curveValue = gravityCurve.Evaluate(t);
-
-            holder.transform.position = Vector3.Lerp(startPos, endPos, curveValue);
-            yield return null;
+            fromSlot.Holder.transform.position = startPos;
+        }
+        if (toSlot.Holder != null)
+        {
+            toSlot.Holder.transform.position = endPos;
         }
 
-        holder.transform.position = endPos;
-    }
+        if (toRenderer != null)
+        {
+            toRenderer.sprite = fallingElement.Sprite;
+            toRenderer.color = fallingElement.Color;
+            toRenderer.enabled = true;
+        }
 
+        if (fromRenderer != null)
+        {
+            if (emptyElement != null)
+            {
+                fromRenderer.sprite = emptyElement.Sprite;
+                fromRenderer.color = emptyElement.Color;
+            }
+            else
+            {
+                fromRenderer.enabled = false;
+            }
+        }
+    }
     public float GetCurrentScrollTimer() { return waitTimer; }
     public float GetScrollTime() { return waitTime; }
 }

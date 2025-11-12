@@ -13,6 +13,8 @@ public class BoardManager : MonoBehaviour
 
     public List<BoardTile> generatedTiles = new List<BoardTile>();
 
+    [SerializeField] private OpenChestScreen openChestPanel;
+
     private void Awake()
     {
         if (instance != null && instance != this) 
@@ -77,5 +79,12 @@ public class BoardManager : MonoBehaviour
         generatedTiles.Remove(tile);
 
         Destroy(tile.gameObject);
+    }
+
+    public void OpenChest(ChestTile chestTile)
+    {
+        openChestPanel.openedChest = chestTile;
+        openChestPanel.Pull();
+        openChestPanel.gameObject.SetActive(true);
     }
 }

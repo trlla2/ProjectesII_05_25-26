@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class OpenChestScreen : MonoBehaviour
 {
+    public ChestTile openedChest;
+
     [SerializeField] TMP_Text _itemNameText;
     [SerializeField] TMP_Text _itemDescriptionText;
     [SerializeField] Image _itemSprite;
@@ -19,12 +21,6 @@ public class OpenChestScreen : MonoBehaviour
         
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void Pull()
     {
         _selectedItem = _itemsPool[Random.Range(0, _itemsPool.Count)];
@@ -32,5 +28,18 @@ public class OpenChestScreen : MonoBehaviour
         _itemNameText.text = _selectedItem.nameItem;
         _itemDescriptionText.text = _selectedItem.description;
         _itemSprite.sprite = _selectedItem.enemySprite;
+
+        Debug.Log("New item pulled");
+    }
+
+    public void KeepItem()
+    {
+        PlayerStats.Instance.AddItemToInventory(_selectedItem);
+    }
+
+    public void CloseChest()
+    {
+        openedChest.Replace();
+        this.gameObject.SetActive(false);
     }
 }

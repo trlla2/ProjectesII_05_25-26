@@ -21,9 +21,54 @@ public class Slot
     {
         CurrentElement = e;
     }
+
     public void DestroySlot()
     {
         GameObject.Destroy(Holder);
+    }
+}
+
+public class Column
+{
+    public Slot[] slots;
+    public int columnIndex;
+    private int slotCount;
+
+    public Column(int columnIdx, int size)
+    {
+        columnIndex = columnIdx;
+        slotCount = size;
+        slots = new Slot[size];
+    }
+
+    public void Initialize(List<Element> availableElements)
+    {
+        for (int i = 0; i < slotCount; i++)
+        {
+            Element randomElement = availableElements[Random.Range(0, availableElements.Count)];
+            slots[i] = new Slot(randomElement, new Vector2Int(columnIndex, i));
+        }
+    }
+
+    public void RemoveElement(int slotIndex, Element emptyElement)
+    {
+        if (slotIndex >= 0 && slotIndex < slotCount)
+        {
+            slots[slotIndex].SetElement(emptyElement);
+        }
+    }
+
+    public List<int> GetEmptySlotIndices()
+    {
+        List<int> emptyIndices = new List<int>();
+        for (int i = 0; i < slotCount; i++)
+        {
+            if (slots[i].CurrentElement != null && slots[i].CurrentElement.Type == ElementType.EMPTY)
+            {
+                emptyIndices.Add(i);
+            }
+        }
+        return emptyIndices;
     }
 }
 
@@ -31,10 +76,19 @@ public class BoardConfiguration
 {
     const int SlotNumber = 4;
 
-    public Slot[,] slots = new Slot[SlotNumber, SlotNumber];
+    public Column[] columns = new Column[SlotNumber];
     public Vector3 BoardWorldPosition;
 
     public List<GameObject> SlotObjects = new List<GameObject>();
+
+    public void Initialize(List<Element> BoardElements)
+    {
+        for (int i = 0; i < SlotNumber; i++)
+        {
+            columns[i] = new Column(i, SlotNumber);
+            columns[i].Initialize(BoardElements);
+        }
+    }
 
     public void SpawnSlots(GameObject slotPrefab, float XdistanceBetween, float YdistanceBetween, Vector3 startPosition, Transform parent)
     {
@@ -46,26 +100,14 @@ public class BoardConfiguration
             {
                 Vector3 pos = startPosition + new Vector3(i * XdistanceBetween, j * YdistanceBetween, 0);
                 GameObject slotObj = GameObject.Instantiate(slotPrefab, pos, Quaternion.identity, parent);
-                slotObj.name = "Slot[" + i + "] [" + j + "]";
+                slotObj.name = "Slot[" + i + "][" + j + "]";
 
-                if (slots[i, j] == null) { Debug.LogError("No valid slot"); return; }
+                if (columns[i].slots[j] == null) { Debug.LogError("No valid slot"); return; }
 
-                slotObj.GetComponent<SlotHolder>().LinkedSlot = slots[i, j];
-                slots[i, j].Holder = slotObj;
+                slotObj.GetComponent<SlotHolder>().LinkedSlot = columns[i].slots[j];
+                columns[i].slots[j].Holder = slotObj;
                 SlotObjects.Add(slotObj);
-                slots[i,j].scaleAnimator = slotObj.GetComponent<ScaleAnimator>();
-            }
-        }
-    }
-
-    public void Initialize(List<Element> BoardElements)
-    {
-        for (int i = 0; i < SlotNumber; i++)
-        {
-            for (int j = 0; j < SlotNumber; j++)
-            {
-                Element randomElement = BoardElements[Random.Range(0, BoardElements.Count)];
-                slots[i, j] = new Slot(randomElement, new Vector2Int(i, j));
+                columns[i].slots[j].scaleAnimator = slotObj.GetComponent<ScaleAnimator>();
             }
         }
     }
@@ -78,8 +120,7 @@ public class BoardConfiguration
         {
             for (int j = 0; j < SlotNumber; j++)
             {
-                elements[i, j] = slots[i, j].CurrentElement;
-                if (elements[i, j] == null) { Debug.LogError("No valid slots"); return null; }
+                elements[i, j] = columns[i].slots[j].CurrentElement;
             }
         }
         return elements;
@@ -132,7 +173,7 @@ public class BoardConfiguration
                 previousDir = dir;
 
                 dir = directions[Random.Range(0, directions.Length)];
-                while (dir != -previousDir)
+                while (dir == -previousDir)
                 {
                     dir = directions[Random.Range(0, directions.Length)];
                 }
@@ -143,7 +184,7 @@ public class BoardConfiguration
                 for (int i = 0; i < spell.Recipe.Count; i++)
                 {
                     Vector2Int pos = positions[i];
-                    slots[pos.x, pos.y].SetElement(spell.Recipe[i]);
+                    columns[pos.x].slots[pos.y].SetElement(spell.Recipe[i]);
                 }
                 spellInserted = true;
             }
@@ -161,26 +202,26 @@ public class BoardConfiguration
         {
             for (int j = 0; j < SlotNumber; j++)
             {
-                if (slots[i, j].Holder != null)
+                if (columns[i].slots[j].Holder != null && columns[i].slots[j].CurrentElement != null)
                 {
-                    SpriteRenderer renderer = slots[i, j].Holder.GetComponent<SpriteRenderer>();
+                    SpriteRenderer renderer = columns[i].slots[j].Holder.GetComponent<SpriteRenderer>();
                     if (renderer != null)
                     {
-                        renderer.sprite = slots[i, j].CurrentElement.Sprite;
-                        renderer.color = slots[i, j].CurrentElement.Color;
+                        renderer.sprite = columns[i].slots[j].CurrentElement.Sprite;
+                        renderer.color = columns[i].slots[j].CurrentElement.Color;
                     }
                 }
             }
         }
     }
 
-    public void MoveBoard(float offsetY)
+    public void MoveColumn(int columnIndex, float offsetY)
     {
-        foreach (GameObject slotObj in SlotObjects)
+        for (int j = 0; j < SlotNumber; j++)
         {
-            if (slotObj != null)
+            if (columns[columnIndex].slots[j].Holder != null)
             {
-                slotObj.transform.position += new Vector3(0, offsetY, 0);
+                columns[columnIndex].slots[j].Holder.transform.position += new Vector3(0, offsetY, 0);
             }
         }
     }
@@ -204,15 +245,22 @@ public class Grid : MonoBehaviour
 
     [Header("Generation")]
     [SerializeField] private GameObject slotPrefab;
-    [SerializeField] private float XDistanceBetween = 1.1f;
-    [SerializeField] private float YDistanceBetween = 1.1f;
+    [SerializeField] public float XDistanceBetween = 1.1f;
+    [SerializeField] public float YDistanceBetween = 1.1f;
 
     [Header("Scroll Settings")]
     [SerializeField] private float waitTime = 4f;
     private float waitTimer = 0;
     [SerializeField] private float scrollDuration = 1f;
+    [SerializeField] private float columnScrollDelay = 0.1f;
     [SerializeField] private AnimationCurve scrollCurve;
 
+    [Header("Gravity Settings")]
+    [SerializeField] private AnimationCurve gravityCurve;
+    [SerializeField] private float gravityDuration = 0.5f;
+
+    [Header("Elements")]
+    [SerializeField] private Element emptyElement;
     [SerializeField] private List<Element> availableelements;
     public List<Spell> availableSpells = new List<Spell>();
 
@@ -221,8 +269,6 @@ public class Grid : MonoBehaviour
 
     [SerializeField] private PlayerPathing pathing;
 
-    [HideInInspector] public float currentFallSpeedMultiplier = 1f;
-   
     [HideInInspector] public bool isScrolling = false;
     [HideInInspector] public bool IsPlayerPathing;
 
@@ -236,9 +282,7 @@ public class Grid : MonoBehaviour
 
     void InitializeBoards()
     {
-        //create 2 boards
         currentBoard = CreateBoard(0f);
-
         float boardHeight = YDistanceBetween * SlotNumber;
         nextBoard = CreateBoard(boardHeight);
     }
@@ -264,6 +308,11 @@ public class Grid : MonoBehaviour
         return newBoard;
     }
 
+    public void ResetWaitTimer()
+    {
+        waitTimer = 0f;
+    }
+
     IEnumerator ScrollRoutine()
     {
         while (true)
@@ -274,49 +323,260 @@ public class Grid : MonoBehaviour
                 waitTimer += Time.deltaTime;
                 yield return null;
             }
-
-            // Perform the scroll animation
-            yield return StartCoroutine(PerformScroll());
-
-            // Replace boards after scroll
-            currentBoard.DestroyBoard();
-            currentBoard = nextBoard;
-
-            // Create new next board
-            float boardHeight = YDistanceBetween * SlotNumber;
-            nextBoard = CreateBoard(boardHeight);
+            yield return StartCoroutine(PerformScroll(1));
         }
     }
 
-    IEnumerator PerformScroll()
+    public IEnumerator PerformScroll(int times)
     {
         isScrolling = true;
-
         pathing.ForceEndPathing();
 
+        List<BoardConfiguration> allBoards = new List<BoardConfiguration>();
+        allBoards.Add(currentBoard);
+        allBoards.Add(nextBoard);
+
+        for (int i = 2; i <= times; i++)
+        {
+            float Height = YDistanceBetween * SlotNumber * i;
+            BoardConfiguration newBoard = CreateBoard(Height);
+            allBoards.Add(newBoard);
+        }
+
+        for (int scrollCount = 0; scrollCount < times; scrollCount++)
+        {
+            for (int col = 0; col < SlotNumber; col++)
+            {
+                int columnIndex = col;
+                yield return new WaitForSeconds(columnScrollDelay);
+                StartCoroutine(ScrollColumnAllBoards(columnIndex, allBoards));
+            }
+            if (scrollCount >= times - 1)
+            {
+                yield return new WaitForSeconds(scrollDuration);
+            }
+        }
+
+        for (int i = 0; i < times; i++)
+        {
+            allBoards[i].DestroyBoard();
+        }
+
+        currentBoard = allBoards[times];
+
+        Vector3 actualCurrentPos = new Vector3(
+            -XDistanceBetween * (SlotNumber - 1) / 2f,
+            -YDistanceBetween * (SlotNumber - 1) / 2f,
+            0
+        ) + transform.position;
+
+        currentBoard.BoardWorldPosition = actualCurrentPos;
+
+        float boardHeight = YDistanceBetween * SlotNumber;
+        nextBoard = CreateBoard(boardHeight);
+
+        isScrolling = false;
+    }
+
+    IEnumerator ScrollColumnAllBoards(int columnIndex, List<BoardConfiguration> boards)
+    {
         float elapsed = 0f;
         float scrollDistance = -YDistanceBetween * SlotNumber;
 
         while (elapsed < scrollDuration)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / scrollDuration);
+            float t = Mathf.Clamp(elapsed / scrollDuration, 0, 1);
             float curveValue = scrollCurve.Evaluate(t);
 
-            // Calculate how much to move this frame
             float previousCurveValue = elapsed <= Time.deltaTime ? 0f : scrollCurve.Evaluate((elapsed - Time.deltaTime) / scrollDuration);
             float deltaMove = (curveValue - previousCurveValue) * scrollDistance;
 
-            // Move both boards
-            currentBoard.MoveBoard(deltaMove);
-            nextBoard.MoveBoard(deltaMove);
+            foreach (BoardConfiguration board in boards)
+            {
+                board.MoveColumn(columnIndex, deltaMove);
+            }
+
+            yield return null;
+        }
+    }
+
+    public void DeleteElements(List<Slot> slotsToDelete)
+    {
+        if (slotsToDelete == null || slotsToDelete.Count == 0)
+            return;
+
+        StartCoroutine(DeleteElementsCoroutine(slotsToDelete));
+    }
+
+    private IEnumerator DeleteElementsCoroutine(List<Slot> slotsToDelete)
+    {
+        //Hashset bc we need only unique ids
+        HashSet<int> affectedColumns = new HashSet<int>();
+
+        foreach (Slot slot in slotsToDelete)
+        {
+            Vector2Int pos = slot.GridPosition;
+            if (pos.x >= 0 && pos.x < SlotNumber && pos.y >= 0 && pos.y < SlotNumber)
+            {
+                currentBoard.columns[pos.x].RemoveElement(pos.y, emptyElement);
+                affectedColumns.Add(pos.x);
+            }
+        }
+
+        currentBoard.UpdateVisuals();
+        nextBoard.UpdateVisuals();
+
+        yield return StartCoroutine(ApplyGravityToAffectedColumns(affectedColumns));
+
+        FillEmptySlots();
+    }
+
+    private IEnumerator ApplyGravityToAffectedColumns(HashSet<int> affectedColumns)
+    {
+        List<Coroutine> gravityCoroutines = new List<Coroutine>();
+
+        foreach (int columnIndex in affectedColumns)
+        {
+            Coroutine gravityCoroutine = StartCoroutine(ApplyGravityToColumn(columnIndex));
+            gravityCoroutines.Add(gravityCoroutine);
+        }
+
+        //esperar a que TODAS las corrutinas de gravedad terminen
+        foreach (Coroutine coroutine in gravityCoroutines)
+        {
+            yield return coroutine;
+        }
+    }
+
+    IEnumerator ApplyGravityToColumn(int columnIndex)
+    {
+        if (columnIndex < 0 || columnIndex >= SlotNumber) yield break;
+
+        //Merge both board columns into a single array
+        Slot[] mergedSlots = new Slot[SlotNumber * 2];
+
+        for (int i = 0; i < SlotNumber; i++)
+        {
+            mergedSlots[i] = currentBoard.columns[columnIndex].slots[i];
+        }
+
+        for (int i = 0; i < SlotNumber; i++)
+        {
+            mergedSlots[SlotNumber + i] = nextBoard.columns[columnIndex].slots[i];
+        }
+
+        bool changesMade;
+        do
+        {
+            changesMade = false;
+
+            for (int i = 0; i < mergedSlots.Length - 1; i++)
+            {
+                Slot currentSlot = mergedSlots[i];
+                Slot aboveSlot = mergedSlots[i + 1];
+
+                // If current slot is empty 
+                if (currentSlot.CurrentElement != null &&
+                    currentSlot.CurrentElement.Type == ElementType.EMPTY &&
+                    aboveSlot.CurrentElement != null &&
+                    aboveSlot.CurrentElement.Type != ElementType.EMPTY)
+                {
+
+                    Element fallingElement = aboveSlot.CurrentElement;
+
+                    currentSlot.SetElement(fallingElement);
+                    aboveSlot.SetElement(emptyElement);
+
+                    currentBoard.UpdateVisuals();
+                    nextBoard.UpdateVisuals();
+
+                    yield return StartCoroutine(AnimateSlotFall(aboveSlot, currentSlot, fallingElement));
+
+                    changesMade = true;
+                }
+            }
+
+        } while (changesMade);
+    }
+
+    void FillEmptySlots()
+    {
+        for (int i = 0; i < currentBoard.columns.Length; i++)
+        {
+            foreach (Slot s in currentBoard.columns[i].slots)
+            {
+                if (s.CurrentElement == null || s.CurrentElement.Type == ElementType.EMPTY)
+                {
+                    Element randomElement = availableelements[Random.Range(0, availableelements.Count)];
+                    s.SetElement(randomElement);
+                }
+            }
+        }
+
+        for (int i = 0; i < nextBoard.columns.Length; i++)
+        {
+            foreach (Slot s in nextBoard.columns[i].slots)
+            {
+                if (s.CurrentElement == null || s.CurrentElement.Type == ElementType.EMPTY)
+                {
+                    Element randomElement = availableelements[Random.Range(0, availableelements.Count)];
+                    s.SetElement(randomElement);
+                }
+            }
+        }
+
+        currentBoard.UpdateVisuals();
+        nextBoard.UpdateVisuals();
+    }
+
+    IEnumerator AnimateSlotFall(Slot fromSlot, Slot toSlot, Element fallingElement)
+    {
+        if (fromSlot.Holder == null || toSlot.Holder == null) yield break;
+
+        Vector3 startPos = fromSlot.Holder.transform.position;
+        Vector3 endPos = toSlot.Holder.transform.position;
+
+        SpriteRenderer fromRenderer = fromSlot.Holder.GetComponent<SpriteRenderer>();
+        SpriteRenderer toRenderer = toSlot.Holder.GetComponent<SpriteRenderer>();
+
+        if (fromRenderer != null)
+        {
+            fromRenderer.sprite = fallingElement.Sprite;
+            fromRenderer.color = fallingElement.Color;
+        }
+        if (toRenderer != null)
+        {
+            toRenderer.sprite = emptyElement.Sprite;
+            toRenderer.color = emptyElement.Color;
+        }
+
+        float elapsed = 0f;
+
+        while (elapsed < gravityDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / gravityDuration);
+            float curveValue = gravityCurve.Evaluate(t);
+
+            if (fromSlot.Holder != null)
+            {
+                fromSlot.Holder.transform.position = Vector3.Lerp(startPos, endPos, curveValue);
+            }
 
             yield return null;
         }
 
-        isScrolling = false;
-    }
+        if (fromSlot.Holder != null)
+        {
+            fromSlot.Holder.transform.position = startPos;
+        }
+        if (toSlot.Holder != null)
+        {
+            toSlot.Holder.transform.position = endPos;
+        }
 
+    }
     public float GetCurrentScrollTimer() { return waitTimer; }
     public float GetScrollTime() { return waitTime; }
 }

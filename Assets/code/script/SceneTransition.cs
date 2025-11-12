@@ -32,7 +32,12 @@ public class SceneTransition : MonoBehaviour
     {
         StartCoroutine(TransitionToScene(sceneName, isAdditive));
     }
-  
+
+    public void UnloadScene(string sceneName)
+    {
+        StartCoroutine(TransitionUnloadScene(sceneName));
+    }
+
     private IEnumerator TransitionToScene(string sceneName, bool isAdditive)
     {
         yield return StartCoroutine(Fade(1f));
@@ -41,9 +46,19 @@ public class SceneTransition : MonoBehaviour
             SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
         else
             SceneManager.LoadScene(sceneName);
-
+        
         yield return StartCoroutine(Fade(0f));
     }
+
+    
+    private IEnumerator TransitionUnloadScene(string sceneName)
+    {
+        yield return StartCoroutine(Fade(1f));
+        SceneManager.UnloadSceneAsync(sceneName);
+        
+        yield return StartCoroutine(Fade(0f));
+    }
+
 
     private IEnumerator Fade(float targetAlpha)
     {

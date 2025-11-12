@@ -23,6 +23,8 @@ public class PlayerPathing : MonoBehaviour
     private CameraShake cameraShake;
     private bool isPathing = false;
 
+    private bool canPath = true;
+
     void Start()
     {
         line = GetComponent<LineRenderer>();
@@ -36,6 +38,9 @@ public class PlayerPathing : MonoBehaviour
         {
             Debug.LogError("No Grid reference!");
         }
+
+
+        GameManager.Instance.OnEndBattle += StopPathing;
     }
     private void FixedUpdate()
     {
@@ -53,8 +58,15 @@ public class PlayerPathing : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        GameManager.Instance.OnEndBattle -= StopPathing;
+    }
+
     void HandleMouseInput()
     {
+        if (!canPath) return;
+
         if (Input.GetMouseButtonDown(0))
         {
             BeginPathing();
@@ -199,7 +211,12 @@ public class PlayerPathing : MonoBehaviour
         line.positionCount = 0;
         currentPath.Clear();
         cursorVisual.gameObject.SetActive(false);
-    }    
+    }
+
+    private void StopPathing(bool isWin, int exp, int money)
+    {
+        canPath = false;
+    }
 
     void UpdateLineRenderer()
     {

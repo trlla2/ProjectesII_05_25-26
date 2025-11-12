@@ -15,7 +15,7 @@ public class PlayerPathing : MonoBehaviour
     public float SelectScaleTime = 0.2f;
 
 
-    private float adjacencyDistance = 1.76776695297f; //es el resultao de 1.25*sqrt(2), 1.25 es la dist entre slots i raiz d 2 para las diagonales
+    private float adjacencyDistance;
 
     private LineRenderer line;
     private List<Slot> currentPath = new List<Slot>();
@@ -29,6 +29,8 @@ public class PlayerPathing : MonoBehaviour
         mainCam = Camera.main;
         cameraShake = mainCam.GetComponent<CameraShake>();
         line.positionCount = 0;
+
+        adjacencyDistance = grid.XDistanceBetween * 1.47f; //es el resultao de 1.25*sqrt(2), 1.25 es la dist entre slots i raiz d 2 para las diagonales
 
         if (grid == null)
         {
@@ -93,11 +95,11 @@ public class PlayerPathing : MonoBehaviour
         if (holder == null) return;
 
         Slot slot = holder.LinkedSlot;
-        if (slot == null || slot.Animated) return; // Can't select animating slots
+        if (slot == null || slot.Animated) return;
 
         if (!currentPath.Contains(slot))
         {
-            // Can add if first slot or adjacent to last slot
+            //Can add if first slot or adjacent to last slot
             if (currentPath.Count == 0 || IsAdjacentWorld(slot, currentPath[^1]))
             {
                 if (currentPath.Count < maxPathLength)
@@ -116,7 +118,7 @@ public class PlayerPathing : MonoBehaviour
         }
         else if (currentPath.Count >= 2 && slot == currentPath[^2])
         {
-            // Allow backtracking
+            //Allow backtracking
             Slot removed = currentPath[^1];
 
             if (removed.Holder != null)

@@ -173,7 +173,7 @@ public class BoardConfiguration
                 previousDir = dir;
 
                 dir = directions[Random.Range(0, directions.Length)];
-                while (dir != -previousDir)
+                while (dir == -previousDir)
                 {
                     dir = directions[Random.Range(0, directions.Length)];
                 }
@@ -245,8 +245,8 @@ public class Grid : MonoBehaviour
 
     [Header("Generation")]
     [SerializeField] private GameObject slotPrefab;
-    [SerializeField] private float XDistanceBetween = 1.1f;
-    [SerializeField] private float YDistanceBetween = 1.1f;
+    [SerializeField] public float XDistanceBetween = 1.1f;
+    [SerializeField] public float YDistanceBetween = 1.1f;
 
     [Header("Scroll Settings")]
     [SerializeField] private float waitTime = 4f;
@@ -269,7 +269,6 @@ public class Grid : MonoBehaviour
 
     [SerializeField] private PlayerPathing pathing;
 
-    [HideInInspector] public float currentFallSpeedMultiplier = 1f;
     [HideInInspector] public bool isScrolling = false;
     [HideInInspector] public bool IsPlayerPathing;
 
@@ -387,7 +386,7 @@ public class Grid : MonoBehaviour
         while (elapsed < scrollDuration)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / scrollDuration);
+            float t = Mathf.Clamp(elapsed / scrollDuration, 0, 1);
             float curveValue = scrollCurve.Evaluate(t);
 
             float previousCurveValue = elapsed <= Time.deltaTime ? 0f : scrollCurve.Evaluate((elapsed - Time.deltaTime) / scrollDuration);
@@ -404,10 +403,16 @@ public class Grid : MonoBehaviour
 
     public void DeleteElements(List<Slot> slotsToDelete)
     {
-        if (slotsToDelete == null || slotsToDelete.Count == 0 || emptyElement == null)
+        if (slotsToDelete == null || slotsToDelete.Count == 0)
             return;
 
-        List<int> affectedColumns = new List<int>();
+        StartCoroutine(DeleteElementsCoroutine(slotsToDelete));
+    }
+
+    private IEnumerator DeleteElementsCoroutine(List<Slot> slotsToDelete)
+    {
+        //Hashset bc we need only unique ids
+        HashSet<int> affectedColumns = new HashSet<int>();
 
         foreach (Slot slot in slotsToDelete)
         {
@@ -422,9 +427,25 @@ public class Grid : MonoBehaviour
         currentBoard.UpdateVisuals();
         nextBoard.UpdateVisuals();
 
+        yield return StartCoroutine(ApplyGravityToAffectedColumns(affectedColumns));
+
+        FillEmptySlots();
+    }
+
+    private IEnumerator ApplyGravityToAffectedColumns(HashSet<int> affectedColumns)
+    {
+        List<Coroutine> gravityCoroutines = new List<Coroutine>();
+
         foreach (int columnIndex in affectedColumns)
         {
-            StartCoroutine(ApplyGravityToColumn(columnIndex));
+            Coroutine gravityCoroutine = StartCoroutine(ApplyGravityToColumn(columnIndex));
+            gravityCoroutines.Add(gravityCoroutine);
+        }
+
+        //esperar a que TODAS las corrutinas de gravedad terminen
+        foreach (Coroutine coroutine in gravityCoroutines)
+        {
+            yield return coroutine;
         }
     }
 
@@ -458,30 +479,50 @@ public class Grid : MonoBehaviour
                 // If current slot is empty 
                 if (currentSlot.CurrentElement != null &&
                     currentSlot.CurrentElement.Type == ElementType.EMPTY &&
-                    aboveSlot.CurrentElement != null)
+                    aboveSlot.CurrentElement != null &&
+                    aboveSlot.CurrentElement.Type != ElementType.EMPTY)
                 {
 
                     Element fallingElement = aboveSlot.CurrentElement;
 
-                    yield return StartCoroutine(AnimateSlotFall(aboveSlot, currentSlot, fallingElement));
-
                     currentSlot.SetElement(fallingElement);
                     aboveSlot.SetElement(emptyElement);
+
+                    currentBoard.UpdateVisuals();
+                    nextBoard.UpdateVisuals();
+
+                    yield return StartCoroutine(AnimateSlotFall(aboveSlot, currentSlot, fallingElement));
 
                     changesMade = true;
                 }
             }
 
         } while (changesMade);
+    }
 
-        //fill empty slots
-        for (int i = 0; i < mergedSlots.Length; i++)
+    void FillEmptySlots()
+    {
+        for (int i = 0; i < currentBoard.columns.Length; i++)
         {
-            if (mergedSlots[i].CurrentElement != null &&
-                mergedSlots[i].CurrentElement.Type == ElementType.EMPTY)
+            foreach (Slot s in currentBoard.columns[i].slots)
             {
-                Element randomElement = availableelements[Random.Range(0, availableelements.Count)];
-                mergedSlots[i].SetElement(randomElement);
+                if (s.CurrentElement == null || s.CurrentElement.Type == ElementType.EMPTY)
+                {
+                    Element randomElement = availableelements[Random.Range(0, availableelements.Count)];
+                    s.SetElement(randomElement);
+                }
+            }
+        }
+
+        for (int i = 0; i < nextBoard.columns.Length; i++)
+        {
+            foreach (Slot s in nextBoard.columns[i].slots)
+            {
+                if (s.CurrentElement == null || s.CurrentElement.Type == ElementType.EMPTY)
+                {
+                    Element randomElement = availableelements[Random.Range(0, availableelements.Count)];
+                    s.SetElement(randomElement);
+                }
             }
         }
 
@@ -496,27 +537,26 @@ public class Grid : MonoBehaviour
         Vector3 startPos = fromSlot.Holder.transform.position;
         Vector3 endPos = toSlot.Holder.transform.position;
 
-        SpriteRenderer toRenderer = toSlot.Holder.GetComponent<SpriteRenderer>();
-        if (toRenderer != null)
-        {
-            toRenderer.enabled = false;
-        }
-
         SpriteRenderer fromRenderer = fromSlot.Holder.GetComponent<SpriteRenderer>();
+        SpriteRenderer toRenderer = toSlot.Holder.GetComponent<SpriteRenderer>();
+
         if (fromRenderer != null)
         {
             fromRenderer.sprite = fallingElement.Sprite;
             fromRenderer.color = fallingElement.Color;
-            fromRenderer.enabled = true;
+        }
+        if (toRenderer != null)
+        {
+            toRenderer.sprite = emptyElement.Sprite;
+            toRenderer.color = emptyElement.Color;
         }
 
         float elapsed = 0f;
-        float duration = gravityDuration * currentFallSpeedMultiplier;
 
-        while (elapsed < duration)
+        while (elapsed < gravityDuration)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / duration);
+            float t = Mathf.Clamp01(elapsed / gravityDuration);
             float curveValue = gravityCurve.Evaluate(t);
 
             if (fromSlot.Holder != null)
@@ -527,8 +567,6 @@ public class Grid : MonoBehaviour
             yield return null;
         }
 
-
-
         if (fromSlot.Holder != null)
         {
             fromSlot.Holder.transform.position = startPos;
@@ -538,25 +576,6 @@ public class Grid : MonoBehaviour
             toSlot.Holder.transform.position = endPos;
         }
 
-        if (toRenderer != null)
-        {
-            toRenderer.sprite = fallingElement.Sprite;
-            toRenderer.color = fallingElement.Color;
-            toRenderer.enabled = true;
-        }
-
-        if (fromRenderer != null)
-        {
-            if (emptyElement != null)
-            {
-                fromRenderer.sprite = emptyElement.Sprite;
-                fromRenderer.color = emptyElement.Color;
-            }
-            else
-            {
-                fromRenderer.enabled = false;
-            }
-        }
     }
     public float GetCurrentScrollTimer() { return waitTimer; }
     public float GetScrollTime() { return waitTime; }

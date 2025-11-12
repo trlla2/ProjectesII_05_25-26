@@ -5083,20 +5083,20 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
+      inSlope: -0.72948337
+      outSlope: -0.72948337
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.1958334
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0
-      outSlope: 0
+      inSlope: -1.7142857
+      outSlope: -1.7142857
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.06666666
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -5107,8 +5107,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 2
-      outSlope: 2
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
@@ -5116,8 +5116,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0
-      outSlope: 0
+      inSlope: 2
+      outSlope: 2
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
@@ -5125,7 +5125,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  gravityDuration: 0.1
+  gravityDuration: 0.15
   emptyElement: {fileID: 11400000, guid: 47f6aa33896c7cb63acb02ad374358fa, type: 2}
   availableelements:
   - {fileID: 11400000, guid: 4be4989cbc43a4648915c11c96e324e5, type: 2}
@@ -5135,7 +5135,6 @@ MonoBehaviour:
   availableSpells:
   - {fileID: 11400000, guid: d65283c45b7504446948b1b821bc9cb0, type: 2}
   pathing: {fileID: 1766485013}
-  currentFallSpeedMultiplier: 1
   isScrolling: 0
   IsPlayerPathing: 0
 --- !u!224 &190367787
@@ -5529,7 +5528,7 @@ Transform:
   m_GameObject: {fileID: 379435939}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.59, y: 3.57, z: 0}
+  m_LocalPosition: {x: -4.676, y: 3.627, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5548,6 +5547,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grid: {fileID: 190367786}
+  times: 4
 --- !u!61 &379435943
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -7873,6 +7873,10 @@ PrefabInstance:
       propertyPath: cursorVisual
       value: 
       objectReference: {fileID: 1468393346}
+    - target: {fileID: 8454210317645414146, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
+      propertyPath: cursorLerpSpeed
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

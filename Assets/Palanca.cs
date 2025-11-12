@@ -6,9 +6,15 @@ public class Palanca : MonoBehaviour
     [SerializeField]
     Grid grid;
 
+    [SerializeField]
+    int times;
+
     public void OnMouseDown()
     {
-        grid.StartCoroutine(grid.PerformScroll(4));
-        grid.ResetWaitTimer();
+        if (!grid.isScrolling)
+        {
+            grid.StartCoroutine(grid.PerformScroll(times));
+            grid.ResetWaitTimer();
+        }
     }
 }

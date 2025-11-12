@@ -4,13 +4,19 @@ public class ChestTile : BoardTile
 {
     [SerializeField] private BoardTileData _postInteractionTile;
 
+    bool isOpen = false;
+
     public override void Interact()
     {
         Debug.Log("opening chest...");
 
-        // once interacted with, convert to other type of tile
         BoardManager.instance.ReplaceTileType(this, _postInteractionTile);
     }
+
+    //public void Replace()
+    //{
+    //    BoardManager.instance.ReplaceTileType(this, _postInteractionTile);
+    //}
     
 
 }

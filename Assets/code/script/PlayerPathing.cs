@@ -202,6 +202,10 @@ public class PlayerPathing : MonoBehaviour
     public void OnSpellCast(Spell spell)
     {
         PlayerStats.Instance.Attack(spell);
+        if(spell.Name == "HEAL")
+        {
+            PlayerStats.Instance.Heal(30);
+        }
     }
 
     public void ForceEndPathing()

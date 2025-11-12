@@ -127,9 +127,17 @@ public class PlayerStats : MonoBehaviour
         OnInventoryChange?.Invoke();
     }
 
+
+    public void Heal(int health)
+    {
+        Mathf.Clamp(hp += health, 0, maxHp);
+        OnHitRecived.Invoke(hp);
+    }
+
     public int GetEXP() { return experiencePoints; }
     public int GetMoney() { return money; }
     public float GetMaxHP() { return maxHp; }
+    
     public int GetLevel() { return level; }
     public int GetEXPForNextLevel () { return (int)Math.Pow(4, level); }
     public List<ItemsType> GetInventory() { return inventory; }

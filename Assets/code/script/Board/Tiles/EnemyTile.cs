@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class EnemyTile : BoardTile
@@ -10,13 +11,22 @@ public class EnemyTile : BoardTile
     {
         Debug.Log("starting combat...");
 
-        
-        BoardManager.instance.ReplaceTileType(this, _postInteractionTile);
-    }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
+        SceneTransition.Instance.LoadScene("TestRoma", true);
+        GameManager.Instance.OnEndBattle += Replace;
     }
 
+    public void Replace(bool win, int xp, int money) // FORCED CHANGE!!!!!!
+    {
+        if (win)
+            BoardManager.instance.ReplaceTileType(this, _postInteractionTile);
+        else
+        {
+            //MUERTE
+        }
+    }
+
+    private void OnDestroy()
+    {
+        GameManager.Instance.OnEndBattle -= Replace;
+    }
 }

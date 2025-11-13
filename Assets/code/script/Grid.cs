@@ -267,6 +267,9 @@ public class Grid : MonoBehaviour
     private BoardConfiguration currentBoard;
     private BoardConfiguration nextBoard;
 
+    [SerializeField] private AudioClip[] GravityClips;
+    [SerializeField] private AudioSource GravitySource;
+
     [SerializeField] private PlayerPathing pathing;
 
     [HideInInspector] public bool isScrolling = false;
@@ -573,6 +576,9 @@ public class Grid : MonoBehaviour
 
             yield return null;
         }
+
+        GravitySource.clip = GravityClips[Random.Range(0, GravityClips.Length)];
+        GravitySource.Play();
 
         if (fromSlot.Holder != null)
         {

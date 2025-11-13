@@ -55,7 +55,7 @@ public class EndPanelBehaviour : MonoBehaviour
     {
         winTranslator.ToOrigin();
         SceneTransition.Instance.UnloadScene("TestRoma");
-        BoardManager.instance.HandleBoardCamera(true);
+        
     }
 
     public void GoMenu()

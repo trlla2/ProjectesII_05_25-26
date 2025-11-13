@@ -19,8 +19,8 @@ public class PlayerPathing : MonoBehaviour
 
     private LineRenderer line;
     private List<Slot> currentPath = new List<Slot>();
-    private Camera mainCam;
-    private CameraShake cameraShake;
+    //private Camera mainCam;
+    //private CameraShake cameraShake;
     private bool isPathing = false;
 
     private bool canPath = true;
@@ -28,8 +28,8 @@ public class PlayerPathing : MonoBehaviour
     void Start()
     {
         line = GetComponent<LineRenderer>();
-        mainCam = Camera.main;
-        cameraShake = mainCam.GetComponent<CameraShake>();
+        //mainCam = Camera.main;
+        //cameraShake = mainCam.GetComponent<CameraShake>();
         line.positionCount = 0;
 
         adjacencyDistance = grid.XDistanceBetween * 1.47f; //es el resultao de 1.25*sqrt(2), 1.25 es la dist entre slots i raiz d 2 para las diagonales
@@ -93,7 +93,7 @@ public class PlayerPathing : MonoBehaviour
 
     void ContinuePathing()
     {
-        Vector3 mousePos = mainCam.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector3.forward);
 
         if (hit.collider == null) return;
@@ -184,7 +184,7 @@ public class PlayerPathing : MonoBehaviour
             {
                 grid.DeleteElements(currentPath);
 
-                cameraShake.Shake(0.15f);
+                Camera.main.GetComponent<CameraShake>().Shake(0.15f);
 
                 grid.ResetWaitTimer();
                 Debug.Log($"Spell cast: " + spell.Name);
@@ -246,7 +246,7 @@ public class PlayerPathing : MonoBehaviour
     {
         if (!isPathing)
         {
-            cursorVisual.transform.position = mainCam.ScreenToWorldPoint(Input.mousePosition);
+            cursorVisual.transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             cursorVisual.transform.position = new Vector3(cursorVisual.transform.position.x, cursorVisual.transform.position.y, 0);
         }
         if (!isPathing || currentPath.Count == 0 || cursorVisual == null)

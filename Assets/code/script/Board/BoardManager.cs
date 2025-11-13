@@ -15,6 +15,8 @@ public class BoardManager : MonoBehaviour
 
     [SerializeField] private OpenChestScreen openChestPanel;
 
+    private Camera boardCamera;
+
     private void Awake()
     {
         if (instance != null && instance != this) 
@@ -24,6 +26,8 @@ public class BoardManager : MonoBehaviour
 
         startingTile.SetGridPosition(new Vector2Int(0, 0));
         generatedTiles.Add(startingTile);
+
+        boardCamera = Camera.main;
     }
 
     public void UpdateNeighbors(BoardTile tile)
@@ -86,5 +90,10 @@ public class BoardManager : MonoBehaviour
         openChestPanel.openedChest = chestTile;
         openChestPanel.Pull();
         openChestPanel.gameObject.SetActive(true);
+    }
+
+    public void HandleBoardCamera(bool enable)
+    {
+        boardCamera.enabled = enable;
     }
 }

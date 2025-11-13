@@ -13,8 +13,6 @@ public class GameManager : MonoBehaviour
     public delegate void GetOnEndBattle(bool isWin, int exp, int money);
     public event GetOnEndBattle OnEndBattle;
 
-    private CameraShake cameraShake;
-
     private int expMultiplyer = 4;
     private int moneyMultiplyer = 4;
 
@@ -30,11 +28,6 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
     }
 
-    private void Start()
-    {
-        cameraShake = Camera.main.GetComponent<CameraShake>();
-    }
-
     public void AttackEnemy(List<DamageType> damageList)
     {
         enemyInCombat?.DealDamage(damageList);
@@ -43,7 +36,7 @@ public class GameManager : MonoBehaviour
     public void AttackPlayer(float damage)
     {
         PlayerStats.Instance.DealDamage(damage);
-        cameraShake.Shake(0.2f);
+        Camera.main.GetComponent<CameraShake>().Shake(0.2f);
     }
 
     public void SetEnemyRef(EnemyBehaviour enemyRef) { enemyInCombat = enemyRef; Debug.Log("enemyInCombat assinged"); }

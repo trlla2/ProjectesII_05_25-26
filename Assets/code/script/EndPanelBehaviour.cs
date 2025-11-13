@@ -34,11 +34,13 @@ public class EndPanelBehaviour : MonoBehaviour
 
         if(isWin)
         {
-            winText.text = "You gain:\n" + exp + " Experience points \n" + money + " coins";
+            winText.text = "You gain:\n" + exp + " Experience points \n" + money + " coins \n Click to continue";
             winPanel.SetActive(true);
             losePanel.SetActive(false);
 
             winTranslator.ToTarget();
+
+           
         }
         else 
         {
@@ -47,6 +49,12 @@ public class EndPanelBehaviour : MonoBehaviour
 
             loseTranslator.ToTarget();
         }
+    }
+
+    public void UnloadBatle()
+    {
+        SceneTransition.Instance.UnloadScene("TestRoma");
+        BoardManager.instance.HandleBoardCamera(true);
     }
 
     private void OnDestroy()

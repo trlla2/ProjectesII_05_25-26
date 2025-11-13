@@ -11,6 +11,7 @@ public class EnemyTile : BoardTile
     {
         Debug.Log("starting combat...");
 
+        
         SceneTransition.Instance.LoadScene("TestRoma", true);
         GameManager.Instance.OnEndBattle += Replace;
     }

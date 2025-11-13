@@ -58,7 +58,7 @@ public class LevelBarHandle : MonoBehaviour
         }
         interpolationTime = 0.0f;
 
-        expSlider.value = PlayerStats.Instance.GetEXP() / PlayerStats.Instance.GetEXPForNextLevel();
+        expSlider.value = (float)PlayerStats.Instance.GetEXP() / (float)PlayerStats.Instance.GetEXPForNextLevel();
     }
 
     private IEnumerator LevelUpExpBarAnimation()

@@ -5510,10 +5510,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e02a4c0454b986845a065ad209d800cd, type: 2}
   - {fileID: 11400000, guid: e0425829627e713429caa4f607152677, type: 2}
   - {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
-  scrollGridSFX: {fileID: 190367788}
+  columGridSFX: {fileID: 190367788}
   minScrollSFXPitch: 0.95
   maxScrollSFXPitch: 1.1
-  scrollClips:
+  columClips:
   - {fileID: 8300000, guid: e6a3413c91047764f8e9f3d3ccad8864, type: 3}
   - {fileID: 8300000, guid: b73339de466336b468a673df0795cf7c, type: 3}
   - {fileID: 8300000, guid: 7381a9465fbe5734083ba3a5317ff48e, type: 3}
@@ -5555,9 +5555,9 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
-  m_Pitch: 3
+  m_Pitch: 0.9
   Loop: 0
   Mute: 0
   Spatialize: 0

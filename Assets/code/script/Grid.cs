@@ -266,13 +266,13 @@ public class Grid : MonoBehaviour
 
     [Header("SFX")]
     [SerializeField]
-    private AudioSource scrollGridSFX;
+    private AudioSource columGridSFX;
     [SerializeField]
-    private float minScrollSFXPitch= 0.5f;
+    private float minScrollSFXPitch= 0.95f;
     [SerializeField]
-    private float maxScrollSFXPitch= 1.5f;
+    private float maxScrollSFXPitch= 1.1f;
     [SerializeField]
-    private List<AudioClip> scrollClips;
+    private List<AudioClip> columClips;
 
     private BoardConfiguration currentBoard;
     private BoardConfiguration nextBoard;
@@ -337,21 +337,13 @@ public class Grid : MonoBehaviour
         }
     }
 
-    private void Update() // DELETE FORCED !!!!!!!!!!
+    private void ColumSFX()// DELETE FORCED !!!!!!!!!!
     {
-        if(isScrolling)
-            ScrollSFX();
-    }
-
-    private void ScrollSFX()
-    {
-        if (!scrollGridSFX.isPlaying)
-        {
-            AudioClip clip = scrollClips[Random.Range(0, scrollClips.Count)];
-            scrollGridSFX.clip = clip;
-            scrollGridSFX.pitch = Random.Range(minScrollSFXPitch, maxScrollSFXPitch);
-            scrollGridSFX.Play();
-        }
+        AudioClip clip = columClips[Random.Range(0, columClips.Count)];
+        columGridSFX.clip = clip;
+        columGridSFX.pitch += 0.02f;
+        columGridSFX.Play();
+        
     }
 
     public IEnumerator PerformScroll(int times)
@@ -379,6 +371,8 @@ public class Grid : MonoBehaviour
                 yield return new WaitForSeconds(columnScrollDelay);
                 StartCoroutine(ScrollColumnAllBoards(columnIndex, allBoards));
             }
+            columGridSFX.pitch = 0.90f;// DELETE FORCED !!!!!!!!!!
+
             if (scrollCount >= times - 1)
             {
                 yield return new WaitForSeconds(scrollDuration);
@@ -428,6 +422,8 @@ public class Grid : MonoBehaviour
 
             yield return null;
         }
+
+        ColumSFX();// DELETE FORCED !!!!!!!!!!
     }
 
     public void DeleteElements(List<Slot> slotsToDelete)

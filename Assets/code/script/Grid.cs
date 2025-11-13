@@ -264,6 +264,16 @@ public class Grid : MonoBehaviour
     [SerializeField] private List<Element> availableelements;
     public List<Spell> availableSpells = new List<Spell>();
 
+    [Header("SFX")]
+    [SerializeField]
+    private AudioSource scrollGridSFX;
+    [SerializeField]
+    private float minScrollSFXPitch= 0.5f;
+    [SerializeField]
+    private float maxScrollSFXPitch= 1.5f;
+    [SerializeField]
+    private List<AudioClip> scrollClips;
+
     private BoardConfiguration currentBoard;
     private BoardConfiguration nextBoard;
 
@@ -324,6 +334,23 @@ public class Grid : MonoBehaviour
                 yield return null;
             }
             yield return StartCoroutine(PerformScroll(1));
+        }
+    }
+
+    private void Update() // DELETE FORCED !!!!!!!!!!
+    {
+        if(isScrolling)
+            ScrollSFX();
+    }
+
+    private void ScrollSFX()
+    {
+        if (!scrollGridSFX.isPlaying)
+        {
+            AudioClip clip = scrollClips[Random.Range(0, scrollClips.Count)];
+            scrollGridSFX.clip = clip;
+            scrollGridSFX.pitch = Random.Range(minScrollSFXPitch, maxScrollSFXPitch);
+            scrollGridSFX.Play();
         }
     }
 

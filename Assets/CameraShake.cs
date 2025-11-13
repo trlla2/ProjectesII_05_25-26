@@ -14,19 +14,25 @@ public class CameraShake : MonoBehaviour
     }
 
 
+
     public void Shake(float force)
     {
-        StopAllCoroutines();
-        StartCoroutine(ShakeRoutine(force));
+        Shake(force, shakeDuration);
     }
 
-    private IEnumerator ShakeRoutine(float force)
+    public void Shake(float force, float duration)
+    {
+        StopAllCoroutines();
+        StartCoroutine(ShakeRoutine(force, duration));
+    }
+
+    private IEnumerator ShakeRoutine(float force, float duration)
     {
         float elapsed = 0f;
-        while (elapsed < shakeDuration)
+        while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            float strength = shakeCurve.Evaluate(elapsed / shakeDuration) * force;
+            float strength = shakeCurve.Evaluate(elapsed / duration) * force;
             transform.localPosition = _originalPosition + (Vector3)Random.insideUnitCircle * strength;
             yield return null;
         }

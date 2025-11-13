@@ -1,6 +1,5 @@
 using UnityEngine;
-using System.Collections;
-using UnityEditor.Build;
+
 
 public class Palanca : MonoBehaviour
 {

@@ -6489,6 +6489,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 573940073}
+        m_TargetAssemblyTypeName: LevelBarHandle, Assembly-CSharp
+        m_MethodName: StopLevelUpAnimation
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &384262550
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6674,6 +6686,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: UnityEngine.UI.Button, UnityEngine.UI
         m_MethodName: set_interactable
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 573940073}
+        m_TargetAssemblyTypeName: LevelBarHandle, Assembly-CSharp
+        m_MethodName: StopLevelUpAnimation
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -7447,6 +7471,7 @@ GameObject:
   m_Component:
   - component: {fileID: 573940071}
   - component: {fileID: 573940072}
+  - component: {fileID: 573940073}
   m_Layer: 5
   m_Name: EXP BAR
   m_TagString: Untagged
@@ -7528,6 +7553,70 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &573940073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 573940070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2fd05aabe09c7e4d9de356853d5af4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  expSlider: {fileID: 573940072}
+  lvlText: {fileID: 1633320747}
+  interpolationDuration: 1
+  interpolationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.0006980896
+      value: 0
+      inSlope: 2.5729647
+      outSlope: 2.5729647
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.0209193
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.060585078
+      outSlope: 0.060585078
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.036262255
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  breathingCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  breathingSpeed: 0.5
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -9019,6 +9108,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHp: 100
+  money: 0
   inventory: []
 --- !u!4 &1442913423
 Transform:
@@ -9155,58 +9245,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79341727b23fdbd4fa90c9dd4761882b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  expSlider: {fileID: 573940072}
-  lvlText: {fileID: 1633320747}
-  interpolationDuration: 1
-  interpolationCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0.0006980896
-      value: 0
-      inSlope: 2.5729647
-      outSlope: 2.5729647
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.0209193
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0.060585078
-      outSlope: 0.060585078
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.036262255
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  breathingCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  breathingSpeed: 0.5
   lvlUpPanel: {fileID: 798005730}
   lvlUpPanelTranslator: {fileID: 798005731}
 --- !u!114 &1507392188
@@ -9710,7 +9748,7 @@ GameObject:
   - component: {fileID: 1633320748}
   - component: {fileID: 1633320747}
   m_Layer: 5
-  m_Name: Lavel Text
+  m_Name: lvl Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10018,6 +10056,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: UnityEngine.UI.Button, UnityEngine.UI
         m_MethodName: set_interactable
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 573940073}
+        m_TargetAssemblyTypeName: LevelBarHandle, Assembly-CSharp
+        m_MethodName: StopLevelUpAnimation
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -10606,6 +10656,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: UnityEngine.UI.Button, UnityEngine.UI
         m_MethodName: set_interactable
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 573940073}
+        m_TargetAssemblyTypeName: LevelBarHandle, Assembly-CSharp
+        m_MethodName: StopLevelUpAnimation
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

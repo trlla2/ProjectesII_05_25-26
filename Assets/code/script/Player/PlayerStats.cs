@@ -139,13 +139,15 @@ public class PlayerStats : MonoBehaviour
 
     public void Heal(int health)
     {
-        Mathf.Clamp(hp += health, 0, maxHp);
-        OnHitRecived.Invoke(hp);
+        if (hp + health <= maxHp)
+        {
+            Mathf.Clamp(hp += health, 0, maxHp);
+            OnHitRecived.Invoke(hp);
+        }
     }
 
     public bool UseMoney(int amount)
     {
-        Debug.Log("Trying to use money: " + amount + " Current money: " + money);
         if (money >= amount)
         {
             money = money - amount;

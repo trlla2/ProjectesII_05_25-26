@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Jobs;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,6 +24,16 @@ public class EnemyUIHandler : MonoBehaviour
     [SerializeField]
     private float timeToChangeDmg = 0.3f;
     private float timerChangeDmg = 0;
+
+    [Header("Weakness Text")]
+    [SerializeField]
+    private TMP_Text weaknessText;
+    [SerializeField]
+    private TranslatorUI weaknessTextTranslator;
+
+    [SerializeField]
+    private float timeToChangeWeak = 0.3f;
+    private float timerChangeWeak = 0;
 
     private EnemyBehaviour enemyBehaviour;
 
@@ -75,6 +86,8 @@ public class EnemyUIHandler : MonoBehaviour
                     damageText.color = Color.yellow;
                     break;
             }
+            if(enemyBehaviour.GetEnemyType().IsWeakTo(damage.element))
+                StartCoroutine(TriggerWeaknessText(damage.element));
 
             while (timerChangeDmg < timeToChangeDmg)
             {
@@ -86,6 +99,36 @@ public class EnemyUIHandler : MonoBehaviour
             timerChangeDmg = 0;
             damageText.text = "";
         }
+    }
+
+    private IEnumerator TriggerWeaknessText(ElementType elementType)
+    {
+        weaknessTextTranslator.ResetPosition();
+
+        switch (elementType)
+        {
+            case ElementType.Red:
+                weaknessText.color = Color.red;
+                break;
+            case ElementType.Blue:
+                weaknessText.color = Color.blue;
+                break;
+            case ElementType.Green:
+                weaknessText.color = Color.green;
+                break;
+            case ElementType.Yellow:
+                weaknessText.color = Color.yellow;
+                break;
+        }
+        weaknessTextTranslator.ToTarget();
+        while (timerChangeWeak < timeToChangeWeak)
+        {
+            timerChangeWeak += Time.deltaTime;
+            yield return null;
+        }
+
+        weaknessTextTranslator.ResetPosition();
+        timerChangeWeak = 0;
     }
 
     private void OnDestroy()

@@ -43,7 +43,9 @@ public class EnemyType : ScriptableObject
             if (weakness == elementType)
             {
                 finalDamage *= weaknessMultiplayer;
-                break;
+                Debug.Log("Weakness hit: " + weakness.ToString() + " Multiplyer: " + weaknessMultiplayer + " Total DMG:" + finalDamage);
+                return finalDamage;
+                
             }
         }
 
@@ -52,19 +54,31 @@ public class EnemyType : ScriptableObject
             if (resistance == elementType)
             {
                 finalDamage *= resistanceMultiplayer;
-                break;
+                return finalDamage;
             }
         }
 
         return finalDamage;
     }
 
+    public bool IsWeakTo(ElementType elementType)
+    {
+        foreach (ElementType weakness in weaknesses)
+        {
+            if (weakness == elementType)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public float GetHealth() { return health; }
     public float GetDamage() { return damage; }
     public float GetFireRate() { return fireRate; }
     public Sprite GetSprite() { return enemySprite; }
-}
+    public List<ElementType> GetWeaknesses() { return weaknesses; }
+ }
 
 
 

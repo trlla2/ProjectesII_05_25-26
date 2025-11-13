@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TreeEditor;
 using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer))]
@@ -72,15 +73,16 @@ public class EnemyBehaviour : MonoBehaviour
     {
         float finalDamage = 0;
 
+        List<DamageType> finalDamageList = new List<DamageType>();
 
-
-        foreach(DamageType damageType in damageList)
+        foreach (DamageType damageType in damageList)
         {
             finalDamage += enemyType.CalculateDamageTaken(damageType.element, damageType.damage);
+            finalDamageList.Add(new DamageType(damageType.element, enemyType.CalculateDamageTaken(damageType.element, damageType.damage)));
         }
 
         health -= finalDamage;
-        OnDamageList?.Invoke(damageList);
+        OnDamageList?.Invoke(finalDamageList);
         OnHitRecived?.Invoke(health);
         Debug.Log("Enemy " + enemyType.name + " has taken " + finalDamage + " damage points with " + health + " remaining health points");
 
@@ -100,4 +102,6 @@ public class EnemyBehaviour : MonoBehaviour
 
     public float GetMaxHP() { return enemyType.GetHealth(); }
     public float GetFireRate() { return enemyType.GetFireRate(); }
+
+    public EnemyType GetEnemyType() { return enemyType; }
 }

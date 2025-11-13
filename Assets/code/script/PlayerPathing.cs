@@ -23,7 +23,7 @@ public class PlayerPathing : MonoBehaviour
     //private CameraShake cameraShake;
     private bool isPathing = false;
 
-    private bool canPath = true;
+    public bool canPath = true;
 
     void Start()
     {

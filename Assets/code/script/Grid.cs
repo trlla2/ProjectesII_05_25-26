@@ -330,7 +330,7 @@ public class Grid : MonoBehaviour
     public IEnumerator PerformScroll(int times)
     {
         isScrolling = true;
-        IsPlayerPathing = false;
+        pathing.canPath = false;
         pathing.ForceEndPathing();
 
         List<BoardConfiguration> allBoards = new List<BoardConfiguration>();
@@ -377,7 +377,7 @@ public class Grid : MonoBehaviour
         nextBoard = CreateBoard(boardHeight);
 
         isScrolling = false;
-        IsPlayerPathing = false;
+        pathing.canPath = true;
     }
 
     IEnumerator ScrollColumnAllBoards(int columnIndex, List<BoardConfiguration> boards)

@@ -377,6 +377,7 @@ public class Grid : MonoBehaviour
         nextBoard = CreateBoard(boardHeight);
 
         isScrolling = false;
+        IsPlayerPathing = false;
     }
 
     IEnumerator ScrollColumnAllBoards(int columnIndex, List<BoardConfiguration> boards)

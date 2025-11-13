@@ -44,6 +44,7 @@ public class PlayerPathing : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        canPath = grid.IsPlayerPathing;
         UpdateCursorPosition();
     }
 
@@ -150,7 +151,6 @@ public class PlayerPathing : MonoBehaviour
 
         TryCastSpell();
 
-        // Reset highlights
         foreach (Slot s in currentPath)
         {
             if (s != null && s.Holder != null)

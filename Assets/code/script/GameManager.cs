@@ -8,6 +8,10 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private int stageLevel = 1;
 
+    [Header("List Of Enemies")]
+    [SerializeField]
+    private List<EnemyType> enemyTypes = new List<EnemyType>();
+
     private EnemyBehaviour enemyInCombat;
 
     public delegate void GetOnEndBattle(bool isWin, int exp, int money);
@@ -15,6 +19,8 @@ public class GameManager : MonoBehaviour
 
     private int expMultiplyer = 4;
     private int moneyMultiplyer = 4;
+
+    
 
     private void Awake()
     {
@@ -39,7 +45,12 @@ public class GameManager : MonoBehaviour
         Camera.main.GetComponent<CameraShake>().Shake(0.2f);
     }
 
-    public void SetEnemyRef(EnemyBehaviour enemyRef) { enemyInCombat = enemyRef; Debug.Log("enemyInCombat assinged"); }
+    public void SetEnemyRef(EnemyBehaviour enemyRef) 
+    { 
+        enemyInCombat = enemyRef; 
+        enemyInCombat.SetEnemyType(enemyTypes[Random.Range(0, enemyTypes.Count)]);
+        Debug.Log("enemyInCombat assinged"); 
+    }
     public void DeleteEnemyRef() {  enemyInCombat = null; }
 
     public void OnPlayerDead()
@@ -56,5 +67,10 @@ public class GameManager : MonoBehaviour
         PlayerStats.Instance.OnWinBattle(exp, money);
         DeleteEnemyRef();
         OnEndBattle?.Invoke(true, exp, money);
+    }
+
+    public void Destroy()
+    {
+        Destroy(this.gameObject);
     }
 }

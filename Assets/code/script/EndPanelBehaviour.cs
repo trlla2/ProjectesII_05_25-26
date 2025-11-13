@@ -53,8 +53,15 @@ public class EndPanelBehaviour : MonoBehaviour
 
     public void UnloadBatle()
     {
+        winTranslator.ToOrigin();
         SceneTransition.Instance.UnloadScene("TestRoma");
         BoardManager.instance.HandleBoardCamera(true);
+    }
+
+    public void GoMenu()
+    {
+        loseTranslator.ToOrigin();
+        SceneTransition.Instance.LoadScene("MainMenu", false);
     }
 
     private void OnDestroy()

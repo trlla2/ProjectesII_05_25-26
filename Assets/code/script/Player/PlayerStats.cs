@@ -157,6 +157,11 @@ public class PlayerStats : MonoBehaviour
         return false;
     }
 
+    public void Destroy()
+    {
+        Destroy(this.gameObject);
+    }
+
     public int GetEXP() { return experiencePoints; }
     public int GetMoney() { return money; }
     public float GetMaxHP() { return maxHp; }

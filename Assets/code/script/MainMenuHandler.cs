@@ -16,7 +16,13 @@ public class MainMenuHandler : MonoBehaviour
     [SerializeField]
     private GameObject credits;
 
-    
+
+
+    private void Awake()
+    {
+        GameManager.Instance?.Destroy();
+        PlayerStats.Instance?.Destroy();
+    }
 
     public void OnBack() 
     {

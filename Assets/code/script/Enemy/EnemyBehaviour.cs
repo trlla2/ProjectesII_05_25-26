@@ -41,7 +41,13 @@ public class EnemyBehaviour : MonoBehaviour
         GameManager.Instance.SetEnemyRef(this); // forced DELETE!@!!!!! 
         InitBatle(); // forced DELETE!@!!!!! 
     }
-
+    
+    public void SetEnemyType(EnemyType newType)
+    {
+        enemyType = newType;
+        spriteRenderer.sprite = enemyType.GetSprite();
+        health = enemyType.GetHealth();
+    }
 
     public void InitBatle()
     {
@@ -53,7 +59,6 @@ public class EnemyBehaviour : MonoBehaviour
     {
         while (inBattle)
         {
-
             if (attackTime < enemyType.GetFireRate())
             {
                 attackTime += Time.deltaTime;

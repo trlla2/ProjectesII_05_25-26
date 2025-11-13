@@ -15,6 +15,7 @@ public class PlayerUIHandler : MonoBehaviour
     {
         PlayerStats.Instance.OnHitRecived += HitRecived;
         PlayerStats.Instance.OnHitEvaded += HitEvaded;
+        HitRecived(PlayerStats.Instance.GetCurrentHP());
     }
 
     private void HitRecived(float health)

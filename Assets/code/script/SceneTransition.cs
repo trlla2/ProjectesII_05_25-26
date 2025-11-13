@@ -62,7 +62,7 @@ public class SceneTransition : MonoBehaviour
     {
         yield return StartCoroutine(Fade(1f));
         SceneManager.UnloadSceneAsync(sceneName);
-        
+        BoardManager.instance.HandleBoardCamera(true); // FORCED CHANGE!!!!!!
         yield return StartCoroutine(Fade(0f));
     }
 

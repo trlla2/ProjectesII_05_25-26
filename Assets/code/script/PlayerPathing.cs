@@ -44,7 +44,6 @@ public class PlayerPathing : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        canPath = grid.IsPlayerPathing;
         UpdateCursorPosition();
     }
 

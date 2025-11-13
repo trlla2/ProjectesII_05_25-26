@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEditor.Build;
 
 public class Palanca : MonoBehaviour
 {
@@ -9,12 +10,35 @@ public class Palanca : MonoBehaviour
     [SerializeField]
     int times;
 
+    [SerializeField]
+    int cost = 4;
+
+    private bool isEnabled = true;
+
+    private void Start()
+    {
+        GameManager.Instance.OnEndBattle += DisablePalanca;
+    }
     public void OnMouseDown()
     {
-        if (!grid.isScrolling)
+        if (!grid.isScrolling && isEnabled)
         {
-            grid.StartCoroutine(grid.PerformScroll(times));
-            grid.ResetWaitTimer();
+            if(PlayerStats.Instance.UseMoney(cost))
+            {
+                grid.StartCoroutine(grid.PerformScroll(times));
+                grid.ResetWaitTimer();
+            }
         }
+    }
+
+
+    private void OnDestroy()
+    {
+        GameManager.Instance.OnEndBattle -= DisablePalanca;
+    }
+
+    public void DisablePalanca(bool isWin, int exp, int money)
+    {
+        isEnabled = false;
     }
 }

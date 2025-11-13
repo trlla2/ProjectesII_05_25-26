@@ -14,11 +14,15 @@ public class PlayerStats : MonoBehaviour
 
     private int experiencePoints = 0;
     private int level = 1;
-    private int money = 0;
+
+    [SerializeField]
+    private int money = 10;
 
     [SerializeField]
     private List<ItemsType> inventory = new List<ItemsType>();
 
+
+    // Events
     public delegate void GetOnHitRecived(float health);
     public event GetOnHitRecived OnHitRecived;
 
@@ -30,6 +34,9 @@ public class PlayerStats : MonoBehaviour
 
     public delegate void GetOnEXPChange();
     public event GetOnEXPChange OnEXPChange;
+
+    public delegate void GetOnMoneyChange();
+    public event GetOnMoneyChange OnMoneyChange;
 
     public delegate void GetOnInventoryChange();
     public event GetOnInventoryChange OnInventoryChange;
@@ -105,6 +112,8 @@ public class PlayerStats : MonoBehaviour
     {
         money += m;
 
+        OnMoneyChange.Invoke();
+
         experiencePoints += exp;
         OnEXPChange.Invoke();
 
@@ -132,6 +141,18 @@ public class PlayerStats : MonoBehaviour
     {
         Mathf.Clamp(hp += health, 0, maxHp);
         OnHitRecived.Invoke(hp);
+    }
+
+    public bool UseMoney(int amount)
+    {
+        Debug.Log("Trying to use money: " + amount + " Current money: " + money);
+        if (money >= amount)
+        {
+            money = money - amount;
+            OnMoneyChange.Invoke();
+            return true;
+        }
+        return false;
     }
 
     public int GetEXP() { return experiencePoints; }

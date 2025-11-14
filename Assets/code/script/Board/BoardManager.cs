@@ -15,6 +15,9 @@ public class BoardManager : MonoBehaviour
 
     [SerializeField] private OpenChestScreen openChestPanel;
 
+    [SerializeField] private AudioSource openChestSource; // FORCED CHANGE
+
+
     private Camera boardCamera;
 
     private void Awake()
@@ -89,6 +92,7 @@ public class BoardManager : MonoBehaviour
     {
         openChestPanel.openedChest = chestTile;
         openChestPanel.Pull();
+        openChestSource.Play(); // FORCED CHANGE
         openChestPanel.gameObject.SetActive(true);
     }
 

@@ -95,7 +95,8 @@ public class EnemyBehaviour : MonoBehaviour
             GameObject part = Instantiate(deathParticles, transform.position, Quaternion.identity);
             part.transform.DetachChildren();
             GameManager.Instance.OnEnemyDead();
-            Destroy(this.gameObject);
+            StopEnemy();
+            spriteRenderer.enabled = false;
         }
     }
     

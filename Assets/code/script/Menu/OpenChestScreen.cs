@@ -11,6 +11,8 @@ public class OpenChestScreen : MonoBehaviour
     [SerializeField] TMP_Text _itemDescriptionText;
     [SerializeField] Image _itemSprite;
 
+    [SerializeField] private AudioSource _audioSource;
+
     [SerializeField] private List<ItemsType> _itemsPool;
     ItemsType _selectedItem;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -18,7 +20,7 @@ public class OpenChestScreen : MonoBehaviour
     {
         Pull();
 
-        
+        _audioSource.Play();
     }
 
     public void Pull()

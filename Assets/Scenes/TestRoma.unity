@@ -5423,6 +5423,7 @@ GameObject:
   m_Component:
   - component: {fileID: 190367787}
   - component: {fileID: 190367786}
+  - component: {fileID: 190367788}
   m_Layer: 0
   m_Name: GRID
   m_TagString: Untagged
@@ -5509,6 +5510,17 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e02a4c0454b986845a065ad209d800cd, type: 2}
   - {fileID: 11400000, guid: e0425829627e713429caa4f607152677, type: 2}
   - {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
+  columGridSFX: {fileID: 190367788}
+  minScrollSFXPitch: 0.95
+  maxScrollSFXPitch: 1.1
+  columClips:
+  - {fileID: 8300000, guid: e6a3413c91047764f8e9f3d3ccad8864, type: 3}
+  - {fileID: 8300000, guid: b73339de466336b468a673df0795cf7c, type: 3}
+  - {fileID: 8300000, guid: 7381a9465fbe5734083ba3a5317ff48e, type: 3}
+  - {fileID: 8300000, guid: 9a98fe8c42ef39a43b49a26b9af02d08, type: 3}
+  - {fileID: 8300000, guid: f5db434c751d0224e838da6172acd102, type: 3}
+  - {fileID: 8300000, guid: 42c19c6493c2e984e8c48d2a358bdf09, type: 3}
+  - {fileID: 8300000, guid: e69293ec51014bb4c836b0b92581177d, type: 3}
   pathing: {fileID: 1766485013}
   isScrolling: 0
   IsPlayerPathing: 0
@@ -5531,6 +5543,103 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!82 &190367788
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190367785}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 0.9
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &210590430
 GameObject:
   m_ObjectHideFlags: 0
@@ -8299,7 +8408,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stageLevel: 1
-  enemyTypes: []
+  enemyTypes:
+  - {fileID: 11400000, guid: e3dd09a9dd0977248b7cd0fbfde410df, type: 2}
+  - {fileID: 11400000, guid: 5a24782ba9a42cb49b3f9ba6e5f9d720, type: 2}
+  - {fileID: 11400000, guid: b9c808fbaa24e3a42b7f571e85b936ad, type: 2}
+  - {fileID: 11400000, guid: bb5502b10a943fa45944063b5ce41d6f, type: 2}
 --- !u!4 &806185222
 Transform:
   m_ObjectHideFlags: 0

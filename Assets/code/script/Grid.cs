@@ -264,6 +264,16 @@ public class Grid : MonoBehaviour
     [SerializeField] private List<Element> availableelements;
     public List<Spell> availableSpells = new List<Spell>();
 
+    [Header("SFX")]
+    [SerializeField]
+    private AudioSource columGridSFX;
+    [SerializeField]
+    private float minScrollSFXPitch= 0.95f;
+    [SerializeField]
+    private float maxScrollSFXPitch= 1.1f;
+    [SerializeField]
+    private List<AudioClip> columClips;
+
     private BoardConfiguration currentBoard;
     private BoardConfiguration nextBoard;
 
@@ -334,6 +344,15 @@ public class Grid : MonoBehaviour
         }
     }
 
+    private void ColumSFX()// DELETE FORCED !!!!!!!!!!
+    {
+        AudioClip clip = columClips[Random.Range(0, columClips.Count)];
+        columGridSFX.clip = clip;
+        columGridSFX.pitch += 0.02f;
+        columGridSFX.Play();
+        
+    }
+
     public IEnumerator PerformScroll(int times)
     {
         isScrolling = true;
@@ -359,6 +378,8 @@ public class Grid : MonoBehaviour
                 yield return new WaitForSeconds(columnScrollDelay);
                 StartCoroutine(ScrollColumnAllBoards(columnIndex, allBoards));
             }
+            columGridSFX.pitch = 0.90f;// DELETE FORCED !!!!!!!!!!
+
             if (scrollCount >= times - 1)
             {
                 yield return new WaitForSeconds(scrollDuration);
@@ -409,6 +430,8 @@ public class Grid : MonoBehaviour
             yield return null;
         }
         shake.Shake(0.05f, columnScrollDelay - (columnScrollDelay)*0.2f);
+
+        ColumSFX();// DELETE FORCED !!!!!!!!!!
     }
 
     public void DeleteElements(List<Slot> slotsToDelete)

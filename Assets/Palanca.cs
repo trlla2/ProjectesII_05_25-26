@@ -12,6 +12,9 @@ public class Palanca : MonoBehaviour
     [SerializeField]
     int cost = 4;
 
+    [SerializeField]
+    private AudioSource pullSound;
+
     private bool isEnabled = true;
 
     private void Start()
@@ -25,6 +28,7 @@ public class Palanca : MonoBehaviour
             if(PlayerStats.Instance.UseMoney(cost))
             {
                 grid.StartCoroutine(grid.PerformScroll(times));
+                pullSound.Play();
                 grid.ResetWaitTimer();
             }
         }

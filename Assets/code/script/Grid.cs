@@ -285,13 +285,13 @@ public class Grid : MonoBehaviour
     [HideInInspector] public bool isScrolling = false;
     [HideInInspector] public bool IsPlayerPathing;
 
-    CameraShake shake;
+    //CameraShake shake;
 
     private void Start()
     {
         if (slotPrefab == null || availableelements.Count <= 0 || availableSpells.Count <= 0) return;
 
-        shake = Camera.main.GetComponent<CameraShake>();
+        //shake = Camera.main.GetComponent<CameraShake>();
 
         InitializeBoards();
         StartCoroutine(ScrollRoutine());
@@ -429,7 +429,7 @@ public class Grid : MonoBehaviour
 
             yield return null;
         }
-        shake.Shake(0.05f, columnScrollDelay - (columnScrollDelay)*0.2f);
+        Camera.main.GetComponent<CameraShake>().Shake(0.05f, columnScrollDelay - (columnScrollDelay)*0.2f);
 
         ColumSFX();// DELETE FORCED !!!!!!!!!!
     }

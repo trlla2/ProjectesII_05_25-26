@@ -144,6 +144,11 @@ public class PlayerStats : MonoBehaviour
             Mathf.Clamp(hp += health, 0, maxHp);
             OnHitRecived.Invoke(hp);
         }
+        else
+        {
+            hp = maxHp;
+            OnHitRecived.Invoke(hp);
+        }
     }
 
     public bool UseMoney(int amount)

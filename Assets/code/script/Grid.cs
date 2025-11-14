@@ -469,6 +469,7 @@ public class Grid : MonoBehaviour
     {
         List<Coroutine> gravityCoroutines = new List<Coroutine>();
 
+        pathing.canPath = false;
         foreach (int columnIndex in affectedColumns)
         {
             Coroutine gravityCoroutine = StartCoroutine(ApplyGravityToColumn(columnIndex));
@@ -480,6 +481,7 @@ public class Grid : MonoBehaviour
         {
             yield return coroutine;
         }
+        pathing.canPath = true;
     }
 
     IEnumerator ApplyGravityToColumn(int columnIndex)

@@ -19,8 +19,9 @@ public class PlayerPathing : MonoBehaviour
 
     private LineRenderer line;
     private List<Slot> currentPath = new List<Slot>();
-    //private Camera mainCam;
-    //private CameraShake cameraShake;
+
+    public SpellPathAnimator spellAnimator;
+
     private bool isPathing = false;
 
     public bool canPath = true;
@@ -28,8 +29,6 @@ public class PlayerPathing : MonoBehaviour
     void Start()
     {
         line = GetComponent<LineRenderer>();
-        //mainCam = Camera.main;
-        //cameraShake = mainCam.GetComponent<CameraShake>();
         line.positionCount = 0;
 
         adjacencyDistance = grid.XDistanceBetween * 1.47f; //es el resultao de 1.25*sqrt(2), 1.25 es la dist entre slots i raiz d 2 para las diagonales
@@ -181,15 +180,20 @@ public class PlayerPathing : MonoBehaviour
         {
             if (spell.Matches(pathElements))
             {
-                grid.DeleteElements(currentPath);
+                List<Slot> animationPath = new List<Slot>(currentPath);
 
-                Camera.main.GetComponent<CameraShake>().Shake(0.15f);
-
-                grid.ResetWaitTimer();
-                Debug.Log($"Spell cast: " + spell.Name);
+                if (spellAnimator != null)
+                {
+                    spellAnimator.OnSpellCast(animationPath, spell);
+                }
 
                 OnSpellCast(spell);
-                if(spell.OnCast != null) spell.OnCast.Invoke(); ;
+                if (spell.OnCast != null) spell.OnCast.Invoke();
+
+                grid.DeleteElements(currentPath);
+                grid.ResetWaitTimer();
+
+                Debug.Log($"Spell cast: " + spell.Name);
 
                 return;
             }

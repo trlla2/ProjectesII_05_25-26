@@ -262,7 +262,7 @@ public class Grid : MonoBehaviour
     [Header("Elements")]
     [SerializeField] private Element emptyElement;
     [SerializeField] private List<Element> availableelements;
-    public List<Spell> availableSpells = new List<Spell>();
+    private List<Spell> availableSpells = new List<Spell>();
 
     [Header("SFX")]
     [SerializeField]
@@ -289,6 +289,8 @@ public class Grid : MonoBehaviour
 
     private void Start()
     {
+        availableSpells = PlayerStats.Instance.GetSpellBook();
+
         if (slotPrefab == null || availableelements.Count <= 0 || availableSpells.Count <= 0) return;
 
         //shake = Camera.main.GetComponent<CameraShake>();

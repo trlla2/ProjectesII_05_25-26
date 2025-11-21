@@ -177,7 +177,7 @@ public class PlayerPathing : MonoBehaviour
             pathElements.Add(s.CurrentElement);
         }
 
-        foreach (Spell spell in grid.availableSpells)
+        foreach (Spell spell in PlayerStats.Instance.GetSpellBook())
         {
             if (spell.Matches(pathElements))
             {

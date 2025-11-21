@@ -19,6 +19,10 @@ public class PlayerStats : MonoBehaviour
     private int money = 10;
 
     [SerializeField]
+    private List<Spell> spellBook = new List<Spell>();
+
+
+    [SerializeField]
     private List<ItemsType> inventory = new List<ItemsType>();
 
 
@@ -167,6 +171,7 @@ public class PlayerStats : MonoBehaviour
         Destroy(this.gameObject);
     }
 
+    public List<Spell> GetSpellBook() { return spellBook; }
     public int GetEXP() { return experiencePoints; }
     public int GetMoney() { return money; }
     public float GetMaxHP() { return maxHp; }

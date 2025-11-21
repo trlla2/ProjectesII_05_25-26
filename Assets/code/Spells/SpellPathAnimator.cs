@@ -121,7 +121,7 @@ public class SpellPathAnimator : MonoBehaviour
                 else if (waypoints.Count == 1)
                 {
                     Vector3 center = waypoints[0].position;
-                    Vector3[] circlePoints = CreateCircularPath(center, 0.5f, 8);
+                    Vector3[] circlePoints = CreateCircularPath(center, 1.2f, 8);
 
                     animationSequence.Append(
                         clone.transform.DOPath(

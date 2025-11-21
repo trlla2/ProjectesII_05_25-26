@@ -7,6 +7,10 @@ using UnityEngine.UI;
 
 public class EnemyUIHandler : MonoBehaviour
 {
+    [Header("Setup")]
+    [SerializeField]
+    private EnemyBehaviour enemyBehaviour;
+
     [Header("HealthBar")]
     [SerializeField]
     private Slider healthBar;
@@ -35,12 +39,10 @@ public class EnemyUIHandler : MonoBehaviour
     private float timeToChangeWeak = 0.3f;
     private float timerChangeWeak = 0;
 
-    private EnemyBehaviour enemyBehaviour;
+    
 
     private void Start()
     {
-        enemyBehaviour = this.gameObject.GetComponentInParent<EnemyBehaviour>();
-
         enemyBehaviour.OnHitRecived += ChangeHealthBar;
         enemyBehaviour.OnAttackTimeChange += ChangeAttackTimeCircle;
         enemyBehaviour.OnDamageList += StartChangeDamageText;
@@ -53,7 +55,7 @@ public class EnemyUIHandler : MonoBehaviour
 
     private void ChangeAttackTimeCircle(float attackTime)
     {
-        attackTimeCircle.fillAmount = 1-(attackTime/enemyBehaviour.GetFireRate());
+        attackTimeCircle.fillAmount = attackTime/enemyBehaviour.GetFireRate();
     }
 
     private void StartChangeDamageText(List<DamageType> damageList)
@@ -63,6 +65,8 @@ public class EnemyUIHandler : MonoBehaviour
 
     private IEnumerator ChangeDamageText(List<DamageType> damageList)
     {
+        ElementType weaken = ElementType.EMPTY;
+
         foreach (DamageType damage in damageList)
         {
             damageTextTranslator.ResetPosition();
@@ -86,8 +90,13 @@ public class EnemyUIHandler : MonoBehaviour
                     damageText.color = Color.yellow;
                     break;
             }
-            if(enemyBehaviour.GetEnemyType().IsWeakTo(damage.element))
-                StartCoroutine(TriggerWeaknessText(damage.element));
+
+            if(enemyBehaviour.GetEnemyType().IsWeakTo(damage.element) && weaken == ElementType.EMPTY)// only displays 1 weakness even if multiple types are present
+            {
+                weaken = damage.element;
+                StartCoroutine(TriggerWeaknessText(weaken));
+
+            }
 
             while (timerChangeDmg < timeToChangeDmg)
             {
@@ -95,10 +104,11 @@ public class EnemyUIHandler : MonoBehaviour
                 yield return null;
             }
 
-            damageTextTranslator.ResetPosition();
             timerChangeDmg = 0;
             damageText.text = "";
         }
+
+
     }
 
     private IEnumerator TriggerWeaknessText(ElementType elementType)
@@ -127,7 +137,6 @@ public class EnemyUIHandler : MonoBehaviour
             yield return null;
         }
 
-        weaknessTextTranslator.ResetPosition();
         timerChangeWeak = 0;
     }
 

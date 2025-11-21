@@ -104,17 +104,16 @@ public class SpellPathAnimator : MonoBehaviour
                     Vector3 startPoint = waypoints[0].position;
                     Vector3 endPoint = waypoints[1].position;
 
-                    // Calculate center point between start and end
                     Vector3 center = (startPoint + endPoint) / 2f;
 
-                    // Calculate radius as half the distance between points
+                    // radius is half the distance between points
                     float radius = Vector3.Distance(startPoint, endPoint) / 2f;
 
-                    // Calculate the angle of the line connecting the two points
+                    //Calculate the angle of the line connecting the points
                     Vector3 toEnd = endPoint - center;
                     float startAngle = Mathf.Atan2(toEnd.y, toEnd.x);
 
-                    // Create circular path starting from waypoint[0] and ending at waypoint[1]
+                    //Create circular path starting from waypoint[0] and ending at waypoint[1]
                     Vector3[] circlePoints = CreateCircularPathBetweenPoints(center, radius, startAngle, 8);
 
                     animationSequence.Append(

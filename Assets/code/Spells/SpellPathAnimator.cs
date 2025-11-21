@@ -99,7 +99,7 @@ public class SpellPathAnimator : MonoBehaviour
             }
             else if (section.mode == SpellPathMode.Loop)
             {
-                //For loops create a circular motion that starts and ends at the same waypoint
+                //For loops create a circular motion that starts and ends at a start and end waypoint, so will always have 2 waypoints
                 if (waypoints.Count >= 2)
                 {
                     
@@ -174,22 +174,16 @@ public class SpellPathAnimator : MonoBehaviour
     {
         GameObject clone;
 
-        if (clonePrefab != null)
-        {
-            clone = Instantiate(clonePrefab);
-        }
-        else
-        {
-            clone = new GameObject($"SpellClone_{element.name}");
-            SpriteRenderer sr = clone.AddComponent<SpriteRenderer>();
-            sr.sortingOrder = 10;
-        }
+        if (clonePrefab == null) return null;
+
+
+        clone = Instantiate(clonePrefab);
 
         SpriteRenderer renderer = clone.GetComponent<SpriteRenderer>();
         if (renderer != null && element.Sprite != null)
         {
             renderer.sprite = element.Sprite;
-            renderer.color = new Color(1, 1, 1, 1);
+            renderer.color = element.Color;
         }
 
         clone.transform.localScale = Vector3.one * elementScale;

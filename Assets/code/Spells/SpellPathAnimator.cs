@@ -19,7 +19,7 @@ public class SpellPathAnimator : MonoBehaviour
     private List<GameObject> activeClones = new List<GameObject>();
 
     void Start()
-    { 
+    {
         shake = Camera.main.GetComponent<CameraShake>();
     }
 
@@ -99,15 +99,23 @@ public class SpellPathAnimator : MonoBehaviour
             }
             else if (section.mode == SpellPathMode.Loop)
             {
-                //For loops create a circular motion that starts and ends at a start and end waypoint, so will always have 2 waypoints
                 if (waypoints.Count >= 2)
                 {
-                    
-                    Vector3 center = waypoints[0].position;
-                    Vector3 radiusPoint = waypoints[1].position;
-                    float radius = Vector3.Distance(center, radiusPoint);
+                    Vector3 startPoint = waypoints[0].position;
+                    Vector3 endPoint = waypoints[1].position;
 
-                    Vector3[] circlePoints = CreateCircularPath(center, radius, 8);
+                    // Calculate center point between start and end
+                    Vector3 center = (startPoint + endPoint) / 2f;
+
+                    // Calculate radius as half the distance between points
+                    float radius = Vector3.Distance(startPoint, endPoint) / 2f;
+
+                    // Calculate the angle of the line connecting the two points
+                    Vector3 toEnd = endPoint - center;
+                    float startAngle = Mathf.Atan2(toEnd.y, toEnd.x);
+
+                    // Create circular path starting from waypoint[0] and ending at waypoint[1]
+                    Vector3[] circlePoints = CreateCircularPathBetweenPoints(center, radius, startAngle, 8);
 
                     animationSequence.Append(
                         clone.transform.DOPath(
@@ -157,11 +165,28 @@ public class SpellPathAnimator : MonoBehaviour
 
     Vector3[] CreateCircularPath(Vector3 center, float radius, int segments)
     {
-        Vector3[] points = new Vector3[segments + 1]; //+1 to close the loop
+        Vector3[] points = new Vector3[segments + 1];
 
         for (int i = 0; i <= segments; i++)
         {
             float angle = i * (360f / segments) * Mathf.Deg2Rad;
+            float x = center.x + Mathf.Cos(angle) * radius;
+            float y = center.y + Mathf.Sin(angle) * radius;
+            points[i] = new Vector3(x, y, center.z);
+        }
+
+        return points;
+    }
+
+    Vector3[] CreateCircularPathBetweenPoints(Vector3 center, float radius, float startAngle, int segments)
+    {
+        Vector3[] points = new Vector3[segments + 1];
+
+        // Create a full loop starting from startAngle
+        for (int i = 0; i <= segments; i++)
+        {
+            // Go full 360 degrees (2pi radians) to complete the loop
+            float angle = startAngle + (i * (360f / segments) * Mathf.Deg2Rad);
             float x = center.x + Mathf.Cos(angle) * radius;
             float y = center.y + Mathf.Sin(angle) * radius;
             points[i] = new Vector3(x, y, center.z);

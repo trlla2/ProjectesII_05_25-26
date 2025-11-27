@@ -6,48 +6,96 @@ using DG.Tweening;
 public class SpellPathAnimator : MonoBehaviour
 {
     [Header("Spell Animation Settings")]
-    public float elementScale = 0.8f;
-    public float elementSpacing = 0.1f;
-    public Ease movementEase = Ease.OutCubic;
+    [SerializeField] private float elementScale = 0.8f;
+    [SerializeField] private float elementSpacing = 0.1f;
+    [SerializeField] private Ease movementEase = Ease.OutCubic;
 
     [Header("References")]
-    public GameObject clonePrefab;
+    [SerializeField] private GameObject clonePrefab;
+    [SerializeField] private SpellPathDate spellPathData;
+    [SerializeField] private Grid grid;
 
-    private CameraShake shake;
-
-    public SpellPathDate spellPathData;
+    private CameraShake cameraShake;
     private List<GameObject> activeClones = new List<GameObject>();
 
-    void Start()
+
+    private void Start()
     {
-        shake = Camera.main.GetComponent<CameraShake>();
-    }
+        cameraShake = Camera.main != null ? Camera.main.GetComponent<CameraShake>() : null;
 
-    public void OnSpellCast(List<Slot> pathSlots, Spell spell)
-    {
-        if (spellPathData == null || spellPathData.pathSections.Length == 0) return;
-
-        StartCoroutine(AnimateSpellPath(pathSlots, spell));
-    }
-
-    IEnumerator AnimateSpellPath(List<Slot> pathSlots, Spell spell)
-    {
-        if (pathSlots.Count == 0) yield break;
-
-        List<GameObject> clones = new List<GameObject>();
-
-        foreach (Slot slot in pathSlots)
+        if (grid == null)
         {
-            if (slot.CurrentElement != null)
+            grid = FindFirstObjectByType<Grid>();
+            if (grid == null)
             {
-                GameObject clone = CreateClone(slot.CurrentElement);
-                clone.transform.position = GetSlotWorldPosition(slot);
-                clones.Add(clone);
-                activeClones.Add(clone);
+                Debug.LogWarning("Grid reference is null. Assign it in the inspector or call Initialize(grid) before casting spells.");
+            }
+            else
+            {
+                Debug.Log("Grid auto-assigned from scene (FindObjectOfType<Grid>())");
             }
         }
+    }
 
-        if (clones.Count == 0) yield break;
+    private void OnDestroy()
+    {
+        CleanupAllAnimations();
+    }
+
+    public void Initialize(Grid gridController)
+    {
+        grid = gridController;
+    }
+
+    public void OnSpellCast(Vector2Int[] pathPositions, Spell spell, System.Action onComplete = null)
+    {
+        if (pathPositions == null || pathPositions.Length == 0)
+        {
+            onComplete?.Invoke();
+            return;
+        }
+
+        if (spellPathData == null || spellPathData.pathSections.Length == 0)
+        {
+            onComplete?.Invoke();
+            return;
+        }
+
+        if (grid == null)
+        {
+            Debug.LogError("[SpellPathAnimator] Cannot cast spell: Grid reference is null");
+            onComplete?.Invoke();
+            return;
+        }
+
+        StartCoroutine(AnimateSpellPath(pathPositions, spell, onComplete));
+    }
+
+   
+    public void CleanupAllAnimations()
+    {
+        StopAllCoroutines();
+
+        foreach (GameObject clone in activeClones)
+        {
+            if (clone != null)
+            {
+                Destroy(clone);
+            }
+        }
+        activeClones.Clear();
+    }
+
+
+    private IEnumerator AnimateSpellPath(Vector2Int[] pathPositions, Spell spell, System.Action onComplete)
+    {
+        List<GameObject> clones = CreateClones(pathPositions);
+
+        if (clones.Count == 0)
+        {
+            onComplete?.Invoke();
+            yield break;
+        }
 
         for (int i = 0; i < clones.Count; i++)
         {
@@ -66,9 +114,10 @@ public class SpellPathAnimator : MonoBehaviour
         }
 
         activeClones.RemoveAll(obj => obj == null);
+        onComplete?.Invoke();
     }
 
-    IEnumerator AnimateSingleClone(GameObject clone, float startDelay)
+    private IEnumerator AnimateSingleClone(GameObject clone, float startDelay)
     {
         yield return new WaitForSeconds(startDelay);
 
@@ -78,91 +127,173 @@ public class SpellPathAnimator : MonoBehaviour
         {
             List<Transform> waypoints = section.GetProcessedWaypoints();
 
-            if (waypoints.Count == 0) continue;
+            if (waypoints.Count == 0)
+                continue;
 
-            if (section.mode == SpellPathMode.CurvedLinear)
+            switch (section.mode)
             {
-                Vector3[] pathPositions = new Vector3[waypoints.Count];
-                for (int i = 0; i < waypoints.Count; i++)
-                {
-                    pathPositions[i] = waypoints[i].position;
-                }
+                case SpellPathMode.CurvedLinear:
+                    AnimateCurvedPath(animationSequence, clone, waypoints, section);
+                    break;
 
-                animationSequence.Append(
-                    clone.transform.DOPath(
-                        pathPositions,
-                        section.duration,
-                        PathType.CatmullRom
-                    )
-                    .SetEase(section.animCurve)
-                );
+                case SpellPathMode.Loop:
+                    AnimateLoopPath(animationSequence, clone, waypoints, section);
+                    break;
             }
-            else if (section.mode == SpellPathMode.Loop)
+        }
+
+        animationSequence.OnComplete(() => OnCloneAnimationComplete(clone));
+        animationSequence.Play();
+    }
+
+    private void AnimateCurvedPath(Sequence sequence, GameObject clone, List<Transform> waypoints, PathSection section)
+    {
+        Vector3[] pathPositions = new Vector3[waypoints.Count];
+        for (int i = 0; i < waypoints.Count; i++)
+        {
+            pathPositions[i] = waypoints[i].position;
+        }
+
+        sequence.Append(
+            clone.transform.DOPath(
+                pathPositions,
+                section.duration,
+                PathType.CatmullRom
+            )
+            .SetEase(section.animCurve)
+        );
+    }
+
+    private void AnimateLoopPath(Sequence sequence, GameObject clone, List<Transform> waypoints, PathSection section)
+    {
+        if (waypoints.Count >= 2)
+        {
+            // Loop between two points
+            Vector3 startPoint = waypoints[0].position;
+            Vector3 endPoint = waypoints[1].position;
+            Vector3 center = (startPoint + endPoint) / 2f;
+            float radius = Vector3.Distance(startPoint, endPoint) / 2f;
+
+            Vector3 toEnd = endPoint - center;
+            float startAngle = Mathf.Atan2(toEnd.y, toEnd.x);
+
+            Vector3[] circlePoints = CreateCircularPathBetweenPoints(center, radius, startAngle, 8);
+
+            sequence.Append(
+                clone.transform.DOPath(
+                    circlePoints,
+                    section.duration,
+                    PathType.CatmullRom
+                )
+                .SetEase(section.animCurve)
+            );
+        }
+        else if (waypoints.Count == 1)
+        {
+            // Loop around a single point
+            Vector3 center = waypoints[0].position;
+            Vector3[] circlePoints = CreateCircularPath(center, 1.2f, 8);
+
+            sequence.Append(
+                clone.transform.DOPath(
+                    circlePoints,
+                    section.duration,
+                    PathType.CatmullRom
+                )
+                .SetEase(section.animCurve)
+            );
+        }
+    }
+
+    private void OnCloneAnimationComplete(GameObject clone)
+    {
+        // Shake camera
+        if (cameraShake != null)
+        {
+            cameraShake.Shake(0.25f);
+        }
+
+        // Fade out
+        SpriteRenderer sr = clone.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.DOFade(0f, 0.3f).OnComplete(() =>
             {
-                if (waypoints.Count >= 2)
+                if (clone != null)
+                    Destroy(clone);
+            });
+        }
+        else
+        {
+            if (clone != null)
+                Destroy(clone);
+        }
+    }
+
+    private List<GameObject> CreateClones(Vector2Int[] pathPositions)
+    {
+        List<GameObject> clones = new List<GameObject>();
+
+        if (pathPositions == null || pathPositions.Length == 0)
+            return clones;
+
+        if (grid == null)
+        {
+            Debug.LogError("CreateClones called but Grid reference is null. No clones will be created.");
+            return clones;
+        }
+
+        foreach (Vector2Int pos in pathPositions)
+        {
+            Element element = grid.GetElementAt(pos);
+            if (element != null)
+            {
+                GameObject clone = CreateClone(element);
+                if (clone != null)
                 {
-                    Vector3 startPoint = waypoints[0].position;
-                    Vector3 endPoint = waypoints[1].position;
-
-                    Vector3 center = (startPoint + endPoint) / 2f;
-
-                    // radius is half the distance between points
-                    float radius = Vector3.Distance(startPoint, endPoint) / 2f;
-
-                    //Calculate the angle of the line connecting the points
-                    Vector3 toEnd = endPoint - center;
-                    float startAngle = Mathf.Atan2(toEnd.y, toEnd.x);
-
-                    //Create circular path starting from waypoint[0] and ending at waypoint[1]
-                    Vector3[] circlePoints = CreateCircularPathBetweenPoints(center, radius, startAngle, 8);
-
-                    animationSequence.Append(
-                        clone.transform.DOPath(
-                            circlePoints,
-                            section.duration,
-                            PathType.CatmullRom
-                        )
-                        .SetEase(section.animCurve)
-                    );
-                }
-                else if (waypoints.Count == 1)
-                {
-                    Vector3 center = waypoints[0].position;
-                    Vector3[] circlePoints = CreateCircularPath(center, 1.2f, 8);
-
-                    animationSequence.Append(
-                        clone.transform.DOPath(
-                            circlePoints,
-                            section.duration,
-                            PathType.CatmullRom
-                        )
-                        .SetEase(section.animCurve)
-                    );
+                    Vector3 worldPos = GetWorldPosition(pos);
+                    clone.transform.position = worldPos;
+                    clones.Add(clone);
+                    activeClones.Add(clone);
                 }
             }
         }
 
-        animationSequence.OnComplete(() =>
-        {
-            shake.Shake(0.25f);
-
-            SpriteRenderer sr = clone.GetComponent<SpriteRenderer>();
-            if (sr != null)
-            {
-                sr.DOFade(0f, 0.3f).OnComplete(() => {
-                    if (clone != null) Destroy(clone);
-                });
-            }
-            else
-            {
-                if (clone != null) Destroy(clone);
-            }
-        });
-
-        animationSequence.Play();
+        return clones;
     }
 
-    Vector3[] CreateCircularPath(Vector3 center, float radius, int segments)
+    private GameObject CreateClone(Element element)
+    {
+        if (clonePrefab == null)
+            return null;
+
+        GameObject clone = Instantiate(clonePrefab);
+
+        SpriteRenderer renderer = clone.GetComponent<SpriteRenderer>();
+        if (renderer != null && element.Sprite != null)
+        {
+            renderer.sprite = element.Sprite;
+            renderer.color = element.Color;
+        }
+
+        clone.transform.localScale = Vector3.one * elementScale;
+        return clone;
+    }
+
+    private Vector3 GetWorldPosition(Vector2Int gridPosition)
+    {
+        if (grid == null)
+            return Vector3.zero;
+
+        ElementVisual visual = grid.GetElementVisualAt(gridPosition);
+        if (visual != null)
+        {
+            return visual.GetWorldPosition();
+        }
+        return Vector3.zero;
+    }
+
+    private Vector3[] CreateCircularPath(Vector3 center, float radius, int segments)
     {
         Vector3[] points = new Vector3[segments + 1];
 
@@ -177,14 +308,12 @@ public class SpellPathAnimator : MonoBehaviour
         return points;
     }
 
-    Vector3[] CreateCircularPathBetweenPoints(Vector3 center, float radius, float startAngle, int segments)
+    private Vector3[] CreateCircularPathBetweenPoints(Vector3 center, float radius, float startAngle, int segments)
     {
         Vector3[] points = new Vector3[segments + 1];
 
-        // Create a full loop starting from startAngle
         for (int i = 0; i <= segments; i++)
         {
-            // Go full 360 degrees (2pi radians) to complete the loop
             float angle = startAngle + (i * (360f / segments) * Mathf.Deg2Rad);
             float x = center.x + Mathf.Cos(angle) * radius;
             float y = center.y + Mathf.Sin(angle) * radius;
@@ -194,36 +323,7 @@ public class SpellPathAnimator : MonoBehaviour
         return points;
     }
 
-    GameObject CreateClone(Element element)
-    {
-        GameObject clone;
-
-        if (clonePrefab == null) return null;
-
-
-        clone = Instantiate(clonePrefab);
-
-        SpriteRenderer renderer = clone.GetComponent<SpriteRenderer>();
-        if (renderer != null && element.Sprite != null)
-        {
-            renderer.sprite = element.Sprite;
-            renderer.color = element.Color;
-        }
-
-        clone.transform.localScale = Vector3.one * elementScale;
-        return clone;
-    }
-
-    Vector3 GetSlotWorldPosition(Slot slot)
-    {
-        if (slot.Holder != null)
-        {
-            return slot.Holder.transform.position;
-        }
-        return Vector3.zero;
-    }
-
-    float CalculateTotalAnimationDuration()
+    private float CalculateTotalAnimationDuration()
     {
         float total = 0f;
         foreach (PathSection section in spellPathData.pathSections)
@@ -233,22 +333,4 @@ public class SpellPathAnimator : MonoBehaviour
         return total;
     }
 
-    public void CleanupAllAnimations()
-    {
-        StopAllCoroutines();
-
-        foreach (GameObject clone in activeClones)
-        {
-            if (clone != null)
-            {
-                Destroy(clone);
-            }
-        }
-        activeClones.Clear();
-    }
-
-    void OnDestroy()
-    {
-        CleanupAllAnimations();
-    }
 }

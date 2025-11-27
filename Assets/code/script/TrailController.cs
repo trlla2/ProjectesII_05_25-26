@@ -21,7 +21,7 @@ public class TrailController : MonoBehaviour
             needsClear = true; 
         }
 
-        trail.forceRenderingOff = Grid.IsPlayerPathing;
+        trail.forceRenderingOff = Grid.CurrentState != GridStateType.Idle;
     }
 
     void LateUpdate()

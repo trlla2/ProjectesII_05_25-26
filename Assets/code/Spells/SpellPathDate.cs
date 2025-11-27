@@ -1,36 +1,39 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
-public enum SpellPathMode
+[System.Serializable]
+public class SpellPathDate : MonoBehaviour
 {
-    CurvedLinear,
-    Loop
+    public PathSection[] pathSections;
 }
 
 [System.Serializable]
 public class PathSection
 {
-    public SpellPathMode mode = SpellPathMode.CurvedLinear;
+    public SpellPathMode mode;
+    public float duration = 1f;
     public AnimationCurve animCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
-    public float duration = 1.5f;
+    public Transform[] waypoints;
 
-    public List<Transform> waypoints = new List<Transform>();
     public List<Transform> GetProcessedWaypoints()
     {
-        List<Transform> processed = new List<Transform>(waypoints);
+        List<Transform> processed = new List<Transform>();
 
-        if (mode == SpellPathMode.Loop && processed.Count >= 2)
+        if (waypoints != null)
         {
-            //Si es Loop solo hay 1 waypoint
-            processed.Add(processed[0]);
+            foreach (Transform t in waypoints)
+            {
+                if (t != null)
+                    processed.Add(t);
+            }
         }
 
         return processed;
     }
 }
 
-public class SpellPathDate : MonoBehaviour
+public enum SpellPathMode
 {
-    public PathSection[] pathSections;
+    CurvedLinear,
+    Loop
 }

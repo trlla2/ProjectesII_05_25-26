@@ -122,7 +122,9 @@ public class ElementVisual : MonoBehaviour
         }
 
         if (blinkSprite != null)
+        {
             blinkSprite.gameObject.SetActive(false);
+        }
     }
 
     public void PlayDeletionEffect()

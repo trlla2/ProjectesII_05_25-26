@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
 
@@ -227,20 +228,21 @@ public class PlayerPathing : MonoBehaviour
         Debug.Log($"PlayerPathing: Casting spell - {spell.Name}");
 
         Vector2Int[] positions = pathData.Positions;
+        List<Vector2Int> posList = new List<Vector2Int>(positions);
 
         if (spellPathAnimator != null)
         {
-            spellPathAnimator.OnSpellCast(positions, spell, () =>
+            spellPathAnimator.OnSpellCast(positions, spell.Recipe, () =>
             {
                 CompleteSpellExecution(spell, positions);
             });
-            List<Vector2Int> posList = new List<Vector2Int>(positions);
 
             grid.InstantVisualEmpty(posList);
         }
         else
         {
             CompleteSpellExecution(spell, positions);
+            grid.InstantVisualEmpty(posList);
         }
     }
 

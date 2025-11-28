@@ -49,6 +49,7 @@ public class GameManager : MonoBehaviour
     { 
         enemyInCombat = enemyRef; 
         enemyInCombat.SetEnemyType(enemyTypes[Random.Range(0, enemyTypes.Count)]);
+        enemyInCombat?.InitBatle();
         Debug.Log("enemyInCombat assinged"); 
     }
     public void DeleteEnemyRef() {  enemyInCombat = null; }

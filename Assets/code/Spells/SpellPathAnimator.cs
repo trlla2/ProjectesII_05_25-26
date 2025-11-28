@@ -47,7 +47,7 @@ public class SpellPathAnimator : MonoBehaviour
         grid = gridController;
     }
 
-    public void OnSpellCast(Vector2Int[] pathPositions, Spell spell, System.Action onComplete = null)
+    public void OnSpellCast(Vector2Int[] pathPositions, List<Element> elements, System.Action onComplete = null)
     {
         if (pathPositions == null || pathPositions.Length == 0)
         {
@@ -68,7 +68,7 @@ public class SpellPathAnimator : MonoBehaviour
             return;
         }
 
-        StartCoroutine(AnimateSpellPath(pathPositions, spell, onComplete));
+        StartCoroutine(AnimateSpellPath(pathPositions, elements, onComplete));
     }
 
    
@@ -87,9 +87,9 @@ public class SpellPathAnimator : MonoBehaviour
     }
 
 
-    private IEnumerator AnimateSpellPath(Vector2Int[] pathPositions, Spell spell, System.Action onComplete)
+    private IEnumerator AnimateSpellPath(Vector2Int[] pathPositions, List<Element> elements, System.Action onComplete)
     {
-        List<GameObject> clones = CreateClones(pathPositions);
+        List<GameObject> clones = CreateClones(pathPositions, elements);
 
         if (clones.Count == 0)
         {
@@ -230,7 +230,9 @@ public class SpellPathAnimator : MonoBehaviour
         }
     }
 
-    private List<GameObject> CreateClones(Vector2Int[] pathPositions)
+    // Updated: accepts optional providedElements which will be used in order for clones;
+    // falls back to grid.GetElementAt(pos) if provided list is null/short.
+    private List<GameObject> CreateClones(Vector2Int[] pathPositions, List<Element> providedElements = null)
     {
         List<GameObject> clones = new List<GameObject>();
 
@@ -243,9 +245,21 @@ public class SpellPathAnimator : MonoBehaviour
             return clones;
         }
 
-        foreach (Vector2Int pos in pathPositions)
+        for (int i = 0; i < pathPositions.Length; i++)
         {
-            Element element = grid.GetElementAt(pos);
+            Vector2Int pos = pathPositions[i];
+
+            Element element = null;
+            if (providedElements != null && i < providedElements.Count)
+            {
+                element = providedElements[i];
+            }
+
+            if (element == null)
+            {
+                element = grid.GetElementAt(pos);
+            }
+
             if (element != null)
             {
                 GameObject clone = CreateClone(element);

@@ -52,7 +52,7 @@ public class RefillState : IGridState
     private Grid grid;
     private VisualGrid visualGrid;
     private bool isRefilling;
-    private float refillDuration = 0.25f;
+    private float refillDuration = 0.15f;
 
     public RefillState(Grid gridController, VisualGrid visual)
     {

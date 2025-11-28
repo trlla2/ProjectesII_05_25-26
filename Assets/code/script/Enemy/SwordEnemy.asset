@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ab529a0c12673a408eb38b86a880060, type: 3}
+  m_Name: SwordEnemy
+  m_EditorClassIdentifier: 
+  health: 100
+  damage: 10
+  fireRate: 7
+  ElementCount: 3
+  weaknesses: 02000000
+  weaknessMultiplier: 0.5
+  resistances: 00000000
+  resistanceMultiplier: 2
+  enemySprite: {fileID: -1402350852106452376, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
+  spellType: 0
+  damagePerElement: 4
+  spellCastDuration: 5

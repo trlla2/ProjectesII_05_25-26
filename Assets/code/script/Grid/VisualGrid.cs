@@ -125,10 +125,6 @@ public class VisualGrid : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Remove/destroy the visual at the given grid position immediately and clear GridData.
-    /// Use this when the element is deleted so visuals are removed before gravity runs.
-    /// </summary>
     public void RemoveVisualAt(Vector2Int gridPosition)
     {
         if (!isInitialized || grid == null || grid.GridData == null)

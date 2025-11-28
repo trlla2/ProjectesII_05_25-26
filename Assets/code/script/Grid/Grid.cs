@@ -15,8 +15,8 @@ public class Grid : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private VisualGrid visualGrid;
-    //[SerializeField] private SpellAnimator spellAnimator;
-
+    [SerializeField] private SpellPathAnimator enemySpellAnimator;
+    
     [Header("Animation Settings")]
     [SerializeField] private AnimationCurve enemyBlinkCurve;
     [SerializeField] private float enemyDeletionDuration = 1f;
@@ -79,7 +79,13 @@ public class Grid : MonoBehaviour
     {
         foreach (Vector2Int pos in positions)
         {
-            gridData.SetElementAt(pos, emptyElement);
+            ElementVisual visual = gridData.GetVisualAt(pos);
+            if (visual.IsTargetedByEnemy)
+            {
+                visual.StopBlinkingAnimation();
+                visual.SetTargetedByEnemy(false);
+            }
+                gridData.SetElementAt(pos, emptyElement);
             visualGrid.GetVisualAt(pos).UpdateVisual(emptyElement);
         }
     }
@@ -97,12 +103,33 @@ public class Grid : MonoBehaviour
 
             // remove visual immediately so it's gone before gravity runs
             if (visualGrid != null)
-                visualGrid.RemoveVisualAt(pos);
+            {
+                ElementVisual visual = gridData.GetVisualAt(pos);
+                if (visual != null)
+                {
+                    // If this visual was targeted by the enemy, stop blinking and clear target
+                    if (visual.IsTargetedByEnemy)
+                    {
+                        print("HERE");
+                        visual.StopBlinkingAnimation();
+                        visual.SetTargetedByEnemy(false);
+                    }
+
+                    visualGrid.RemoveVisualAt(pos);
+                }
+            }
             else
             {
                 ElementVisual visual = gridData.GetVisualAt(pos);
                 if (visual != null)
                 {
+                    //If this visual was targeted by the enemy, stop blinking and 
+                    if (visual.IsTargetedByEnemy)
+                    {
+                        visual.StopBlinkingAnimation();
+                        visual.SetTargetedByEnemy(false);
+                    }
+
                     Destroy(visual.gameObject);
                     gridData.SetVisualAt(pos, null);
                 }
@@ -255,13 +282,11 @@ public class Grid : MonoBehaviour
 
     private IEnumerator EnemyDeletionRoutine(float duration, List<Vector2Int> positions)
     {
-        //Mark elements as not selectable and start blink anim
         foreach (var pos in positions)
         {
             ElementVisual visual = gridData.GetVisualAt(pos);
             if (visual != null)
             {
-                visual.SetSelectable(false);
                 visual.SetTargetedByEnemy(true);
 
                 Element element = gridData.GetElementAt(pos);
@@ -274,53 +299,75 @@ public class Grid : MonoBehaviour
 
         yield return new WaitForSeconds(duration);
 
-        foreach (var pos in positions)
-        {
-            ElementVisual visual = gridData.GetVisualAt(pos);
-            if (visual != null)
-            {
-                visual.StopBlinkingAnimation();
-
-                // spawn deletion effect at visual position before removing the visual
-                visual.PlayDeletionEffect();
-
-                // remove visual immediately so it is no longer visible in the scene
-                if (visualGrid != null)
-                    visualGrid.RemoveVisualAt(pos);
-                else
-                {
-                    Destroy(visual.gameObject);
-                    gridData.SetVisualAt(pos, null);
-                }
-            }
-
-            // mark the logical element as empty
-            gridData.SetElementAt(pos, emptyElement);
-        }
-
-        //Get spell recipe before deleting
+        // Filter out positions where elements were already destroyed by player
+        List<Vector2Int> validPositions = new List<Vector2Int>();
         List<Element> spellElements = new List<Element>();
+
         foreach (var pos in positions)
         {
             Element elem = gridData.GetElementAt(pos);
-            if (elem != null && elem != emptyElement)
+            ElementVisual visual = gridData.GetVisualAt(pos);
+
+            // Only include positions that still have non-empty elements
+            if (elem != null && elem != emptyElement && visual != null)
+            {
+                validPositions.Add(pos);
                 spellElements.Add(elem);
+            }
+            else
+            {
+                // If element was already destroyed, clean up any remaining visual state
+                if (visual != null && visual.IsTargetedByEnemy)
+                {
+                    visual.StopBlinkingAnimation();
+                    visual.SetTargetedByEnemy(false);
+                }
+            }
         }
 
-        /*
-        // Cast spell animation
-        if (spellAnimator != null && spellElements.Count > 0)
+        // Only proceed with deletion if there are valid positions remaining
+        if (validPositions.Count > 0)
         {
-            spellAnimator.CastSpell(spellElements, () =>
+            foreach (var pos in validPositions)
             {
-                // After spell animation, trigger refill
+                ElementVisual visual = gridData.GetVisualAt(pos);
+                if (visual != null)
+                {
+                    visual.StopBlinkingAnimation();
+                    visual.SetTargetedByEnemy(false);
+                    visual.PlayDeletionEffect();
+
+                    if (visualGrid != null)
+                        visualGrid.RemoveVisualAt(pos);
+                    else
+                    {
+                        Destroy(visual.gameObject);
+                        gridData.SetVisualAt(pos, null);
+                    }
+                }
+
+                gridData.SetElementAt(pos, emptyElement);
+            }
+
+            // Pass only valid positions and elements to the animator
+            if (enemySpellAnimator != null && validPositions.Count > 0)
+            {
+                enemySpellAnimator.OnSpellCast(validPositions.ToArray(), spellElements, () =>
+                {
+                    ChangeState(new RefillState(this, visualGrid));
+                });
+            }
+            else
+            {
                 ChangeState(new RefillState(this, visualGrid));
-            });
+            }
         }
         else
-        {*/
+        {
+            Debug.Log("All targeted elements were destroyed by player before enemy spell could cast");
+            //maybe do something special here?
             ChangeState(new RefillState(this, visualGrid));
-        //}
+        }
     }
 
     private IEnumerator BlockElementsRoutine(float duration, List<Vector2Int> positions)

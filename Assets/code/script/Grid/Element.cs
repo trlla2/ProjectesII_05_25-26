@@ -9,6 +9,7 @@ public enum ElementType
     EMPTY
 }
 
+[System.Serializable]
 public struct DamageType
 {
     public ElementType element;

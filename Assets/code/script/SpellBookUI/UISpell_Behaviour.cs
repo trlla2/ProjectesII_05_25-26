@@ -3,9 +3,7 @@ using UnityEngine;
 
 public class UISpell_Behaviour : MonoBehaviour
 {
-    [Header("SETUP")]
-    [SerializeField]
-    private TMP_Text spellName;
+    
     [Header("Recipe")]
     [SerializeField]
     private Transform recipeParent;
@@ -18,6 +16,5 @@ public class UISpell_Behaviour : MonoBehaviour
             GameObject o = Instantiate(element, recipeParent);
             o.GetComponent<UIElement_Behaviour>().SetupElementUI(e);
         }
-        spellName.text = spell.Name;
     }
 }

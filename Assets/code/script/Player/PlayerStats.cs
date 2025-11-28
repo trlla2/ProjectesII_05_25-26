@@ -116,14 +116,14 @@ public class PlayerStats : MonoBehaviour
     {
         money += m;
 
-        OnMoneyChange.Invoke();
+        OnMoneyChange?.Invoke();
 
         experiencePoints += exp;
-        OnEXPChange.Invoke();
+        OnEXPChange?.Invoke();
 
         if (experiencePoints >= GetEXPForNextLevel())
         {
-            OnLevelUp.Invoke();
+            OnLevelUp?.Invoke();
         }
     }
 
@@ -146,12 +146,12 @@ public class PlayerStats : MonoBehaviour
         if (hp + health <= maxHp)
         {
             Mathf.Clamp(hp += health, 0, maxHp);
-            OnHitRecived.Invoke(hp);
+            OnHitRecived?.Invoke(hp);
         }
         else
         {
             hp = maxHp;
-            OnHitRecived.Invoke(hp);
+            OnHitRecived?.Invoke(hp);
         }
     }
 
@@ -160,7 +160,7 @@ public class PlayerStats : MonoBehaviour
         if (money >= amount)
         {
             money = money - amount;
-            OnMoneyChange.Invoke();
+            OnMoneyChange?.Invoke();
             return true;
         }
         return false;

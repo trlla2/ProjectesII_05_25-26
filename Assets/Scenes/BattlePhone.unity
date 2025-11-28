@@ -5519,37 +5519,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 751e908ea896db843878f3ce3c8d76bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotPrefab: {fileID: 5074324612046381537, guid: 728fae653c737824c92ab724d73cffd2, type: 3}
-  XDistanceBetween: 1.2
-  YDistanceBetween: 1.2
-  waitTime: 8
-  scrollDuration: 1
-  columnScrollDelay: 0.1
-  scrollCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: -0.72948337
-      outSlope: -0.72948337
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.1958334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: -1.7142857
-      outSlope: -1.7142857
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.06666666
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  gravityCurve:
+  availableElements:
+  - {fileID: 11400000, guid: 8fd29fd89e0e2fc418ab8a117cefbbd4, type: 2}
+  - {fileID: 11400000, guid: 4be4989cbc43a4648915c11c96e324e5, type: 2}
+  - {fileID: 11400000, guid: 02288df98d810c14a8b97ec86fb6b86f, type: 2}
+  - {fileID: 11400000, guid: 1ab200a2191b3a645a4c64114d4fc11a, type: 2}
+  emptyElement: {fileID: 11400000, guid: 47f6aa33896c7cb63acb02ad374358fa, type: 2}
+  availableSpells:
+  - {fileID: 11400000, guid: d65283c45b7504446948b1b821bc9cb0, type: 2}
+  - {fileID: 11400000, guid: e9afe958fcdfa78458bbde73be344e18, type: 2}
+  - {fileID: 11400000, guid: e02a4c0454b986845a065ad209d800cd, type: 2}
+  - {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
+  visualGrid: {fileID: 2040530735}
+  enemyBlinkCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
@@ -5564,8 +5546,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 2
-      outSlope: 2
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
@@ -5573,31 +5555,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  gravityDuration: 0.05
-  emptyElement: {fileID: 11400000, guid: 47f6aa33896c7cb63acb02ad374358fa, type: 2}
-  availableelements:
-  - {fileID: 11400000, guid: 4be4989cbc43a4648915c11c96e324e5, type: 2}
-  - {fileID: 11400000, guid: 8fd29fd89e0e2fc418ab8a117cefbbd4, type: 2}
-  - {fileID: 11400000, guid: 02288df98d810c14a8b97ec86fb6b86f, type: 2}
-  - {fileID: 11400000, guid: 1ab200a2191b3a645a4c64114d4fc11a, type: 2}
-  columGridSFX: {fileID: 190367788}
-  minScrollSFXPitch: 0.95
-  maxScrollSFXPitch: 1.1
-  columClips:
-  - {fileID: 8300000, guid: e6a3413c91047764f8e9f3d3ccad8864, type: 3}
-  - {fileID: 8300000, guid: b73339de466336b468a673df0795cf7c, type: 3}
-  - {fileID: 8300000, guid: 7381a9465fbe5734083ba3a5317ff48e, type: 3}
-  - {fileID: 8300000, guid: 9a98fe8c42ef39a43b49a26b9af02d08, type: 3}
-  - {fileID: 8300000, guid: f5db434c751d0224e838da6172acd102, type: 3}
-  - {fileID: 8300000, guid: 42c19c6493c2e984e8c48d2a358bdf09, type: 3}
-  - {fileID: 8300000, guid: e69293ec51014bb4c836b0b92581177d, type: 3}
-  GravityClips:
-  - {fileID: 8300000, guid: 318c919019ca39c43a19aa939847446c, type: 3}
-  - {fileID: 8300000, guid: b9840215613bf97469ee8866b6532e41, type: 3}
-  GravitySource: {fileID: 190367789}
-  pathing: {fileID: 1766485013}
-  isScrolling: 0
-  IsPlayerPathing: 0
+  enemyDeletionDuration: 1
+  blockDuration: 1
 --- !u!224 &190367787
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6002,6 +5961,7 @@ MonoBehaviour:
   movementEase: 20
   clonePrefab: {fileID: 823688408045220818, guid: 4708e3ebd8788b04783c1300cda193eb, type: 3}
   spellPathData: {fileID: 244508974}
+  grid: {fileID: 0}
 --- !u!114 &244508974
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6016,6 +5976,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pathSections:
   - mode: 0
+    duration: 0.4
     animCurve:
       serializedVersion: 2
       m_Curve:
@@ -6040,10 +6001,10 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    duration: 0.4
     waypoints:
     - {fileID: 718497210}
   - mode: 1
+    duration: 0.25
     animCurve:
       serializedVersion: 2
       m_Curve:
@@ -6068,11 +6029,11 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    duration: 0.25
     waypoints:
     - {fileID: 1607689154}
     - {fileID: 1811031083}
   - mode: 0
+    duration: 0.4
     animCurve:
       serializedVersion: 2
       m_Curve:
@@ -6097,7 +6058,6 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    duration: 0.4
     waypoints:
     - {fileID: 1246770901}
 --- !u!4 &244508975
@@ -11660,7 +11620,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!212 &379435940
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -11745,9 +11705,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grid: {fileID: 190367786}
-  times: 4
-  cost: 4
   pullSound: {fileID: 379435944}
+  cost: 4
+  scrollTimes: 3
 --- !u!61 &379435943
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -21958,17 +21918,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1766485013 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8454210317645414146, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
-  m_PrefabInstance: {fileID: 210622971475663879}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c288a4207b73d184c91d015fc76ca054, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1776343806
 GameObject:
   m_ObjectHideFlags: 0
@@ -23206,6 +23155,149 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2018683238}
   m_CullTransparentMesh: 1
+--- !u!1 &2040530734
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2040530736}
+  - component: {fileID: 2040530735}
+  m_Layer: 0
+  m_Name: VisualGrid
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2040530735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2040530734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2015e2e7706cfa4b9763b322af1ada5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gravityRefillCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  swapCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  scrollCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  fillEmptyCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  elementVisualPrefab: {fileID: 5074324612046381537, guid: 728fae653c737824c92ab724d73cffd2, type: 3}
+  isInitialized: 0
+  startPosition: {x: 0, y: 0, z: 0}
+--- !u!4 &2040530736
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2040530734}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.5, y: -2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2041891010
 GameObject:
   m_ObjectHideFlags: 0
@@ -23770,6 +23862,10 @@ PrefabInstance:
       propertyPath: spellAnimator
       value: 
       objectReference: {fileID: 244508973}
+    - target: {fileID: 8454210317645414146, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
+      propertyPath: spellPathAnimator
+      value: 
+      objectReference: {fileID: 244508973}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 2831610121371997470, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
@@ -23971,3 +24067,4 @@ SceneRoots:
   - {fileID: 1607689154}
   - {fileID: 1811031083}
   - {fileID: 1246770901}
+  - {fileID: 2040530736}

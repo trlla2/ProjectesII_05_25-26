@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 [RequireComponent(typeof(LineRenderer))]
 public class PlayerPathing : MonoBehaviour
@@ -104,6 +106,8 @@ public class PlayerPathing : MonoBehaviour
 
     private void HandleInput()
     {
+        if (grid.CurrentState != GridStateType.Idle) return;
+
         if (inputHandler.IsPathingInputDown())
         {
             BeginPathing();
@@ -223,6 +227,9 @@ public class PlayerPathing : MonoBehaviour
         Debug.Log($"PlayerPathing: Casting spell - {spell.Name}");
 
         Vector2Int[] positions = pathData.Positions;
+        List<Vector2Int> posList = new List<Vector2Int>(positions);
+
+        grid.InstantVisualEmpty(posList);
 
         if (spellPathAnimator != null)
         {

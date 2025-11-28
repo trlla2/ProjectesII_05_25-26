@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class GridGravity
 {
@@ -26,24 +27,46 @@ public class GridGravity
 
     private void ProcessColumn(int columnIndex, List<Vector2Int> movedPositions)
     {
-        for (int row = 0; row < gridData.GridSize - 1; row++)
+        int gridSize = gridData.GridSize;
+
+        //Buscar la fila más baja donde haya un elemento targeted
+        int blockedRow = -1;
+        for (int row = 0; row < gridSize; row++)
+        {
+            Vector2Int pos = new Vector2Int(columnIndex, row);
+            ElementVisual e = gridData.GetVisualAt(pos);
+
+            if (e != null && e.IsTargetedByEnemy)
+            {
+                blockedRow = row;
+                break;
+            }
+        }
+
+        //Procesar gravedad SOLO por encima de blockedRow (o toda la columna si blockedRow = -1)
+        int maxProcessRow = (blockedRow == -1) ? gridSize - 1 : blockedRow - 1;
+
+        for (int row = 0; row < maxProcessRow; row++)
         {
             Vector2Int currentPos = new Vector2Int(columnIndex, row);
             Element currentElement = gridData.GetElementAt(currentPos);
 
             if (currentElement == emptyElement || currentElement == null)
             {
-                //Look for filed element above
-                for (int aboveRow = row + 1; aboveRow < gridData.GridSize; aboveRow++)
+                //Buscar elemento que pueda caer
+                for (int aboveRow = row + 1; aboveRow <= maxProcessRow; aboveRow++)
                 {
                     Vector2Int abovePos = new Vector2Int(columnIndex, aboveRow);
                     Element aboveElement = gridData.GetElementAt(abovePos);
-
-                    if (aboveElement != emptyElement && aboveElement != null)
+                    ElementVisual aboveElementVisual = gridData.GetVisualAt(abovePos);
+                    //No pueden caer elementos targeted
+                    if (aboveElement != null && aboveElement != emptyElement && !aboveElementVisual.IsTargetedByEnemy)
                     {
+                        // SWAP lógico
                         gridData.SetElementAt(currentPos, aboveElement);
                         gridData.SetElementAt(abovePos, emptyElement);
 
+                        // SWAP visual
                         ElementVisual currentVisual = gridData.GetVisualAt(currentPos);
                         ElementVisual aboveVisual = gridData.GetVisualAt(abovePos);
 
@@ -60,4 +83,5 @@ public class GridGravity
             }
         }
     }
+
 }

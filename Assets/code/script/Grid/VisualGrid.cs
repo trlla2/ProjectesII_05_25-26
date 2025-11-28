@@ -16,7 +16,7 @@ public class VisualGrid : MonoBehaviour
     public bool isInitialized = false;
     private float xSpacing = 1.1f;
     private float ySpacing = 1.1f;
-    private Vector3 startPosition;
+    public Vector3 startPosition;
     private void Awake()
     {
         startPosition = transform.position;
@@ -28,11 +28,6 @@ public class VisualGrid : MonoBehaviour
         isInitialized = true;
 
         CreateAllVisuals();
-    }
-
-    public void PlayStartGravityAnimation(float duration)
-    {
-        StartCoroutine(StartGravityRoutine(duration));
     }
 
     public void FillEmpty(List<Vector2Int> positions, float duration)
@@ -130,6 +125,23 @@ public class VisualGrid : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Remove/destroy the visual at the given grid position immediately and clear GridData.
+    /// Use this when the element is deleted so visuals are removed before gravity runs.
+    /// </summary>
+    public void RemoveVisualAt(Vector2Int gridPosition)
+    {
+        if (!isInitialized || grid == null || grid.GridData == null)
+            return;
+
+        ElementVisual visual = grid.GridData.GetVisualAt(gridPosition);
+        if (visual != null)
+        {
+            Destroy(visual.gameObject);
+            grid.GridData.SetVisualAt(gridPosition, null);
+        }
+    }
+
     
     public void UpdateAnchorsForPositions(List<Vector2Int> positions)
     {
@@ -167,58 +179,7 @@ public class VisualGrid : MonoBehaviour
         }
     }
 
-    private IEnumerator StartGravityRoutine(float duration)
-    {
-        Dictionary<ElementVisual, Vector3> startPositions = new Dictionary<ElementVisual, Vector3>();
-        Dictionary<ElementVisual, Vector3> targetPositions = new Dictionary<ElementVisual, Vector3>();
 
-        for (int x = 0; x < grid.GridData.GridSize; x++)
-        {
-            for (int y = 0; y < grid.GridData.GridSize; y++)
-            {
-                Vector2Int pos = new Vector2Int(x, y);
-                ElementVisual visual = grid.GridData.GetVisualAt(pos);
-
-                if (visual != null)
-                {
-                    Vector3 targetPos = GridToWorldPosition(pos);
-                    Vector3 startPos = targetPos + new Vector3(0, (grid.GridData.GridSize + 1) * ySpacing, 0);
-
-                    startPositions[visual] = startPos;
-                    targetPositions[visual] = targetPos;
-
-                    // Move only the sprite renderers to the start position; the anchor remains fixed.
-                    visual.SetWorldPosition(startPos);
-                }
-            }
-        }
-
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = gravityRefillCurve.Evaluate(elapsed / duration);
-
-            foreach (var kvp in startPositions)
-            {
-                ElementVisual visual = kvp.Key;
-                if (visual != null)
-                {
-                    Vector3 newPos = Vector3.Lerp(startPositions[visual], targetPositions[visual], t);
-                    visual.SetWorldPosition(newPos);
-                }
-            }
-
-            yield return null;
-        }
-
-        //snap final positions (sprite renderers)
-        foreach (var kvp in targetPositions)
-        {
-            if (kvp.Key != null)
-                kvp.Key.SetWorldPosition(kvp.Value);
-        }
-    }
 
     private IEnumerator FillEmptyRoutine(List<Vector2Int> positions, float duration)
     {
@@ -264,7 +225,6 @@ public class VisualGrid : MonoBehaviour
             yield return null;
         }
 
-        //Snap to final scale
         foreach (var kvp in startScales)
         {
             if (kvp.Key != null)
@@ -300,6 +260,76 @@ public class VisualGrid : MonoBehaviour
 
         visualA.SetWorldPosition(targetPosA);
         visualB.SetWorldPosition(targetPosB);
+    }
+
+    /// Animate visuals that have been moved by gravity.
+    /// movedPositions should contain the target grid positions (where visuals now logically reside).
+    /// This will animate sprite renderers from their current world positions to the new anchors, then update anchors.
+    public IEnumerator AnimateGravity(List<Vector2Int> movedPositions, float duration)
+    {
+        yield return StartCoroutine(GravityRoutine(movedPositions, duration));
+    }
+
+    private IEnumerator GravityRoutine(List<Vector2Int> movedPositions, float duration)
+    {
+        if (!isInitialized || grid == null || grid.GridData == null || movedPositions == null || movedPositions.Count == 0)
+            yield break;
+
+        // Prepare list of visuals and start/target positions
+        var items = new List<(ElementVisual visual, Vector3 start, Vector3 target, Vector2Int targetGridPos)>(movedPositions.Count);
+
+        foreach (var pos in movedPositions)
+        {
+            if (!grid.GridData.IsPositionValid(pos))
+                continue;
+
+            ElementVisual visual = grid.GridData.GetVisualAt(pos);
+            if (visual == null)
+                continue;
+
+            // current sprite world pos (before animation)
+            Vector3 startWorld = visual.GetWorldPosition();
+
+            // where the anchor should end up (logical target)
+            Vector3 targetWorld = GridToWorldPosition(pos);
+
+            // visual.GridPosition already updated by gravity logic; store pos to re-initialize later to be safe
+            items.Add((visual, startWorld, targetWorld, pos));
+        }
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = gravityRefillCurve.Evaluate(Mathf.Clamp01(elapsed / duration));
+
+            foreach (var item in items)
+            {
+                if (item.visual != null)
+                    item.visual.SetWorldPosition(Vector3.Lerp(item.start, item.target, t));
+            }
+
+            yield return null;
+        }
+
+        // Finalize: snap sprites to targets and update anchors/sprite transforms
+        foreach (var item in items)
+        {
+            if (item.visual == null)
+                continue;
+
+            item.visual.SetWorldPosition(item.target);
+
+            // move anchor to new grid position and reset sprite transform
+            item.visual.transform.position = item.target;
+
+            // ensure initialization with correct grid pos & element
+            Element element = grid.GridData.GetElementAt(item.targetGridPos);
+            item.visual.Initialize(item.targetGridPos, element);
+
+            item.visual.ResetSpriteTransform();
+            item.visual.SetWorldPosition(item.target);
+        }
     }
 
     private IEnumerator RefillRoutine(float duration)

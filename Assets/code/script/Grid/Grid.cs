@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
+using static UnityEditor.PlayerSettings;
 
 public class Grid : MonoBehaviour
 {
@@ -72,6 +74,15 @@ public class Grid : MonoBehaviour
         gridData.SwapElements(posA, posB);
         visualGrid.Swap(posA, posB, 0.3f);
     }
+    
+    public void InstantVisualEmpty(List<Vector2Int> positions)
+    {
+        foreach (Vector2Int pos in positions)
+        {
+            gridData.SetElementAt(pos, emptyElement);
+            visualGrid.GetVisualAt(pos).UpdateVisual(emptyElement);
+        }
+    }
 
     public void DeleteElementsByPlayer(List<Vector2Int> positions)
     {
@@ -80,12 +91,21 @@ public class Grid : MonoBehaviour
 
         foreach (var pos in positions)
         {
+            // mark logical element as empty immediately
             gridData.SetElementAt(pos, emptyElement);
+            visualGrid.GetVisualAt(pos).UpdateVisual(emptyElement);
 
-            ElementVisual visual = gridData.GetVisualAt(pos);
-            if (visual != null)
+            // remove visual immediately so it's gone before gravity runs
+            if (visualGrid != null)
+                visualGrid.RemoveVisualAt(pos);
+            else
             {
-                visual.UpdateVisual(emptyElement);
+                ElementVisual visual = gridData.GetVisualAt(pos);
+                if (visual != null)
+                {
+                    Destroy(visual.gameObject);
+                    gridData.SetVisualAt(pos, null);
+                }
             }
         }
 
@@ -260,13 +280,22 @@ public class Grid : MonoBehaviour
             if (visual != null)
             {
                 visual.StopBlinkingAnimation();
+
+                // spawn deletion effect at visual position before removing the visual
                 visual.PlayDeletionEffect();
-                visual.SetTargetedByEnemy(false);
-                visual.SetSelectable(true);
+
+                // remove visual immediately so it is no longer visible in the scene
+                if (visualGrid != null)
+                    visualGrid.RemoveVisualAt(pos);
+                else
+                {
+                    Destroy(visual.gameObject);
+                    gridData.SetVisualAt(pos, null);
+                }
             }
 
+            // mark the logical element as empty
             gridData.SetElementAt(pos, emptyElement);
-            visual.UpdateVisual(emptyElement);
         }
 
         //Get spell recipe before deleting

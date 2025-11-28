@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
+using Unity.VisualScripting.FullSerializer;
 public enum GridStateType
 {
     Initialize,
@@ -85,17 +86,40 @@ public class RefillState : IGridState
 
     private void PerformRefill()
     {
+        //Apply gravity and get positions that moved (logical swap already updates gridData visuals)
         List<Vector2Int> movedPositions = grid.GravityHandler.ApplyGravity();
 
-        //Get empty positions after gravity
+        // Run the refill sequence as a coroutine so we can wait for gravity animation to finish
+        grid.StartCoroutine(RefillSequence(movedPositions, refillDuration));
+    }
+
+    private IEnumerator RefillSequence(List<Vector2Int> movedPositions, float gravityDuration)
+    {
+        // Animate gravity and wait until it finishes
+        if (visualGrid != null && movedPositions != null && movedPositions.Count > 0)
+        {
+            yield return grid.StartCoroutine(visualGrid.AnimateGravity(movedPositions, gravityDuration));
+        }
+
+        // After gravity animation completes, find empty slots and spawn new elements
         List<Vector2Int> emptyPositions = GetEmptyPositions();
 
         if (emptyPositions.Count > 0)
         {
+            //Fill empty slots with new elements
             grid.FillEmptySlots(grid.AvailableElements);
 
-            visualGrid.Refill(refillDuration);
+            //Ensure visuals exist for newly spawned elements
+            foreach (var pos in emptyPositions)
+            {
+                Element element = grid.GridData.GetElementAt(pos);
+                if (element != null && element != grid.EmptyElement)
+                {
+                    visualGrid.EnsureVisualAt(pos, element);
+                }
+            }
 
+            // Disable selection during animation
             foreach (var pos in emptyPositions)
             {
                 ElementVisual visual = grid.GridData.GetVisualAt(pos);
@@ -103,8 +127,12 @@ public class RefillState : IGridState
                     visual.SetSelectable(false);
             }
 
-            // Schedule completion
-            grid.StartCoroutine(CompleteRefillAfterDelay(refillDuration));
+            // Play the refill (scale-in) animation and then finalize
+            visualGrid.Refill(refillDuration);
+
+            // Wait for fill animation to complete then finalize (CompleteRefillAfterDelay will set isRefilling=false)
+            yield return new WaitForSeconds(refillDuration);
+            yield return grid.StartCoroutine(CompleteRefillAfterDelay(0f));
         }
         else
         {
@@ -137,13 +165,31 @@ public class RefillState : IGridState
     {
         yield return new WaitForSeconds(delay);
 
+        //After animation completes, ensure ALL visuals are properly 
         for (int x = 0; x < grid.GridData.GridSize; x++)
         {
             for (int y = 0; y < grid.GridData.GridSize; y++)
             {
-                ElementVisual visual = grid.GridData.GetVisualAt(new Vector2Int(x, y));
+                Vector2Int pos = new Vector2Int(x, y);
+                ElementVisual visual = grid.GridData.GetVisualAt(pos);
+
                 if (visual != null)
+                {
+                    //Reset anchor
+                    visual.transform.position = visualGrid.GridToWorldPosition(pos);
+
+                    //Reset sprite transform
+                    visual.ResetSpriteTransform();
+                    Debug.Log(visualGrid.GridToWorldPosition(pos));
+                    visual.SetWorldPosition(visualGrid.GridToWorldPosition(pos));
+
+                    //Re-initialize to ensure grid position
+                    Element element = grid.GridData.GetElementAt(pos);
+                    visual.Initialize(pos, element);
+
+                    //Re-enable selection
                     visual.SetSelectable(true);
+                }
             }
         }
 

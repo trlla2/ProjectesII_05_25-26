@@ -54,7 +54,7 @@ public class EndPanelBehaviour : MonoBehaviour
     public void UnloadBatle()
     {
         winTranslator.ToOrigin();
-        SceneTransition.Instance.UnloadScene("TestRoma");
+        SceneTransition.Instance.UnloadScene("BattlePhone");
         
     }
 

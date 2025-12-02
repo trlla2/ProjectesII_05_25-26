@@ -32,7 +32,6 @@ public class TranslatorUI : MonoBehaviour
         rectTransform = GetComponent<RectTransform>();
 
         originPosition = rectTransform.anchoredPosition;
-        Debug.Log(gameObject.name + "Origin Position: " + rectTransform.anchoredPosition);
         originScale = rectTransform.localScale;
         originRotation = rectTransform.localEulerAngles;
     }

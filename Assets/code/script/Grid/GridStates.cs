@@ -180,7 +180,6 @@ public class RefillState : IGridState
 
                     //Reset sprite transform
                     visual.ResetSpriteTransform();
-                    Debug.Log(visualGrid.GridToWorldPosition(pos));
                     visual.SetWorldPosition(visualGrid.GridToWorldPosition(pos));
 
                     //Re-initialize to ensure grid position

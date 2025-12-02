@@ -1,9 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 [RequireComponent(typeof(LineRenderer))]
 public class PlayerPathing : MonoBehaviour
@@ -30,8 +27,6 @@ public class PlayerPathing : MonoBehaviour
 
     private bool isPathing = false;
     private bool canPath = true;
-
-    public event System.Action<Spell> OnSpellCasted;
 
     private void Awake()
     {

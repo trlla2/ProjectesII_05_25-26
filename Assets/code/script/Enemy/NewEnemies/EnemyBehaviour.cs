@@ -15,11 +15,11 @@ public class EnemyBehaviour : MonoBehaviour
 
     private SpriteRenderer spriteRenderer;
 
-
     private float currentHealth;
-    private float attackTimer = 0f;
     private bool inBattle = false;
     private bool isCastingSpell = false;
+
+    private IEnemySpell activeSpell;
 
     public event System.Action<float> OnHealthChanged;
     public event System.Action<List<DamageType>> OnDamageReceived;
@@ -45,8 +45,6 @@ public class EnemyBehaviour : MonoBehaviour
     private void Start()
     {
         InitializeEnemy();
-
-        // Register with GameManager if it exists
         if (GameManager.Instance != null)
         {
             GameManager.Instance.SetEnemyRef(this);
@@ -55,7 +53,7 @@ public class EnemyBehaviour : MonoBehaviour
 
     private void OnDestroy()
     {
-        StopAllCoroutines();
+        StopBattle();
     }
 
     private void InitializeEnemy()
@@ -68,7 +66,6 @@ public class EnemyBehaviour : MonoBehaviour
 
         spriteRenderer.sprite = enemyType.EnemySprite;
         currentHealth = enemyType.Health;
-        attackTimer = 0f;
     }
 
     public void SetEnemyType(EnemyType newType)
@@ -83,51 +80,65 @@ public class EnemyBehaviour : MonoBehaviour
             return;
 
         inBattle = true;
-        StartCoroutine(BattleRoutine());
+
+        //Start by targeting
+        CreateAndExecuteSpell();
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnPlayerMove += HandlePlayerMove;
     }
 
     public void StopBattle()
     {
+        if (!inBattle)
+            return;
+
         inBattle = false;
         isCastingSpell = false;
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnPlayerMove -= HandlePlayerMove;
+
+        if (activeSpell != null && grid != null)
+        {
+            for (int x = 0; x < Grid.GridSize; x++)
+                for (int y = 0; y < Grid.GridSize; y++)
+                {
+                    var pos = new Vector2Int(x, y);
+                    var visual = grid.GetElementVisualAt(pos);
+                    if (visual != null && visual.IsTargetedByEnemy)
+                    {
+                        visual.SetTargetedByEnemy(false);
+                    }
+                }
+        }
+
+        activeSpell = null;
         StopAllCoroutines();
     }
 
-    private IEnumerator BattleRoutine()
+    private void CreateAndExecuteSpell()
     {
-        while (inBattle)
+        if (enemyType == null || grid == null)
+            return;
+
+        activeSpell = enemyType.CreateSpell();
+        if (activeSpell != null)
         {
-            if (!isCastingSpell)
-            {
-                attackTimer += Time.deltaTime;
-                OnAttackTimerChanged?.Invoke(attackTimer);
-                OnAttackTimeChange?.Invoke(attackTimer); // Legacy event
-
-                // Check if ready to cast spell
-                if (attackTimer >= enemyType.FireRate)
-                {
-                    Debug.Log("NOW CASTING");
-                    yield return StartCoroutine(CastSpellRoutine());
-                    attackTimer = 0f;
-                }
-            }
-
-            yield return null;
+            activeSpell.Execute(grid);
+            isCastingSpell = true;
         }
     }
 
-    private IEnumerator CastSpellRoutine()
+    private void HandlePlayerMove()
     {
-        isCastingSpell = true;
+        if (!inBattle || activeSpell == null)
+            return;
 
-        IEnemySpell spell = enemyType.CreateSpell();
-
-        bool spellComplete = false;
-        spell.Execute(grid, () => spellComplete = true);
-
-        yield return new WaitUntil(() => spellComplete);
-
-        isCastingSpell = false;
+        activeSpell.Tick(grid, () =>
+        {
+            isCastingSpell = false;
+            CreateAndExecuteSpell();
+        });
     }
 
     public void TakeDamage(List<DamageType> damageList)
@@ -186,8 +197,6 @@ public class EnemyBehaviour : MonoBehaviour
 
     public float GetCurrentHealth() => currentHealth;
     public float GetMaxHealth() => enemyType.Health;
-    public float GetFireRate() => enemyType.FireRate;
-    public float GetAttackTimer() => attackTimer;
     public bool IsInBattle() => inBattle;
     public bool IsCastingSpell() => isCastingSpell;
     public EnemyType GetEnemyType() => enemyType;

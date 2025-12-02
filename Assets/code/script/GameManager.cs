@@ -17,10 +17,12 @@ public class GameManager : MonoBehaviour
     public delegate void GetOnEndBattle(bool isWin, int exp, int money);
     public event GetOnEndBattle OnEndBattle;
 
+    public event System.Action OnPlayerMove;
+
     private int expMultiplyer = 4;
     private int moneyMultiplyer = 4;
 
-    
+
 
     private void Awake()
     {
@@ -37,6 +39,14 @@ public class GameManager : MonoBehaviour
     public void AttackEnemy(List<DamageType> damageList)
     {
         enemyInCombat?.DealDamage(damageList);
+
+        OnPlayerMove?.Invoke();
+    }
+
+    //future use? Mb if the player misses a spell
+    public void NotifyPlayerMove()
+    {
+        OnPlayerMove?.Invoke();
     }
 
     public void AttackPlayer(float damage)

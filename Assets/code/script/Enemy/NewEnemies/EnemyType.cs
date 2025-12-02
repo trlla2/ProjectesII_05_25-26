@@ -7,7 +7,6 @@ public class EnemyType : ScriptableObject
     [Header("Basic Stats")]
     [SerializeField] private float health = 100f;
     [SerializeField] private float damage = 10f;
-    [SerializeField] private float fireRate = 3f;
     [SerializeField] private int ElementCount = 3;
 
     [Header("Elemental Properties")]
@@ -22,16 +21,16 @@ public class EnemyType : ScriptableObject
     [Header("Spell Behavior")]
     [SerializeField] private EnemySpellType spellType = EnemySpellType.ColumnDestroy;
     [SerializeField] private float damagePerElement = 4f;
-    [SerializeField] private float spellCastDuration = 1.5f;
+    [SerializeField] private int moveCount = 2; // number of player moves until spell triggers
 
     public float Health => health;
     public float Damage => damage;
-    public float FireRate => fireRate;
     public Sprite EnemySprite => enemySprite;
     public List<ElementType> Weaknesses => new List<ElementType>(weaknesses);
     public EnemySpellType SpellType => spellType;
     public float DamagePerElement => damagePerElement;
-    public float SpellCastDuration => spellCastDuration;
+    public int MoveCount => moveCount;
+
     public float CalculateDamageTaken(ElementType elementType, float baseDamage)
     {
         if (weaknesses.Contains(elementType))
@@ -58,13 +57,13 @@ public class EnemyType : ScriptableObject
         switch (spellType)
         {
             case EnemySpellType.ColumnDestroy:
-                return new ColumnDestroySpell(damagePerElement, spellCastDuration);
+                return new ColumnDestroySpell(damagePerElement, moveCount);
 
             case EnemySpellType.RandomDestroy:
-                return new RandomDestroySpell(ElementCount, damagePerElement, spellCastDuration);
+                return new RandomDestroySpell(ElementCount, damagePerElement, moveCount);
 
             default:
-                return new ColumnDestroySpell(damagePerElement, spellCastDuration);
+                return new ColumnDestroySpell(damagePerElement, moveCount);
         }
     }
 }

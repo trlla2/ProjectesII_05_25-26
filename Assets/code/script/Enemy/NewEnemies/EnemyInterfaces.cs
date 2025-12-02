@@ -1,111 +1,75 @@
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public interface IEnemySpell
 {
-    void Execute(Grid grid, System.Action onComplete = null);
-    float GetCastDuration();
+    void Execute(Grid grid);
+    ///Tick once per player move. if max moves reached, apply effect.
+    void Tick(Grid grid, System.Action onComplete = null);
+    int RemainingMoves { get; }
     string GetSpellName();
 }
 
 public abstract class EnemySpellBase : IEnemySpell
 {
-    protected float castDuration;
+    protected int remainingMoves;
+    protected int initialMoves;
     protected string spellName;
+    protected float damagePerElement;
+    protected List<Vector2Int> targetedPositions = new List<Vector2Int>();
 
-    public float GetCastDuration() => castDuration;
+    public int RemainingMoves => remainingMoves;
     public string GetSpellName() => spellName;
 
-    public abstract void Execute(Grid grid, System.Action onComplete = null);
-}
+    public abstract void Execute(Grid grid);
 
-public class ColumnDestroySpell : EnemySpellBase
-{
-    private float damagePerElement;
-    private int columnIndex;
-
-    public ColumnDestroySpell(float damage = 4f, float duration = 1.5f, int column = -1)
+    public virtual void Tick(Grid grid, System.Action onComplete = null)
     {
-        damagePerElement = damage;
-        castDuration = duration;
-        columnIndex = column;
-        spellName = "Column Destroy";
-    }
-
-    public override void Execute(Grid grid, System.Action onComplete = null)
-    {
-        if (grid == null)
+        if (grid != null)
         {
-            onComplete?.Invoke();
-            return;
-        }
-
-        // Select a random column if not specified
-        int targetColumn = columnIndex >= 0 ? columnIndex : Random.Range(0, Grid.GridSize);
-
-        // Get all positions in the column
-        List<Vector2Int> positions = GetColumnPositions(targetColumn, grid);
-
-        if (positions.Count == 0)
-        {
-            onComplete?.Invoke();
-            return;
-        }
-
-        // Start the blinking anim (grid will mark visuals as targeted)
-        grid.StartDeleteElementsByEnemies(castDuration, positions);
-
-        // Invoke completion callback after duration and apply damage only for elements still targeted
-        if (onComplete != null)
-        {
-            grid.StartCoroutine(InvokeAfterDelay(castDuration, grid, positions, onComplete));
-        }
-        else
-        {
-            grid.StartCoroutine(InvokeAfterDelay(castDuration, grid, positions, null));
-        }
-    }
-
-    private List<Vector2Int> GetColumnPositions(int column, Grid grid)
-    {
-        List<Vector2Int> positions = new List<Vector2Int>();
-
-        for (int row = 0; row < Grid.GridSize; row++)
-        {
-            Vector2Int pos = new Vector2Int(column, row);
-
-            // Only add if position is valid and has a non-empty element
-            if (grid.IsPositionValid(pos))
+            float animDuration = grid.EnemyTargetAnimDuration;
+            AnimationCurve curve = grid.EnemyTargetFillCurve;
+            foreach (var pos in targetedPositions)
             {
-                Element element = grid.GetElementAt(pos);
-                if (element != null && element != grid.EmptyElement)
+                ElementVisual visual = grid.GetElementVisualAt(pos);
+                if (visual != null && visual.IsTargetedByEnemy)
+                    visual.UpdateTargetVisual(remainingMoves, initialMoves, animDuration, curve);
+            }
+        }
+
+        remainingMoves--;
+        remainingMoves = Mathf.Max(0, remainingMoves);
+
+        if (grid != null)
+        {
+            float animDuration = grid.EnemyTargetAnimDuration;
+            AnimationCurve curve = grid.EnemyTargetFillCurve;
+
+            foreach (var pos in targetedPositions)
+            {
+                ElementVisual visual = grid.GetElementVisualAt(pos);
+                if (visual != null && visual.IsTargetedByEnemy)
                 {
-                    positions.Add(pos);
+                    visual.UpdateTargetVisual(remainingMoves, initialMoves, animDuration, curve);
                 }
             }
         }
 
-        return positions;
-    }
-
-    private void DamagePlayer(float damage)
-    {
-        // Integrate with your player stats system
-        if (PlayerStats.Instance != null)
+        if (remainingMoves <= 0)
         {
-            PlayerStats.Instance.DealDamage(damage);
+            ApplyEffect(grid);
+            onComplete?.Invoke();
         }
-
     }
 
-    private System.Collections.IEnumerator InvokeAfterDelay(float delay, Grid grid, List<Vector2Int> positions, System.Action callback)
+    protected virtual void ApplyEffect(Grid grid)
     {
-        yield return new UnityEngine.WaitForSeconds(delay);
+        if (grid == null)
+            return;
 
-        // Count how many positions are still targeted (visual exists and still targeted)
         int remaining = 0;
-        foreach (var pos in positions)
+        foreach (var pos in targetedPositions)
         {
             ElementVisual visual = grid.GetElementVisualAt(pos);
             if (visual != null && visual.IsTargetedByEnemy)
@@ -119,59 +83,92 @@ public class ColumnDestroySpell : EnemySpellBase
             float totalDamage = damagePerElement * remaining;
             DamagePlayer(totalDamage);
         }
+        foreach (var pos in targetedPositions)
+        {
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual != null)
+            {
+                visual.SetTargetedByEnemy(false);
+            }
+        }
 
-        callback?.Invoke();
+        targetedPositions.Clear();
+    }
+
+    protected void DamagePlayer(float damage)
+    {
+        Debug.Log($"Enemy spell deals {damage} damage to player.");
+        if (PlayerStats.Instance != null)
+        {
+            PlayerStats.Instance.DealDamage(damage);
+        }
+    }
+}
+
+public class ColumnDestroySpell : EnemySpellBase
+{
+    private int columnIndex;
+
+    public ColumnDestroySpell(float damage = 4f, int moves = 2, int column = -1)
+    {
+        damagePerElement = damage;
+        remainingMoves = moves;
+        initialMoves = moves;
+        columnIndex = column;
+        spellName = "Column Destroy";
+    }
+
+    public override void Execute(Grid grid)
+    {
+        targetedPositions.Clear();
+
+        if (grid == null)
+            return;
+
+        int targetColumn = columnIndex >= 0 ? columnIndex : Random.Range(0, Grid.GridSize);
+
+        for (int row = 0; row < Grid.GridSize; row++)
+        {
+            Vector2Int pos = new Vector2Int(targetColumn, row);
+            if (grid.IsPositionValid(pos))
+            {
+                Element element = grid.GetElementAt(pos);
+                if (element != null && element != grid.EmptyElement)
+                {
+                    targetedPositions.Add(pos);
+                    ElementVisual visual = grid.GetElementVisualAt(pos);
+                    if (visual != null)
+                    {
+                        visual.SetTargetedByEnemy(true);
+                        visual.UpdateTargetVisual(remainingMoves, initialMoves, grid.EnemyTargetAnimDuration, grid.EnemyTargetFillCurve);
+                    }
+                }
+            }
+        }
     }
 }
 
 public class RandomDestroySpell : EnemySpellBase
 {
-    private float damagePerElement;
     private int elementCount;
 
-    public RandomDestroySpell(int count = 3, float damage = 4f, float duration = 1.5f)
+    public RandomDestroySpell(int count = 3, float damage = 4f, int moves = 2)
     {
         elementCount = count;
         damagePerElement = damage;
-        castDuration = duration;
+        remainingMoves = moves;
+        initialMoves = moves;
         spellName = "Random Destroy";
     }
 
-    public override void Execute(Grid grid, System.Action onComplete = null)
+    public override void Execute(Grid grid)
     {
+        targetedPositions.Clear();
+
         if (grid == null)
-        {
-            onComplete?.Invoke();
             return;
-        }
 
-        // Get random valid positions
-        List<Vector2Int> positions = GetRandomPositions(elementCount, grid);
-
-        if (positions.Count == 0)
-        {
-            onComplete?.Invoke();
-            return;
-        }
-
-        // Start the blinking deletion animation (grid will mark visuals as targeted)
-        grid.StartDeleteElementsByEnemies(castDuration, positions);
-
-        // Invoke completion callback after duration and apply damage only for elements still targeted
-        if (onComplete != null)
-        {
-            grid.StartCoroutine(InvokeAfterDelay(castDuration, grid, positions, onComplete));
-        }
-        else
-        {
-            grid.StartCoroutine(InvokeAfterDelay(castDuration, grid, positions, null));
-        }
-    }
-
-    private List<Vector2Int> GetRandomPositions(int count, Grid grid)
-    {
         List<Vector2Int> allPositions = new List<Vector2Int>();
-        List<Vector2Int> selectedPositions = new List<Vector2Int>();
 
         for (int x = 0; x < Grid.GridSize; x++)
         {
@@ -179,7 +176,6 @@ public class RandomDestroySpell : EnemySpellBase
             {
                 Vector2Int pos = new Vector2Int(x, y);
                 Element element = grid.GetElementAt(pos);
-
                 if (element != null && element != grid.EmptyElement)
                 {
                     allPositions.Add(pos);
@@ -187,51 +183,25 @@ public class RandomDestroySpell : EnemySpellBase
             }
         }
 
-        int targetCount = Mathf.Min(count, allPositions.Count);
+        int targetCount = Mathf.Min(elementCount, allPositions.Count);
         for (int i = 0; i < targetCount; i++)
         {
             if (allPositions.Count == 0)
                 break;
 
             int randomIndex = Random.Range(0, allPositions.Count);
-            selectedPositions.Add(allPositions[randomIndex]);
+            Vector2Int chosen = allPositions[randomIndex];
+            targetedPositions.Add(chosen);
+
+            ElementVisual visual = grid.GetElementVisualAt(chosen);
+            if (visual != null)
+            {
+                visual.SetTargetedByEnemy(true);
+                // show initial fill based on initialMoves
+                visual.UpdateTargetVisual(remainingMoves, initialMoves, grid.EnemyTargetAnimDuration, grid.EnemyTargetFillCurve);
+            }
+
             allPositions.RemoveAt(randomIndex);
         }
-
-        return selectedPositions;
-    }
-
-    private void DamagePlayer(float damage)
-    {
-        if (PlayerStats.Instance != null)
-        {
-            PlayerStats.Instance.DealDamage(damage);
-        }
-
-        Debug.Log($"RandomDestroySpell: Dealt {damage} damage to player");
-    }
-
-    private IEnumerator InvokeAfterDelay(float delay, Grid grid, List<Vector2Int> positions, System.Action callback)
-    {
-        yield return new UnityEngine.WaitForSeconds(delay);
-
-        // Count how many positions are still targeted (visual exists and still targeted)
-        int remaining = 0;
-        foreach (var pos in positions)
-        {
-            ElementVisual visual = grid.GetElementVisualAt(pos);
-            if (visual != null && visual.IsTargetedByEnemy)
-            {
-                remaining++;
-            }
-        }
-
-        if (remaining > 0)
-        {
-            float totalDamage = damagePerElement * remaining;
-            DamagePlayer(totalDamage);
-        }
-
-        callback?.Invoke();
     }
 }

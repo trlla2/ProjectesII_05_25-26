@@ -1,18 +1,17 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ElementVisual : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer elementRenderer;
-    [SerializeField] private SpriteRenderer blinkSprite;
-    [SerializeField] private GameObject deletionEffectPrefab;
-
-    public SpriteRenderer deletionSpriteRenderer;
+    [SerializeField] private GameObject deletionEffectPrefab; 
+    [SerializeField] private Image targetFillImage;
 
     private Vector2Int gridPosition;
     private bool canSelect = true;
     private bool isTargetedByEnemy;
-    private Coroutine blinkCoroutine;
+    private Coroutine fillCoroutine;
 
     public Vector2Int GridPosition => gridPosition;
     public bool CanSelect => canSelect;
@@ -20,14 +19,20 @@ public class ElementVisual : MonoBehaviour
 
     public void Initialize(Vector2Int position, Element element)
     {
-        if (deletionEffectPrefab != null)
-            deletionSpriteRenderer = deletionEffectPrefab.GetComponent<SpriteRenderer>();
-
         gridPosition = position;
         UpdateVisual(element);
-
-        if (blinkSprite != null)
-            blinkSprite.gameObject.SetActive(false);
+        if (targetFillImage != null)
+        {
+            if (!isTargetedByEnemy)
+            {
+                targetFillImage.enabled = false;
+                targetFillImage.fillAmount = 0f;
+            }
+            else
+            {
+                targetFillImage.enabled = true;
+            }
+        }
     }
 
     public void UpdateVisual(Element element)
@@ -44,11 +49,13 @@ public class ElementVisual : MonoBehaviour
         if (elementRenderer != null)
             elementRenderer.transform.position = position;
 
-        if (blinkSprite != null)
-            blinkSprite.transform.position = position;
+        if (deletionEffectPrefab != null)
+            deletionEffectPrefab.transform.position = position;
 
-        if (deletionSpriteRenderer != null)
-            deletionSpriteRenderer.transform.position = position;
+        if (targetFillImage != null)
+        {
+            targetFillImage.rectTransform.position = position;
+        }
     }
 
     public Vector3 GetWorldPosition()
@@ -64,11 +71,11 @@ public class ElementVisual : MonoBehaviour
         if (elementRenderer != null)
             elementRenderer.transform.localPosition = localPosition;
 
-        if (blinkSprite != null)
-            blinkSprite.transform.localPosition = localPosition;
+        if (deletionEffectPrefab != null)
+            deletionEffectPrefab.transform.localPosition = localPosition;
 
-        if (deletionSpriteRenderer != null)
-            deletionSpriteRenderer.transform.localPosition = localPosition;
+        if (targetFillImage != null)
+            targetFillImage.rectTransform.localPosition = localPosition;
     }
 
     public void SetSpriteWorldPosition(Vector3 worldPosition)
@@ -81,11 +88,11 @@ public class ElementVisual : MonoBehaviour
         if (elementRenderer != null)
             elementRenderer.transform.localScale = scale;
 
-        if (blinkSprite != null)
-            blinkSprite.transform.localScale = scale;
+        if (deletionEffectPrefab != null)
+            deletionEffectPrefab.transform.localScale = scale;
 
-        if (deletionSpriteRenderer != null)
-            deletionSpriteRenderer.transform.localScale = scale;
+        if (targetFillImage != null)
+            targetFillImage.rectTransform.localScale = scale;
     }
 
     public void ResetSpriteTransform()
@@ -102,62 +109,79 @@ public class ElementVisual : MonoBehaviour
     public void SetTargetedByEnemy(bool targeted)
     {
         isTargetedByEnemy = targeted;
-    }
 
-    public void StartBlinkingAnimation(float duration, AnimationCurve blinkCurve)
-    {
-        if (blinkCoroutine != null)
-            StopCoroutine(blinkCoroutine);
-
-        //use deletionSpriteRenderer as source sprite if available
-        blinkCoroutine = StartCoroutine(BlinkRoutine(duration, blinkCurve, deletionSpriteRenderer));
-    }
-
-    public void StopBlinkingAnimation()
-    {
-        if (blinkCoroutine != null)
+        if (targetFillImage != null)
         {
-            StopCoroutine(blinkCoroutine);
-            blinkCoroutine = null;
-        }
-
-        if (blinkSprite != null)
-        {
-            blinkSprite.gameObject.SetActive(false);
+            targetFillImage.enabled = targeted;
+            if (!targeted)
+                targetFillImage.fillAmount = 0f;
         }
     }
 
-    public void PlayDeletionEffect()
+    public void UpdateTargetVisual(int remainingMoves, int totalMoves, float animDuration, AnimationCurve fillCurve)
     {
-        if (deletionEffectPrefab != null)
-        {
-            Instantiate(deletionEffectPrefab, GetWorldPosition(), Quaternion.identity);
-        }
+        if (targetFillImage == null)
+            return;
+
+        float targetFill = 0f;
+        if (totalMoves > 0)
+            targetFill = Mathf.Clamp((float)remainingMoves / (float)totalMoves, 0, 1);
+
+        if (!targetFillImage.enabled)
+            targetFillImage.enabled = true;
+
+        if (fillCoroutine != null)
+            StopCoroutine(fillCoroutine);
+
+        fillCoroutine = StartCoroutine(FillRoutine(targetFill, animDuration, fillCurve));
     }
 
-    private IEnumerator BlinkRoutine(float duration, AnimationCurve curve, SpriteRenderer sprite)
+    public void ClearTargetVisual()
     {
-        if (blinkSprite == null || sprite == null)
+        if (fillCoroutine != null)
+        {
+            StopCoroutine(fillCoroutine);
+            fillCoroutine = null;
+        }
+
+        if (targetFillImage != null)
+        {
+            targetFillImage.fillAmount = 0f;
+            targetFillImage.enabled = false;
+        }
+    }
+    private IEnumerator FillRoutine(float targetFill, float duration, AnimationCurve curve)
+    {
+        if (targetFillImage == null)
             yield break;
 
-        // copy sprite so the blink sprite matches the deletion / source sprite
-        blinkSprite.sprite = sprite.sprite;
-        blinkSprite.gameObject.SetActive(true);
-
+        float startFill = targetFillImage.fillAmount;
         float elapsed = 0f;
+
+        if (duration <= 0f)
+        {
+            targetFillImage.fillAmount = targetFill;
+
+            if (targetFill <= 0f && !isTargetedByEnemy)
+                targetFillImage.enabled = false;
+
+            yield break;
+        }
+
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            float normalizedTime = elapsed / duration;
-            float alpha = curve.Evaluate(normalizedTime);
-
-            Color color = blinkSprite.color;
-            color.a = alpha;
-            blinkSprite.color = color;
-
+            float t = Mathf.Clamp01(elapsed / duration);
+            float c = curve != null ? curve.Evaluate(t) : t;
+            targetFillImage.fillAmount = Mathf.Lerp(startFill, targetFill, c);
             yield return null;
         }
 
-        blinkSprite.gameObject.SetActive(false);
+        targetFillImage.fillAmount = targetFill;
+
+        if (targetFill <= 0f && !isTargetedByEnemy)
+            targetFillImage.enabled = false;
+
+        fillCoroutine = null;
     }
 }

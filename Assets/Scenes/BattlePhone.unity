@@ -5531,6 +5531,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e02a4c0454b986845a065ad209d800cd, type: 2}
   - {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
   visualGrid: {fileID: 2040530735}
+  enemySpellAnimator: {fileID: 964765496}
   enemyBlinkCurve:
     serializedVersion: 2
     m_Curve:
@@ -5770,6 +5771,37 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &191384467
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 191384468}
+  m_Layer: 0
+  m_Name: EnemyWayPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 6519382022992737161, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &191384468
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 191384467}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.02, y: -0.63, z: 0.06719153}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &210590430
 GameObject:
   m_ObjectHideFlags: 0
@@ -12358,17 +12390,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 400, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &439764308 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3201950882602130019, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
-  m_PrefabInstance: {fileID: 1982195253204217190}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e21abb082d983f4ba40217ace6c1856, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &440038483
 GameObject:
   m_ObjectHideFlags: 0
@@ -13708,10 +13729,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stageLevel: 1
   enemyTypes:
-  - {fileID: 11400000, guid: e3dd09a9dd0977248b7cd0fbfde410df, type: 2}
-  - {fileID: 11400000, guid: 5a24782ba9a42cb49b3f9ba6e5f9d720, type: 2}
-  - {fileID: 11400000, guid: b9c808fbaa24e3a42b7f571e85b936ad, type: 2}
-  - {fileID: 11400000, guid: bb5502b10a943fa45944063b5ce41d6f, type: 2}
+  - {fileID: 11400000, guid: 3ddc38c9790bdd44bacbeb43cb61cada, type: 2}
 --- !u!4 &806185222
 Transform:
   m_ObjectHideFlags: 0
@@ -14184,6 +14202,126 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &964765495
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 964765498}
+  - component: {fileID: 964765497}
+  - component: {fileID: 964765496}
+  m_Layer: 0
+  m_Name: SpellAnimatorENEMY
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &964765496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 964765495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2c8f5532a57df244b26affc1b487653, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  elementScale: 1.2
+  elementSpacing: 0.15
+  movementEase: 20
+  clonePrefab: {fileID: 823688408045220818, guid: 4708e3ebd8788b04783c1300cda193eb, type: 3}
+  spellPathData: {fileID: 964765497}
+  grid: {fileID: 0}
+--- !u!114 &964765497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 964765495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4579771027919d94e81a1dc99d7e0265, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pathSections:
+  - mode: 0
+    duration: 0.3
+    animCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    waypoints:
+    - {fileID: 191384468}
+  - mode: 0
+    duration: 0.1
+    animCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    waypoints:
+    - {fileID: 1452289981}
+--- !u!4 &964765498
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 964765495}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &975234179
 GameObject:
   m_ObjectHideFlags: 0
@@ -20486,6 +20624,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1452289980
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1452289981}
+  m_Layer: 0
+  m_Name: EnemyWayPoint (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 6519382022992737161, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1452289981
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1452289980}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.14, y: -4.32, z: 0.06719153}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1455746636
 GameObject:
   m_ObjectHideFlags: 0
@@ -23290,15 +23459,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7364422f45b6f7c4787a2317e61b5d33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyBehaviour: {fileID: 439764308}
-  healthBar: {fileID: 1474826783}
-  attackTimeCircle: {fileID: 1888189775}
-  damageText: {fileID: 1937170125}
-  damageTextTranslator: {fileID: 1937170124}
-  timeToChangeDmg: 0.5
-  weaknessText: {fileID: 1070558224}
-  weaknessTextTranslator: {fileID: 1070558223}
-  timeToChangeWeak: 0.5
 --- !u!1 &2079776959
 GameObject:
   m_ObjectHideFlags: 0
@@ -23968,6 +24128,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 18.432003
       objectReference: {fileID: 0}
+    - target: {fileID: 8116796911541987023, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
+      propertyPath: grid
+      value: 
+      objectReference: {fileID: 190367786}
     - target: {fileID: 8657585950942379864, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: m_Camera
       value: 
@@ -24003,7 +24167,10 @@ SceneRoots:
   - {fileID: 874665316}
   - {fileID: 1507392192}
   - {fileID: 244508975}
+  - {fileID: 964765498}
   - {fileID: 718497210}
   - {fileID: 1607689154}
+  - {fileID: 191384468}
+  - {fileID: 1452289981}
   - {fileID: 2040530736}
   - {fileID: 1078555492}

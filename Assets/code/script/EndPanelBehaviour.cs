@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EndPanelBehaviour : MonoBehaviour
 {
@@ -54,7 +55,7 @@ public class EndPanelBehaviour : MonoBehaviour
     public void UnloadBatle()
     {
         winTranslator.ToOrigin();
-        SceneTransition.Instance.UnloadScene("TestRoma");
+        SceneTransition.Instance.UnloadScene("BattlePhone");
         
     }
 

@@ -96,8 +96,7 @@ public class RefillState : IGridState
             yield return grid.StartCoroutine(visualGrid.AnimateGravity(movedPositions, gravityDuration));
         }
 
-        // After gravity animation completes, find empty slots and spawn new elements
-        List<Vector2Int> emptyPositions = GetEmptyPositionsExcludingBelowTargets();
+        List<Vector2Int> emptyPositions = GetEmptyPositions();
 
         if (emptyPositions.Count > 0)
         {
@@ -125,7 +124,6 @@ public class RefillState : IGridState
             // Play the fill animation only for the chosen positions
             visualGrid.FillEmpty(emptyPositions, refillDuration);
 
-            // Wait for fill animation to complete then finalize (CompleteRefillAfterDelay will set isRefilling=false)
             yield return new WaitForSeconds(refillDuration);
             yield return grid.StartCoroutine(CompleteRefillAfterDelay(0f));
         }
@@ -135,7 +133,7 @@ public class RefillState : IGridState
         }
     }
 
-    private List<Vector2Int> GetEmptyPositionsExcludingBelowTargets()
+    private List<Vector2Int> GetEmptyPositions()
     {
         List<Vector2Int> emptyPositions = new List<Vector2Int>();
         int size = grid.GridData.GridSize;
@@ -149,20 +147,7 @@ public class RefillState : IGridState
 
                 if (element == grid.EmptyElement || element == null)
                 {
-                    bool isBelowTargeted = false;
-                    for (int yAbove = y + 1; yAbove < size; yAbove++)
-                    {
-                        Vector2Int abovePos = new Vector2Int(x, yAbove);
-                        ElementVisual aboveVisual = grid.GridData.GetVisualAt(abovePos);
-                        if (aboveVisual != null && aboveVisual.IsTargetedByEnemy)
-                        {
-                            isBelowTargeted = true;
-                            break;
-                        }
-                    }
-
-                    if (!isBelowTargeted)
-                        emptyPositions.Add(pos);
+                    emptyPositions.Add(pos);
                 }
             }
         }
@@ -207,10 +192,10 @@ public class RefillState : IGridState
 
 public class LeverPullState : IGridState
 {
-    private readonly Grid grid;
-    private readonly VisualGrid visualGrid;
-    private readonly List<Element> availableElements;
-    private readonly List<Spell> availableSpells;
+    private  Grid grid;
+    private  VisualGrid visualGrid;
+    private  List<Element> availableElements;
+    private  List<Spell> availableSpells;
     private bool isAnimating;
     private float scrollDuration = 1.5f;
     private float columnDelay = 0.1f;
@@ -281,12 +266,15 @@ public class EnemySpellState : IGridState
     private bool isProcessing;
     private float refillDuration = 0.15f;
 
-    public EnemySpellState(Grid gridController, VisualGrid visual, List<Vector2Int> positionsToProcess, System.Action onCompleteCallback)
+    private bool excludeBelowTargets = true;
+
+    public EnemySpellState(Grid gridController, VisualGrid visual, List<Vector2Int> positionsToProcess, System.Action onCompleteCallback, bool excludeBelowTargets = true)
     {
         grid = gridController;
         visualGrid = visual;
         positions = positionsToProcess ?? new List<Vector2Int>();
         onComplete = onCompleteCallback;
+        this.excludeBelowTargets = excludeBelowTargets;
     }
 
     public void Enter()
@@ -337,7 +325,12 @@ public class EnemySpellState : IGridState
             yield return grid.StartCoroutine(visualGrid.AnimateGravity(movedPositions, refillDuration));
         }
 
-        List<Vector2Int> emptyPositions = GetEmptyPositionsExcludingBelowTargets();
+        List<Vector2Int> emptyPositions;
+
+        if (excludeBelowTargets)
+            emptyPositions = GetEmptyPositionsExcludingBelowTargets();
+        else
+            emptyPositions = GetEmptyPositions();
 
         if (emptyPositions.Count > 0)
         {
@@ -375,6 +368,28 @@ public class EnemySpellState : IGridState
         }
     }
 
+    private List<Vector2Int> GetEmptyPositions()
+    {
+        List<Vector2Int> emptyPositions = new List<Vector2Int>();
+        int size = grid.GridData.GridSize;
+
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                Vector2Int pos = new Vector2Int(x, y);
+                Element element = grid.GridData.GetElementAt(pos);
+
+                if (element == grid.EmptyElement || element == null)
+                {
+                    emptyPositions.Add(pos);
+                }
+            }
+        }
+
+        return emptyPositions;
+    }
+
     private List<Vector2Int> GetEmptyPositionsExcludingBelowTargets()
     {
         List<Vector2Int> emptyPositions = new List<Vector2Int>();
@@ -394,7 +409,14 @@ public class EnemySpellState : IGridState
                     {
                         Vector2Int abovePos = new Vector2Int(x, yAbove);
                         ElementVisual aboveVisual = grid.GridData.GetVisualAt(abovePos);
-                        if (aboveVisual != null && aboveVisual.IsTargetedByEnemy)
+                        Element aboveElement = grid.GridData.GetElementAt(abovePos);
+
+                        // Consider the above tile as a blocker only if:
+                        // - there's a visual
+                        // - that visual is currently targeted by the enemy
+                        // - AND the logical element at that position is non-empty
+                        if (aboveVisual != null && aboveVisual.IsTargetedByEnemy
+                            && aboveElement != null && aboveElement != grid.EmptyElement)
                         {
                             isBelowTargeted = true;
                             break;

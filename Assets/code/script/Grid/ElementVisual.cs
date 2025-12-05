@@ -116,6 +116,11 @@ public class ElementVisual : MonoBehaviour
             if (!targeted)
                 targetFillImage.fillAmount = 0f;
         }
+
+        if (!targeted)
+        {
+            StopCountdown();
+        }
     }
 
     public void UpdateTargetVisual(int remainingMoves, int totalMoves, float animDuration, AnimationCurve fillCurve)
@@ -134,6 +139,32 @@ public class ElementVisual : MonoBehaviour
             StopCoroutine(fillCoroutine);
 
         fillCoroutine = StartCoroutine(FillRoutine(targetFill, animDuration, fillCurve));
+    }
+
+    public void StartCountdown(float totalSeconds)
+    {
+        if (targetFillImage == null)
+            return;
+
+        totalSeconds = Mathf.Max(0.0001f, totalSeconds);
+
+        if (fillCoroutine != null)
+        {
+            StopCoroutine(fillCoroutine);
+            fillCoroutine = null;
+        }
+
+        targetFillImage.enabled = true;
+        fillCoroutine = StartCoroutine(CountdownRoutine(totalSeconds));
+    }
+
+    public void StopCountdown()
+    {
+        if (fillCoroutine != null)
+        {
+            StopCoroutine(fillCoroutine);
+            fillCoroutine = null;
+        }
     }
 
     public void ClearTargetVisual()
@@ -182,6 +213,27 @@ public class ElementVisual : MonoBehaviour
         if (targetFill <= 0f && !isTargetedByEnemy)
             targetFillImage.enabled = false;
 
+        fillCoroutine = null;
+    }
+
+    private IEnumerator CountdownRoutine(float totalSeconds)
+    {
+        if (targetFillImage == null)
+            yield break;
+
+        float elapsed = 0f;
+
+        targetFillImage.fillAmount = 1f;
+
+        while (elapsed < totalSeconds)
+        {
+            elapsed += Time.deltaTime;
+            float remainingFraction = Mathf.Clamp01(Mathf.Max(0f, 1f - (elapsed / totalSeconds)));
+            targetFillImage.fillAmount = remainingFraction;
+            yield return null;
+        }
+
+        targetFillImage.fillAmount = 0f;
         fillCoroutine = null;
     }
 }

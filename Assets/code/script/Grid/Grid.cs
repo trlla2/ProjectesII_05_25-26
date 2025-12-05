@@ -206,7 +206,7 @@ public class Grid : MonoBehaviour
         enemySpellAnimator.OnSpellCast(pathPositions, elements, onComplete);
     }
 
-    public void ProcessEnemySpell(List<Vector2Int> positions, System.Action onComplete = null)
+    public void ProcessEnemySpell(List<Vector2Int> positions, System.Action onComplete = null, bool excludeBelowTargets = true)
     {
         if (positions == null || positions.Count == 0)
         {
@@ -214,7 +214,7 @@ public class Grid : MonoBehaviour
             return;
         }
 
-        ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete));
+        ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete, excludeBelowTargets));
     }
 
     public void FillEmptySlots(List<Element> elements, List<Vector2Int> positionsToFill = null)
@@ -248,7 +248,6 @@ public class Grid : MonoBehaviour
             }
             else if (visualGrid != null && visualGrid.isInitialized)
             {
-                // create visual for newly spawned element and anchor it (only if VisualGrid is initialized)
                 visualGrid.EnsureVisualAt(pos, randomElement);
             }
         }

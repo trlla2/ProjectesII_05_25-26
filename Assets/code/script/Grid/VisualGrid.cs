@@ -191,7 +191,7 @@ public class VisualGrid : MonoBehaviour
             }
             else
             {
-                // If a visual doesn't exist for a newly spawned element, create it so scaling animation works.
+                //if a visual doesn't exist, create it so scaling animation works.
                 Element element = grid.GridData.GetElementAt(pos);
                 if (element != null)
                 {
@@ -236,7 +236,7 @@ public class VisualGrid : MonoBehaviour
         if (visualA == null || visualB == null)
             yield break;
 
-        // Work with sprite positions so anchors remain fixed.
+        //Work with sprite positions so anchors remain fixed.
         Vector3 startPosA = visualA.GetWorldPosition();
         Vector3 startPosB = visualB.GetWorldPosition();
         Vector3 targetPosA = GridToWorldPosition(posB);
@@ -258,9 +258,6 @@ public class VisualGrid : MonoBehaviour
         visualB.SetWorldPosition(targetPosB);
     }
 
-    /// Animate visuals that have been moved by gravity.
-    /// movedPositions should contain the target grid positions (where visuals now logically reside).
-    /// This will animate sprite renderers from their current world positions to the new anchors, then update anchors.
     public IEnumerator AnimateGravity(List<Vector2Int> movedPositions, float duration)
     {
         yield return StartCoroutine(GravityRoutine(movedPositions, duration));
@@ -289,7 +286,7 @@ public class VisualGrid : MonoBehaviour
             // where the anchor should end up (logical target)
             Vector3 targetWorld = GridToWorldPosition(pos);
 
-            // visual.GridPosition already updated by gravity logic; store pos to re-initialize later to be safe
+            //visual.GridPosition already updated by gravity logic; store pos to re-initialize later to be safe
             items.Add((visual, startWorld, targetWorld, pos));
         }
 
@@ -308,7 +305,7 @@ public class VisualGrid : MonoBehaviour
             yield return null;
         }
 
-        // Finalize: snap sprites to targets and update anchors/sprite transforms
+        //snap sprites to targets and update anchors/sprite transforms
         foreach (var item in items)
         {
             if (item.visual == null)
@@ -341,12 +338,29 @@ public class VisualGrid : MonoBehaviour
 
                 if (element == grid.EmptyElement || element == null)
                 {
-                    emptyPositions.Add(pos);
+                    // Exclude empty slots that are below any targeted element in the same column.
+                    bool isBelowTargeted = false;
+                    for (int yAbove = y + 1; yAbove < grid.GridData.GridSize; yAbove++)
+                    {
+                        Vector2Int abovePos = new Vector2Int(x, yAbove);
+                        ElementVisual aboveVisual = grid.GridData.GetVisualAt(abovePos);
+                        if (aboveVisual != null && aboveVisual.IsTargetedByEnemy)
+                        {
+                            isBelowTargeted = true;
+                            break;
+                        }
+                    }
+
+                    if (!isBelowTargeted)
+                    {
+                        emptyPositions.Add(pos);
+                    }
                 }
             }
         }
 
-        yield return FillEmptyRoutine(emptyPositions, duration);
+        if (emptyPositions.Count > 0)
+            yield return FillEmptyRoutine(emptyPositions, duration);
     }
 
     private IEnumerator ScrollRoutine(float scrollDuration, float columnDelay)

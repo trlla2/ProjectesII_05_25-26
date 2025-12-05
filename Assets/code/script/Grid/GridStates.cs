@@ -361,7 +361,6 @@ public class EnemySpellState : IGridState
                     visual.SetSelectable(false);
             }
 
-            // Play the refill (scale-in) animation only for chosen positions
             visualGrid.FillEmpty(emptyPositions, refillDuration);
 
             // Wait for fill animation to complete then finalize

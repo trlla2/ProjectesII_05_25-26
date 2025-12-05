@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
-using Unity.VisualScripting.FullSerializer;
 public enum GridStateType
 {
     Initialize,
@@ -89,19 +88,19 @@ public class RefillState : IGridState
         //Apply gravity and get positions that moved (logical swap already updates gridData visuals)
         List<Vector2Int> movedPositions = grid.GravityHandler.ApplyGravity();
 
-        // Run the refill sequence as a coroutine so we can wait for gravity animation to finish
+        //Run the refill sequence as a coroutine so we can wait for gravity animation to finish
         grid.StartCoroutine(RefillSequence(movedPositions, refillDuration));
     }
 
     private IEnumerator RefillSequence(List<Vector2Int> movedPositions, float gravityDuration)
     {
-        // Animate gravity and wait until it finishes
+        //Animate gravity and wait until it finishes
         if (visualGrid != null && movedPositions != null && movedPositions.Count > 0)
         {
             yield return grid.StartCoroutine(visualGrid.AnimateGravity(movedPositions, gravityDuration));
         }
 
-        // After gravity animation completes, find empty slots and spawn new elements
+        //After gravity animation completes, find empty slots and spawn new elements
         List<Vector2Int> emptyPositions = GetEmptyPositions();
 
         if (emptyPositions.Count > 0)
@@ -260,5 +259,161 @@ public class LeverPullState : IGridState
     {
         yield return new WaitForSeconds(delay);
         isAnimating = false;
+    }
+}
+
+public class EnemySpellState : IGridState
+{
+    private Grid grid;
+    private VisualGrid visualGrid;
+    private List<Vector2Int> positions;
+    private System.Action onComplete;
+    private bool isProcessing;
+    private float refillDuration = 0.15f;
+
+    public EnemySpellState(Grid gridController, VisualGrid visual, List<Vector2Int> positionsToProcess, System.Action onCompleteCallback)
+    {
+        grid = gridController;
+        visualGrid = visual;
+        positions = positionsToProcess ?? new List<Vector2Int>();
+        onComplete = onCompleteCallback;
+    }
+
+    public void Enter()
+    {
+        isProcessing = true;
+        grid.StartCoroutine(ProcessSequence());
+    }
+
+    public void Update()
+    {
+        if (!isProcessing)
+        {
+            grid.ChangeState(new IdleState(grid));
+        }
+    }
+
+    public void Exit()
+    {
+        isProcessing = false;
+    }
+
+    public GridStateType GetStateType()
+    {
+        return GridStateType.Processing;
+    }
+
+    private IEnumerator ProcessSequence()
+    {
+        if (positions == null || positions.Count == 0)
+        {
+            isProcessing = false;
+            onComplete?.Invoke();
+            yield break;
+        }
+
+        bool animationFinished = false;
+        grid.PlayEnemySpellAnimation(positions, () => { animationFinished = true; });
+
+        while (!animationFinished)
+            yield return null;
+
+        grid.InstantVisualEmpty(positions);
+
+        // Apply gravity and animate moved positions
+        List<Vector2Int> movedPositions = grid.GravityHandler.ApplyGravity();
+
+        if (visualGrid != null && movedPositions != null && movedPositions.Count > 0)
+        {
+            yield return grid.StartCoroutine(visualGrid.AnimateGravity(movedPositions, refillDuration));
+        }
+
+        // Fill empty slots and animate refill
+        List<Vector2Int> emptyPositions = GetEmptyPositions();
+
+        if (emptyPositions.Count > 0)
+        {
+            grid.FillEmptySlots(grid.AvailableElements);
+
+            //Ensure visuals exist for newly spawned elements
+            foreach (var pos in emptyPositions)
+            {
+                Element element = grid.GridData.GetElementAt(pos);
+                if (element != null && element != grid.EmptyElement)
+                {
+                    visualGrid.EnsureVisualAt(pos, element);
+                }
+            }
+
+            foreach (var pos in emptyPositions)
+            {
+                ElementVisual visual = grid.GridData.GetVisualAt(pos);
+                if (visual != null)
+                    visual.SetSelectable(false);
+            }
+
+
+            visualGrid.Refill(refillDuration);
+
+
+            yield return new WaitForSeconds(refillDuration);
+            yield return grid.StartCoroutine(CompleteRefillAfterDelay(0f));
+        }
+        else
+        {
+            isProcessing = false;
+            onComplete?.Invoke();
+        }
+    }
+
+    private List<Vector2Int> GetEmptyPositions()
+    {
+        List<Vector2Int> emptyPositions = new List<Vector2Int>();
+
+        for (int x = 0; x < grid.GridData.GridSize; x++)
+        {
+            for (int y = 0; y < grid.GridData.GridSize; y++)
+            {
+                Vector2Int pos = new Vector2Int(x, y);
+                Element element = grid.GridData.GetElementAt(pos);
+
+                if (element == grid.EmptyElement || element == null)
+                {
+                    emptyPositions.Add(pos);
+                }
+            }
+        }
+
+        return emptyPositions;
+    }
+
+    private IEnumerator CompleteRefillAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        for (int x = 0; x < grid.GridData.GridSize; x++)
+        {
+            for (int y = 0; y < grid.GridData.GridSize; y++)
+            {
+                Vector2Int pos = new Vector2Int(x, y);
+                ElementVisual visual = grid.GridData.GetVisualAt(pos);
+
+                if (visual != null)
+                {
+                    visual.transform.position = visualGrid.GridToWorldPosition(pos);
+
+                    visual.ResetSpriteTransform();
+                    visual.SetWorldPosition(visualGrid.GridToWorldPosition(pos));
+
+                    Element element = grid.GridData.GetElementAt(pos);
+                    visual.Initialize(pos, element);
+
+                    visual.SetSelectable(true);
+                }
+            }
+        }
+
+        isProcessing = false;
+        onComplete?.Invoke();
     }
 }

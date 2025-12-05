@@ -5,7 +5,7 @@ using UnityEngine;
 public interface IEnemySpell
 {
     void Execute(Grid grid);
-    ///Tick once per player move. if max moves reached, apply effect.
+    //Tick once per player move. if max moves reached, apply effect.
     void Tick(Grid grid, System.Action onComplete = null);
     int RemainingMoves { get; }
     string GetSpellName();
@@ -58,38 +58,57 @@ public abstract class EnemySpellBase : IEnemySpell
 
         if (remainingMoves <= 0)
         {
-            ApplyEffect(grid);
-            onComplete?.Invoke();
+            ApplyEffect(grid, onComplete);
         }
     }
 
-    protected virtual void ApplyEffect(Grid grid)
+    protected virtual void ApplyEffect(Grid grid, System.Action onComplete = null)
     {
         if (grid == null)
+        {
+            onComplete?.Invoke();
             return;
+        }
 
-        int remaining = 0;
+        //collect only positions that still contain non-empty elements and are targeted
+        List<Vector2Int> finalPositions = new List<Vector2Int>();
+
         foreach (var pos in targetedPositions)
         {
+            if (!grid.IsPositionValid(pos))
+                continue;
+
+            Element element = grid.GetElementAt(pos);
             ElementVisual visual = grid.GetElementVisualAt(pos);
-            if (visual != null && visual.IsTargetedByEnemy)
+
+            if (element != null && element != grid.EmptyElement && visual != null && visual.IsTargetedByEnemy)
             {
-                remaining++;
+                finalPositions.Add(pos);
+            }
+            else
+            {
+                // clear target if it's no longer valid
+                if (visual != null)
+                {
+                    visual.SetTargetedByEnemy(false);
+                }
             }
         }
 
-        if (remaining > 0)
+        if (finalPositions.Count > 0)
         {
-            float totalDamage = damagePerElement * remaining;
-            DamagePlayer(totalDamage);
-        }
-        foreach (var pos in targetedPositions)
-        {
-            ElementVisual visual = grid.GetElementVisualAt(pos);
-            if (visual != null)
+            float totalDamage = damagePerElement * finalPositions.Count;
+
+            grid.ProcessEnemySpell(finalPositions, () =>
             {
-                visual.SetTargetedByEnemy(false);
-            }
+                DamagePlayer(totalDamage);
+                onComplete?.Invoke();
+            });
+        }
+        else
+        {
+            // nothing to process, continue immediately
+            onComplete?.Invoke();
         }
 
         targetedPositions.Clear();
@@ -197,7 +216,6 @@ public class RandomDestroySpell : EnemySpellBase
             if (visual != null)
             {
                 visual.SetTargetedByEnemy(true);
-                // show initial fill based on initialMoves
                 visual.UpdateTargetVisual(remainingMoves, initialMoves, grid.EnemyTargetAnimDuration, grid.EnemyTargetFillCurve);
             }
 

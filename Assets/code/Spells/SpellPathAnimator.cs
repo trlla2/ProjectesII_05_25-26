@@ -30,10 +30,6 @@ public class SpellPathAnimator : MonoBehaviour
             {
                 Debug.LogWarning("Grid reference is null. Assign it in the inspector or call Initialize(grid) before casting spells.");
             }
-            else
-            {
-                Debug.Log("Grid auto-assigned from scene (FindObjectOfType<Grid>())");
-            }
         }
     }
 

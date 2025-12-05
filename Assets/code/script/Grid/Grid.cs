@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
-using static UnityEditor.PlayerSettings;
 
 public class Grid : MonoBehaviour
 {
@@ -99,17 +97,15 @@ public class Grid : MonoBehaviour
 
         foreach (var pos in positions)
         {
-            // mark logical element as empty immediately
+            //mark logical element as empty immediately
             gridData.SetElementAt(pos, emptyElement);
             visualGrid.GetVisualAt(pos).UpdateVisual(emptyElement);
 
-            // remove visual immediately so it's gone before gravity runs
             if (visualGrid != null)
             {
                 ElementVisual visual = gridData.GetVisualAt(pos);
                 if (visual != null)
                 {
-                    // If this visual was targeted by the enemy, stop blinking and clear target
                     if (visual.IsTargetedByEnemy)
                     {
                         visual.ClearTargetVisual();
@@ -124,7 +120,6 @@ public class Grid : MonoBehaviour
                 ElementVisual visual = gridData.GetVisualAt(pos);
                 if (visual != null)
                 {
-                    //If this visual was targeted by the enemy, stop blinking and 
                     if (visual.IsTargetedByEnemy)
                     {
                         visual.ClearTargetVisual();
@@ -184,6 +179,41 @@ public class Grid : MonoBehaviour
     public void SetElementVisualAt(Vector2Int position, ElementVisual visual)
     {
         gridData.SetVisualAt(position, visual);
+    }
+
+    public void PlayEnemySpellAnimation(List<Vector2Int> positions, System.Action onComplete = null)
+    {
+        if (positions == null || positions.Count == 0)
+        {
+            onComplete?.Invoke();
+            return;
+        }
+
+        if (enemySpellAnimator == null)
+        {
+            onComplete?.Invoke();
+            return;
+        }
+
+        Vector2Int[] pathPositions = positions.ToArray();
+        List<Element> elements = new List<Element>(positions.Count);
+        foreach (var pos in positions)
+        {
+            elements.Add(GetElementAt(pos));
+        }
+
+        enemySpellAnimator.OnSpellCast(pathPositions, elements, onComplete);
+    }
+
+    public void ProcessEnemySpell(List<Vector2Int> positions, System.Action onComplete = null)
+    {
+        if (positions == null || positions.Count == 0)
+        {
+            onComplete?.Invoke();
+            return;
+        }
+
+        ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete));
     }
 
 

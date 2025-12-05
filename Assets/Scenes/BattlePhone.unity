@@ -5814,6 +5814,7 @@ GameObject:
   - component: {fileID: 210590434}
   - component: {fileID: 210590433}
   - component: {fileID: 210590432}
+  - component: {fileID: 210590435}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -5958,6 +5959,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 210590430}
   m_CullTransparentMesh: 1
+--- !u!114 &210590435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 210590430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d1a04d3536205640b08a328e1f6b7d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hapticType: 7
 --- !u!1 &244508972
 GameObject:
   m_ObjectHideFlags: 0
@@ -11866,6 +11880,8 @@ GameObject:
   - component: {fileID: 384262551}
   - component: {fileID: 384262550}
   - component: {fileID: 384262549}
+  - component: {fileID: 384262553}
+  - component: {fileID: 384262554}
   m_Layer: 5
   m_Name: Fire Uprade
   m_TagString: Untagged
@@ -12071,6 +12087,32 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 450, y: 125}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &384262553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 384262548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d1a04d3536205640b08a328e1f6b7d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hapticType: 7
+--- !u!114 &384262554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 384262548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d1a04d3536205640b08a328e1f6b7d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hapticType: 7
 --- !u!1 &399035007
 GameObject:
   m_ObjectHideFlags: 0
@@ -12185,6 +12227,7 @@ GameObject:
   - component: {fileID: 414644231}
   - component: {fileID: 414644230}
   - component: {fileID: 414644229}
+  - component: {fileID: 414644233}
   m_Layer: 5
   m_Name: Plant Uprade
   m_TagString: Untagged
@@ -12390,6 +12433,19 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 450, y: 125}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &414644233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 414644228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d1a04d3536205640b08a328e1f6b7d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hapticType: 7
 --- !u!1 &440038483
 GameObject:
   m_ObjectHideFlags: 0
@@ -14117,6 +14173,50 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &880607468
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 880607469}
+  - component: {fileID: 880607470}
+  m_Layer: 0
+  m_Name: --------------- Haptic Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &880607469
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880607468}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.3034498, y: -1.0229291, z: 62.803085}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &880607470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880607468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a665e6416209294ba3e359c9d88c15a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &883489811
 GameObject:
   m_ObjectHideFlags: 0
@@ -21599,7 +21699,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 51.45
+  m_fontSize: 51.5
   m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -21719,6 +21819,7 @@ GameObject:
   - component: {fileID: 1747072106}
   - component: {fileID: 1747072105}
   - component: {fileID: 1747072104}
+  - component: {fileID: 1747072107}
   m_Layer: 5
   m_Name: Water Element
   m_TagString: Untagged
@@ -21924,6 +22025,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1747072102}
   m_CullTransparentMesh: 1
+--- !u!114 &1747072107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1747072102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d1a04d3536205640b08a328e1f6b7d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hapticType: 7
 --- !u!1 &1758440759
 GameObject:
   m_ObjectHideFlags: 0
@@ -22823,6 +22937,7 @@ GameObject:
   - component: {fileID: 1982930677}
   - component: {fileID: 1982930676}
   - component: {fileID: 1982930675}
+  - component: {fileID: 1982930679}
   m_Layer: 5
   m_Name: Electric Upgrade
   m_TagString: Untagged
@@ -23028,6 +23143,19 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 450, y: 125}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1982930679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1982930674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d1a04d3536205640b08a328e1f6b7d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hapticType: 7
 --- !u!1 &2011371931
 GameObject:
   m_ObjectHideFlags: 0
@@ -23471,6 +23599,7 @@ GameObject:
   - component: {fileID: 2079776963}
   - component: {fileID: 2079776962}
   - component: {fileID: 2079776961}
+  - component: {fileID: 2079776964}
   m_Layer: 5
   m_Name: Continue button
   m_TagString: Untagged
@@ -23615,6 +23744,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2079776959}
   m_CullTransparentMesh: 1
+--- !u!114 &2079776964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2079776959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d1a04d3536205640b08a328e1f6b7d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hapticType: 7
 --- !u!1 &2080880436
 GameObject:
   m_ObjectHideFlags: 0
@@ -24174,3 +24316,4 @@ SceneRoots:
   - {fileID: 1452289981}
   - {fileID: 2040530736}
   - {fileID: 1078555492}
+  - {fileID: 880607469}

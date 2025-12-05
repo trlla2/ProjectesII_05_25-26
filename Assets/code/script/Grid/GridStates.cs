@@ -33,7 +33,6 @@ public class IdleState : IGridState
 
     public void Update()
     {
-        //Nothing to update in idle state
     }
 
     public void Exit()
@@ -85,30 +84,27 @@ public class RefillState : IGridState
 
     private void PerformRefill()
     {
-        //Apply gravity and get positions that moved (logical swap already updates gridData visuals)
         List<Vector2Int> movedPositions = grid.GravityHandler.ApplyGravity();
-
-        //Run the refill sequence as a coroutine so we can wait for gravity animation to finish
         grid.StartCoroutine(RefillSequence(movedPositions, refillDuration));
     }
 
     private IEnumerator RefillSequence(List<Vector2Int> movedPositions, float gravityDuration)
     {
-        //Animate gravity and wait until it finishes
+        // Animate gravity and wait until it finishes
         if (visualGrid != null && movedPositions != null && movedPositions.Count > 0)
         {
             yield return grid.StartCoroutine(visualGrid.AnimateGravity(movedPositions, gravityDuration));
         }
 
-        //After gravity animation completes, find empty slots and spawn new elements
-        List<Vector2Int> emptyPositions = GetEmptyPositions();
+        // After gravity animation completes, find empty slots and spawn new elements
+        List<Vector2Int> emptyPositions = GetEmptyPositionsExcludingBelowTargets();
 
         if (emptyPositions.Count > 0)
         {
-            //Fill empty slots with new elements
-            grid.FillEmptySlots(grid.AvailableElements);
+            // Fill only the allowed empty slots with new elements
+            grid.FillEmptySlots(grid.AvailableElements, emptyPositions);
 
-            //Ensure visuals exist for newly spawned elements
+            // Ensure visuals exist for newly spawned elements
             foreach (var pos in emptyPositions)
             {
                 Element element = grid.GridData.GetElementAt(pos);
@@ -126,8 +122,8 @@ public class RefillState : IGridState
                     visual.SetSelectable(false);
             }
 
-            // Play the refill (scale-in) animation and then finalize
-            visualGrid.Refill(refillDuration);
+            // Play the fill animation only for the chosen positions
+            visualGrid.FillEmpty(emptyPositions, refillDuration);
 
             // Wait for fill animation to complete then finalize (CompleteRefillAfterDelay will set isRefilling=false)
             yield return new WaitForSeconds(refillDuration);
@@ -139,20 +135,34 @@ public class RefillState : IGridState
         }
     }
 
-    private List<Vector2Int> GetEmptyPositions()
+    private List<Vector2Int> GetEmptyPositionsExcludingBelowTargets()
     {
         List<Vector2Int> emptyPositions = new List<Vector2Int>();
+        int size = grid.GridData.GridSize;
 
-        for (int x = 0; x < grid.GridData.GridSize; x++)
+        for (int x = 0; x < size; x++)
         {
-            for (int y = 0; y < grid.GridData.GridSize; y++)
+            for (int y = 0; y < size; y++)
             {
                 Vector2Int pos = new Vector2Int(x, y);
                 Element element = grid.GridData.GetElementAt(pos);
 
                 if (element == grid.EmptyElement || element == null)
                 {
-                    emptyPositions.Add(pos);
+                    bool isBelowTargeted = false;
+                    for (int yAbove = y + 1; yAbove < size; yAbove++)
+                    {
+                        Vector2Int abovePos = new Vector2Int(x, yAbove);
+                        ElementVisual aboveVisual = grid.GridData.GetVisualAt(abovePos);
+                        if (aboveVisual != null && aboveVisual.IsTargetedByEnemy)
+                        {
+                            isBelowTargeted = true;
+                            break;
+                        }
+                    }
+
+                    if (!isBelowTargeted)
+                        emptyPositions.Add(pos);
                 }
             }
         }
@@ -320,7 +330,6 @@ public class EnemySpellState : IGridState
 
         grid.InstantVisualEmpty(positions);
 
-        // Apply gravity and animate moved positions
         List<Vector2Int> movedPositions = grid.GravityHandler.ApplyGravity();
 
         if (visualGrid != null && movedPositions != null && movedPositions.Count > 0)
@@ -328,12 +337,11 @@ public class EnemySpellState : IGridState
             yield return grid.StartCoroutine(visualGrid.AnimateGravity(movedPositions, refillDuration));
         }
 
-        // Fill empty slots and animate refill
-        List<Vector2Int> emptyPositions = GetEmptyPositions();
+        List<Vector2Int> emptyPositions = GetEmptyPositionsExcludingBelowTargets();
 
         if (emptyPositions.Count > 0)
         {
-            grid.FillEmptySlots(grid.AvailableElements);
+            grid.FillEmptySlots(grid.AvailableElements, emptyPositions);
 
             //Ensure visuals exist for newly spawned elements
             foreach (var pos in emptyPositions)
@@ -345,6 +353,7 @@ public class EnemySpellState : IGridState
                 }
             }
 
+            // Disable selection during animation
             foreach (var pos in emptyPositions)
             {
                 ElementVisual visual = grid.GridData.GetVisualAt(pos);
@@ -352,34 +361,49 @@ public class EnemySpellState : IGridState
                     visual.SetSelectable(false);
             }
 
+            // Play the refill (scale-in) animation only for chosen positions
+            visualGrid.FillEmpty(emptyPositions, refillDuration);
 
-            visualGrid.Refill(refillDuration);
-
-
+            // Wait for fill animation to complete then finalize
             yield return new WaitForSeconds(refillDuration);
             yield return grid.StartCoroutine(CompleteRefillAfterDelay(0f));
         }
         else
         {
+            // no refill needed, finish processing now
             isProcessing = false;
             onComplete?.Invoke();
         }
     }
 
-    private List<Vector2Int> GetEmptyPositions()
+    private List<Vector2Int> GetEmptyPositionsExcludingBelowTargets()
     {
         List<Vector2Int> emptyPositions = new List<Vector2Int>();
+        int size = grid.GridData.GridSize;
 
-        for (int x = 0; x < grid.GridData.GridSize; x++)
+        for (int x = 0; x < size; x++)
         {
-            for (int y = 0; y < grid.GridData.GridSize; y++)
+            for (int y = 0; y < size; y++)
             {
                 Vector2Int pos = new Vector2Int(x, y);
                 Element element = grid.GridData.GetElementAt(pos);
 
                 if (element == grid.EmptyElement || element == null)
                 {
-                    emptyPositions.Add(pos);
+                    bool isBelowTargeted = false;
+                    for (int yAbove = y + 1; yAbove < size; yAbove++)
+                    {
+                        Vector2Int abovePos = new Vector2Int(x, yAbove);
+                        ElementVisual aboveVisual = grid.GridData.GetVisualAt(abovePos);
+                        if (aboveVisual != null && aboveVisual.IsTargetedByEnemy)
+                        {
+                            isBelowTargeted = true;
+                            break;
+                        }
+                    }
+
+                    if (!isBelowTargeted)
+                        emptyPositions.Add(pos);
                 }
             }
         }
@@ -391,6 +415,7 @@ public class EnemySpellState : IGridState
     {
         yield return new WaitForSeconds(delay);
 
+        //After animation completes, ensure ALL visuals are properly 
         for (int x = 0; x < grid.GridData.GridSize; x++)
         {
             for (int y = 0; y < grid.GridData.GridSize; y++)
@@ -400,14 +425,18 @@ public class EnemySpellState : IGridState
 
                 if (visual != null)
                 {
+                    //Reset anchor
                     visual.transform.position = visualGrid.GridToWorldPosition(pos);
 
+                    //Reset sprite transform
                     visual.ResetSpriteTransform();
                     visual.SetWorldPosition(visualGrid.GridToWorldPosition(pos));
 
+                    //Re-initialize to ensure grid position
                     Element element = grid.GridData.GetElementAt(pos);
                     visual.Initialize(pos, element);
 
+                    //Re-enable selection
                     visual.SetSelectable(true);
                 }
             }

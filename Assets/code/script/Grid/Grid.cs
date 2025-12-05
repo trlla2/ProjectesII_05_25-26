@@ -97,15 +97,17 @@ public class Grid : MonoBehaviour
 
         foreach (var pos in positions)
         {
-            //mark logical element as empty immediately
+            // mark logical element as empty immediately
             gridData.SetElementAt(pos, emptyElement);
             visualGrid.GetVisualAt(pos).UpdateVisual(emptyElement);
 
+            // remove visual immediately so it's gone before gravity runs
             if (visualGrid != null)
             {
                 ElementVisual visual = gridData.GetVisualAt(pos);
                 if (visual != null)
                 {
+                    // If this visual was targeted by the enemy, stop blinking and clear target
                     if (visual.IsTargetedByEnemy)
                     {
                         visual.ClearTargetVisual();
@@ -180,7 +182,6 @@ public class Grid : MonoBehaviour
     {
         gridData.SetVisualAt(position, visual);
     }
-
     public void PlayEnemySpellAnimation(List<Vector2Int> positions, System.Action onComplete = null)
     {
         if (positions == null || positions.Count == 0)
@@ -216,6 +217,42 @@ public class Grid : MonoBehaviour
         ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete));
     }
 
+    public void FillEmptySlots(List<Element> elements, List<Vector2Int> positionsToFill = null)
+    {
+        if (elements == null || elements.Count == 0)
+            return;
+
+        List<Vector2Int> positions;
+        if (positionsToFill != null)
+        {
+            positions = positionsToFill;
+        }
+        else
+        {
+            positions = GetEmptyPositions();
+        }
+
+        foreach (var pos in positions)
+        {
+            // safety
+            if (!gridData.IsPositionValid(pos))
+                continue;
+
+            Element randomElement = elements[Random.Range(0, elements.Count)];
+            gridData.SetElementAt(pos, randomElement);
+
+            ElementVisual visual = gridData.GetVisualAt(pos);
+            if (visual != null)
+            {
+                visual.UpdateVisual(randomElement);
+            }
+            else if (visualGrid != null && visualGrid.isInitialized)
+            {
+                // create visual for newly spawned element and anchor it (only if VisualGrid is initialized)
+                visualGrid.EnsureVisualAt(pos, randomElement);
+            }
+        }
+    }
 
     public void ChangeState(IGridState newState)
     {
@@ -260,28 +297,10 @@ public class Grid : MonoBehaviour
 
     public void FillEmptySlots(List<Element> elements)
     {
-        if (elements == null || elements.Count == 0)
-            return;
-
-        List<Vector2Int> emptyPositions = GetEmptyPositions();
-
-        foreach (var pos in emptyPositions)
-        {
-            Element randomElement = elements[Random.Range(0, elements.Count)];
-            gridData.SetElementAt(pos, randomElement);
-
-            ElementVisual visual = gridData.GetVisualAt(pos);
-            if (visual != null)
-            {
-                visual.UpdateVisual(randomElement);
-            }
-            else if (visualGrid != null && visualGrid.isInitialized)
-            {
-                // create visual for newly spawned element and anchor it (only if VisualGrid is initialized)
-                visualGrid.EnsureVisualAt(pos, randomElement);
-            }
-        }
+        // kept for backward compatibility: delegate to new implementation
+        FillEmptySlots(elements, null);
     }
+
     private List<Vector2Int> GetEmptyPositions()
     {
         List<Vector2Int> emptyPositions = new List<Vector2Int>();

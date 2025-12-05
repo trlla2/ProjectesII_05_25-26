@@ -62,11 +62,9 @@ public class GridGravity
                     //No pueden caer elementos targeted
                     if (aboveElement != null && aboveElement != emptyElement && !aboveElementVisual.IsTargetedByEnemy)
                     {
-                        // SWAP lógico
                         gridData.SetElementAt(currentPos, aboveElement);
                         gridData.SetElementAt(abovePos, emptyElement);
 
-                        // SWAP visual
                         ElementVisual currentVisual = gridData.GetVisualAt(currentPos);
                         ElementVisual aboveVisual = gridData.GetVisualAt(abovePos);
 

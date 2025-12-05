@@ -21,16 +21,11 @@ public class EnemyBehaviour : MonoBehaviour
 
     private IEnemySpell activeSpell;
 
-    public event System.Action<float> OnHealthChanged;
-    public event System.Action<List<DamageType>> OnDamageReceived;
-    public event System.Action<float> OnAttackTimerChanged;
-    public event System.Action OnDeath;
-
     //Legacy System
     public delegate void GetOnHitRecived(float health);
     public event GetOnHitRecived OnHitRecived;
 
-    public delegate void GetOnDamageList(List<DamageType> damageList);
+    public delegate void GetOnDamageList(DamageType damageList);
     public event GetOnDamageList OnDamageList;
 
     public delegate void GetOnAttackTimeChange(float attackTime);
@@ -141,32 +136,17 @@ public class EnemyBehaviour : MonoBehaviour
         });
     }
 
-    public void TakeDamage(List<DamageType> damageList)
+    public void DealDamage(DamageType damageType)
     {
-        if (damageList == null || damageList.Count == 0)
-            return;
+        float damage = enemyType.CalculateDamageTaken(damageType.element, damageType.damage);
 
-        float totalDamage = 0f;
-        List<DamageType> processedDamage = new List<DamageType>();
-
-        foreach (DamageType damageType in damageList)
-        {
-            float finalDamage = enemyType.CalculateDamageTaken(damageType.element, damageType.damage);
-            totalDamage += finalDamage;
-            processedDamage.Add(new DamageType(damageType.element, finalDamage));
-        }
-
-        currentHealth -= totalDamage;
+        currentHealth -= damage;
         currentHealth = Mathf.Max(0, currentHealth);
 
-        OnHealthChanged?.Invoke(currentHealth);
-        OnDamageReceived?.Invoke(processedDamage);
-
-        //Legacy events
         OnHitRecived?.Invoke(currentHealth);
-        OnDamageList?.Invoke(processedDamage);
+        OnDamageList?.Invoke(damageType);
 
-        Debug.Log($"Enemy {enemyType.name} took {totalDamage} damage. Health: {currentHealth}/{enemyType.Health}");
+        Debug.Log($"Enemy {enemyType.name} took {damage} damage. Health: {currentHealth}/{enemyType.Health}");
 
         if (currentHealth <= 0)
         {
@@ -184,26 +164,12 @@ public class EnemyBehaviour : MonoBehaviour
             particles.transform.SetParent(null);
         }
 
-        OnDeath?.Invoke();
-
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.OnEnemyDead();
+            GameManager.Instance.OnEnemyDead(); 
         }
         spriteRenderer.enabled = false;
 
         Debug.Log($"Enemy {enemyType.name} has been defeated!");
     }
-
-    public float GetCurrentHealth() => currentHealth;
-    public float GetMaxHealth() => enemyType.Health;
-    public bool IsInBattle() => inBattle;
-    public bool IsCastingSpell() => isCastingSpell;
-    public EnemyType GetEnemyType() => enemyType;
-
-    // Legacy support methods
-    public void InitBatle() => StartBattle();
-    public void StopEnemy() => StopBattle();
-    public float GetMaxHP() => GetMaxHealth();
-    public void DealDamage(List<DamageType> damageList) => TakeDamage(damageList);
 }

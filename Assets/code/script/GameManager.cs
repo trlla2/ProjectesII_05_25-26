@@ -4,6 +4,9 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+    
+    private PlayerStats playerStats;
+
     [Header("Stage")]
     [SerializeField]
     private int stageLevel = 1;
@@ -36,9 +39,9 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
     }
 
-    public void AttackEnemy(List<DamageType> damageList)
+    public void AttackEnemy(DamageType damageType)
     {
-        enemyInCombat?.DealDamage(damageList);
+        enemyInCombat?.DealDamage(playerStats.AttackWithElement(damageType.damage));
 
         OnPlayerMove?.Invoke();
     }
@@ -51,22 +54,25 @@ public class GameManager : MonoBehaviour
 
     public void AttackPlayer(float damage)
     {
-        PlayerStats.Instance.DealDamage(damage);
+        playerStats.Damage(damage);
         Camera.main.GetComponent<CameraShake>().Shake(0.2f);
+
+        if(playerStats.IsAlive())
+            OnPlayerDead();
     }
 
     public void SetEnemyRef(EnemyBehaviour enemyRef) 
     { 
         enemyInCombat = enemyRef; 
         enemyInCombat.SetEnemyType(enemyTypes[Random.Range(0, enemyTypes.Count)]);
-        enemyInCombat?.InitBatle();
+        enemyInCombat?.StartBattle();
         Debug.Log("enemyInCombat assinged"); 
     }
     public void DeleteEnemyRef() {  enemyInCombat = null; }
 
     public void OnPlayerDead()
     {
-        enemyInCombat?.StopEnemy();
+        enemyInCombat?.StopBattle();
         OnEndBattle?.Invoke(false, 0, 0); // 0 cause player lose
     }
 
@@ -74,8 +80,9 @@ public class GameManager : MonoBehaviour
     {
         int exp = stageLevel * expMultiplyer;
         int money = stageLevel * moneyMultiplyer;
+        playerStats.AddExp(exp);
+        playerStats.AddMoney(money);
 
-        PlayerStats.Instance.OnWinBattle(exp, money);
         DeleteEnemyRef();
         OnEndBattle?.Invoke(true, exp, money);
     }

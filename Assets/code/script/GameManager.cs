@@ -5,7 +5,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     
-    private PlayerStats playerStats;
+    private PlayerStats playerStats = new PlayerStats();
 
     [Header("Stage")]
     [SerializeField]

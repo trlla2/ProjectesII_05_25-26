@@ -20567,63 +20567,6 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 100
   m_TargetDisplay: 0
---- !u!1 &1442913421
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1442913423}
-  - component: {fileID: 1442913422}
-  m_Layer: 0
-  m_Name: --------------- PLAYER SATS MANAGER
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1442913422
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1442913421}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a321e5494e50f1c4f8ed1254b0126e56, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHp: 100
-  money: 10
-  spellBook:
-  - {fileID: 11400000, guid: d65283c45b7504446948b1b821bc9cb0, type: 2}
-  - {fileID: 11400000, guid: e9afe958fcdfa78458bbde73be344e18, type: 2}
-  - {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
-  - {fileID: 11400000, guid: e02a4c0454b986845a065ad209d800cd, type: 2}
-  inventory:
-  - {fileID: 11400000, guid: e047397be666a1b4d9643b4a3ec57c55, type: 2}
-  - {fileID: 11400000, guid: e047397be666a1b4d9643b4a3ec57c55, type: 2}
-  - {fileID: 11400000, guid: e047397be666a1b4d9643b4a3ec57c55, type: 2}
-  - {fileID: 11400000, guid: e047397be666a1b4d9643b4a3ec57c55, type: 2}
-  - {fileID: 11400000, guid: e047397be666a1b4d9643b4a3ec57c55, type: 2}
---- !u!4 &1442913423
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1442913421}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1452289980
 GameObject:
   m_ObjectHideFlags: 0
@@ -21599,7 +21542,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 51.45
+  m_fontSize: 51.5
   m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -24163,7 +24106,6 @@ SceneRoots:
   - {fileID: 1776343809}
   - {fileID: 1336190214}
   - {fileID: 379435941}
-  - {fileID: 1442913423}
   - {fileID: 874665316}
   - {fileID: 1507392192}
   - {fileID: 244508975}

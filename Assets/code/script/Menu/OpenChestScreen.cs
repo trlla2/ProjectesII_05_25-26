@@ -33,7 +33,7 @@ public class OpenChestScreen : MonoBehaviour
 
     public void KeepItem()
     {
-        PlayerStats.Instance.AddItemToInventory(_selectedItem);
+        GameManager.Instance.AddItemToPlayerInventory(_selectedItem);
     }
 
     public void CloseChest()

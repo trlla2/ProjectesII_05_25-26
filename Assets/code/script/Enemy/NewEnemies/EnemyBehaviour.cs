@@ -17,7 +17,6 @@ public class EnemyBehaviour : MonoBehaviour
 
     private float currentHealth;
     private bool inBattle = false;
-    private bool isCastingSpell = false;
 
     private IEnemySpell activeSpell;
 
@@ -89,7 +88,6 @@ public class EnemyBehaviour : MonoBehaviour
             return;
 
         inBattle = false;
-        isCastingSpell = false;
         if (GameManager.Instance != null)
             GameManager.Instance.OnPlayerMove -= HandlePlayerMove;
 
@@ -120,7 +118,6 @@ public class EnemyBehaviour : MonoBehaviour
         if (activeSpell != null)
         {
             activeSpell.Execute(grid);
-            isCastingSpell = true;
         }
     }
 
@@ -131,7 +128,6 @@ public class EnemyBehaviour : MonoBehaviour
 
         activeSpell.Tick(grid, () =>
         {
-            isCastingSpell = false;
             CreateAndExecuteSpell();
         });
     }

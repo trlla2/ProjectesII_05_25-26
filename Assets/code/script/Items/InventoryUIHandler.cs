@@ -8,7 +8,7 @@ public class InventoryUIHandler : MonoBehaviour
     private GameObject itemUIPrefab;
     private void Start()
     {
-        PlayerStats.Instance.OnInventoryChange += RefreshInventoryUI;
+        GameManager.Instance.OnPlayerInventoryChange += RefreshInventoryUI;
         RefreshInventoryUI();
     }
 
@@ -20,7 +20,7 @@ public class InventoryUIHandler : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        foreach (var item in PlayerStats.Instance.GetInventory())
+        foreach (var item in GameManager.Instance.GetPlayerInventory())
         {
             GameObject itemUI = Instantiate(itemUIPrefab, transform);
             itemUI.GetComponent<Image>().sprite = item.enemySprite;
@@ -30,6 +30,6 @@ public class InventoryUIHandler : MonoBehaviour
 
     private void OnDestroy()
     {
-        PlayerStats.Instance.OnInventoryChange -= RefreshInventoryUI;
+        GameManager.Instance.OnPlayerInventoryChange -= RefreshInventoryUI;
     }   
 }

@@ -150,7 +150,7 @@ public class Grid : MonoBehaviour
         if (CurrentState != GridStateType.Idle)
             return;
 
-        ChangeState(new LeverPullState(this, visualGrid, elements, PlayerStats.Instance.GetSpellBook()));
+        ChangeState(new LeverPullState(this, visualGrid, elements, GameManager.Instance.GetPlayerSpellBook()));
     }
 
     public Element GetElementAt(Vector2Int position)

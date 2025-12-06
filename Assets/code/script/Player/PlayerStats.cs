@@ -97,8 +97,6 @@ class PlayerStats
     public void LevelUp()
     {
         Level ++;
-        ExperiencePoints = 0;
-        Hp = MaxHp;
     }
 
     public void UpgradeElementalLevel(ElementType elementType)

@@ -54,10 +54,7 @@ public class Palanca : MonoBehaviour
 
     private bool TryConsumeCost()
     {
-        if (PlayerStats.Instance == null)
-            return false;
-
-        return PlayerStats.Instance.UseMoney(cost);
+        return GameManager.Instance.UsePlayerMoney(cost);
     }
 
     private void ExecuteLeverPull()

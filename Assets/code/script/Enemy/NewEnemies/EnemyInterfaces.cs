@@ -117,10 +117,8 @@ public abstract class EnemySpellBase : IEnemySpell
     protected void DamagePlayer(float damage)
     {
         Debug.Log($"Enemy spell deals {damage} damage to player.");
-        if (PlayerStats.Instance != null)
-        {
-            PlayerStats.Instance.DealDamage(damage);
-        }
+        
+        GameManager.Instance.AttackPlayer(damage);
     }
 }
 

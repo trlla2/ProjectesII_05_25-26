@@ -253,8 +253,10 @@ public class PlayerPathing : MonoBehaviour
     //Can be converted into a SpellEffectHandler class in the future if more complex effects are needed
     private void HandleSpellEffects(Spell spell)
     {
-         PlayerStats.Instance.Attack(spell);
-         if (spell.Name == "HEAL") PlayerStats.Instance.Heal(30); 
+        foreach(Element e in spell.Recipe)
+            GameManager.Instance.AttackEnemy(e.Type);
+
+        if (spell.Name == "HEAL") GameManager.Instance.HealPlayer(30); 
     }
 
     private void UpdateVisuals()
@@ -329,7 +331,7 @@ public class PlayerPathing : MonoBehaviour
 
     private List<Spell> GetAvailableSpells()
     {
-        return PlayerStats.Instance.GetSpellBook();
+        return GameManager.Instance.GetPlayerSpellBook();
     }
 
 }

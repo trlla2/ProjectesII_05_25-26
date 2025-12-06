@@ -29,8 +29,8 @@ public class LevelBarHandle : MonoBehaviour
 
     private void Start()
     {
-        PlayerStats.Instance.OnLevelUp += StartLevelUpAnimation;
-        PlayerStats.Instance.OnEXPChange += UpdateEXPBar;
+        GameManager.Instance.OnPlayerLevelUp += StartLevelUpAnimation;
+        GameManager.Instance.OnPlayerEXPChange += UpdateEXPBar;
         UpdateEXPBar();
     }
 
@@ -40,7 +40,7 @@ public class LevelBarHandle : MonoBehaviour
     }
     private void UpdateEXPBar()
     {
-        lvlText.text = PlayerStats.Instance.GetLevel() + "lvl";
+        lvlText.text = GameManager.Instance.GetPlayerLevel() + "lvl";
         StartCoroutine(InterpolateEXPBar());
     }
 
@@ -52,13 +52,13 @@ public class LevelBarHandle : MonoBehaviour
 
             float interpolateValue = interpolationCurve.Evaluate(interpolationTime / interpolationDuration);
 
-            expSlider.value = (PlayerStats.Instance.GetEXP() * interpolateValue) / PlayerStats.Instance.GetEXPForNextLevel();
+            expSlider.value = (GameManager.Instance.GetPlayerEXP() * interpolateValue) / GameManager.Instance.GetPlayerEXPForNextLevel();
 
             yield return null;
         }
         interpolationTime = 0.0f;
 
-        expSlider.value = (float)PlayerStats.Instance.GetEXP() / (float)PlayerStats.Instance.GetEXPForNextLevel();
+        expSlider.value = (float)GameManager.Instance.GetPlayerEXP() / (float)GameManager.Instance.GetPlayerEXPForNextLevel();
     }
 
     private IEnumerator LevelUpExpBarAnimation()
@@ -108,8 +108,8 @@ public class LevelBarHandle : MonoBehaviour
 
     private void OnDestroy()
     {
-        PlayerStats.Instance.OnLevelUp -= StartLevelUpAnimation;
-        PlayerStats.Instance.OnEXPChange -= UpdateEXPBar;
+        GameManager.Instance.OnPlayerLevelUp -= StartLevelUpAnimation;
+        GameManager.Instance.OnPlayerEXPChange -= UpdateEXPBar;
 
     }
 }

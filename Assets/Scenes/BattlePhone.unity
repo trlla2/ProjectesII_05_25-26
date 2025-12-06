@@ -13708,6 +13708,7 @@ GameObject:
   m_Component:
   - component: {fileID: 806185222}
   - component: {fileID: 806185221}
+  - component: {fileID: 806185223}
   m_Layer: 0
   m_Name: --------------------- GAME MANAGER
   m_TagString: Untagged
@@ -13745,6 +13746,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &806185223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 806185220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5089faa8aa8f981468d790dfeaa1fece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  items:
+  - {fileID: 11400000, guid: e047397be666a1b4d9643b4a3ec57c55, type: 2}
+  - {fileID: 11400000, guid: e047397be666a1b4d9643b4a3ec57c55, type: 2}
+  - {fileID: 11400000, guid: e047397be666a1b4d9643b4a3ec57c55, type: 2}
+  spells:
+  - {fileID: 11400000, guid: d65283c45b7504446948b1b821bc9cb0, type: 2}
+  - {fileID: 11400000, guid: e02a4c0454b986845a065ad209d800cd, type: 2}
+  - {fileID: 11400000, guid: e9afe958fcdfa78458bbde73be344e18, type: 2}
+  - {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
 --- !u!1 &810593950
 GameObject:
   m_ObjectHideFlags: 0
@@ -23399,9 +23421,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 2041891010}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7364422f45b6f7c4787a2317e61b5d33, type: 3}
+  m_Script: {fileID: 11500000, guid: 8eea307f14423df448094e8ad506a968, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  healthBar: {fileID: 1474826783}
+  attackTimeCircle: {fileID: 0}
+  damageText: {fileID: 1937170125}
+  damageTextTranslator: {fileID: 1937170124}
+  timeToChangeDmg: 0.3
+  weaknessText: {fileID: 1070558224}
+  weaknessTextTranslator: {fileID: 1070558223}
+  timeToChangeWeak: 0.3
 --- !u!1 &2079776959
 GameObject:
   m_ObjectHideFlags: 0

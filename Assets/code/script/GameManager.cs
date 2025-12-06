@@ -73,6 +73,7 @@ public class GameManager : MonoBehaviour
         if (playerStats.EvadeAttack())
         {
             OnPlayerHitEvaded?.Invoke();
+            Debug.Log("EVADEDDDDDDDDDD");
             return;
         }
 
@@ -98,7 +99,7 @@ public class GameManager : MonoBehaviour
     public void AddItemToPlayerInventory(ItemsType item)
     {
         playerStats.AddItemToInventory(item);
-        OnPlayerInventoryChange.Invoke();
+        OnPlayerInventoryChange?.Invoke();
     }
 
     public void UpgradePlayerElementLevel(ElementType type)

@@ -2,17 +2,24 @@ using System;
 using System.Collections.Generic;
 
 
-class PlayerStats
+public class PlayerStats
 {
+    
+
     public float MaxHp;
     public float Hp;
+
     public int ExperiencePoints;
     public int Level;
-    public int Money;
-    public List<Spell> SpellBook;
-    public List<ItemsType> Inventory;
     public Dictionary<ElementType, int> ElementalLevels;
     public int ElementalLevelMultiplyer;
+
+    public int Money;
+    public List<Spell> SpellBook;
+
+    public List<Item> Inventory;
+    public int EvasionPoints;
+    public int ExtraHealth;
 
     public PlayerStats()
     {
@@ -22,7 +29,7 @@ class PlayerStats
         Level = 1;
         Money = 10;
         SpellBook = new List<Spell>();
-        Inventory = new List<ItemsType>();
+        Inventory = new List<Item>();
         ElementalLevels = new Dictionary<ElementType, int>()
         {
             { ElementType.Green, 1},
@@ -31,6 +38,9 @@ class PlayerStats
             { ElementType.Blue, 1}
         };
         ElementalLevelMultiplyer = 4;
+    
+        ExtraHealth = 0;
+        EvasionPoints = 0;
     }
 
     public List<DamageType> AttackWithSpell(Spell spell)
@@ -48,17 +58,8 @@ class PlayerStats
     {
         return new DamageType(elementType, ElementalLevelMultiplyer * ElementalLevels[elementType]);
     }
-
     
-    public bool EvadeAttack()
-    {
-        float evasionChance = 0;
-
-        foreach (ItemsType item in Inventory)
-            evasionChance += item.evasionBonus;
-
-        return UnityEngine.Random.Range(0f, 100f) < evasionChance;
-    }
+    public bool EvadeAttack() { return UnityEngine.Random.Range(0f, 100f) < EvasionPoints; }
 
     public void Damage(float dT) { Hp -= dT; }
 
@@ -100,7 +101,20 @@ class PlayerStats
         ElementalLevels[elementType] += 1;
     }
 
-    public void AddItemToInventory(ItemsType item) { Inventory.Add(item); }
+    public void AddItemToInventory(Item item) 
+    { 
+        Inventory.Add(item);
+        item.ApplyEffects(this);
+    }
+
+    public void RemoveItemFromInventory(Item item)
+    {
+        if (Inventory.Contains(item))
+        {
+            Inventory.Remove(item);
+            item.RemoveEffects(this);
+        }
+    }
 
     public void AddSpellToSpellBook(Spell spell)
     {
@@ -111,5 +125,7 @@ class PlayerStats
     public int GetEXPForNextLevel() { return (int)Math.Pow(4, Level); }
     public bool CanLevelUp() { return ExperiencePoints >= GetEXPForNextLevel(); }
     public bool IsAlive() { return Hp > 0; }
+    public void ModifyEvasion(int amount) { EvasionPoints += amount; }
+    public void ModifyExtraHealth(int amount) { ExtraHealth += amount; }
 
     }

@@ -5,7 +5,7 @@ public class DEBUG_Stats : MonoBehaviour
 {
     [Header("DEBUG ONLY")]
     [SerializeField]
-    private List<ItemsType> items = new List<ItemsType>();
+    private List<Item> items = new List<Item>();
     [Header(" ONLY PUT 4 SPELLS")]
     [SerializeField]
     private List<Spell> spells = new List<Spell>();
@@ -15,7 +15,7 @@ public class DEBUG_Stats : MonoBehaviour
         foreach (Spell spell in spells)
             GameManager.Instance.AddSpellToPlayerSpellBook(spell);
 
-        foreach (ItemsType item in items)
+        foreach (Item item in items)
             GameManager.Instance.AddItemToPlayerInventory(item);
         
 

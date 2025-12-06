@@ -96,7 +96,7 @@ public class GameManager : MonoBehaviour
         return playerStats.UseMoney(amount);
     }
 
-    public void AddItemToPlayerInventory(ItemsType item)
+    public void AddItemToPlayerInventory(Item item)
     {
         playerStats.AddItemToInventory(item);
         OnPlayerInventoryChange?.Invoke();
@@ -147,6 +147,6 @@ public class GameManager : MonoBehaviour
     public int GetPlayerEXPForNextLevel() => playerStats.GetEXPForNextLevel();
     public int GetPlayerMoney() => playerStats.Money;
     public List<Spell> GetPlayerSpellBook() => playerStats.SpellBook;
-    public List<ItemsType> GetPlayerInventory() => playerStats.Inventory;
+    public List<Item> GetPlayerInventory() => playerStats.Inventory;
     public EnemyBehaviour GetEnemyRef() => enemyInCombat;
 }

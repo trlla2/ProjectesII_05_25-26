@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer))]
@@ -24,12 +22,8 @@ public class EnemyBehaviour : MonoBehaviour
     public delegate void GetOnHitRecived(float health);
     public event GetOnHitRecived OnHitRecived;
 
-    public delegate void GetOnDamageList(DamageType damageList);
-    public event GetOnDamageList OnDamageList;
-
-    public delegate void GetOnAttackTimeChange(float attackTime);
-    public event GetOnAttackTimeChange OnAttackTimeChange;
-
+    public delegate void GetOnDamageList(DamageType damageType);
+    public event GetOnDamageList OnGetDamage;
 
     private void Awake()
     {
@@ -140,7 +134,7 @@ public class EnemyBehaviour : MonoBehaviour
         currentHealth = Mathf.Max(0, currentHealth);
 
         OnHitRecived?.Invoke(currentHealth);
-        OnDamageList?.Invoke(damageType);
+        OnGetDamage?.Invoke(damageType);
 
         Debug.Log($"Enemy {enemyType.name} took {damage} damage. Health: {currentHealth}/{enemyType.Health}");
 
@@ -168,4 +162,7 @@ public class EnemyBehaviour : MonoBehaviour
 
         Debug.Log($"Enemy {enemyType.name} has been defeated!");
     }
+
+    public float GetMaxHP() => enemyType.Health;
+    public EnemyType GetEnemyType() => enemyType;
 }

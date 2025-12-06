@@ -1,9 +1,5 @@
-using NUnit.Framework.Constraints;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using TMPro;
-using UnityEngine;
 
 
 class PlayerStats
@@ -106,8 +102,14 @@ class PlayerStats
 
     public void AddItemToInventory(ItemsType item) { Inventory.Add(item); }
 
-    public int GetEXPForNextLevel() { return (int)Math.Pow(4, Level); }
+    public void AddSpellToSpellBook(Spell spell)
+    {
+        if(SpellBook.Count < 4)
+            SpellBook.Add(spell);
+    }
 
+    public int GetEXPForNextLevel() { return (int)Math.Pow(4, Level); }
+    public bool CanLevelUp() { return ExperiencePoints >= GetEXPForNextLevel(); }
     public bool IsAlive() { return Hp > 0; }
 
     }

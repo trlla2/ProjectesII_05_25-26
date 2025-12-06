@@ -81,7 +81,7 @@ public class GameManager : MonoBehaviour
 
         OnPlayerHitRecived.Invoke(playerStats.Hp);
 
-        if(playerStats.IsAlive())
+        if(!playerStats.IsAlive())
             OnPlayerDead();
     }
 
@@ -107,6 +107,8 @@ public class GameManager : MonoBehaviour
         playerStats.LevelUp();
     }
 
+    public void AddSpellToPlayerSpellBook(Spell spell) { playerStats.AddSpellToSpellBook(spell); }
+
     public void OnPlayerDead()
     {
         enemyInCombat?.StopBattle();
@@ -119,12 +121,16 @@ public class GameManager : MonoBehaviour
         int money = stageLevel * moneyMultiplyer;
 
         playerStats.AddExp(exp);
-        OnPlayerEXPChange.Invoke();
+        OnPlayerEXPChange?.Invoke();
 
         playerStats.AddMoney(money);
-        OnPlayerMoneyChange.Invoke();
+        OnPlayerMoneyChange?.Invoke();
 
         DeleteEnemyRef();
+
+        if(playerStats.CanLevelUp())
+            OnPlayerLevelUp.Invoke();
+
         OnEndBattle?.Invoke(true, exp, money);
     }
 
@@ -141,4 +147,5 @@ public class GameManager : MonoBehaviour
     public int GetPlayerMoney() => playerStats.Money;
     public List<Spell> GetPlayerSpellBook() => playerStats.SpellBook;
     public List<ItemsType> GetPlayerInventory() => playerStats.Inventory;
+    public EnemyBehaviour GetEnemyRef() => enemyInCombat;
 }

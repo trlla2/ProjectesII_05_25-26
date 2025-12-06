@@ -118,7 +118,7 @@ public class EnemyUIHandler : MonoBehaviour
             yield return null;
         }
 
-        weaknessTextTranslator.ResetPosition();
+        //weaknessTextTranslator.ResetPosition();
         timerChangeWeak = 0;
     }
 

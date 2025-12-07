@@ -5500,6 +5500,8 @@ GameObject:
   - component: {fileID: 710040041163105777}
   - component: {fileID: 4371430810554761619}
   - component: {fileID: 6855472849321200636}
+  - component: {fileID: 2496224515864261584}
+  - component: {fileID: 3579746744673039026}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -5517,7 +5519,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2.04, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9209209537207105133}
@@ -5648,9 +5650,10 @@ MonoBehaviour:
   cursorVisual: {fileID: 0}
   maxPathLength: 6
   cursorLerpSpeed: 15
-  SelectScaleAmount: 0.2
-  SelectScaleTime: 0.2
-  canPath: 1
+  selectScaleAmount: 0.2
+  selectScaleTime: 0.2
+  xDistanceBetween: 1.25
+  spellPathAnimator: {fileID: 0}
 --- !u!212 &710040041163105777
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5692,9 +5695,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 11
+  m_SortingLayerID: -2047655367
+  m_SortingLayer: 2
+  m_SortingOrder: 1
   m_Sprite: {fileID: -4104670303789555025, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -5734,6 +5737,40 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   killParticles: {fileID: 2881528849542322018}
   spriteRenderer: {fileID: 710040041163105777}
+--- !u!95 &2496224515864261584
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4902791056421607132}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 6fd2b08bba2bb2143882f77410fc9e2e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3579746744673039026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4902791056421607132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09d7074eefe3bf14c918ba8a509bb589, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5150983109030623896
 GameObject:
   m_ObjectHideFlags: 0

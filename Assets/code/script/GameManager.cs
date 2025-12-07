@@ -145,6 +145,7 @@ public class GameManager : MonoBehaviour
     public int GetPlayerLevel() => playerStats.Level;
     public int GetPlayerEXP() => playerStats.ExperiencePoints;
     public int GetPlayerEXPForNextLevel() => playerStats.GetEXPForNextLevel();
+    public int GetPlayerEXPForLastLevel() => playerStats.GetEXPForLastLevel();
     public int GetPlayerMoney() => playerStats.Money;
     public List<Spell> GetPlayerSpellBook() => playerStats.SpellBook;
     public List<Item> GetPlayerInventory() => playerStats.Inventory;

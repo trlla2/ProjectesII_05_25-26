@@ -122,6 +122,13 @@ public class PlayerStats
             SpellBook.Add(spell);
     }
 
+    public int GetEXPForLastLevel() 
+    { 
+        if(Level - 1 > 0)
+            return (int)Math.Pow(4, Level - 1);
+
+        return 0;
+    }
     public int GetEXPForNextLevel() { return (int)Math.Pow(4, Level); }
     public bool CanLevelUp() { return ExperiencePoints >= GetEXPForNextLevel(); }
     public bool IsAlive() { return Hp > 0; }

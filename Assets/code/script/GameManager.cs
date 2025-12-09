@@ -58,8 +58,6 @@ public class GameManager : MonoBehaviour
     public void AttackEnemy(ElementType element)
     {
         enemyInCombat?.DealDamage(playerStats.AttackWithElement(element));
-
-        OnPlayerMove?.Invoke();
     }
 
     //future use? Mb if the player misses a spell

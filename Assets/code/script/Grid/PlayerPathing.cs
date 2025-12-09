@@ -256,6 +256,8 @@ public class PlayerPathing : MonoBehaviour
         foreach(Element e in spell.Recipe)
             GameManager.Instance.AttackEnemy(e.Type);
 
+        GameManager.Instance.NotifyPlayerMove();
+
         if (spell.Name == "HEAL") GameManager.Instance.HealPlayer(30); 
     }
 

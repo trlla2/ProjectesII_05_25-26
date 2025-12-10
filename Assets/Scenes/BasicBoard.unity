@@ -1348,6 +1348,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1135501900}
   - component: {fileID: 1135501899}
+  - component: {fileID: 1135501901}
   m_Layer: 0
   m_Name: --------------------- GAME MANAGER
   m_TagString: Untagged
@@ -1369,10 +1370,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stageLevel: 1
   enemyTypes:
-  - {fileID: 11400000, guid: e3dd09a9dd0977248b7cd0fbfde410df, type: 2}
-  - {fileID: 11400000, guid: b9c808fbaa24e3a42b7f571e85b936ad, type: 2}
-  - {fileID: 11400000, guid: 5a24782ba9a42cb49b3f9ba6e5f9d720, type: 2}
-  - {fileID: 11400000, guid: bb5502b10a943fa45944063b5ce41d6f, type: 2}
+  - {fileID: 11400000, guid: 3ddc38c9790bdd44bacbeb43cb61cada, type: 2}
 --- !u!4 &1135501900
 Transform:
   m_ObjectHideFlags: 0
@@ -1388,6 +1386,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1135501901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1135501898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5089faa8aa8f981468d790dfeaa1fece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  items: []
+  spells:
+  - {fileID: 11400000, guid: d65283c45b7504446948b1b821bc9cb0, type: 2}
+  - {fileID: 11400000, guid: e02a4c0454b986845a065ad209d800cd, type: 2}
+  - {fileID: 11400000, guid: e9afe958fcdfa78458bbde73be344e18, type: 2}
+  - {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
 --- !u!1 &1217863286
 GameObject:
   m_ObjectHideFlags: 0

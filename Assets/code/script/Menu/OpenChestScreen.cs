@@ -12,8 +12,8 @@ public class OpenChestScreen : MonoBehaviour
     [SerializeField] Image _itemSprite;
 
     
-    [SerializeField] private List<ItemsType> _itemsPool;
-    ItemsType _selectedItem;
+    [SerializeField] private List<Item> _itemsPool;
+    Item _selectedItem;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -33,7 +33,7 @@ public class OpenChestScreen : MonoBehaviour
 
     public void KeepItem()
     {
-        PlayerStats.Instance.AddItemToInventory(_selectedItem);
+        GameManager.Instance.AddItemToPlayerInventory(_selectedItem);
     }
 
     public void CloseChest()

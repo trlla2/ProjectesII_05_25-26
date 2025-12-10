@@ -11,7 +11,7 @@ public class PlayerHandler : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private void Start()
     {
-        PlayerStats.Instance.OnHitRecived += HandlePlayerHit;
+        GameManager.Instance.OnPlayerHitRecived += HandlePlayerHit;
     }
 
     private void HandlePlayerHit(float health)
@@ -25,6 +25,6 @@ public class PlayerHandler : MonoBehaviour
 
     private void OnDestroy()
     {
-        PlayerStats.Instance.OnHitRecived -= HandlePlayerHit;
+        GameManager.Instance.OnPlayerHitRecived -= HandlePlayerHit;
     }
 }

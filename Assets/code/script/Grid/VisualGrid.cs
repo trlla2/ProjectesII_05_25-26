@@ -14,8 +14,10 @@ public class VisualGrid : MonoBehaviour
 
     private Grid grid;
     public bool isInitialized = false;
-    private float xSpacing = 1.1f;
-    private float ySpacing = 1.1f;
+
+    [Header("Spacing")]
+    [SerializeField] private float xSpacing = 1.1f;
+    [SerializeField] private float ySpacing = 1.1f;
     public Vector3 startPosition;
     private void Awake()
     {

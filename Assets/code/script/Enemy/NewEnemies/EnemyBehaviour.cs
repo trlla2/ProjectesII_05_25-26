@@ -28,15 +28,16 @@ public class EnemyBehaviour : MonoBehaviour
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.SetEnemyRef(this);
+        }
     }
 
     private void Start()
     {
         InitializeEnemy();
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.SetEnemyRef(this);
-        }
+        
     }
 
     private void OnDestroy()

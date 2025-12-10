@@ -5,6 +5,8 @@ using System.Linq;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 
+#if UNITY_EDITOR
+
 [CustomPropertyDrawer(typeof(IItemEffect), true)]
 public class ItemEffectDrawer : PropertyDrawer
 {
@@ -103,3 +105,5 @@ public class ItemEffectDrawer : PropertyDrawer
         menu.ShowAsContext();
     }
 }
+
+#endif 

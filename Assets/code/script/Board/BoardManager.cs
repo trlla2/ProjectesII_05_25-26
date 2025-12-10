@@ -10,6 +10,8 @@ public class BoardManager : MonoBehaviour
     public BoardTileData emptyTileData;
     public BoardTileData enemyTileData;
     public BoardTileData chestTileData;
+    public BoardTileData bossTileData;
+    public BoardTileData stairsTileData;
 
     public List<BoardTile> generatedTiles = new List<BoardTile>();
 

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 
 public class BoardGenerator : MonoBehaviour
@@ -8,6 +10,7 @@ public class BoardGenerator : MonoBehaviour
     [SerializeField] int _numOfEnemyTilesInBoard;
     [SerializeField] int _numOfChestTilesInBoard;
     [SerializeField] int _numOfEgressTilesInBoard;
+    [SerializeField] int _numOfMiniBosses;
     int _numOfTotalTilesInBoard;
 
     private void Awake()
@@ -66,7 +69,11 @@ public class BoardGenerator : MonoBehaviour
 
     void AssignSpecialTiles()
     {
+        BoardTile lastTile = BoardManager.instance.generatedTiles.ElementAt(BoardManager.instance.generatedTiles.Count - 1);
         List<BoardTile> availableTiles = new List<BoardTile>(BoardManager.instance.generatedTiles);
+        // remove last 6 tiles (reserved for stairs, boss and chest of egress)
+        availableTiles.RemoveRange(availableTiles.Count - 6, 6);
+        // remove starting tile from special tiles gen
         availableTiles.Remove(BoardManager.instance.startingTile);
         Shuffle(availableTiles);
 
@@ -89,6 +96,10 @@ public class BoardGenerator : MonoBehaviour
             if (assignedEnemies >= _numOfEnemyTilesInBoard && assignedChests >= _numOfChestTilesInBoard)
                 break;
         }
+
+        
+        //BoardTile lastTile = BoardManager.instance.generatedTiles.
+        BoardManager.instance.ReplaceTileType(lastTile, BoardManager.instance.stairsTileData);
 
         Debug.Log($"Asignadas {assignedEnemies} tiles de enemigos y {assignedChests} tiles de cofres.");
     }

@@ -1018,6 +1018,8 @@ MonoBehaviour:
   emptyTileData: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   enemyTileData: {fileID: 11400000, guid: 27551c8f56ed7724a8d92062277b60c2, type: 2}
   chestTileData: {fileID: 11400000, guid: d22ce5231cab6564988711f5ec7898de, type: 2}
+  bossTileData: {fileID: 11400000, guid: bc3587d48929d3347ab647196bf11cde, type: 2}
+  stairsTileData: {fileID: 11400000, guid: 5109a009fed6a2d4595e73f54ebbf5c4, type: 2}
   generatedTiles: []
   openChestPanel: {fileID: 137198783}
   openChestSource: {fileID: 1035823811}
@@ -1168,6 +1170,7 @@ MonoBehaviour:
   _numOfEnemyTilesInBoard: 5
   _numOfChestTilesInBoard: 3
   _numOfEgressTilesInBoard: 0
+  _numOfMiniBosses: 0
 --- !u!1 &1106537844
 GameObject:
   m_ObjectHideFlags: 0

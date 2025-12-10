@@ -18,12 +18,7 @@ public class BoardGenerator : MonoBehaviour
     void Start()
     {
         InstanceBoard();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        //InstanceHallOfEgress();
     }
 
     void InstanceBoard()
@@ -104,6 +99,39 @@ public class BoardGenerator : MonoBehaviour
         {
             int rand = Random.Range(i, list.Count);
             (list[i], list[rand]) = (list[rand], list[i]);
+        }
+    }
+
+    List<Vector2Int> GenerateSquareGrid(Vector2Int origin, int size)
+    {
+        List<Vector2Int> positions = new List<Vector2Int>();
+
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                positions.Add(new Vector2Int(origin.x + x, origin.y + y));
+            }
+        }
+
+        return positions;
+    }
+
+    void InstanceHallOfEgress()
+    {
+        BoardTile currentTile = BoardManager.instance.startingTile;
+
+        List<Vector2Int> gridPositions = GenerateSquareGrid(currentTile.GetGridPosition(), 4);
+
+        foreach (var pos in gridPositions)
+        {
+            if (pos == currentTile.GetGridPosition())
+                continue;
+
+            BoardTile nextTile = BoardManager.instance.CreateNewTile(BoardManager.instance.emptyTileData, pos);
+            BoardManager.instance.UpdateNeighbors(currentTile);
+
+            currentTile = nextTile;
         }
     }
 }

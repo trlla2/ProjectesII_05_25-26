@@ -52,7 +52,7 @@ public class BoardGenerator : MonoBehaviour
         //if (current.GetGridPosition() != startingTile.GetGridPosition())
         //    freePositions.Add(new Vector2Int(current.GetGridPosition().x-1, current.GetGridPosition().y));
         freePositions.Add(new Vector2Int(current.GetGridPosition().x + 1, current.GetGridPosition().y));
-        freePositions.Add(new Vector2Int(current.GetGridPosition().x, current.GetGridPosition().y - 1));
+        //freePositions.Add(new Vector2Int(current.GetGridPosition().x, current.GetGridPosition().y - 1));
         freePositions.Add(new Vector2Int(current.GetGridPosition().x, current.GetGridPosition().y + 1));
 
         for (int i = 0; i < BoardManager.instance.generatedTiles.Count; i++)

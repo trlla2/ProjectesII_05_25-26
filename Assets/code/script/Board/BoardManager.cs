@@ -92,7 +92,10 @@ public class BoardManager : MonoBehaviour
     {
         openChestPanel.openedChest = chestTile;
         openChestPanel.Pull();
-        openChestSource.Play(); // FORCED CHANGE
+
+        boardCamera.gameObject.GetComponent<TileClickHandler>().HandleBoardRaycast(false); // FORCED CHANGE
+
+        openChestSource.Play();
         openChestPanel.gameObject.SetActive(true);
     }
 

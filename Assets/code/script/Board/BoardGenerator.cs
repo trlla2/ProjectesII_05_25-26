@@ -20,19 +20,18 @@ public class BoardGenerator : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        InstanceBoard();
+        InstanceBoard(this.transform);
         //InstanceHallOfEgress();
     }
 
-    void InstanceBoard()
+    void InstanceBoard(Transform parent)
     {
         BoardTile currentTile = BoardManager.instance.startingTile;
 
         for (int i = 0; i < _numOfTotalTilesInBoard; i++)
         {
             Vector2Int nextGridPosition = GetRandomFreeNeighborPosition(currentTile);
-            // falta seleccion de tipo de casilla (solo genera emptys)
-            BoardTile nextTile = BoardManager.instance.CreateNewTile(BoardManager.instance.emptyTileData, nextGridPosition);
+            BoardTile nextTile = BoardManager.instance.CreateNewTile(BoardManager.instance.emptyTileData, nextGridPosition, parent);
 
             BoardManager.instance.UpdateNeighbors(currentTile);
 
@@ -128,21 +127,21 @@ public class BoardGenerator : MonoBehaviour
         return positions;
     }
 
-    void InstanceHallOfEgress()
-    {
-        BoardTile currentTile = BoardManager.instance.startingTile;
+    //void InstanceHallOfEgress()
+    //{
+    //    BoardTile currentTile = BoardManager.instance.startingTile;
 
-        List<Vector2Int> gridPositions = GenerateSquareGrid(currentTile.GetGridPosition(), 4);
+    //    List<Vector2Int> gridPositions = GenerateSquareGrid(currentTile.GetGridPosition(), 4);
 
-        foreach (var pos in gridPositions)
-        {
-            if (pos == currentTile.GetGridPosition())
-                continue;
+    //    foreach (var pos in gridPositions)
+    //    {
+    //        if (pos == currentTile.GetGridPosition())
+    //            continue;
 
-            BoardTile nextTile = BoardManager.instance.CreateNewTile(BoardManager.instance.emptyTileData, pos);
-            BoardManager.instance.UpdateNeighbors(currentTile);
+    //        BoardTile nextTile = BoardManager.instance.CreateNewTile(BoardManager.instance.emptyTileData, pos);
+    //        BoardManager.instance.UpdateNeighbors(currentTile);
 
-            currentTile = nextTile;
-        }
-    }
+    //        currentTile = nextTile;
+    //    }
+    //}
 }

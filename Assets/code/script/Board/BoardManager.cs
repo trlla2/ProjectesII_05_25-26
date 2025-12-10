@@ -59,11 +59,11 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    public BoardTile CreateNewTile(BoardTileData tileData, Vector2Int gridPosition)
+    public BoardTile CreateNewTile(BoardTileData tileData, Vector2Int gridPosition, Transform parent)
     {
         GameObject newTileInstance = Instantiate(tileData.tilePrefab,
                 new Vector3(gridPosition.x, startingTile.transform.position.y, gridPosition.y),
-                startingTile.gameObject.transform.rotation, this.gameObject.transform);
+                startingTile.gameObject.transform.rotation, parent);
 
         BoardTile newTile = newTileInstance.GetComponent<BoardTile>();
         newTile.SetGridPosition(gridPosition);
@@ -76,11 +76,11 @@ public class BoardManager : MonoBehaviour
 
     public void ReplaceTileType(BoardTile tile, BoardTileData newData)
     {
-        Vector3 pos = tile.transform.position;
-        Quaternion rot = tile.transform.rotation;
-        Transform parent = tile.transform.parent;
+        //Vector3 pos = tile.transform.position;
+        //Quaternion rot = tile.transform.rotation;
+        //Transform parent = tile.transform.parent;
 
-        BoardTile newTile = CreateNewTile(newData, tile.GetGridPosition());
+        BoardTile newTile = CreateNewTile(newData, tile.GetGridPosition(), tile.transform.parent);
         newTile.SetGridPosition(tile.GetGridPosition());
 
         UpdateNeighbors(newTile);

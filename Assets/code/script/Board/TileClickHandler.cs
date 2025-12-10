@@ -19,7 +19,7 @@ public class TileClickHandler : MonoBehaviour
     {
         mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if (player.isMoving/*FORCED*/ || raycastActive) 
+        if (!player.isMoving/*FORCED*/ && raycastActive) 
         {
             HandleMouseHover();
             if (Input.GetMouseButtonDown(0))

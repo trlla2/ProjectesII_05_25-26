@@ -30,7 +30,12 @@ public class BoardGenerator : MonoBehaviour
 
         for (int i = 0; i < _numOfTotalTilesInBoard; i++)
         {
-            Vector2Int nextGridPosition = GetRandomFreeNeighborPosition(currentTile);
+            Vector2Int nextGridPosition;
+            if (i == _numOfTotalTilesInBoard - 1)
+                nextGridPosition = currentTile.GetGridPosition() + new Vector2Int(0, 1);
+            else
+                nextGridPosition = GetRandomFreeNeighborPosition(currentTile);
+
             BoardTile nextTile = BoardManager.instance.CreateNewTile(BoardManager.instance.emptyTileData, nextGridPosition, parent);
 
             BoardManager.instance.UpdateNeighbors(currentTile);
@@ -52,13 +57,13 @@ public class BoardGenerator : MonoBehaviour
         //freePositions.Add(new Vector2Int(current.GetGridPosition().x, current.GetGridPosition().y - 1));
         freePositions.Add(new Vector2Int(current.GetGridPosition().x, current.GetGridPosition().y + 1));
 
-        for (int i = 0; i < BoardManager.instance.generatedTiles.Count; i++)
+        foreach(BoardTile tile in BoardManager.instance.generatedTiles)
         {
-            for (int j = 0; j < freePositions.Count; j++)
+            foreach(Vector2Int pos in freePositions)
             {
-                if (BoardManager.instance.generatedTiles[i].GetComponent<BoardTile>().GetGridPosition() == freePositions[j])
+                if (tile.GetGridPosition() == pos)
                 {
-                    freePositions.RemoveAt(j);
+                    freePositions.Remove(pos);
                 }
             }
         }
@@ -96,8 +101,6 @@ public class BoardGenerator : MonoBehaviour
                 break;
         }
 
-        
-        //BoardTile lastTile = BoardManager.instance.generatedTiles.
         BoardManager.instance.ReplaceTileType(lastTile, BoardManager.instance.stairsTileData);
 
         Debug.Log($"Asignadas {assignedEnemies} tiles de enemigos y {assignedChests} tiles de cofres.");
@@ -126,22 +129,4 @@ public class BoardGenerator : MonoBehaviour
 
         return positions;
     }
-
-    //void InstanceHallOfEgress()
-    //{
-    //    BoardTile currentTile = BoardManager.instance.startingTile;
-
-    //    List<Vector2Int> gridPositions = GenerateSquareGrid(currentTile.GetGridPosition(), 4);
-
-    //    foreach (var pos in gridPositions)
-    //    {
-    //        if (pos == currentTile.GetGridPosition())
-    //            continue;
-
-    //        BoardTile nextTile = BoardManager.instance.CreateNewTile(BoardManager.instance.emptyTileData, pos);
-    //        BoardManager.instance.UpdateNeighbors(currentTile);
-
-    //        currentTile = nextTile;
-    //    }
-    //}
 }

@@ -89,7 +89,7 @@ public class PathVisualizer : MonoBehaviour
         ElementVisual visual = grid.GetElementVisualAt(position);
         if (visual != null)
         {
-            HapticsManager.instance.GenerateHapticFeedback(HapticsManager.HapticTypes.RigidImpact);
+            HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.RigidImpact);
             visual.GetComponent<Highlighter>().SetHighlight(highlight);
             visual.GetComponent<ScaleAnimator>().PlayScale(0.5f, 0.15f);
         }

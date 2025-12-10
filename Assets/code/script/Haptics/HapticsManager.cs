@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class HapticsManager : MonoBehaviour
 {
-    public static HapticsManager instance { get; private set; }
+    public static HapticsManager Instance { get; private set; }
 
     public enum HapticTypes
     {
@@ -19,10 +19,10 @@ public class HapticsManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance != null && instance != this) 
+        if (Instance != null && Instance != this) 
             Destroy(this.gameObject);
         else
-            instance = this;
+            Instance = this;
     }
 
 

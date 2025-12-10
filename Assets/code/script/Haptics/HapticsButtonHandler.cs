@@ -1,22 +1,19 @@
  using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 
 [RequireComponent(typeof(Button))]
-public class HapticsButtonHandler : MonoBehaviour
+[RequireComponent(typeof(EventTrigger))]
+public class HapticsButtonHandler : MonoBehaviour, IPointerDownHandler
 {
-    private Button _button;
-    [SerializeField]
-    public HapticsManager.HapticTypes hapticType;
-
-    private void Awake()
+    public void OnPointerDown(PointerEventData eventData)
     {
-        _button = GetComponent<Button>();
-        _button.onClick.AddListener(OnButtonPress);
+        Feedback();
     }
 
-    public void OnButtonPress()
+    private void Feedback()
     {
-        HapticsManager.instance.GenerateHapticFeedback(hapticType);
+        HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.RigidImpact);
     }
 }

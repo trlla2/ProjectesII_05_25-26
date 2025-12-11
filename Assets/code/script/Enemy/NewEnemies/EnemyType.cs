@@ -17,6 +17,7 @@ public class EnemyType : ScriptableObject
 
     [Header("Art")]
     [SerializeField] private Sprite enemySprite;
+    [SerializeField] private RuntimeAnimatorController animatorController;
 
     [Header("Spell Behavior")]
     [SerializeField] private EnemySpellType spellType = EnemySpellType.ColumnDestroy;
@@ -30,6 +31,7 @@ public class EnemyType : ScriptableObject
     public EnemySpellType SpellType => spellType;
     public float DamagePerElement => damagePerElement;
     public int MoveCount => moveCount;
+    public RuntimeAnimatorController AnimatorController => animatorController;
 
     public float CalculateDamageTaken(ElementType elementType, float baseDamage)
     {

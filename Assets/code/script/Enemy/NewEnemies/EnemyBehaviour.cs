@@ -1,6 +1,7 @@
+using UnityEditor.Animations;
 using UnityEngine;
 
-[RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(SpriteRenderer), typeof(AnimatorController))]
 public class EnemyBehaviour : MonoBehaviour
 {
     [Header("Configuration")]
@@ -12,6 +13,7 @@ public class EnemyBehaviour : MonoBehaviour
 
 
     private SpriteRenderer spriteRenderer;
+    private Animator animator;
 
     private float currentHealth;
     private bool inBattle = false;
@@ -28,16 +30,16 @@ public class EnemyBehaviour : MonoBehaviour
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.SetEnemyRef(this);
-        }
+        animator = GetComponent<Animator>();
+        
     }
 
     private void Start()
     {
-        InitializeEnemy();
-        
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.SetEnemyRef(this);
+        }
     }
 
     private void OnDestroy()
@@ -49,12 +51,13 @@ public class EnemyBehaviour : MonoBehaviour
     {
         if (enemyType == null)
         {
-            Debug.LogError("EnemyBehaviour: No EnemyType assigned!");
+            Debug.LogWarning("EnemyBehaviour: No EnemyType assigned!");
             return;
         }
 
         spriteRenderer.sprite = enemyType.EnemySprite;
         currentHealth = enemyType.Health;
+        animator.runtimeAnimatorController = enemyType.AnimatorController;
     }
 
     public void SetEnemyType(EnemyType newType)

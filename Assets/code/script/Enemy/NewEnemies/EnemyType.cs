@@ -24,6 +24,11 @@ public class EnemyType : ScriptableObject
     [SerializeField] private float damagePerElement = 4f;
     [SerializeField] private int moveCount = 2; // number of player moves until spell triggers
 
+    [Header("TimerEnemy")]
+    [SerializeField] private float AtackTimer = 4f;
+
+    public bool excludeBelowTargets = false;
+
     public float Health => health;
     public float Damage => damage;
     public Sprite EnemySprite => enemySprite;
@@ -59,13 +64,16 @@ public class EnemyType : ScriptableObject
         switch (spellType)
         {
             case EnemySpellType.ColumnDestroy:
-                return new ColumnDestroySpell(damagePerElement, moveCount);
+                return new ColumnDestroySpell(damagePerElement, moveCount, excludeBelowTargets);
 
             case EnemySpellType.RandomDestroy:
-                return new RandomDestroySpell(ElementCount, damagePerElement, moveCount);
+                return new RandomDestroySpell(ElementCount, damagePerElement, moveCount, excludeBelowTargets);
+
+            case EnemySpellType.SingleTimedTarget:
+                return new SingleElementTimedSpell(AtackTimer, damagePerElement, excludeBelowTargets);
 
             default:
-                return new ColumnDestroySpell(damagePerElement, moveCount);
+                return new ColumnDestroySpell(damagePerElement, moveCount, excludeBelowTargets);
         }
     }
 }
@@ -73,5 +81,6 @@ public class EnemyType : ScriptableObject
 public enum EnemySpellType
 {
     ColumnDestroy,
-    RandomDestroy
+    RandomDestroy,
+    SingleTimedTarget
 }

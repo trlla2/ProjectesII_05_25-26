@@ -182,29 +182,6 @@ public class Grid : MonoBehaviour
     {
         gridData.SetVisualAt(position, visual);
     }
-    public void PlayEnemySpellAnimation(List<Vector2Int> positions, System.Action onComplete = null)
-    {
-        if (positions == null || positions.Count == 0)
-        {
-            onComplete?.Invoke();
-            return;
-        }
-
-        if (enemySpellAnimator == null)
-        {
-            onComplete?.Invoke();
-            return;
-        }
-
-        Vector2Int[] pathPositions = positions.ToArray();
-        List<Element> elements = new List<Element>(positions.Count);
-        foreach (var pos in positions)
-        {
-            elements.Add(GetElementAt(pos));
-        }
-
-        enemySpellAnimator.OnSpellCast(pathPositions, elements, onComplete);
-    }
 
     public void ProcessEnemySpell(List<Vector2Int> positions, System.Action onComplete = null, bool excludeBelowTargets = true)
     {
@@ -287,17 +264,10 @@ public class Grid : MonoBehaviour
                 }
                 else if (visualGrid != null && visualGrid.isInitialized)
                 {
-                    // ensure a visual exists for newly populated slot (only if VisualGrid is initialized)
                     visualGrid.EnsureVisualAt(pos, randomElement);
                 }
             }
         }
-    }
-
-    public void FillEmptySlots(List<Element> elements)
-    {
-        // kept for backward compatibility: delegate to new implementation
-        FillEmptySlots(elements, null);
     }
 
     private List<Vector2Int> GetEmptyPositions()
@@ -342,5 +312,10 @@ public class Grid : MonoBehaviour
                 visual.SetSelectable(true);
             }
         }
+    }
+
+    public SpellPathAnimator GetEnemySpellAnimator()
+    {
+        return enemySpellAnimator;
     }
 }

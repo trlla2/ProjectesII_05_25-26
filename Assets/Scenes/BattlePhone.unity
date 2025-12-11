@@ -5989,11 +5989,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   elementScale: 1.2
-  elementSpacing: 0.15
+  elementSpacing: 0.2
   movementEase: 20
   clonePrefab: {fileID: 823688408045220818, guid: 4708e3ebd8788b04783c1300cda193eb, type: 3}
   spellPathData: {fileID: 244508974}
-  grid: {fileID: 0}
+  grid: {fileID: 190367786}
+  isPlayerAnimator: 1
 --- !u!114 &244508974
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13945,7 +13946,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &806185221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14577,11 +14578,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   elementScale: 1.2
-  elementSpacing: 0.15
+  elementSpacing: 0.25
   movementEase: 20
   clonePrefab: {fileID: 823688408045220818, guid: 4708e3ebd8788b04783c1300cda193eb, type: 3}
   spellPathData: {fileID: 964765497}
-  grid: {fileID: 0}
+  grid: {fileID: 190367786}
+  isPlayerAnimator: 0
 --- !u!114 &964765497
 MonoBehaviour:
   m_ObjectHideFlags: 0

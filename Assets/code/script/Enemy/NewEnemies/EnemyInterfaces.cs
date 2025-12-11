@@ -75,6 +75,7 @@ public abstract class EnemySpellBase : IEnemySpell
 
         //collect only positions that still contain non-empty elements and are targeted
         List<Vector2Int> finalPositions = new List<Vector2Int>();
+        List<Element> elements = new List<Element>();
 
         foreach (var pos in targetedPositions)
         {
@@ -87,6 +88,7 @@ public abstract class EnemySpellBase : IEnemySpell
             if (element != null && element != grid.EmptyElement && visual != null && visual.IsTargetedByEnemy)
             {
                 finalPositions.Add(pos);
+                elements.Add(element);
             }
             else
             {
@@ -100,13 +102,10 @@ public abstract class EnemySpellBase : IEnemySpell
 
         if (finalPositions.Count > 0)
         {
-            float totalDamage = damagePerElement * finalPositions.Count;
-
             // Pass excludeBelowTargets through to grid so the refill logic can choose behavior
             grid.ProcessEnemySpell(finalPositions, () =>
             {
-                DamagePlayer(totalDamage);
-                onComplete?.Invoke();
+                DamagePlayerWithAnimation(grid, finalPositions.ToArray(), elements, damagePerElement, onComplete);
             }, excludeBelowTargets);
         }
         else
@@ -118,11 +117,20 @@ public abstract class EnemySpellBase : IEnemySpell
         targetedPositions.Clear();
     }
 
-    protected void DamagePlayer(float damage)
+    protected void DamagePlayerWithAnimation(Grid grid, Vector2Int[] positions, List<Element> elements, float damagePerElement, System.Action onComplete = null)
     {
-        Debug.Log($"Enemy spell deals {damage} damage to player.");
+        SpellPathAnimator enemyAnimator = grid.GetEnemySpellAnimator();
         
-        GameManager.Instance.AttackPlayer(damage);
+        if (enemyAnimator != null)
+        {
+            enemyAnimator.SetIsPlayerAnimator(false);
+            enemyAnimator.SetDamagePerElement(damagePerElement);
+            enemyAnimator.OnSpellCast(positions, elements, onComplete);
+        }
+        else
+        {
+            Debug.LogWarning("Enemy spell animator not found on grid, CANT DEAL DMG");
+        }
     }
 }
 
@@ -297,7 +305,7 @@ public class SingleElementTimedSpell : EnemySpellBase
                 Vector2Int newPick = PickRandomValidPosition(ownerGrid);
                 if (newPick.x == -1)
                 {
-                    // no valid targets -> stop
+                    //no valid targets -> stop
                     yield break;
                 }
 
@@ -326,19 +334,23 @@ public class SingleElementTimedSpell : EnemySpellBase
 
             if (targetedPositions.Count > 0 && IsTargetStillValid(ownerGrid, targetedPositions[0]) && elapsed >= timerSeconds)
             {
-                var pos = targetedPositions[0];
+                Vector2Int pos = targetedPositions[0];
+                Element element = ownerGrid.GetElementAt(pos);
                 List<Vector2Int> finalPositions = new List<Vector2Int> { pos };
+                List<Element> elements = new List<Element> { element };
 
                 // Flag to wait until grid processing completes
                 bool processingComplete = false;
 
                 ownerGrid.ProcessEnemySpell(finalPositions, () =>
                 {
-                    DamagePlayer(damagePerElement);
-                    processingComplete = true;
+                    DamagePlayerWithAnimation(ownerGrid, finalPositions.ToArray(), elements, damagePerElement, () =>
+                    {
+                        processingComplete = true;
+                    });
                 }, excludeBelowTargets);
 
-                var vis = ownerGrid.GetElementVisualAt(pos);
+                ElementVisual vis = ownerGrid.GetElementVisualAt(pos);
                 if (vis != null)
                 {
                     vis.StopCountdown();
@@ -354,7 +366,7 @@ public class SingleElementTimedSpell : EnemySpellBase
                     yield return null;
                 }
 
-                // After processing completes, loop continues and the spell will retarget automatically.
+                //After processing completes, loop continues and the spell will retarget automatically.
             }
 
             yield return null;
@@ -394,7 +406,7 @@ public class SingleElementTimedSpell : EnemySpellBase
         if (candidates.Count == 0)
             return new Vector2Int(-1,-1);
 
-        int idx = Random.Range(0, candidates.Count);
-        return candidates[idx];
+        int i = Random.Range(0, candidates.Count);
+        return candidates[i];
     }
 }

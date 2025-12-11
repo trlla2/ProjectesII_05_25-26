@@ -15,8 +15,14 @@ public class SpellPathAnimator : MonoBehaviour
     [SerializeField] private SpellPathDate spellPathData;
     [SerializeField] private Grid grid;
 
+    [Header("Animator Type")]
+    [SerializeField] private bool isPlayerAnimator = true;
+
+    private float damagePerElement = 4f;
+
     private CameraShake cameraShake;
     private List<GameObject> activeClones = new List<GameObject>();
+    private Dictionary<GameObject, Element> cloneElementMap = new Dictionary<GameObject, Element>();
 
 
     private void Start()
@@ -26,10 +32,6 @@ public class SpellPathAnimator : MonoBehaviour
         if (grid == null)
         {
             grid = FindFirstObjectByType<Grid>();
-            if (grid == null)
-            {
-                Debug.LogWarning("Grid reference is null. Assign it in the inspector or call Initialize(grid) before casting spells.");
-            }
         }
     }
 
@@ -41,6 +43,16 @@ public class SpellPathAnimator : MonoBehaviour
     public void Initialize(Grid gridController)
     {
         grid = gridController;
+    }
+
+    public void SetIsPlayerAnimator(bool isPlayer)
+    {
+        isPlayerAnimator = isPlayer;
+    }
+
+    public void SetDamagePerElement(float damage)
+    {
+        damagePerElement = damage;
     }
 
     public void OnSpellCast(Vector2Int[] pathPositions, List<Element> elements, System.Action onComplete = null)
@@ -80,6 +92,7 @@ public class SpellPathAnimator : MonoBehaviour
             }
         }
         activeClones.Clear();
+        cloneElementMap.Clear();
     }
 
 
@@ -110,6 +123,7 @@ public class SpellPathAnimator : MonoBehaviour
         }
 
         activeClones.RemoveAll(obj => obj == null);
+        cloneElementMap.Clear();
         onComplete?.Invoke();
     }
 
@@ -138,7 +152,7 @@ public class SpellPathAnimator : MonoBehaviour
             }
         }
 
-        animationSequence.OnComplete(() => OnCloneAnimationComplete(clone));
+        animationSequence.OnComplete(() => OnCloneAnimationComplete(clone , startDelay));
         animationSequence.Play();
     }
 
@@ -201,12 +215,25 @@ public class SpellPathAnimator : MonoBehaviour
         }
     }
 
-    private void OnCloneAnimationComplete(GameObject clone)
+    private void OnCloneAnimationComplete(GameObject clone, float startDelay)
     {
-        // Shake camera
+        if (GameManager.Instance != null && cloneElementMap.ContainsKey(clone))
+        {
+            Element element = cloneElementMap[clone];
+            
+            if (isPlayerAnimator)
+            {
+                GameManager.Instance.AttackEnemy(element.Type);
+            }
+            else
+            {
+                GameManager.Instance.AttackPlayer(damagePerElement);
+            }
+        }
+
         if (cameraShake != null)
         {
-            cameraShake.Shake(0.25f);
+            cameraShake.Shake(0.25f, startDelay - 0.05f);//shake w/ sligthly less delay than startDelay
         }
 
         // Fade out
@@ -216,18 +243,22 @@ public class SpellPathAnimator : MonoBehaviour
             sr.DOFade(0f, 0.3f).OnComplete(() =>
             {
                 if (clone != null)
+                {
+                    cloneElementMap.Remove(clone);
                     Destroy(clone);
+                }
             });
         }
         else
         {
             if (clone != null)
+            {
+                cloneElementMap.Remove(clone);
                 Destroy(clone);
+            }
         }
     }
 
-    // Updated: accepts optional providedElements which will be used in order for clones;
-    // falls back to grid.GetElementAt(pos) if provided list is null/short.
     private List<GameObject> CreateClones(Vector2Int[] pathPositions, List<Element> providedElements = null)
     {
         List<GameObject> clones = new List<GameObject>();
@@ -265,6 +296,7 @@ public class SpellPathAnimator : MonoBehaviour
                     clone.transform.position = worldPos;
                     clones.Add(clone);
                     activeClones.Add(clone);
+                    cloneElementMap[clone] = element;
                 }
             }
         }

@@ -310,20 +310,16 @@ public class EnemySpellState : IGridState
             yield break;
         }
 
-        bool animationFinished = false;
-        grid.PlayEnemySpellAnimation(positions, () => { animationFinished = true; });
-
-        while (!animationFinished)
-            yield return null;
-
         grid.InstantVisualEmpty(positions);
 
+        // Apply gravity
         List<Vector2Int> movedPositions = grid.GravityHandler.ApplyGravity();
 
         if (visualGrid != null && movedPositions != null && movedPositions.Count > 0)
         {
             yield return grid.StartCoroutine(visualGrid.AnimateGravity(movedPositions, refillDuration));
         }
+
 
         List<Vector2Int> emptyPositions;
 
@@ -412,9 +408,9 @@ public class EnemySpellState : IGridState
                         Element aboveElement = grid.GridData.GetElementAt(abovePos);
 
                         // Consider the above tile as a blocker only if:
-                        // - there's a visual
-                        // - that visual is currently targeted by the enemy
-                        // - AND the logical element at that position is non-empty
+                        // here's a visual
+                        //that visual is currently targeted by the enemy
+                        //the logical element at that position is non-empty
                         if (aboveVisual != null && aboveVisual.IsTargetedByEnemy
                             && aboveElement != null && aboveElement != grid.EmptyElement)
                         {

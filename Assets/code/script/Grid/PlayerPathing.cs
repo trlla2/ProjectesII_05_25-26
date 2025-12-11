@@ -55,6 +55,7 @@ public class PlayerPathing : MonoBehaviour
         pathData = new PathData(maxPathLength);
 
         pathVisualizer = gameObject.AddComponent<PathVisualizer>();
+        pathVisualizer.cursorVisual = cursorVisual;
     }
 
     private void ValidateSetup()

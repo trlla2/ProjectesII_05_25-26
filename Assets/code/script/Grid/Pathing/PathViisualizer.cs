@@ -4,8 +4,8 @@ using static Solo.MOST_IN_ONE.MOST_HapticFeedback;
 public class PathVisualizer : MonoBehaviour
 {
     [SerializeField] private LineRenderer lineRenderer;
-    [SerializeField] private Transform cursorVisual;
-    [SerializeField] private float cursorLerpSpeed = 5f;
+    public Transform cursorVisual;
+    [SerializeField] private float cursorLerpSpeed = 25f;
 
     private Grid grid;
     private VisualGrid visualGrid;

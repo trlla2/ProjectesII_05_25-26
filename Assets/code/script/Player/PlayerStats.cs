@@ -20,7 +20,7 @@ public class PlayerStats
     public List<Item> Inventory;
     public int EvasionPoints;
     public int ExtraHealth;
-
+    public int ExtraDamage;
     public PlayerStats()
     {
         MaxHp = 100.0f;
@@ -56,7 +56,10 @@ public class PlayerStats
 
     public DamageType AttackWithElement(ElementType elementType)
     {
-        return new DamageType(elementType, ElementalLevelMultiplyer * ElementalLevels[elementType]);
+        DamageType totalDamage = new DamageType(elementType, ElementalLevelMultiplyer * ElementalLevels[elementType]);
+        totalDamage.damage += ExtraDamage;
+
+        return totalDamage;
     }
     
     public bool EvadeAttack() { return UnityEngine.Random.Range(0f, 100f) < EvasionPoints; }
@@ -134,5 +137,6 @@ public class PlayerStats
     public bool IsAlive() { return Hp > 0; }
     public void ModifyEvasion(int amount) { EvasionPoints += amount; }
     public void ModifyExtraHealth(int amount) { ExtraHealth += amount; }
+    public void ModifyExtraDamage(int amount) { ExtraDamage += amount; }
 
     }

@@ -8,7 +8,7 @@ public class SpellPathAnimator : MonoBehaviour
     [Header("Spell Animation Settings")]
     [SerializeField] private float elementScale = 0.8f;
     [SerializeField] private float elementSpacing = 0.1f;
-    [SerializeField] private Ease movementEase = Ease.OutCubic;
+    //[SerializeField] private Ease movementEase = Ease.OutCubic;
 
     [Header("References")]
     [SerializeField] private GameObject clonePrefab;

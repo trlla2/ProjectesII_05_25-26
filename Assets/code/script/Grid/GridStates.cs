@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
+
 public enum GridStateType
 {
     Initialize,
     Idle,
     Refill,
-    LeverPull,
+    Reroll,
     Processing
 }
 
@@ -90,7 +91,6 @@ public class RefillState : IGridState
 
     private IEnumerator RefillSequence(List<Vector2Int> movedPositions, float gravityDuration)
     {
-        // Animate gravity and wait until it finishes
         if (visualGrid != null && movedPositions != null && movedPositions.Count > 0)
         {
             yield return grid.StartCoroutine(visualGrid.AnimateGravity(movedPositions, gravityDuration));
@@ -159,7 +159,6 @@ public class RefillState : IGridState
     {
         yield return new WaitForSeconds(delay);
 
-        //After animation completes, ensure ALL visuals are properly 
         for (int x = 0; x < grid.GridData.GridSize; x++)
         {
             for (int y = 0; y < grid.GridData.GridSize; y++)
@@ -169,18 +168,12 @@ public class RefillState : IGridState
 
                 if (visual != null)
                 {
-                    //Reset anchor
                     visual.transform.position = visualGrid.GridToWorldPosition(pos);
-
-                    //Reset sprite transform
                     visual.ResetSpriteTransform();
                     visual.SetWorldPosition(visualGrid.GridToWorldPosition(pos));
 
-                    //Re-initialize to ensure grid position
                     Element element = grid.GridData.GetElementAt(pos);
                     visual.Initialize(pos, element);
-
-                    //Re-enable selection
                     visual.SetSelectable(true);
                 }
             }
@@ -190,29 +183,32 @@ public class RefillState : IGridState
     }
 }
 
-public class LeverPullState : IGridState
+public class RerollState : IGridState
 {
-    private  Grid grid;
-    private  VisualGrid visualGrid;
-    private  List<Element> availableElements;
-    private  List<Spell> availableSpells;
+    private Grid grid;
+    private VisualGrid visualGrid;
+    private List<Element> availableElements;
+    private List<Spell> availableSpells;
     private bool isAnimating;
-    private float scrollDuration = 1.5f;
-    private float columnDelay = 0.1f;
 
-    public LeverPullState(Grid gridController, VisualGrid visual,
-                          List<Element> elements, List<Spell> spells)
+    private float scrollDuration = 1.5f;
+    private float columnDelay = 0.25f;
+    private int scrollTimes = 5;
+
+    public RerollState(Grid gridController, VisualGrid visual,
+                       List<Element> elements, List<Spell> spells, int times = 3)
     {
         grid = gridController;
         visualGrid = visual;
         availableElements = elements;
         availableSpells = spells;
+        scrollTimes = Mathf.Max(1, times);
     }
 
     public void Enter()
     {
         isAnimating = true;
-        PerformLeverPull();
+        grid.StartCoroutine(PerformReroll());
     }
 
     public void Update()
@@ -230,30 +226,148 @@ public class LeverPullState : IGridState
 
     public GridStateType GetStateType()
     {
-        return GridStateType.LeverPull;
+        return GridStateType.Reroll;
     }
 
-    private void PerformLeverPull()
+    private IEnumerator PerformReroll()
     {
-        grid.RandomizeBoard(availableElements);
+        int gridSize = grid.GridData.GridSize;
 
-        //Try to insert a random spell
+        Element[,] finalGrid = GenerateFinalGrid();
+
         if (availableSpells != null && availableSpells.Count > 0)
         {
             Spell randomSpell = availableSpells[Random.Range(0, availableSpells.Count)];
-            grid.InsertSpell(randomSpell.Recipe);
+            TryInsertSpellIntoGrid(finalGrid, randomSpell.Recipe);
         }
 
-        visualGrid.PlayScrollAnimation(scrollDuration, columnDelay);
+        yield return grid.StartCoroutine(visualGrid.PlayRerollAnimation(scrollTimes, scrollDuration, columnDelay, availableElements, finalGrid));
 
-        float totalDuration = scrollDuration + (columnDelay * grid.GridData.GridSize);
-        grid.StartCoroutine(CompleteAfterDelay(totalDuration));
+        ApplyFinalGrid(finalGrid);
+
+        FinalizeVisuals();
+
+        isAnimating = false;
     }
 
-    private IEnumerator CompleteAfterDelay(float delay)
+    private Element[,] GenerateFinalGrid()
     {
-        yield return new WaitForSeconds(delay);
-        isAnimating = false;
+        int size = grid.GridData.GridSize;
+        Element[,] result = new Element[size, size];
+
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                result[x, y] = availableElements[Random.Range(0, availableElements.Count)];
+            }
+        }
+
+        return result;
+    }
+
+    //Cant use the spellinsert interface since we need to reroll the whole grid and working with a temp grid
+    //rather than the actual griddata, so we need to reimplement it here
+    private void TryInsertSpellIntoGrid(Element[,] targetGrid, List<Element> recipe)
+    {
+        if (recipe == null || recipe.Count == 0)
+            return;
+
+        int size = targetGrid.GetLength(0);
+        
+        // Try multiple attempts to find a valid path
+        int maxAttempts = 50;
+        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            Vector2Int startPos = new Vector2Int(
+                Random.Range(0, size),
+                Random.Range(0, size)
+            );
+
+            List<Vector2Int> path = GenerateRandomPathFromStart(size, recipe.Count, startPos);
+            
+            if (path != null && path.Count == recipe.Count)
+            {
+                for (int i = 0; i < recipe.Count; i++)
+                {
+                    Vector2Int pos = path[i];
+                    targetGrid[pos.x, pos.y] = recipe[i];
+                }
+                return;
+            }
+        }
+    }
+
+    private List<Vector2Int> GenerateRandomPathFromStart(int gridSize, int length, Vector2Int start)
+    {
+        if (length > gridSize * gridSize)
+            return null;
+
+        List<Vector2Int> path = new List<Vector2Int> { start };
+        HashSet<Vector2Int> visited = new HashSet<Vector2Int> { start };
+
+        Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+
+        while (path.Count < length)
+        {
+            Vector2Int current = path[path.Count - 1];
+            List<Vector2Int> neighbors = new List<Vector2Int>();
+
+            foreach (var dir in directions)
+            {
+                Vector2Int next = current + dir;
+                if (next.x >= 0 && next.x < gridSize && next.y >= 0 && next.y < gridSize && !visited.Contains(next))
+                {
+                    neighbors.Add(next);
+                }
+            }
+
+            if (neighbors.Count == 0)
+                return null;
+
+            Vector2Int chosen = neighbors[Random.Range(0, neighbors.Count)];
+            path.Add(chosen);
+            visited.Add(chosen);
+        }
+
+        return path;
+    }
+
+    private void ApplyFinalGrid(Element[,] finalGrid)
+    {
+        int size = grid.GridData.GridSize;
+
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                grid.GridData.SetElementAt(new Vector2Int(x, y), finalGrid[x, y]);
+            }
+        }
+    }
+
+    private void FinalizeVisuals()
+    {
+        int size = grid.GridData.GridSize;
+
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                Vector2Int pos = new Vector2Int(x, y);
+                ElementVisual visual = grid.GridData.GetVisualAt(pos);
+                Element element = grid.GridData.GetElementAt(pos);
+
+                if (visual != null)
+                {
+                    visual.transform.position = visualGrid.GridToWorldPosition(pos);
+                    visual.Initialize(pos, element);
+                    visual.ResetSpriteTransform();
+                    visual.SetWorldPosition(visualGrid.GridToWorldPosition(pos));
+                    visual.SetSelectable(true);
+                }
+            }
+        }
     }
 }
 
@@ -267,14 +381,17 @@ public class EnemySpellState : IGridState
     private float refillDuration = 0.15f;
 
     private bool excludeBelowTargets = true;
+    private bool rerollAfterProcess = false;
 
-    public EnemySpellState(Grid gridController, VisualGrid visual, List<Vector2Int> positionsToProcess, System.Action onCompleteCallback, bool excludeBelowTargets = true)
+    public EnemySpellState(Grid gridController, VisualGrid visual, List<Vector2Int> positionsToProcess, 
+                           System.Action onCompleteCallback, bool excludeBelowTargets = true, bool rerollAfter = false)
     {
         grid = gridController;
         visualGrid = visual;
         positions = positionsToProcess ?? new List<Vector2Int>();
         onComplete = onCompleteCallback;
         this.excludeBelowTargets = excludeBelowTargets;
+        this.rerollAfterProcess = rerollAfter;
     }
 
     public void Enter()
@@ -287,7 +404,15 @@ public class EnemySpellState : IGridState
     {
         if (!isProcessing)
         {
-            grid.ChangeState(new IdleState(grid));
+            if (rerollAfterProcess)
+            {
+                grid.ChangeState(new RerollState(grid, visualGrid, grid.AvailableElements, 
+                    GameManager.Instance.GetPlayerSpellBook(), 3));
+            }
+            else
+            {
+                grid.ChangeState(new IdleState(grid));
+            }
         }
     }
 
@@ -312,14 +437,12 @@ public class EnemySpellState : IGridState
 
         grid.InstantVisualEmpty(positions);
 
-        // Apply gravity
         List<Vector2Int> movedPositions = grid.GravityHandler.ApplyGravity();
 
         if (visualGrid != null && movedPositions != null && movedPositions.Count > 0)
         {
             yield return grid.StartCoroutine(visualGrid.AnimateGravity(movedPositions, refillDuration));
         }
-
 
         List<Vector2Int> emptyPositions;
 
@@ -332,7 +455,6 @@ public class EnemySpellState : IGridState
         {
             grid.FillEmptySlots(grid.AvailableElements, emptyPositions);
 
-            //Ensure visuals exist for newly spawned elements
             foreach (var pos in emptyPositions)
             {
                 Element element = grid.GridData.GetElementAt(pos);
@@ -342,7 +464,6 @@ public class EnemySpellState : IGridState
                 }
             }
 
-            // Disable selection during animation
             foreach (var pos in emptyPositions)
             {
                 ElementVisual visual = grid.GridData.GetVisualAt(pos);
@@ -407,10 +528,6 @@ public class EnemySpellState : IGridState
                         ElementVisual aboveVisual = grid.GridData.GetVisualAt(abovePos);
                         Element aboveElement = grid.GridData.GetElementAt(abovePos);
 
-                        // Consider the above tile as a blocker only if:
-                        // here's a visual
-                        //that visual is currently targeted by the enemy
-                        //the logical element at that position is non-empty
                         if (aboveVisual != null && aboveVisual.IsTargetedByEnemy
                             && aboveElement != null && aboveElement != grid.EmptyElement)
                         {
@@ -432,7 +549,6 @@ public class EnemySpellState : IGridState
     {
         yield return new WaitForSeconds(delay);
 
-        //After animation completes, ensure ALL visuals are properly 
         for (int x = 0; x < grid.GridData.GridSize; x++)
         {
             for (int y = 0; y < grid.GridData.GridSize; y++)
@@ -442,18 +558,12 @@ public class EnemySpellState : IGridState
 
                 if (visual != null)
                 {
-                    //Reset anchor
                     visual.transform.position = visualGrid.GridToWorldPosition(pos);
-
-                    //Reset sprite transform
                     visual.ResetSpriteTransform();
                     visual.SetWorldPosition(visualGrid.GridToWorldPosition(pos));
 
-                    //Re-initialize to ensure grid position
                     Element element = grid.GridData.GetElementAt(pos);
                     visual.Initialize(pos, element);
-
-                    //Re-enable selection
                     visual.SetSelectable(true);
                 }
             }

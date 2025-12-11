@@ -11,7 +11,6 @@ public class PlayerPathing : MonoBehaviour
 
     [Header("Pathing Settings")]
     [SerializeField] private int maxPathLength = 6;
-    [SerializeField] private float cursorLerpSpeed = 5f;
     [SerializeField] private float selectScaleAmount = 0.2f;
     [SerializeField] private float selectScaleTime = 0.2f;
     [SerializeField] private float xDistanceBetween = 1.25f;
@@ -55,6 +54,7 @@ public class PlayerPathing : MonoBehaviour
         pathData = new PathData(maxPathLength);
 
         pathVisualizer = gameObject.AddComponent<PathVisualizer>();
+        pathVisualizer.cursorVisual = cursorVisual;
     }
 
     private void ValidateSetup()

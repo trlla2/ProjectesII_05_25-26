@@ -23,7 +23,7 @@ public class PlayerStats
     public int ExtraDamage;
     public PlayerStats()
     {
-        MaxHp = 100.0f;
+        MaxHp = 40.0f;
         Hp = MaxHp;
         ExperiencePoints = 0;
         Level = 1;

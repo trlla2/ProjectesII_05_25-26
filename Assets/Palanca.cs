@@ -64,7 +64,7 @@ public class Palanca : MonoBehaviour
             pullSound.Play();
         }
 
-        grid.LeverPull(grid.AvailableElements);
+        grid.Reroll(scrollTimes);
     }
 
     private void SubscribeToEvents()

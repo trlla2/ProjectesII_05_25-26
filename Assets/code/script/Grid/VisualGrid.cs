@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 public class VisualGrid : MonoBehaviour
 {
     [Header("Animation Curves")]
@@ -19,6 +20,7 @@ public class VisualGrid : MonoBehaviour
     [SerializeField] private float xSpacing = 1.1f;
     [SerializeField] private float ySpacing = 1.1f;
     public Vector3 startPosition;
+
     private void Awake()
     {
         startPosition = transform.position;
@@ -47,9 +49,10 @@ public class VisualGrid : MonoBehaviour
         StartCoroutine(RefillRoutine(duration));
     }
 
-    public void PlayScrollAnimation(float scrollDuration, float columnDelay)
+    public IEnumerator PlayRerollAnimation(int scrollTimes, float scrollDuration, float columnDelay, 
+                                            List<Element> availableElements, Element[,] finalGrid)
     {
-        StartCoroutine(ScrollRoutine(scrollDuration, columnDelay));
+        yield return StartCoroutine(RerollScrollRoutine(scrollTimes, scrollDuration, columnDelay, availableElements, finalGrid));
     }
 
     public Vector3 GridToWorldPosition(Vector2Int gridPosition)
@@ -80,13 +83,11 @@ public class VisualGrid : MonoBehaviour
 
     private void CreateElementVisual(Vector2Int gridPosition, Element element)
     {
-        // Delegate to EnsureVisualAt to centralize behavior.
         EnsureVisualAt(gridPosition, element);
     }
 
     public void EnsureVisualAt(Vector2Int gridPosition, Element element)
     {
-        // VisualGrid must be initialized and grid data must exist.
         if (!isInitialized || grid == null || grid.GridData == null)
             return;
 
@@ -106,19 +107,15 @@ public class VisualGrid : MonoBehaviour
 
             Vector3 worldPos = GridToWorldPosition(gridPosition);
 
-            // Anchor the visual GameObject to the fixed grid world position.
             visual.transform.position = worldPos;
-
-            // Initialize and make sure the sprite renderers are positioned relative to the anchor.
             visual.Initialize(gridPosition, element);
             visual.ResetSpriteTransform();
-            visual.SetWorldPosition(worldPos); // ensure sprite is centered on anchor
+            visual.SetWorldPosition(worldPos);
 
             grid.GridData.SetVisualAt(gridPosition, visual);
         }
         else
         {
-            // Reuse existing visual: set anchor and update the displayed element.
             Vector3 worldPos = GridToWorldPosition(gridPosition);
             existing.transform.position = worldPos;
             existing.Initialize(gridPosition, element);
@@ -140,7 +137,6 @@ public class VisualGrid : MonoBehaviour
         }
     }
 
-    
     public void UpdateAnchorsForPositions(List<Vector2Int> positions)
     {
         if (!isInitialized || grid == null || grid.GridData == null)
@@ -158,10 +154,8 @@ public class VisualGrid : MonoBehaviour
             if (visual != null)
             {
                 visual.transform.position = GridToWorldPosition(pos);
-                // Make sure visual knows its grid position and sprites reset
                 visual.Initialize(pos, grid.GridData.GetElementAt(pos));
                 visual.ResetSpriteTransform();
-                // Keep sprite renderers centered on anchor
                 visual.SetWorldPosition(GridToWorldPosition(pos));
             }
         }
@@ -177,8 +171,6 @@ public class VisualGrid : MonoBehaviour
         }
     }
 
-
-
     private IEnumerator FillEmptyRoutine(List<Vector2Int> positions, float duration)
     {
         Dictionary<ElementVisual, float> startScales = new Dictionary<ElementVisual, float>();
@@ -193,7 +185,6 @@ public class VisualGrid : MonoBehaviour
             }
             else
             {
-                //if a visual doesn't exist, create it so scaling animation works.
                 Element element = grid.GridData.GetElementAt(pos);
                 if (element != null)
                 {
@@ -238,7 +229,6 @@ public class VisualGrid : MonoBehaviour
         if (visualA == null || visualB == null)
             yield break;
 
-        //Work with sprite positions so anchors remain fixed.
         Vector3 startPosA = visualA.GetWorldPosition();
         Vector3 startPosB = visualB.GetWorldPosition();
         Vector3 targetPosA = GridToWorldPosition(posB);
@@ -270,7 +260,6 @@ public class VisualGrid : MonoBehaviour
         if (!isInitialized || grid == null || grid.GridData == null || movedPositions == null || movedPositions.Count == 0)
             yield break;
 
-        // Prepare list of visuals and start/target positions
         var items = new List<(ElementVisual visual, Vector3 start, Vector3 target, Vector2Int targetGridPos)>(movedPositions.Count);
 
         foreach (var pos in movedPositions)
@@ -282,13 +271,9 @@ public class VisualGrid : MonoBehaviour
             if (visual == null)
                 continue;
 
-            // current sprite world pos (before animation)
             Vector3 startWorld = visual.GetWorldPosition();
-
-            // where the anchor should end up (logical target)
             Vector3 targetWorld = GridToWorldPosition(pos);
 
-            //visual.GridPosition already updated by gravity logic; store pos to re-initialize later to be safe
             items.Add((visual, startWorld, targetWorld, pos));
         }
 
@@ -307,18 +292,14 @@ public class VisualGrid : MonoBehaviour
             yield return null;
         }
 
-        //snap sprites to targets and update anchors/sprite transforms
         foreach (var item in items)
         {
             if (item.visual == null)
                 continue;
 
             item.visual.SetWorldPosition(item.target);
-
-            // move anchor to new grid position and reset sprite transform
             item.visual.transform.position = item.target;
 
-            // ensure initialization with correct grid pos & element
             Element element = grid.GridData.GetElementAt(item.targetGridPos);
             item.visual.Initialize(item.targetGridPos, element);
 
@@ -340,7 +321,6 @@ public class VisualGrid : MonoBehaviour
 
                 if (element == grid.EmptyElement || element == null)
                 {
-                    // Exclude empty slots that are below any targeted element in the same column.
                     bool isBelowTargeted = false;
                     for (int yAbove = y + 1; yAbove < grid.GridData.GridSize; yAbove++)
                     {
@@ -365,51 +345,180 @@ public class VisualGrid : MonoBehaviour
             yield return FillEmptyRoutine(emptyPositions, duration);
     }
 
-    private IEnumerator ScrollRoutine(float scrollDuration, float columnDelay)
+    private IEnumerator RerollScrollRoutine(int scrollTimes, float scrollDuration, float columnDelay,
+                                             List<Element> availableElements, Element[,] finalGrid)
     {
-        for (int col = 0; col < grid.GridData.GridSize; col++)
+        int gridSize = grid.GridData.GridSize;
+        float gridHeight = gridSize * ySpacing;
+
+        float upperThreshold = startPosition.y + (gridSize - 1) * ySpacing;
+        float lowerThreshold = startPosition.y;
+
+        List<List<(GameObject obj, SpriteRenderer renderer, GameObject background)>> columnClones = new List<List<(GameObject, SpriteRenderer, GameObject)>>();
+
+        for (int col = 0; col < gridSize; col++)
         {
-            StartCoroutine(ScrollColumnRoutine(col, scrollDuration));
+            List<(GameObject, SpriteRenderer, GameObject)> clones = new List<(GameObject, SpriteRenderer, GameObject)>();
+
+            for (int cloneIndex = 0; cloneIndex < scrollTimes; cloneIndex++)
+            {
+                for (int row = 0; row < gridSize; row++)
+                {
+                    Element element;
+                    if (cloneIndex == scrollTimes - 1)
+                    {
+                        element = finalGrid[col, row];
+                    }
+                    else
+                    {
+                        element = availableElements[Random.Range(0, availableElements.Count)];
+                    }
+
+                    Vector3 spawnPos = startPosition + new Vector3(
+                        col * xSpacing,
+                        (gridSize + row + (cloneIndex * gridSize)) * ySpacing,
+                        0f
+                    );
+
+                    GameObject cloneObj = Instantiate(elementVisualPrefab, spawnPos, Quaternion.identity, transform);
+                    SpriteRenderer sr = cloneObj.GetComponentInChildren<SpriteRenderer>();
+                    GameObject cloneBackground = cloneObj.transform.Find("Background")?.gameObject;
+                    if (sr != null && element != null)
+                    {
+                        sr.sprite = element.Sprite;
+                        sr.color = element.Color;
+                        sr.enabled = false;
+                        if (cloneBackground != null)
+                            cloneBackground.SetActive(false);
+                    }
+
+                    clones.Add((cloneObj, sr, cloneBackground));
+                }
+            }
+
+            columnClones.Add(clones);
+        }
+
+        float totalScrollDistance = scrollTimes * gridHeight;
+
+        for (int col = 0; col < gridSize; col++)
+        {
+            StartCoroutine(ScrollColumnDown(col, columnClones[col], totalScrollDistance, scrollDuration, finalGrid, upperThreshold, lowerThreshold));
             yield return new WaitForSeconds(columnDelay);
+        }
+
+        yield return new WaitForSeconds(scrollDuration);
+
+        foreach (var cloneList in columnClones)
+        {
+            foreach (var clone in cloneList)
+            {
+                if (clone.obj != null)
+                    Destroy(clone.obj);
+            }
         }
     }
 
-    private IEnumerator ScrollColumnRoutine(int column, float duration)
+    private IEnumerator ScrollColumnDown(int column, List<(GameObject obj, SpriteRenderer renderer, GameObject background)> clones, 
+                                          float totalDistance, float duration, Element[,] finalGrid, float upperThreshold, float lowerThreshold)
     {
-        List<ElementVisual> columnVisuals = new List<ElementVisual>();
+        int gridSize = grid.GridData.GridSize;
 
-        for (int row = 0; row < grid.GridData.GridSize; row++)
+        List<(ElementVisual visual, SpriteRenderer renderer, GameObject background)> originalVisuals = new List<(ElementVisual, SpriteRenderer, GameObject)>();
+        List<Vector3> originalStartPositions = new List<Vector3>();
+
+        for (int row = 0; row < gridSize; row++)
         {
             ElementVisual visual = grid.GridData.GetVisualAt(new Vector2Int(column, row));
             if (visual != null)
-                columnVisuals.Add(visual);
+            {
+                SpriteRenderer sr = visual.GetComponentInChildren<SpriteRenderer>();
+                GameObject bg = visual.transform.Find("Background")?.gameObject;
+                originalVisuals.Add((visual, sr, bg));
+                originalStartPositions.Add(visual.GetWorldPosition());
+            }
+        }
+
+        List<Vector3> cloneStartPositions = new List<Vector3>();
+        foreach (var clone in clones)
+        {
+            cloneStartPositions.Add(clone.obj.transform.position);
         }
 
         float elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            float t = scrollCurve.Evaluate(elapsed / duration);
-            float scrollAmount = Mathf.Sin(t * Mathf.PI * 4) * 0.5f;
+            float t = scrollCurve.Evaluate(Mathf.Clamp01(elapsed / duration));
+            float offset = t * totalDistance;
 
-            foreach (var visual in columnVisuals)
+            for (int i = 0; i < originalVisuals.Count; i++)
             {
-                if (visual != null)
+                if (originalVisuals[i].visual != null)
                 {
-                    Vector3 basePos = GridToWorldPosition(visual.GridPosition);
-                    // Move only sprite renderers, leaving the anchor fixed.
-                    visual.SetWorldPosition(basePos + new Vector3(0, scrollAmount, 0));
+                    Vector3 newPos = originalStartPositions[i] - new Vector3(0, offset, 0);
+                    originalVisuals[i].visual.SetWorldPosition(newPos);
+
+                    bool isVisible = newPos.y <= upperThreshold && newPos.y >= lowerThreshold;
+
+                    if (originalVisuals[i].renderer != null)
+                    {
+                        originalVisuals[i].renderer.enabled = isVisible;
+                    }
+
+                    if (originalVisuals[i].background != null)
+                    {
+                        originalVisuals[i].background.SetActive(isVisible);
+                    }
+                }
+            }
+
+            for (int i = 0; i < clones.Count; i++)
+            {
+                if (clones[i].obj != null)
+                {
+                    Vector3 newPos = cloneStartPositions[i] - new Vector3(0, offset, 0);
+                    clones[i].obj.transform.position = newPos;
+
+                    bool isVisible = newPos.y <= upperThreshold && newPos.y >= lowerThreshold;
+
+                    if (clones[i].renderer != null)
+                    {
+                        clones[i].renderer.enabled = isVisible;
+                    }
+
+                    if (clones[i].background != null)
+                    {
+                        clones[i].background.SetActive(isVisible);
+                    }
                 }
             }
 
             yield return null;
         }
 
-        foreach (var visual in columnVisuals)
+        for (int row = 0; row < gridSize; row++)
         {
+            Vector2Int pos = new Vector2Int(column, row);
+            ElementVisual visual = grid.GridData.GetVisualAt(pos);
+            Element element = finalGrid[column, row];
+
             if (visual != null)
             {
-                visual.SetWorldPosition(GridToWorldPosition(visual.GridPosition));
+                Vector3 finalPos = GridToWorldPosition(pos);
+                visual.transform.position = finalPos;
+                visual.Initialize(pos, element);
+                visual.UpdateVisual(element);
+                visual.ResetSpriteTransform();
+                visual.SetWorldPosition(finalPos);
+
+                SpriteRenderer sr = visual.GetComponentInChildren<SpriteRenderer>();
+                if (sr != null)
+                    sr.enabled = true;
+
+                GameObject bg = visual.transform.Find("Background")?.gameObject;
+                if (bg != null)
+                    bg.SetActive(true);
             }
         }
     }

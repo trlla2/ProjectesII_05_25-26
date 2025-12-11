@@ -21,7 +21,7 @@ public class BoardGenerator : MonoBehaviour
     void Start()
     {
         InstanceBoard(this.transform);
-        //InstanceHallOfEgress();
+        //InstanceHallOfEgress(this.transform);
     }
 
     void InstanceBoard(Transform parent)
@@ -57,6 +57,16 @@ public class BoardGenerator : MonoBehaviour
         //freePositions.Add(new Vector2Int(current.GetGridPosition().x, current.GetGridPosition().y - 1));
         freePositions.Add(new Vector2Int(current.GetGridPosition().x, current.GetGridPosition().y + 1));
 
+        //for (int i = 0; i < BoardManager.instance.generatedTiles.Count; i++)
+        //{
+        //    for (int j = 0; j < freePositions.Count; j++)
+        //    {
+        //        if (BoardManager.instance.generatedTiles[i].GetComponent<BoardTile>().GetGridPosition() == freePositions[j])
+        //        {
+        //            freePositions.RemoveAt(j);
+        //        }
+        //    }
+        //}
         foreach(BoardTile tile in BoardManager.instance.generatedTiles)
         {
             foreach(Vector2Int pos in freePositions)
@@ -101,6 +111,8 @@ public class BoardGenerator : MonoBehaviour
                 break;
         }
 
+        
+        //BoardTile lastTile = BoardManager.instance.generatedTiles.
         BoardManager.instance.ReplaceTileType(lastTile, BoardManager.instance.stairsTileData);
 
         Debug.Log($"Asignadas {assignedEnemies} tiles de enemigos y {assignedChests} tiles de cofres.");
@@ -128,5 +140,23 @@ public class BoardGenerator : MonoBehaviour
         }
 
         return positions;
+    }
+
+    void InstanceHallOfEgress(Transform parent)
+    {
+        BoardTile currentTile = BoardManager.instance.startingTile;
+
+        List<Vector2Int> gridPositions = GenerateSquareGrid(currentTile.GetGridPosition(), 4);
+
+        foreach (var pos in gridPositions)
+        {
+            if (pos == currentTile.GetGridPosition())
+                continue;
+
+            BoardTile nextTile = BoardManager.instance.CreateNewTile(BoardManager.instance.emptyTileData, pos, parent);
+            BoardManager.instance.UpdateNeighbors(currentTile);
+
+            currentTile = nextTile;
+        }
     }
 }

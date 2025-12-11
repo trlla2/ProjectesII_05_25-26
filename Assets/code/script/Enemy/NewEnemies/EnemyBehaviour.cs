@@ -37,7 +37,6 @@ public class EnemyBehaviour : MonoBehaviour
     private void Start()
     {
         InitializeEnemy();
-        
     }
 
     private void OnDestroy()

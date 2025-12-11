@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class BoardManager : MonoBehaviour
 {
-    public static BoardManager instance { get; private set; } = new BoardManager();
+    public static BoardManager instance { get; private set; }
 
     public BoardTile startingTile;
     public BoardTileData emptyTileData;
@@ -13,11 +13,10 @@ public class BoardManager : MonoBehaviour
     public BoardTileData bossTileData;
     public BoardTileData stairsTileData;
 
-    public List<BoardTile> generatedTiles = new List<BoardTile>();
+    public List<BoardTile> generatedTiles;
 
     [SerializeField] private OpenChestScreen openChestPanel;
 
-    [SerializeField] private AudioSource openChestSource; // FORCED CHANGE
 
 
     private Camera boardCamera;
@@ -97,12 +96,11 @@ public class BoardManager : MonoBehaviour
 
         boardCamera.gameObject.GetComponent<TileClickHandler>().HandleBoardRaycast(false); // FORCED CHANGE
 
-        openChestSource.Play();
         openChestPanel.gameObject.SetActive(true);
     }
 
     public void HandleBoardCamera(bool enable)
     {
-        boardCamera.enabled = enable;
+        boardCamera.gameObject.SetActive(enable);
     }
 }

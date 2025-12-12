@@ -53,6 +53,7 @@ public class Grid : MonoBehaviour
 
         InitializeComponents();
         RandomizeBoard(availableElements);
+        InsertSpell(GameManager.Instance.GetPlayerSpellBook()[(int)Random.Range(0, GameManager.Instance.GetPlayerSpellBook().Count)].Recipe);
 
         ChangeState(new IdleState(this));
         visualGrid.FillEmpty(GetEmptyPositions(), 0.5f);

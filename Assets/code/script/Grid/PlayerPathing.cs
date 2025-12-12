@@ -85,6 +85,9 @@ public class PlayerPathing : MonoBehaviour
 
     private void Update()
     {
+
+        if (grid.CurrentState != GridStateType.Idle)
+            return; 
         if (!canPath)
             return;
 

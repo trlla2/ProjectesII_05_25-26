@@ -13,6 +13,10 @@ public class EndPanelBehaviour : MonoBehaviour
     [Header("Text")]
     [SerializeField]
     private TMP_Text winText;
+    [SerializeField]
+    private Color coinTextColor = Color.yellow;
+    [SerializeField]
+    private Color expTextColor = Color.blue;
 
     [Header("Translators")]
     [SerializeField]
@@ -35,7 +39,10 @@ public class EndPanelBehaviour : MonoBehaviour
 
         if(isWin)
         {
-            winText.text = "You gain: \n" + exp + "Exp \n" + money + " coins \n \n Click to continue";
+            string coinColorHex = ColorUtility.ToHtmlStringRGB(coinTextColor);
+            string expColorHex = ColorUtility.ToHtmlStringRGB(expTextColor);
+
+            winText.text = $"You gain: \n <color=#{expColorHex}>{exp} Exp</color> \n <color=#{coinColorHex}>{money} coins</color> \n \n Click to continue";
             winPanel.SetActive(true);
             losePanel.SetActive(false);
 

@@ -28,12 +28,12 @@ public class Grid : MonoBehaviour
     private ISpellInserter spellInserter;
     private IGridState currentState;
 
-
     public GridStateType CurrentState => currentState?.GetStateType() ?? GridStateType.Idle;
     public GridData GridData => gridData;
     public GridGravity GravityHandler => gravityHandler;
     public Element EmptyElement => emptyElement;
     public List<Element> AvailableElements => availableElements;
+    public VisualGrid VisualGrid => visualGrid;
 
     private void Awake()
     {
@@ -57,7 +57,6 @@ public class Grid : MonoBehaviour
         ChangeState(new IdleState(this));
         visualGrid.FillEmpty(GetEmptyPositions(), 0.5f);
     }
-
 
     public void InsertSpell(List<Element> spellRecipe)
     {
@@ -85,7 +84,7 @@ public class Grid : MonoBehaviour
             {
                 visual.SetTargetedByEnemy(false);
             }
-                gridData.SetElementAt(pos, emptyElement);
+            gridData.SetElementAt(pos, emptyElement);
             visualGrid.GetVisualAt(pos).UpdateVisual(emptyElement);
         }
     }
@@ -97,17 +96,14 @@ public class Grid : MonoBehaviour
 
         foreach (var pos in positions)
         {
-            // mark logical element as empty immediately
             gridData.SetElementAt(pos, emptyElement);
             visualGrid.GetVisualAt(pos).UpdateVisual(emptyElement);
 
-            // remove visual immediately so it's gone before gravity runs
             if (visualGrid != null)
             {
                 ElementVisual visual = gridData.GetVisualAt(pos);
                 if (visual != null)
                 {
-                    // If this visual was targeted by the enemy, stop blinking and clear target
                     if (visual.IsTargetedByEnemy)
                     {
                         visual.ClearTargetVisual();
@@ -145,12 +141,12 @@ public class Grid : MonoBehaviour
         StartCoroutine(BlockElementsRoutine(duration, positions));
     }
 
-    public void LeverPull(List<Element> elements)
+    public void Reroll(int scrollTimes = 5)
     {
         if (CurrentState != GridStateType.Idle)
             return;
 
-        ChangeState(new LeverPullState(this, visualGrid, elements, GameManager.Instance.GetPlayerSpellBook()));
+        ChangeState(new RerollState(this, visualGrid, availableElements, availableSpells,scrollTimes));
     }
 
     public Element GetElementAt(Vector2Int position)
@@ -182,7 +178,9 @@ public class Grid : MonoBehaviour
     {
         gridData.SetVisualAt(position, visual);
     }
-    public void PlayEnemySpellAnimation(List<Vector2Int> positions, System.Action onComplete = null)
+
+    public void ProcessEnemySpell(List<Vector2Int> positions, System.Action onComplete = null, 
+                                   bool excludeBelowTargets = true, bool rerollAfter = false)
     {
         if (positions == null || positions.Count == 0)
         {
@@ -190,31 +188,7 @@ public class Grid : MonoBehaviour
             return;
         }
 
-        if (enemySpellAnimator == null)
-        {
-            onComplete?.Invoke();
-            return;
-        }
-
-        Vector2Int[] pathPositions = positions.ToArray();
-        List<Element> elements = new List<Element>(positions.Count);
-        foreach (var pos in positions)
-        {
-            elements.Add(GetElementAt(pos));
-        }
-
-        enemySpellAnimator.OnSpellCast(pathPositions, elements, onComplete);
-    }
-
-    public void ProcessEnemySpell(List<Vector2Int> positions, System.Action onComplete = null, bool excludeBelowTargets = true)
-    {
-        if (positions == null || positions.Count == 0)
-        {
-            onComplete?.Invoke();
-            return;
-        }
-
-        ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete, excludeBelowTargets));
+        ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete, excludeBelowTargets, rerollAfter));
     }
 
     public void FillEmptySlots(List<Element> elements, List<Vector2Int> positionsToFill = null)
@@ -232,7 +206,7 @@ public class Grid : MonoBehaviour
             positions = GetEmptyPositions();
         }
 
-        foreach (var pos in positions)
+        foreach (Vector2Int pos in positions)
         {
             // safety
             if (!gridData.IsPositionValid(pos))
@@ -287,17 +261,10 @@ public class Grid : MonoBehaviour
                 }
                 else if (visualGrid != null && visualGrid.isInitialized)
                 {
-                    // ensure a visual exists for newly populated slot (only if VisualGrid is initialized)
                     visualGrid.EnsureVisualAt(pos, randomElement);
                 }
             }
         }
-    }
-
-    public void FillEmptySlots(List<Element> elements)
-    {
-        // kept for backward compatibility: delegate to new implementation
-        FillEmptySlots(elements, null);
     }
 
     private List<Vector2Int> GetEmptyPositions()
@@ -320,6 +287,7 @@ public class Grid : MonoBehaviour
 
         return emptyPositions;
     }
+
     private IEnumerator BlockElementsRoutine(float duration, List<Vector2Int> positions)
     {
         foreach (var pos in positions)
@@ -342,5 +310,10 @@ public class Grid : MonoBehaviour
                 visual.SetSelectable(true);
             }
         }
+    }
+
+    public SpellPathAnimator GetEnemySpellAnimator()
+    {
+        return enemySpellAnimator;
     }
 }

@@ -11,7 +11,6 @@ public class PlayerPathing : MonoBehaviour
 
     [Header("Pathing Settings")]
     [SerializeField] private int maxPathLength = 6;
-    [SerializeField] private float cursorLerpSpeed = 5f;
     [SerializeField] private float selectScaleAmount = 0.2f;
     [SerializeField] private float selectScaleTime = 0.2f;
     [SerializeField] private float xDistanceBetween = 1.25f;
@@ -55,6 +54,7 @@ public class PlayerPathing : MonoBehaviour
         pathData = new PathData(maxPathLength);
 
         pathVisualizer = gameObject.AddComponent<PathVisualizer>();
+        pathVisualizer.cursorVisual = cursorVisual;
     }
 
     private void ValidateSetup()
@@ -253,9 +253,6 @@ public class PlayerPathing : MonoBehaviour
     //Can be converted into a SpellEffectHandler class in the future if more complex effects are needed
     private void HandleSpellEffects(Spell spell)
     {
-        foreach(Element e in spell.Recipe)
-            GameManager.Instance.AttackEnemy(e.Type);
-
         GameManager.Instance.NotifyPlayerMove();
 
         if (spell.Name == "HEAL") GameManager.Instance.HealPlayer(30); 

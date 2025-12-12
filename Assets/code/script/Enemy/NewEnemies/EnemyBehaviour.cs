@@ -1,7 +1,7 @@
-using UnityEditor.Animations;
 using UnityEngine;
+using System.Collections;
 
-[RequireComponent(typeof(SpriteRenderer), typeof(AnimatorController))]
+[RequireComponent(typeof(SpriteRenderer))]
 public class EnemyBehaviour : MonoBehaviour
 {
     [Header("Configuration")]
@@ -11,6 +11,8 @@ public class EnemyBehaviour : MonoBehaviour
     [Header("Visual Effects")]
     [SerializeField] private GameObject deathParticles;
 
+    [Header("Reroll Settings")]
+    [SerializeField] private int rerollScrollTimes = 3;
 
     private SpriteRenderer spriteRenderer;
     private Animator animator;
@@ -31,7 +33,6 @@ public class EnemyBehaviour : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
-        
     }
 
     private void Start()
@@ -73,7 +74,6 @@ public class EnemyBehaviour : MonoBehaviour
 
         inBattle = true;
 
-        //Start by targeting
         CreateAndExecuteSpell();
 
         if (GameManager.Instance != null)
@@ -126,8 +126,25 @@ public class EnemyBehaviour : MonoBehaviour
 
         activeSpell.Tick(grid, () =>
         {
-            CreateAndExecuteSpell();
+            StartCoroutine(RerollAndRetarget());
         });
+    }
+
+    private IEnumerator RerollAndRetarget()
+    {
+        if (grid == null || grid.VisualGrid == null)
+        {
+            CreateAndExecuteSpell();
+            yield break;
+        }
+        grid.Reroll(rerollScrollTimes);
+
+        while (grid.CurrentState != GridStateType.Idle)
+        {
+            yield return null;
+        }
+
+        CreateAndExecuteSpell();
     }
 
     public void DealDamage(DamageType damageType)

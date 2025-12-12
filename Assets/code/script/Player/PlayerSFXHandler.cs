@@ -14,12 +14,12 @@ public class PlayerSFXHandler : MonoBehaviour
         GameManager.Instance.OnPlayerHitRecived += HandlePlayerHit;
     }
 
-    private void HandlePlayerHit(float health)
+    private void HandlePlayerHit()
     {
 
         hitSource.Play();
 
-        if (health <= 0)
+        if (GameManager.Instance.GetPlayerHP() <= 0)
             deathSource.Play();
     }
         

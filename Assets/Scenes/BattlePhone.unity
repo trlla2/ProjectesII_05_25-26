@@ -13711,6 +13711,8 @@ MonoBehaviour:
   stageLevel: 1
   enemyTypes:
   - {fileID: 11400000, guid: 3ddc38c9790bdd44bacbeb43cb61cada, type: 2}
+  - {fileID: 11400000, guid: b58a165a179e5564c8881963ab38360b, type: 2}
+  - {fileID: 11400000, guid: 5a68dbd4268eb7749b497b05fa080c5c, type: 2}
 --- !u!4 &806185222
 Transform:
   m_ObjectHideFlags: 0
@@ -20606,7 +20608,7 @@ GameObject:
   - component: {fileID: 1507392187}
   - component: {fileID: 1507392193}
   m_Layer: 5
-  m_Name: -------------- CANVAS PLACEHOLDER
+  m_Name: -------------- CANVAS UI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20641,6 +20643,8 @@ MonoBehaviour:
   winPanel: {fileID: 1594906318}
   losePanel: {fileID: 810593950}
   winText: {fileID: 483719664}
+  coinTextColor: {r: 0.8679245, g: 0.75432163, b: 0, a: 1}
+  expTextColor: {r: 0, g: 0.5827391, b: 1, a: 1}
   winTranslator: {fileID: 1594906320}
   loseTranslator: {fileID: 810593951}
 --- !u!114 &1507392189

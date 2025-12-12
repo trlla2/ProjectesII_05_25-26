@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour
     public event System.Action OnPlayerLevelUp;
     public event System.Action OnPlayerMoneyChange;
     public event System.Action<float> OnPlayerHitRecived;
+    public event System.Action<float> OnPlayerHealed;
     public event System.Action OnPlayerHitEvaded;
     public event System.Action OnPlayerInventoryChange;
 
@@ -46,6 +47,8 @@ public class GameManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(this.gameObject);
     }
+
+    
 
     public void SetEnemyRef(EnemyBehaviour enemyRef)
     {
@@ -88,6 +91,7 @@ public class GameManager : MonoBehaviour
     public void HealPlayer(int amount)
     {
         playerStats.Heal(amount);
+        OnPlayerHealed?.Invoke(playerStats.Hp);
     }
 
     public bool UsePlayerMoney(int amount)

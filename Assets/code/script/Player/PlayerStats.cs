@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-
+using UnityEngine;
 
 public class PlayerStats
 {
@@ -69,8 +69,7 @@ public class PlayerStats
     public void Heal(float amount)
     {
         Hp += amount;
-        if (Hp > MaxHp)
-            Hp = MaxHp;
+        if (Hp > MaxHp + ExtraHealth)   Hp = MaxHp + ExtraHealth;
     }
 
     public void AddMoney(int amount) { Money += amount; }
@@ -78,7 +77,7 @@ public class PlayerStats
     {
         if (Money >= amount)
         {
-            Money = Money - amount;
+            Money -= amount;
             return true;
         }
         return false;

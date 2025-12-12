@@ -45,7 +45,6 @@ public class EnemyUIHandler : MonoBehaviour
     private void SetEnemyRef(EnemyBehaviour reference)
     {
         enemyBehaviour = reference;
-        Debug.Log("yeyeyeyeeye");
         enemyBehaviour.OnHitRecived += ChangeHealthBar;
         enemyBehaviour.OnGetDamage += AddDamageToQueue;
     }

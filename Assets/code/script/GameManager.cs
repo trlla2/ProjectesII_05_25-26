@@ -25,14 +25,15 @@ public class GameManager : MonoBehaviour
     public event GetOnEndBattle OnEndBattle;
 
     public event System.Action OnPlayerMove;
-
     public event System.Action OnPlayerEXPChange;
     public event System.Action OnPlayerLevelUp;
     public event System.Action OnPlayerMoneyChange;
     public event System.Action<float> OnPlayerHitRecived;
     public event System.Action OnPlayerHitEvaded;
     public event System.Action OnPlayerInventoryChange;
-    
+
+    public event System.Action<EnemyBehaviour> OnSetEnemyReference;
+
 
     private void Awake()
     {
@@ -49,6 +50,7 @@ public class GameManager : MonoBehaviour
     public void SetEnemyRef(EnemyBehaviour enemyRef)
     {
         enemyInCombat = enemyRef;
+        OnSetEnemyReference?.Invoke(enemyRef);
         enemyInCombat.SetEnemyType(enemyTypes[Random.Range(0, enemyTypes.Count)]);
         enemyInCombat?.StartBattle();
         Debug.Log("enemyInCombat assinged");
@@ -60,7 +62,6 @@ public class GameManager : MonoBehaviour
         enemyInCombat?.DealDamage(playerStats.AttackWithElement(element) );
     }
 
-    //future use? Mb if the player misses a spell
     public void NotifyPlayerMove()
     {
         OnPlayerMove?.Invoke();

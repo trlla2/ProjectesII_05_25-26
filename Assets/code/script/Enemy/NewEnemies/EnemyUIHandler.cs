@@ -1,5 +1,6 @@
 using System.Collections.Generic; 
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,10 +9,6 @@ public class EnemyUIHandler : MonoBehaviour
     [Header("HealthBar")]
     [SerializeField]
     private Slider healthBar;
-
-    [Header("Attack TimeCircle")]
-    [SerializeField]
-    private Image attackTimeCircle;
 
     [Header("Damage Text")]
     [SerializeField]
@@ -42,8 +39,12 @@ public class EnemyUIHandler : MonoBehaviour
 
     private void Start()
     {
-        enemyBehaviour = GameManager.Instance.GetEnemyRef();
+        GameManager.Instance.OnSetEnemyReference += SetEnemyRef;
+    }
 
+    private void SetEnemyRef(EnemyBehaviour reference)
+    {
+        enemyBehaviour = reference;
         enemyBehaviour.OnHitRecived += ChangeHealthBar;
         enemyBehaviour.OnGetDamage += AddDamageToQueue;
     }

@@ -1,7 +1,6 @@
-using UnityEditor.Animations;
 using UnityEngine;
 
-[RequireComponent(typeof(SpriteRenderer), typeof(AnimatorController))]
+[RequireComponent(typeof(SpriteRenderer), typeof(Animator))]
 public class EnemyBehaviour : MonoBehaviour
 {
     [Header("Configuration")]

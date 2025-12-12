@@ -35,7 +35,7 @@ public class EndPanelBehaviour : MonoBehaviour
 
         if(isWin)
         {
-            winText.text = "You gain:\n" + exp + " Experience points \n" + money + " coins \n Click to continue";
+            winText.text = "You gain: \n" + exp + "Exp \n" + money + " coins \n \n Click to continue";
             winPanel.SetActive(true);
             losePanel.SetActive(false);
 

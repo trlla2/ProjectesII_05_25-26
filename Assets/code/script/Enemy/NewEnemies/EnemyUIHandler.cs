@@ -37,7 +37,7 @@ public class EnemyUIHandler : MonoBehaviour
 
     private EnemyBehaviour enemyBehaviour;
 
-    private void Start()
+    private void Awake()
     {
         GameManager.Instance.OnSetEnemyReference += SetEnemyRef;
     }
@@ -45,6 +45,7 @@ public class EnemyUIHandler : MonoBehaviour
     private void SetEnemyRef(EnemyBehaviour reference)
     {
         enemyBehaviour = reference;
+        Debug.Log("yeyeyeyeeye");
         enemyBehaviour.OnHitRecived += ChangeHealthBar;
         enemyBehaviour.OnGetDamage += AddDamageToQueue;
     }

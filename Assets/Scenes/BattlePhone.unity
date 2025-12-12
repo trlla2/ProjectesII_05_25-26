@@ -5990,7 +5990,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   elementScale: 1.2
   elementSpacing: 0.2
-  movementEase: 20
   clonePrefab: {fileID: 823688408045220818, guid: 4708e3ebd8788b04783c1300cda193eb, type: 3}
   spellPathData: {fileID: 244508974}
   grid: {fileID: 190367786}
@@ -14329,7 +14328,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   elementScale: 1.2
   elementSpacing: 0.25
-  movementEase: 20
   clonePrefab: {fileID: 823688408045220818, guid: 4708e3ebd8788b04783c1300cda193eb, type: 3}
   spellPathData: {fileID: 964765497}
   grid: {fileID: 190367786}
@@ -20369,12 +20367,12 @@ GameObject:
   - component: {fileID: 1468393346}
   - component: {fileID: 1468393347}
   m_Layer: 0
-  m_Name: Circle
+  m_Name: CursorVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1468393346
 Transform:
   m_ObjectHideFlags: 0
@@ -21132,7 +21130,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 53.8
+  m_fontSize: 47.75
   m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 1

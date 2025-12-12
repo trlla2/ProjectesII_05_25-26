@@ -11,7 +11,7 @@ public class PlayerAnimationHandler : MonoBehaviour
         GameManager.Instance.OnPlayerHitRecived += HitAnimation;
     }
 
-    private void HitAnimation(float hp)
+    private void HitAnimation()
     {
         animator.SetTrigger("Hit");
     }

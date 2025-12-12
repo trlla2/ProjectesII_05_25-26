@@ -28,8 +28,8 @@ public class GameManager : MonoBehaviour
     public event System.Action OnPlayerEXPChange;
     public event System.Action OnPlayerLevelUp;
     public event System.Action OnPlayerMoneyChange;
-    public event System.Action<float> OnPlayerHitRecived;
-    public event System.Action<float> OnPlayerHealed;
+    public event System.Action OnPlayerHitRecived;
+    public event System.Action OnPlayerHealed;
     public event System.Action OnPlayerHitEvaded;
     public event System.Action OnPlayerInventoryChange;
 
@@ -82,7 +82,7 @@ public class GameManager : MonoBehaviour
         playerStats.Damage(damage);
         Camera.main.GetComponent<CameraShake>().Shake(0.2f);
 
-        OnPlayerHitRecived.Invoke(playerStats.Hp);
+        OnPlayerHitRecived.Invoke();
 
         if(!playerStats.IsAlive())
             OnPlayerDead();
@@ -91,7 +91,7 @@ public class GameManager : MonoBehaviour
     public void HealPlayer(int amount)
     {
         playerStats.Heal(amount);
-        OnPlayerHealed?.Invoke(playerStats.Hp);
+        OnPlayerHealed?.Invoke();
     }
 
     public bool UsePlayerMoney(int amount)
@@ -144,7 +144,7 @@ public class GameManager : MonoBehaviour
     }
 
     public float GetPlayerHP() => playerStats.Hp;
-    public float GetPlayerMaxHP() => playerStats.MaxHp;
+    public float GetPlayerHPPercentage() => playerStats.Hp / playerStats.MaxHp + playerStats.ExtraHealth;
     public int GetPlayerLevel() => playerStats.Level;
     public int GetPlayerEXP() => playerStats.ExperiencePoints;
     public int GetPlayerEXPForNextLevel() => playerStats.GetEXPForNextLevel();

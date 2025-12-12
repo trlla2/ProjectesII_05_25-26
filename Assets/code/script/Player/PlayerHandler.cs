@@ -14,9 +14,9 @@ public class PlayerHandler : MonoBehaviour
         GameManager.Instance.OnPlayerHitRecived += HandlePlayerHit;
     }
 
-    private void HandlePlayerHit(float health)
+    private void HandlePlayerHit()
     {
-        if(health <= 0)
+        if(GameManager.Instance.GetPlayerHP() <= 0)
         {
             killParticles.Play();
             spriteRenderer.enabled = false;

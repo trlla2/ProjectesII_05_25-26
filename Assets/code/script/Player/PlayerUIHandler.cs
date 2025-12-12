@@ -16,12 +16,13 @@ public class PlayerUIHandler : MonoBehaviour
         GameManager.Instance.OnPlayerHitRecived += UpdateHealBar;
         GameManager.Instance.OnPlayerHealed += UpdateHealBar;
         GameManager.Instance.OnPlayerHitEvaded += HitEvaded;
-        UpdateHealBar(GameManager.Instance.GetPlayerHP());
+
+        UpdateHealBar();
     }
 
-    private void UpdateHealBar(float health)
+    private void UpdateHealBar()
     {
-        healthBar.value = health / GameManager.Instance.GetPlayerMaxHP();
+        healthBar.value = GameManager.Instance.GetPlayerHPPercentage();
     }
 
     private void HitEvaded()

@@ -255,7 +255,7 @@ public class PlayerPathing : MonoBehaviour
     {
         GameManager.Instance.NotifyPlayerMove();
 
-        if (spell.Name == "HEAL") GameManager.Instance.HealPlayer(30); 
+        if (spell.Name == "HEAL") GameManager.Instance.HealPlayer(5); 
     }
 
     private void UpdateVisuals()

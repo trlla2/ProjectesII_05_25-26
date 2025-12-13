@@ -7,6 +7,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpHeight;
     [SerializeField] private float jumpDuration;
+    [SerializeField] private ParticleSystem jumpParticles;
+    private float _jumpParticlesDuration;
     [SerializeField] private float waitTimeBetweenTilesInSeconds;
 
     private BoardTile currentTile;
@@ -16,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     {
         currentTile = BoardManager.instance.startingTile;
         transform.position = BoardManager.instance.startingTile.transform.position;
+        _jumpParticlesDuration = jumpParticles.main.duration;
     }
 
     public void TryMoveTo(BoardTile target, System.Action onArrive = null)
@@ -47,19 +50,19 @@ public class PlayerMovement : MonoBehaviour
             Vector3 targetPos = tile.transform.position;
             while (Vector3.Distance(transform.position, targetPos) > 0.01f)
             {
-                //transform.position = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);
-                //yield return null;
                 yield return StartCoroutine(JumpToTile(tile.transform.position));
             }
-            if (tile != path[0] /*|| tile == path[path.Count-1])*/)
+            currentTile = tile;
+
+            GameObject newParticles = Instantiate(jumpParticles.gameObject, tile.transform.position, currentTile.transform.rotation, currentTile.transform);
+            Destroy(newParticles, _jumpParticlesDuration);
+
+            if (currentTile != path[0])
             {
                 Debug.Log("waiting..");
                 yield return new WaitForSecondsRealtime(waitTimeBetweenTilesInSeconds);
             }
-            currentTile = tile;
-
-            //if (!path[path.IndexOf(tile)].IsWalkable())
-            //    break;
+            
         }
 
         isMoving = false;
@@ -76,10 +79,8 @@ public class PlayerMovement : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = elapsed / jumpDuration;
 
-            // Movimiento horizontal
             Vector3 horizontalPos = Vector3.Lerp(startPos, targetPos, t);
 
-            // Curva de salto (parábola)
             float height = Mathf.Sin(t * Mathf.PI) * jumpHeight;
 
             transform.position = new Vector3(
@@ -91,7 +92,6 @@ public class PlayerMovement : MonoBehaviour
             yield return null;
         }
 
-        // Asegura posición final exacta
         transform.position = targetPos;
     }
 

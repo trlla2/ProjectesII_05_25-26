@@ -6,6 +6,7 @@ using UnityEngine.Events;
 public class Spell : ScriptableObject
 {
     public string Name;
+    public string Description;
     public List<Element> Recipe;
     public UnityEvent OnCast;
 

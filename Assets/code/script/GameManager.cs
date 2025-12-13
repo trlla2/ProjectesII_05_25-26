@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     [Header("List Of Enemies")]
     [SerializeField]
     private List<EnemyType> enemyTypes = new List<EnemyType>();
+    private List<EnemyType> currentEnemyList;
 
     private EnemyBehaviour enemyInCombat;
     
@@ -48,17 +49,30 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(this.gameObject);
-    }
 
-    
+        currentEnemyList = new List<EnemyType>(enemyTypes);
+    }
 
     public void SetEnemyRef(EnemyBehaviour enemyRef)
     {
         enemyInCombat = enemyRef;
         OnSetEnemyReference?.Invoke(enemyRef);
-        enemyInCombat.SetEnemyType(enemyTypes[Random.Range(0, enemyTypes.Count)]);
+        enemyInCombat.SetEnemyType(PickRandomEenemy());
         enemyInCombat?.StartBattle();
-        Debug.Log("enemyInCombat assinged");
+    }
+    private EnemyType PickRandomEenemy()
+    {
+        int index = Random.Range(0, currentEnemyList.Count);
+        EnemyType type = currentEnemyList[index];
+        currentEnemyList.RemoveAt(index);
+
+        if (currentEnemyList.Count <= 0)
+        {
+            currentEnemyList.Clear();
+            currentEnemyList = new List<EnemyType>(enemyTypes);
+        }
+
+        return type;
     }
     public void DeleteEnemyRef() { enemyInCombat = null; }
 

@@ -55,8 +55,10 @@ public class TileClickHandler : MonoBehaviour
             if (clickedTile == null)
                 return;
 
+            clickedTile.HighlightTile(true);
             player.TryMoveTo(clickedTile, () =>
             {
+                clickedTile.HighlightTile(false);
                 clickedTile.Interact();
             });
         }

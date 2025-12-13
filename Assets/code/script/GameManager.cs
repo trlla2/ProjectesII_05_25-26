@@ -14,11 +14,14 @@ public class GameManager : MonoBehaviour
     [Header("List Of Enemies")]
     [SerializeField]
     private List<EnemyType> enemyTypes = new List<EnemyType>();
+    private List<EnemyType> currentEnemyList;
 
     private EnemyBehaviour enemyInCombat;
     
     private int expMultiplyer = 4;
     private int moneyMultiplyer = 4;
+
+    private SpellHoverHandler spellHoverHandler;
 
     // EVENTS
     public delegate void GetOnEndBattle(bool isWin, int exp, int money);
@@ -46,17 +49,30 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(this.gameObject);
-    }
 
-    
+        currentEnemyList = new List<EnemyType>(enemyTypes);
+    }
 
     public void SetEnemyRef(EnemyBehaviour enemyRef)
     {
         enemyInCombat = enemyRef;
         OnSetEnemyReference?.Invoke(enemyRef);
-        enemyInCombat.SetEnemyType(enemyTypes[Random.Range(0, enemyTypes.Count)]);
+        enemyInCombat.SetEnemyType(PickRandomEenemy());
         enemyInCombat?.StartBattle();
-        Debug.Log("enemyInCombat assinged");
+    }
+    private EnemyType PickRandomEenemy()
+    {
+        int index = Random.Range(0, currentEnemyList.Count);
+        EnemyType type = currentEnemyList[index];
+        currentEnemyList.RemoveAt(index);
+
+        if (currentEnemyList.Count <= 0)
+        {
+            currentEnemyList.Clear();
+            currentEnemyList = new List<EnemyType>(enemyTypes);
+        }
+
+        return type;
     }
     public void DeleteEnemyRef() { enemyInCombat = null; }
 
@@ -75,7 +91,6 @@ public class GameManager : MonoBehaviour
         if (playerStats.EvadeAttack())
         {
             OnPlayerHitEvaded?.Invoke();
-            Debug.Log("EVADEDDDDDDDDDD");
             return;
         }
 
@@ -137,6 +152,15 @@ public class GameManager : MonoBehaviour
 
         OnEndBattle?.Invoke(true, exp, money);
     }
+
+    public void SetHoverHandlerRef(SpellHoverHandler spellHover) { spellHoverHandler = spellHover; }
+    public void DeleteHoverHandlerRef() { spellHoverHandler = null; }
+    public void HoverSpell(Spell spell)
+    {
+        spellHoverHandler.SetupSpellUI(spell);
+        spellHoverHandler.Show();
+    }
+    public void UnHoverSpell() { spellHoverHandler.UnShow(); } 
 
     public void Destroy()
     {

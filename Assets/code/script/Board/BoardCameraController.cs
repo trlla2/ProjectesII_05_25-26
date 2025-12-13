@@ -14,7 +14,7 @@ public class BoardCameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        this.gameObject.transform.position = new Vector3(_player.transform.position.x+ camOffset.x, _player.transform.position.y+camOffset.y, _player.transform.position.z+camOffset.z);
+        this.gameObject.transform.position = new Vector3(_player.transform.position.x+ camOffset.x, /*_player.*/transform.position.y/*+camOffset.y*/, _player.transform.position.z+camOffset.z);
     }
 
 }

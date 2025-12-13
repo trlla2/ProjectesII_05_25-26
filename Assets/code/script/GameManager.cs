@@ -20,6 +20,8 @@ public class GameManager : MonoBehaviour
     private int expMultiplyer = 4;
     private int moneyMultiplyer = 4;
 
+    private SpellHoverHandler spellHoverHandler;
+
     // EVENTS
     public delegate void GetOnEndBattle(bool isWin, int exp, int money);
     public event GetOnEndBattle OnEndBattle;
@@ -75,7 +77,6 @@ public class GameManager : MonoBehaviour
         if (playerStats.EvadeAttack())
         {
             OnPlayerHitEvaded?.Invoke();
-            Debug.Log("EVADEDDDDDDDDDD");
             return;
         }
 
@@ -137,6 +138,15 @@ public class GameManager : MonoBehaviour
 
         OnEndBattle?.Invoke(true, exp, money);
     }
+
+    public void SetHoverHandlerRef(SpellHoverHandler spellHover) { spellHoverHandler = spellHover; }
+    public void DeleteHoverHandlerRef() { spellHoverHandler = null; }
+    public void HoverSpell(Spell spell)
+    {
+        spellHoverHandler.SetupSpellUI(spell);
+        spellHoverHandler.Show();
+    }
+    public void UnHoverSpell() { spellHoverHandler.UnShow(); } 
 
     public void Destroy()
     {

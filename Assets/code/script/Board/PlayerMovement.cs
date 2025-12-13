@@ -54,7 +54,7 @@ public class PlayerMovement : MonoBehaviour
             if (tile != path[0] /*|| tile == path[path.Count-1])*/)
             {
                 Debug.Log("waiting..");
-                yield return new WaitForSeconds(waitTimeBetweenTilesInSeconds);
+                yield return new WaitForSecondsRealtime(waitTimeBetweenTilesInSeconds);
             }
             currentTile = tile;
 

@@ -644,7 +644,7 @@ MonoBehaviour:
   bossTileData: {fileID: 11400000, guid: bc3587d48929d3347ab647196bf11cde, type: 2}
   stairsTileData: {fileID: 11400000, guid: 5109a009fed6a2d4595e73f54ebbf5c4, type: 2}
   generatedTiles: []
-  openChestPanel: {fileID: 0}
+  openChestPanel: {fileID: 2114031267}
 --- !u!1 &1101005416
 GameObject:
   m_ObjectHideFlags: 0
@@ -1001,7 +1001,7 @@ Canvas:
   m_GameObject: {fileID: 1217863286}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 0
   m_Camera: {fileID: 1106537846}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -1588,6 +1588,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1983104618292807921, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
   m_PrefabInstance: {fileID: 2114031265}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2114031267 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5583812689237297437, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
+  m_PrefabInstance: {fileID: 2114031265}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d50e8374673dbdf4cbe6611a64dfc9ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

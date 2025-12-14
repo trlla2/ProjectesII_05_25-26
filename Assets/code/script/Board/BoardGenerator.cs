@@ -5,16 +5,22 @@ using UnityEngine;
 public class BoardGenerator : MonoBehaviour
 {
     [SerializeField] float _spaceBetweenTiles;
-    [SerializeField] int _numOfEmptyTilesInBoard;
-    [SerializeField] int _numOfEnemyTilesInBoard;
-    [SerializeField] int _numOfChestTilesInBoard;
-    [SerializeField] int _numOfEgressTilesInBoard;
-    [SerializeField] int _numOfMiniBosses;
+
+    [SerializeField] int _numOfEmptyTiles;
+    [SerializeField] int _numOfStairs;
+
+    [SerializeField] int _numOfEnemyTiles;
+    [SerializeField] int _numOfMiniBossTiles;
+    [SerializeField] int _numOfBossesTiles;
+
+    [SerializeField] int _numOfChestTiles;
+    [SerializeField] int _numOfEgressTiles;
+    
     int _numOfTotalTilesInBoard;
 
     private void Awake()
     {
-        _numOfTotalTilesInBoard = _numOfEmptyTilesInBoard + _numOfEnemyTilesInBoard + _numOfChestTilesInBoard + _numOfEgressTilesInBoard;
+        _numOfTotalTilesInBoard = _numOfEmptyTiles + _numOfEnemyTiles + _numOfChestTiles + _numOfEgressTiles;
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -82,11 +88,18 @@ public class BoardGenerator : MonoBehaviour
 
     void AssignSpecialTiles()
     {
-        BoardTile lastTile = BoardManager.instance.generatedTiles.ElementAt(BoardManager.instance.generatedTiles.Count - 1);
+        List<BoardTile> stairsTiles = new List<BoardTile>();
+        for (int i = 0; i < _numOfStairs; i++)
+        {
+            stairsTiles.Add(BoardManager.instance.generatedTiles.ElementAt(BoardManager.instance.generatedTiles.Count-1 - i));
+        }
+        
         List<BoardTile> availableTiles = new List<BoardTile>(BoardManager.instance.generatedTiles);
-        // remove last 6 tiles (reserved for stairs, boss and chest of egress)
-        availableTiles.RemoveRange(availableTiles.Count - 6, 6);
-        // remove starting tile from special tiles gen
+
+                                                        // also reserved 1 empty tile between each different one
+        int numOfTilesReservedForEndZone = _numOfStairs +1+ _numOfBossesTiles +1+ _numOfEgressTiles + 1;
+        availableTiles.RemoveRange(availableTiles.Count - numOfTilesReservedForEndZone, numOfTilesReservedForEndZone);
+
         availableTiles.Remove(BoardManager.instance.startingTile);
         Shuffle(availableTiles);
 
@@ -95,24 +108,42 @@ public class BoardGenerator : MonoBehaviour
 
         foreach (var tile in availableTiles)
         {
-            if (assignedEnemies < _numOfEnemyTilesInBoard)
+            if (assignedEnemies < _numOfEnemyTiles)
             {
                 BoardManager.instance.ReplaceTileType(tile, BoardManager.instance.enemyTileData);
                 assignedEnemies++;
             }
-            else if (assignedChests < _numOfChestTilesInBoard)
+            else if (assignedChests < _numOfChestTiles)
             {
                 BoardManager.instance.ReplaceTileType(tile, BoardManager.instance.chestTileData);
                 assignedChests++;
             }
 
-            if (assignedEnemies >= _numOfEnemyTilesInBoard && assignedChests >= _numOfChestTilesInBoard)
+            if (assignedEnemies >= _numOfEnemyTiles && assignedChests >= _numOfChestTiles)
                 break;
         }
 
-        
+        for (int i = 0; i < stairsTiles.Count; i++)
+        {
+            BoardManager.instance.ReplaceTileType(stairsTiles[i], BoardManager.instance.stairsTileData);
+            if (i != 0)
+                stairsTiles[i].SetGridPosition(stairsTiles[0].GetGridPosition() + new Vector2Int(0, 1));
+
+            stairsTiles[i].SetYPosition(stairsTiles[i].GetYPosition() - (0.5f*i));
+        }
+
+        //foreach(BoardTile tile in stairsTiles)
+        //{
+        //    BoardManager.instance.ReplaceTileType(tile, BoardManager.instance.stairsTileData);
+        //    if (tile != stairsTiles[0])
+        //    {
+        //        tile.SetGridPosition(stairsTiles[0].GetGridPosition() + new Vector2Int(0, 1));
+        //        tile.SetYPosition(stairsTiles.ElementAt(tile.).GetYPosition() - 0.5f);
+        //    }
+                
+        //}
         //BoardTile lastTile = BoardManager.instance.generatedTiles.
-        BoardManager.instance.ReplaceTileType(lastTile, BoardManager.instance.stairsTileData);
+        
 
         Debug.Log($"Asignadas {assignedEnemies} tiles de enemigos y {assignedChests} tiles de cofres.");
     }
@@ -125,6 +156,10 @@ public class BoardGenerator : MonoBehaviour
             (list[i], list[rand]) = (list[rand], list[i]);
         }
     }
+
+
+
+    // WADIYATALKINABEET
 
     List<Vector2Int> GenerateSquareGrid(Vector2Int origin, int size)
     {

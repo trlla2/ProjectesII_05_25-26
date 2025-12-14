@@ -114,9 +114,17 @@ public class GameManager : MonoBehaviour
         return playerStats.UseMoney(amount);
     }
 
-    public void AddItemToPlayerInventory(Item item)
+    public bool AddItemToPlayerInventory(Item item)
     {
-        playerStats.AddItemToInventory(item);
+        bool isItemAdded = playerStats.AddItemToInventory(item);
+        OnPlayerInventoryChange?.Invoke();
+        
+        return isItemAdded;
+    }
+
+    public void RemoveItemFromPlayerInventory(Item item) 
+    { 
+        playerStats.RemoveItemFromInventory(item);
         OnPlayerInventoryChange?.Invoke();
     }
 

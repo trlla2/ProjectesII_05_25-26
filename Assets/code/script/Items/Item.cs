@@ -10,7 +10,7 @@ public class Item : ScriptableObject
 
 
     [Header("Art Stuff")]
-    public Sprite enemySprite;
+    public Sprite Sprite;
 
     [Header("Behaviour")]
     [SerializeReference]

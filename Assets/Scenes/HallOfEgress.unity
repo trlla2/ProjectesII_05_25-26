@@ -1146,6 +1146,7 @@ MonoBehaviour:
   _itemSprite: {fileID: 1723392903}
   _itemsPool:
   - {fileID: 11400000, guid: e047397be666a1b4d9643b4a3ec57c55, type: 2}
+  _removeItemPanel: {fileID: 0}
 --- !u!1 &148963313
 GameObject:
   m_ObjectHideFlags: 0
@@ -5884,6 +5885,50 @@ Transform:
   - {fileID: 918903683}
   m_Father: {fileID: 702071344}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!1 &798640336
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 798640338}
+  - component: {fileID: 798640337}
+  m_Layer: 0
+  m_Name: ------------- HAPTICS MANAGER
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &798640337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 798640336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a665e6416209294ba3e359c9d88c15a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &798640338
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 798640336}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.9386989, y: -1.701159, z: 6.613272}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &802871036
 GameObject:
   m_ObjectHideFlags: 0
@@ -19884,3 +19929,4 @@ SceneRoots:
   - {fileID: 1935851525}
   - {fileID: 1135501900}
   - {fileID: 826760722}
+  - {fileID: 798640338}

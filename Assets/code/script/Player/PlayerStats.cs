@@ -18,6 +18,8 @@ public class PlayerStats
     public List<Spell> SpellBook;
 
     public List<Item> Inventory;
+    public int LimitInventory;
+
     public int EvasionPoints;
     public int ExtraHealth;
     public int ExtraDamage;
@@ -30,6 +32,7 @@ public class PlayerStats
         Money = 10;
         SpellBook = new List<Spell>();
         Inventory = new List<Item>();
+        LimitInventory = 5;
         ElementalLevels = new Dictionary<ElementType, int>()
         {
             { ElementType.Green, 1},
@@ -103,19 +106,23 @@ public class PlayerStats
         ElementalLevels[elementType] += 1;
     }
 
-    public void AddItemToInventory(Item item) 
-    { 
+    public bool AddItemToInventory(Item item) 
+    {
+        if (Inventory.Count >= LimitInventory) return false;
+
         Inventory.Add(item);
         item.ApplyEffects(this);
+
+        return true;// the item was added
     }
 
     public void RemoveItemFromInventory(Item item)
     {
-        if (Inventory.Contains(item))
-        {
-            Inventory.Remove(item);
-            item.RemoveEffects(this);
-        }
+        if (!Inventory.Contains(item)) return;
+        
+        Inventory.Remove(item);
+        item.RemoveEffects(this);
+        
     }
 
     public void AddSpellToSpellBook(Spell spell)

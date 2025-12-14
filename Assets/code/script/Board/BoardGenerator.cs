@@ -91,7 +91,7 @@ public class BoardGenerator : MonoBehaviour
         List<BoardTile> stairsTiles = new List<BoardTile>();
         for (int i = 0; i < _numOfStairs; i++)
         {
-            stairsTiles.Add(BoardManager.instance.generatedTiles.ElementAt(BoardManager.instance.generatedTiles.Count - i));
+            stairsTiles.Add(BoardManager.instance.generatedTiles.ElementAt(BoardManager.instance.generatedTiles.Count-1 - i));
         }
         
         List<BoardTile> availableTiles = new List<BoardTile>(BoardManager.instance.generatedTiles);
@@ -123,12 +123,25 @@ public class BoardGenerator : MonoBehaviour
                 break;
         }
 
-        foreach(BoardTile tile in stairsTiles)
+        for (int i = 0; i < stairsTiles.Count; i++)
         {
-            BoardManager.instance.ReplaceTileType(tile, BoardManager.instance.stairsTileData);
-            if (tile != stairsTiles[0])
-                tile.SetYPosition(tile.GetYPosition() + 0.5f);
+            BoardManager.instance.ReplaceTileType(stairsTiles[i], BoardManager.instance.stairsTileData);
+            if (i != 0)
+                stairsTiles[i].SetGridPosition(stairsTiles[0].GetGridPosition() + new Vector2Int(0, 1));
+
+            stairsTiles[i].SetYPosition(stairsTiles[i].GetYPosition() - (0.5f*i));
         }
+
+        //foreach(BoardTile tile in stairsTiles)
+        //{
+        //    BoardManager.instance.ReplaceTileType(tile, BoardManager.instance.stairsTileData);
+        //    if (tile != stairsTiles[0])
+        //    {
+        //        tile.SetGridPosition(stairsTiles[0].GetGridPosition() + new Vector2Int(0, 1));
+        //        tile.SetYPosition(stairsTiles.ElementAt(tile.).GetYPosition() - 0.5f);
+        //    }
+                
+        //}
         //BoardTile lastTile = BoardManager.instance.generatedTiles.
         
 

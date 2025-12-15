@@ -9,6 +9,6 @@ public class SpellbookTile : BoardTile
         _openSpellbookScreen.CreateSpellsButtons();
         Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(false);
 
-        _openSpellbookScreen.gameObject.SetActive(true);
+        _openSpellbookScreen.OpenSpellBook();
     }
 }

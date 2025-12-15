@@ -10,17 +10,10 @@ public class SpellbookScreen : MonoBehaviour
 
     [SerializeField] private GameObject _scrollviewContent;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    private TranslatorUI translator;
+    private void Awake() { translator = GetComponent<TranslatorUI>(); }
+    public void OpenSpellBook(){ translator.ToTarget(); }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     public void CreateSpellsButtons()
     {
         //if (_scrollviewContent.GetComponentsInChildren<Button>() != null)

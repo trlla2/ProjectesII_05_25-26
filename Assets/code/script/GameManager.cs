@@ -176,7 +176,7 @@ public class GameManager : MonoBehaviour
     }
 
     public float GetPlayerHP() => playerStats.Hp;
-    public float GetPlayerHPPercentage() => playerStats.Hp / playerStats.MaxHp + playerStats.ExtraHealth;
+    public float GetPlayerHPPercentage() => playerStats.Hp / (playerStats.MaxHp + playerStats.ExtraHealth);
     public int GetPlayerLevel() => playerStats.Level;
     public int GetPlayerEXP() => playerStats.ExperiencePoints;
     public int GetPlayerEXPForNextLevel() => playerStats.GetEXPForNextLevel();

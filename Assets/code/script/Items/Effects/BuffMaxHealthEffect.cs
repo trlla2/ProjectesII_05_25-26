@@ -8,6 +8,7 @@ public class BuffMaxHealthEffect : IItemEffect
     public void Equip(PlayerStats target)
     {
         target.ModifyExtraHealth(amount);
+        target.Heal(amount);
     }
 
     public void UnEquip(PlayerStats target)

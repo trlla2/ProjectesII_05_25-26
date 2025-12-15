@@ -12,7 +12,6 @@ public class UISpell_Behaviour : MonoBehaviour
     private GameObject element;
 
     Spell currentSpell;
-    private EventTrigger trigger;
 
     public void SetupSpellUI(Spell spell)
     {

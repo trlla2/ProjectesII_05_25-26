@@ -18,11 +18,17 @@ public class OpenChestScreen : MonoBehaviour
     [SerializeField] RemoveItemPanelHandler _removeItemPanel;
     
     Item _selectedItem;
+
+    private TranslatorUI _translator;
+
+    private void Awake() {  _translator = GetComponent<TranslatorUI>(); }
+
     private void Start()
     {
         Pull();
+        _translator.ToTarget();
     }
-
+    private void OnEnable() { _translator.ToTarget(); }
     public void Pull()
     {
         _selectedItem = _itemsPool[Random.Range(0, _itemsPool.Count)];
@@ -46,7 +52,6 @@ public class OpenChestScreen : MonoBehaviour
         HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.RigidImpact);
         openedChest.Replace();
         Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(true);
-        this.gameObject.SetActive(false);
-
+        _translator.ToOrigin();
     }
 }

@@ -32,7 +32,7 @@ public class PlayerStats
         Money = 10;
         SpellBook = new List<Spell>();
         Inventory = new List<Item>();
-        LimitInventory = 5;
+        LimitInventory = 3;
         ElementalLevels = new Dictionary<ElementType, int>()
         {
             { ElementType.Green, 1},

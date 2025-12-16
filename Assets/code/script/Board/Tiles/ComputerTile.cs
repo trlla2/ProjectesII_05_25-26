@@ -7,7 +7,7 @@ public class ComputerTile : BoardTile
     public override void Interact()
     {
         Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(false);
-        _openComputerScreen.SetActive(true);
+        _openComputerScreen.GetComponent<TranslatorUI>().ToTarget();
     }
 
 }

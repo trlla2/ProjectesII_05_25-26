@@ -24,6 +24,7 @@ public class InventoryUIHandler : MonoBehaviour
         {
             GameObject itemUI = Instantiate(itemUIPrefab, transform);
             itemUI.GetComponent<Image>().sprite = item.Sprite;
+            itemUI.GetComponent<TranslatorUI>().ToTarget();
 
         }
     }

@@ -17,7 +17,8 @@ public class GameManager : MonoBehaviour
     private List<EnemyType> currentEnemyList;
 
     private EnemyBehaviour enemyInCombat;
-    
+    private EnemyType forcedEnemyType;
+
     private int expMultiplyer = 4;
     private int moneyMultiplyer = 4;
 
@@ -58,11 +59,28 @@ public class GameManager : MonoBehaviour
 
     public void EnterBattle() { OnEnterBattle?.Invoke(); }
     public void EnterBoard() { OnEnterBoard?.Invoke(); }
+    public void SetForcedEnemy(EnemyType type)
+    {
+        forcedEnemyType = type;
+    }
     public void SetEnemyRef(EnemyBehaviour enemyRef)
     {
         enemyInCombat = enemyRef;
         OnSetEnemyReference?.Invoke(enemyRef);
-        enemyInCombat.SetEnemyType(PickRandomEenemy());
+
+        EnemyType typeToUse;
+
+        if (forcedEnemyType != null)
+        {
+            typeToUse = forcedEnemyType;
+            forcedEnemyType = null;
+        }
+        else
+        {
+            typeToUse = PickRandomEenemy();
+        }
+        enemyInCombat.SetEnemyType(typeToUse);
+
         enemyInCombat?.StartBattle();
     }
     private EnemyType PickRandomEenemy()

@@ -20,18 +20,15 @@ public class EnemyTile : BoardTile
 
         _boardRaycast.HandleBoardRaycast(false);
         SceneTransition.Instance.LoadScene("BattlePhone", true);
+        GameManager.Instance.EnterBattle();
         GameManager.Instance.OnEndBattle += Replace;
     }
 
-    public void Replace(bool win, int xp, int money) // FORCED CHANGE!!!!!!
+    public void Replace(bool win, int xp, int money) 
     {
         _boardRaycast.HandleBoardRaycast(true);
         if (win)
             BoardManager.instance.ReplaceTileType(this, _postInteractionTile);
-        else
-        {
-            //MUERTE
-        }
     }
 
     private void OnDestroy()

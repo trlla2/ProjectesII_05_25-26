@@ -12,6 +12,7 @@ public class InventoryUIHandler : MonoBehaviour
         RefreshInventoryUI();
     }
 
+    private void OnEnable() { RefreshInventoryUI(); }
     private void RefreshInventoryUI()
     {
 

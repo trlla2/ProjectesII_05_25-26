@@ -63,7 +63,6 @@ public class EndPanelBehaviour : MonoBehaviour
     {
         winTranslator.ToOrigin();
         SceneTransition.Instance.UnloadScene("BattlePhone");
-        
     }
 
     public void GoMenu()
@@ -74,6 +73,7 @@ public class EndPanelBehaviour : MonoBehaviour
 
     private void OnDestroy()
     {
+        GameManager.Instance.EnterBoard();
         GameManager.Instance.OnEndBattle -= SetWinLosePanel;
     }
 }

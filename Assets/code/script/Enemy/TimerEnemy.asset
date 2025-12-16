@@ -12,15 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ab529a0c12673a408eb38b86a880060, type: 3}
   m_Name: TimerEnemy
   m_EditorClassIdentifier: 
+  name: Small Tiefling
   health: 100
   damage: 10
-  ElementCount: 1
+  elementCount: 3
+  level: 1
   weaknesses: 02000000
-  weaknessMultiplier: 0.5
+  weaknessMultiplier: 2
   resistances: 00000000
-  resistanceMultiplier: 2
+  resistanceMultiplier: 0.5
   enemySprite: {fileID: -1402350852106452376, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
+  animatorController: {fileID: 9100000, guid: 8b362d370e2a8a94a9a3bd2eaa3c948a, type: 2}
   spellType: 2
   damagePerElement: 4
   moveCount: 3
   AtackTimer: 4
+  excludeBelowTargets: 0

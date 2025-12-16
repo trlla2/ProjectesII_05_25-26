@@ -53,6 +53,8 @@ public class LevelBarHandle : MonoBehaviour
         HandleLevelUpAnimation();
     }
 
+    private void OnEnable() {  StopLevelUpAnimation(); }
+
     private void HandleInterpolation()
     {
         if (!isInterpolating) return;

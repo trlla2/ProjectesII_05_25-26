@@ -27,6 +27,9 @@ public class GameManager : MonoBehaviour
     public delegate void GetOnEndBattle(bool isWin, int exp, int money);
     public event GetOnEndBattle OnEndBattle;
 
+    public event System.Action OnEnterBattle;
+    public event System.Action OnEnterBoard;
+
     public event System.Action OnPlayerMove;
     public event System.Action OnPlayerEXPChange;
     public event System.Action OnPlayerLevelUp;
@@ -53,6 +56,8 @@ public class GameManager : MonoBehaviour
         currentEnemyList = new List<EnemyType>(enemyTypes);
     }
 
+    public void EnterBattle() { OnEnterBattle?.Invoke(); }
+    public void EnterBoard() { OnEnterBoard.Invoke(); }
     public void SetEnemyRef(EnemyBehaviour enemyRef)
     {
         enemyInCombat = enemyRef;

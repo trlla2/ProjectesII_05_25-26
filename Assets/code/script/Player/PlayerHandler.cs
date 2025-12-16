@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class PlayerHandler : MonoBehaviour
@@ -16,11 +15,10 @@ public class PlayerHandler : MonoBehaviour
 
     private void HandlePlayerHit()
     {
-        if(GameManager.Instance.GetPlayerHP() <= 0)
-        {
-            killParticles.Play();
+        killParticles.Play();
+
+        if (GameManager.Instance.GetPlayerHP() <= 0)
             spriteRenderer.enabled = false;
-        }
     }
 
     private void OnDestroy()

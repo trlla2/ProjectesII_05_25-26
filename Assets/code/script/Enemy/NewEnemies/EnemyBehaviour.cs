@@ -9,7 +9,7 @@ public class EnemyBehaviour : MonoBehaviour
     [SerializeField] private Grid grid;
 
     [Header("Visual Effects")]
-    [SerializeField] private GameObject deathParticles;
+    [SerializeField] private ParticleSystem deathParticles;
 
     [Header("Reroll Settings")]
     [SerializeField] private int rerollScrollTimes = 3;
@@ -149,6 +149,7 @@ public class EnemyBehaviour : MonoBehaviour
 
     public void DealDamage(DamageType damageType)
     {
+        deathParticles.Play(); // NO FUNCIONA
         float damage = enemyType.CalculateDamageTaken(damageType.element, damageType.damage);
 
         currentHealth -= damage;
@@ -157,23 +158,22 @@ public class EnemyBehaviour : MonoBehaviour
         OnHitRecived?.Invoke(currentHealth);
         OnGetDamage?.Invoke(damageType);
 
+        
+
         Debug.Log($"Enemy {enemyType.name} took {damage} damage. Health: {currentHealth}/{enemyType.Health}");
 
         if (currentHealth <= 0)
         {
             Die();
         }
+        
     }
 
     private void Die()
     {
         StopBattle();
 
-        if (deathParticles != null)
-        {
-            GameObject particles = Instantiate(deathParticles, transform.position, Quaternion.identity);
-            particles.transform.SetParent(null);
-        }
+        deathParticles.Play();
 
         if (GameManager.Instance != null)
         {

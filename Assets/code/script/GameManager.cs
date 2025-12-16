@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void EnterBattle() { OnEnterBattle?.Invoke(); }
-    public void EnterBoard() { OnEnterBoard.Invoke(); }
+    public void EnterBoard() { OnEnterBoard?.Invoke(); }
     public void SetEnemyRef(EnemyBehaviour enemyRef)
     {
         enemyInCombat = enemyRef;

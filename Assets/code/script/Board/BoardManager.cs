@@ -16,6 +16,7 @@ public class BoardManager : MonoBehaviour
     public List<BoardTile> generatedTiles;
 
     [SerializeField] private OpenChestScreen openChestPanel;
+    [SerializeField] private NewSpellPanelBehaviour newSpellPanel;
 
 
 
@@ -94,9 +95,15 @@ public class BoardManager : MonoBehaviour
         openChestPanel.openedChest = chestTile;
         openChestPanel.Pull();
 
-        boardCamera.gameObject.GetComponent<TileClickHandler>().HandleBoardRaycast(false); // FORCED CHANGE
+        boardCamera.gameObject.GetComponent<TileClickHandler>().HandleBoardRaycast(false);
 
         openChestPanel.gameObject.SetActive(true);
+    }
+
+    public void GetNewSpell(NewSpellTile tile)
+    {
+        boardCamera.gameObject.GetComponent<TileClickHandler>().HandleBoardRaycast(false);
+        newSpellPanel.Show(tile);
     }
 
     public void HandleBoardCamera(bool enable)

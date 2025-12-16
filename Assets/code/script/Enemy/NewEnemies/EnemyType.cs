@@ -4,10 +4,14 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewEnemyType", menuName = "Game/Enemy Type")]
 public class EnemyType : ScriptableObject
 {
+    [Header("Data")]
+    [SerializeField] private string name;
+
     [Header("Basic Stats")]
     [SerializeField] private float health = 100f;
     [SerializeField] private float damage = 10f;
-    [SerializeField] private int ElementCount = 3;
+    [SerializeField] private int elementCount = 3;
+    [SerializeField] private int level;
 
     [Header("Elemental Properties")]
     [SerializeField] private List<ElementType> weaknesses = new List<ElementType>();
@@ -36,6 +40,8 @@ public class EnemyType : ScriptableObject
     public EnemySpellType SpellType => spellType;
     public float DamagePerElement => damagePerElement;
     public int MoveCount => moveCount;
+    public string Name => name;
+    public int Level => level;
     public RuntimeAnimatorController AnimatorController => animatorController;
 
     public float CalculateDamageTaken(ElementType elementType, float baseDamage)
@@ -67,7 +73,7 @@ public class EnemyType : ScriptableObject
                 return new ColumnDestroySpell(damagePerElement, moveCount, excludeBelowTargets);
 
             case EnemySpellType.RandomDestroy:
-                return new RandomDestroySpell(ElementCount, damagePerElement, moveCount, excludeBelowTargets);
+                return new RandomDestroySpell(elementCount, damagePerElement, moveCount, excludeBelowTargets);
 
             case EnemySpellType.SingleTimedTarget:
                 return new SingleElementTimedSpell(AtackTimer, damagePerElement, excludeBelowTargets);

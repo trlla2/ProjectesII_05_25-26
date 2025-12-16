@@ -6,6 +6,10 @@ using UnityEngine.UI;
 
 public class EnemyUIHandler : MonoBehaviour
 {
+    [Header("Description")]
+    [SerializeField]
+    private TMP_Text nameText;
+
     [Header("HealthBar")]
     [SerializeField]
     private Slider healthBar;
@@ -40,6 +44,11 @@ public class EnemyUIHandler : MonoBehaviour
     private void Awake()
     {
         GameManager.Instance.OnSetEnemyReference += SetEnemyRef;
+    }
+
+    private void Start()
+    {
+        nameText.text = enemyBehaviour.GetEnemyType().Name + ", Level " + enemyBehaviour.GetEnemyType().Level;
     }
 
     private void SetEnemyRef(EnemyBehaviour reference)

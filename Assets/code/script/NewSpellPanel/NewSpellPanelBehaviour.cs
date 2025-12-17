@@ -1,4 +1,5 @@
 using TMPro;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class NewSpellPanelBehaviour : MonoBehaviour
@@ -51,11 +52,14 @@ public class NewSpellPanelBehaviour : MonoBehaviour
         GameManager.Instance.AddSpellToPlayerSpellBook(spellTile.Spell);
         spellTile.Replace();
         spellTile = null;
+        translatorUI.ToOrigin();
+        Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(true);
     }
 
     public void Show(NewSpellTile tile) 
     { 
         spellTile = tile;
+        SetupSpellUI(tile.Spell);
         translatorUI.ToTarget();
     }
 

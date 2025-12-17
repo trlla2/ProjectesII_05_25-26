@@ -129,6 +129,7 @@ public class PlayerStats
     {
         if(SpellBook.Count < 4)
             SpellBook.Add(spell);
+        Debug.Log("Spell Added");
     }
 
     public int GetEXPForLastLevel() 

@@ -27,6 +27,7 @@ public class Grid : MonoBehaviour
     private GridGravity gravityHandler;
     private ISpellInserter spellInserter;
     private IGridState currentState;
+    [SerializeField]private TutorialManager tutorialManager;
 
     public GridStateType CurrentState => currentState?.GetStateType() ?? GridStateType.Idle;
     public GridData GridData => gridData;
@@ -53,7 +54,12 @@ public class Grid : MonoBehaviour
 
         InitializeComponents();
         RandomizeBoard(availableElements);
-        InsertSpell(GameManager.Instance.GetPlayerSpellBook()[(int)Random.Range(0, GameManager.Instance.GetPlayerSpellBook().Count)].Recipe);
+        
+        if (GameManager.Instance != null && GameManager.Instance.GetPlayerSpellBook() != null 
+            && GameManager.Instance.GetPlayerSpellBook().Count > 0)
+        {
+            InsertSpell(GameManager.Instance.GetPlayerSpellBook()[(int)Random.Range(0, GameManager.Instance.GetPlayerSpellBook().Count)].Recipe);
+        }
 
         ChangeState(new IdleState(this));
         visualGrid.FillEmpty(GetEmptyPositions(), 0.5f);
@@ -70,6 +76,9 @@ public class Grid : MonoBehaviour
     public void SwapElements(Vector2Int posA, Vector2Int posB)
     {
         if (CurrentState != GridStateType.Idle)
+            return;
+
+        if (IsTutorialBlocking())
             return;
 
         gridData.SwapElements(posA, posB);
@@ -93,6 +102,9 @@ public class Grid : MonoBehaviour
     public void DeleteElementsByPlayer(List<Vector2Int> positions)
     {
         if (positions == null || positions.Count == 0)
+            return;
+
+        if (IsTutorialBlocking())
             return;
 
         foreach (var pos in positions)
@@ -147,7 +159,18 @@ public class Grid : MonoBehaviour
         if (CurrentState != GridStateType.Idle)
             return;
 
-        ChangeState(new RerollState(this, visualGrid, availableElements, availableSpells,scrollTimes));
+        if (IsTutorialBlocking())
+            return;
+
+        List<Spell> spellsToUse = availableSpells;
+        
+        if (GameManager.Instance != null && GameManager.Instance.GetPlayerSpellBook() != null 
+            && GameManager.Instance.GetPlayerSpellBook().Count > 0)
+        {
+            spellsToUse = GameManager.Instance.GetPlayerSpellBook();
+        }
+
+        ChangeState(new RerollState(this, visualGrid, availableElements, spellsToUse, scrollTimes));
     }
 
     public Element GetElementAt(Vector2Int position)
@@ -311,6 +334,11 @@ public class Grid : MonoBehaviour
                 visual.SetSelectable(true);
             }
         }
+    }
+
+    private bool IsTutorialBlocking()
+    {
+        return tutorialManager != null && tutorialManager.IsTutorialActive();
     }
 
     public SpellPathAnimator GetEnemySpellAnimator()

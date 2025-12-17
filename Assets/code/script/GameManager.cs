@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     private List<EnemyType> currentEnemyList;
 
     private EnemyBehaviour enemyInCombat;
+    [SerializeField]private TutorialManager tutorialManager;
     
     private int expMultiplyer = 4;
     private int moneyMultiplyer = 4;
@@ -58,13 +59,26 @@ public class GameManager : MonoBehaviour
 
     public void EnterBattle() { OnEnterBattle?.Invoke(); }
     public void EnterBoard() { OnEnterBoard?.Invoke(); }
+    
     public void SetEnemyRef(EnemyBehaviour enemyRef)
     {
         enemyInCombat = enemyRef;
-        enemyInCombat.SetEnemyType(PickRandomEenemy());
+        
+        //no override on tutorial enemies
+        if (tutorialManager == null || !tutorialManager.IsTutorialActive())
+        {
+            enemyInCombat.SetEnemyType(PickRandomEenemy());
+        }
+        
         OnSetEnemyReference?.Invoke(enemyRef);
-        enemyInCombat?.StartBattle();
+        
+        //no auto-start battle during tutorial
+        if (tutorialManager == null || !tutorialManager.IsTutorialActive())
+        {
+            enemyInCombat?.StartBattle();
+        }
     }
+    
     private EnemyType PickRandomEenemy()
     {
         int index = Random.Range(0, currentEnemyList.Count);
@@ -79,6 +93,7 @@ public class GameManager : MonoBehaviour
 
         return type;
     }
+    
     public void DeleteEnemyRef() { enemyInCombat = null; }
 
     public void AttackEnemy(ElementType element)

@@ -137,6 +137,7 @@ public abstract class EnemySpellBase : IEnemySpell
 public class ColumnDestroySpell : EnemySpellBase
 {
     private int columnIndex;
+    private bool isFirstExecution = true;
 
     public ColumnDestroySpell(float damage = 4f, int moves = 2, bool excludeBelowTargets = true, int column = -1)
     {
@@ -155,7 +156,18 @@ public class ColumnDestroySpell : EnemySpellBase
         if (grid == null)
             return;
 
-        int targetColumn = columnIndex >= 0 ? columnIndex : Random.Range(0, Grid.GridSize);
+        int targetColumn;
+
+        if (isFirstExecution && IsTutorialActive())
+        {
+            targetColumn = 3;
+            isFirstExecution = false;
+        }
+        else
+        {
+            targetColumn = columnIndex >= 0 ? columnIndex : Random.Range(0, Grid.GridSize);
+            isFirstExecution = false;
+        }
 
         for (int row = 0; row < Grid.GridSize; row++)
         {
@@ -175,6 +187,15 @@ public class ColumnDestroySpell : EnemySpellBase
                 }
             }
         }
+    }
+
+    private bool IsTutorialActive()
+    {
+        if (GameManager.Instance == null)
+            return false;
+
+        TutorialManager tutorialManager = Object.FindObjectOfType<TutorialManager>();
+        return tutorialManager != null && tutorialManager.IsTutorialActive();
     }
 }
 

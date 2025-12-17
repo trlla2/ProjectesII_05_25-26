@@ -29,6 +29,7 @@ public class EnemyBehaviour : MonoBehaviour
     public delegate void GetOnDamageList(DamageType damageType);
     public event GetOnDamageList OnGetDamage;
 
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();

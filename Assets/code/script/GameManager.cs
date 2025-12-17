@@ -61,8 +61,8 @@ public class GameManager : MonoBehaviour
     public void SetEnemyRef(EnemyBehaviour enemyRef)
     {
         enemyInCombat = enemyRef;
-        OnSetEnemyReference?.Invoke(enemyRef);
         enemyInCombat.SetEnemyType(PickRandomEenemy());
+        OnSetEnemyReference?.Invoke(enemyRef);
         enemyInCombat?.StartBattle();
     }
     private EnemyType PickRandomEenemy()

@@ -24,6 +24,9 @@ public class EndPanelBehaviour : MonoBehaviour
     [SerializeField]
     private TranslatorUI loseTranslator;
 
+    [Header("Setup")]
+    [SerializeField]
+    private string sceneToUnload = "BattlePhone";
     [Header("Scenes")]
     [SerializeField]
     private string loseScene;
@@ -66,7 +69,7 @@ public class EndPanelBehaviour : MonoBehaviour
     public void UnloadBatle()
     {
         winTranslator.ToOrigin();
-        SceneTransition.Instance.UnloadScene("BattlePhone");
+        SceneTransition.Instance.UnloadScene(sceneToUnload);
     }
 
     public void GoMenu()

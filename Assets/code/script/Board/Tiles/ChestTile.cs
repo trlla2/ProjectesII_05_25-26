@@ -12,8 +12,6 @@ public class ChestTile : BoardTile
         openChestSource.Play();
         Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(false);
         BoardManager.instance.OpenChest(this);
-
-        //BoardManager.instance.ReplaceTileType(this, _postInteractionTile);
     }
 
     public void Replace()

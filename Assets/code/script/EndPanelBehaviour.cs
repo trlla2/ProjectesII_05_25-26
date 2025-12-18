@@ -24,12 +24,13 @@ public class EndPanelBehaviour : MonoBehaviour
     [SerializeField]
     private TranslatorUI loseTranslator;
 
-    [Header("Setup")]
-    [SerializeField]
-    private string sceneToUnload = "BattlePhone";
     [Header("Scenes")]
     [SerializeField]
     private string loseScene;
+    [SerializeField]
+    private string sceneToUnload = "BattlePhone";
+    [SerializeField]
+    private bool goToHallOfEgress = false;
 
 
     private void Start()
@@ -69,7 +70,10 @@ public class EndPanelBehaviour : MonoBehaviour
     public void UnloadBatle()
     {
         winTranslator.ToOrigin();
-        SceneTransition.Instance.UnloadScene(sceneToUnload);
+        if(goToHallOfEgress)
+            SceneTransition.Instance.LoadScene("HallOfEgress", false);
+        else
+            SceneTransition.Instance.UnloadScene(sceneToUnload);
     }
 
     public void GoMenu()

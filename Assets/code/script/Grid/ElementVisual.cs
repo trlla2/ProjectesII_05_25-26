@@ -122,7 +122,6 @@ public class ElementVisual : MonoBehaviour
         {
             GameObject temp = Instantiate(breakEnemyHoverParticles, transform);
             temp.transform.SetParent(null);
-            Debug.Log("Hola???");
             StopCountdown();
         }
     }

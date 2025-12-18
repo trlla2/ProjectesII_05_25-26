@@ -72,7 +72,6 @@ public class GameManager : MonoBehaviour
     {
         enemyInCombat = enemyRef;
         
-        
         OnSetEnemyReference?.Invoke(enemyRef);
 
         EnemyType typeToUse;

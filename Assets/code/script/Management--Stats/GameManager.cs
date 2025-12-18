@@ -75,6 +75,7 @@ public class GameManager : MonoBehaviour
 
 
         EnemyType typeToUse;
+        Debug.Log("aaaaaaaaaaaaaaaaaaaa");
 
         if (forcedEnemyType != null)
         {

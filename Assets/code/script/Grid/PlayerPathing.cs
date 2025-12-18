@@ -48,7 +48,7 @@ public class PlayerPathing : MonoBehaviour
         float adjacencyDistance = xDistanceBetween * 1.47f;//Slightly more than diagonal distance sqrt(2)
 
         inputHandler = new MouseInputHandler();
-        pathValidator = new WorldSpacePathValidator(grid, adjacencyDistance); 
+        pathValidator = new WorldSpacePathValidator(grid, adjacencyDistance);
         spellMatcher = new SpellMatcher();
 
         pathData = new PathData(maxPathLength);
@@ -59,7 +59,7 @@ public class PlayerPathing : MonoBehaviour
 
     private void ValidateSetup()
     {
-        if (grid == null){ return;}
+        if (grid == null) { return; }
 
         if (grid.GridData != null)
         {
@@ -87,7 +87,7 @@ public class PlayerPathing : MonoBehaviour
     {
 
         if (grid.CurrentState != GridStateType.Idle)
-            return; 
+            return;
         if (!canPath)
             return;
 
@@ -251,6 +251,7 @@ public class PlayerPathing : MonoBehaviour
         grid.DeleteElementsByPlayer(positionsList);
 
         HandleSpellEffects(spell);
+        TryCompleteTutorialStep();
     }
 
     //Can be converted into a SpellEffectHandler class in the future if more complex effects are needed
@@ -258,7 +259,7 @@ public class PlayerPathing : MonoBehaviour
     {
         GameManager.Instance.NotifyPlayerMove();
 
-        if (spell.Name == "HEAL") GameManager.Instance.HealPlayer(5); 
+        if (spell.Name == "HEAL") GameManager.Instance.HealPlayer(5);
     }
 
     private void UpdateVisuals()
@@ -334,6 +335,15 @@ public class PlayerPathing : MonoBehaviour
     private List<Spell> GetAvailableSpells()
     {
         return GameManager.Instance.GetPlayerSpellBook();
+    }
+
+    private void TryCompleteTutorialStep()
+    {
+        TutorialManager tutorialManager = Object.FindFirstObjectByType<TutorialManager>();
+        if (tutorialManager != null && tutorialManager.IsTutorialActive())
+        {
+            tutorialManager.CompleteCurrentStep();
+        }
     }
 
 }

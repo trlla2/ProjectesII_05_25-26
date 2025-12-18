@@ -132,6 +132,8 @@ public class PlayerStats
         Debug.Log("Spell Added");
     }
 
+    public void ClearSpellBook()  { SpellBook.Clear(); }
+
     public int GetEXPForLastLevel() 
     { 
         if(Level - 1 > 0)

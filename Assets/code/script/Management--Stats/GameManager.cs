@@ -76,6 +76,7 @@ public class GameManager : MonoBehaviour
         OnSetEnemyReference?.Invoke(enemyRef);
 
         EnemyType typeToUse;
+        Debug.Log("aaaaaaaaaaaaaaaaaaaa");
 
         if (forcedEnemyType != null)
         {

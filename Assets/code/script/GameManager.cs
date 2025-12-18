@@ -72,11 +72,6 @@ public class GameManager : MonoBehaviour
     {
         enemyInCombat = enemyRef;
         
-        //no override on tutorial enemies
-        if (tutorialManager == null || !tutorialManager.IsTutorialActive())
-        {
-            enemyInCombat.SetEnemyType(PickRandomEenemy());
-        }
         
         OnSetEnemyReference?.Invoke(enemyRef);
 
@@ -91,9 +86,12 @@ public class GameManager : MonoBehaviour
         {
             typeToUse = PickRandomEenemy();
         }
-        enemyInCombat.SetEnemyType(typeToUse);
 
-        enemyInCombat?.StartBattle();
+        //no override on tutorial enemies
+        if (tutorialManager == null || !tutorialManager.IsTutorialActive())
+        {
+            enemyInCombat.SetEnemyType(typeToUse);
+        }
 
         //no auto-start battle during tutorial
         if (tutorialManager == null || !tutorialManager.IsTutorialActive())

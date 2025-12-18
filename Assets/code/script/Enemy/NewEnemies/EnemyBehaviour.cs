@@ -29,6 +29,7 @@ public class EnemyBehaviour : MonoBehaviour
     public delegate void GetOnDamageList(DamageType damageType);
     public event GetOnDamageList OnGetDamage;
 
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -156,7 +157,7 @@ public class EnemyBehaviour : MonoBehaviour
         currentHealth = Mathf.Max(0, currentHealth);
 
         OnHitRecived?.Invoke(currentHealth);
-        OnGetDamage?.Invoke(damageType);
+        OnGetDamage?.Invoke(new DamageType(damageType.element, damage));
 
         
 

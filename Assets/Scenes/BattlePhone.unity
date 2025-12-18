@@ -5196,14 +5196,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.7960785, g: 1, b: 0.09019608, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -8786045263768636744, guid: 40ec649488dfb054ebb1285089645f20, type: 3}
+  m_Sprite: {fileID: -8229843964781142861, guid: 40ec649488dfb054ebb1285089645f20, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -11661,7 +11661,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Small Enemy, Level 1
+  m_text: a
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 82df2d7357f6e7b4399b30f46491977a, type: 2}
   m_sharedMaterial: {fileID: 329255076594384967, guid: 82df2d7357f6e7b4399b30f46491977a, type: 2}
@@ -15579,7 +15579,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 0.5, g: 0.004612953, b: 0, a: 1}
-      maxColor: {r: 0.041666627, g: 1, b: 0, a: 1}
+      maxColor: {r: 0.7960785, g: 1, b: 0.09019608, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -16722,9 +16722,9 @@ ParticleSystem:
       maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
-        key0: {r: 0.11860069, g: 0.96862745, b: 0, a: 1}
-        key1: {r: 0.027853493, g: 0.4627451, b: 0, a: 1}
-        key2: {r: 0.033765335, g: 0.27450982, b: 0, a: 0}
+        key0: {r: 0.7960785, g: 1, b: 0.09019608, a: 1}
+        key1: {r: 0.3037412, g: 0.3679245, b: 0.08156817, a: 1}
+        key2: {r: 0.106242575, g: 0.13207549, b: 0.016820936, a: 0}
         key3: {r: 0.2735849, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
         key5: {r: 0, g: 0, b: 0, a: 0}
@@ -21149,6 +21149,7 @@ MonoBehaviour:
   expTextColor: {r: 0, g: 0.5827391, b: 1, a: 1}
   winTranslator: {fileID: 1594906320}
   loseTranslator: {fileID: 810593951}
+  loseScene: HallOfEgress
 --- !u!114 &1507392189
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24197,7 +24198,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7811222588343090408, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
       propertyPath: m_Parameters.colorGradient.key0.b
-      value: 1
+      value: 0.09019608
       objectReference: {fileID: 0}
     - target: {fileID: 7811222588343090408, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
       propertyPath: m_Parameters.colorGradient.key0.g
@@ -24205,19 +24206,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7811222588343090408, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
       propertyPath: m_Parameters.colorGradient.key0.r
-      value: 1
+      value: 0.7960785
       objectReference: {fileID: 0}
     - target: {fileID: 7811222588343090408, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
       propertyPath: m_Parameters.colorGradient.key1.b
-      value: 1
+      value: 0.08627451
       objectReference: {fileID: 0}
     - target: {fileID: 7811222588343090408, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
       propertyPath: m_Parameters.colorGradient.key1.g
-      value: 1
+      value: 0.9960785
       objectReference: {fileID: 0}
     - target: {fileID: 7811222588343090408, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
       propertyPath: m_Parameters.colorGradient.key1.r
-      value: 1
+      value: 0.79215693
       objectReference: {fileID: 0}
     - target: {fileID: 7811222588343090408, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
       propertyPath: m_Parameters.colorGradient.m_NumColorKeys

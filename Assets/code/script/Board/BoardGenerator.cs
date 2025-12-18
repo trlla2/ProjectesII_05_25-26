@@ -6,7 +6,7 @@ public class BoardGenerator : MonoBehaviour
 {
     [SerializeField] float _spaceBetweenTiles;
 
-    [SerializeField] int _numOfEmptyTiles;
+    [SerializeField] int _numOfEmptyTiles; 
     [SerializeField] int _numOfStairs;
 
     [SerializeField] int _numOfEnemyTiles;
@@ -22,11 +22,9 @@ public class BoardGenerator : MonoBehaviour
     {
         _numOfTotalTilesInBoard = _numOfEmptyTiles + _numOfEnemyTiles + _numOfChestTiles + _numOfEgressTiles;
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         InstanceBoard(this.transform);
-        //InstanceHallOfEgress(this.transform);
     }
 
     void InstanceBoard(Transform parent)
@@ -56,22 +54,9 @@ public class BoardGenerator : MonoBehaviour
     Vector2Int GetRandomFreeNeighborPosition(BoardTile current)
     {
         List<Vector2Int> freePositions = new List<Vector2Int>();
-        //if (current.GetGridPosition() != startingTile.GetGridPosition())
-        //    freePositions.Add(new Vector2Int(current.GetGridPosition().x-1, current.GetGridPosition().y));
         freePositions.Add(new Vector2Int(current.GetGridPosition().x + 1, current.GetGridPosition().y));
-        //freePositions.Add(new Vector2Int(current.GetGridPosition().x, current.GetGridPosition().y - 1));
         freePositions.Add(new Vector2Int(current.GetGridPosition().x, current.GetGridPosition().y + 1));
 
-        //for (int i = 0; i < BoardManager.instance.generatedTiles.Count; i++)
-        //{
-        //    for (int j = 0; j < freePositions.Count; j++)
-        //    {
-        //        if (BoardManager.instance.generatedTiles[i].GetComponent<BoardTile>().GetGridPosition() == freePositions[j])
-        //        {
-        //            freePositions.RemoveAt(j);
-        //        }
-        //    }
-        //}
         foreach(BoardTile tile in BoardManager.instance.generatedTiles)
         {
             foreach(Vector2Int pos in freePositions)
@@ -108,6 +93,9 @@ public class BoardGenerator : MonoBehaviour
 
         foreach (var tile in availableTiles)
         {
+            if (HasSpecialNeighbor(tile))
+                continue;
+
             if (assignedEnemies < _numOfEnemyTiles)
             {
                 BoardManager.instance.ReplaceTileType(tile, BoardManager.instance.enemyTileData);
@@ -131,18 +119,6 @@ public class BoardGenerator : MonoBehaviour
 
             stairsTiles[i].SetYPosition(stairsTiles[i].GetYPosition() - (0.5f*i));
         }
-
-        //foreach(BoardTile tile in stairsTiles)
-        //{
-        //    BoardManager.instance.ReplaceTileType(tile, BoardManager.instance.stairsTileData);
-        //    if (tile != stairsTiles[0])
-        //    {
-        //        tile.SetGridPosition(stairsTiles[0].GetGridPosition() + new Vector2Int(0, 1));
-        //        tile.SetYPosition(stairsTiles.ElementAt(tile.).GetYPosition() - 0.5f);
-        //    }
-                
-        //}
-        //BoardTile lastTile = BoardManager.instance.generatedTiles.
         
 
         Debug.Log($"Asignadas {assignedEnemies} tiles de enemigos y {assignedChests} tiles de cofres.");
@@ -156,7 +132,22 @@ public class BoardGenerator : MonoBehaviour
             (list[i], list[rand]) = (list[rand], list[i]);
         }
     }
+    private bool HasSpecialNeighbor(BoardTile tile)
+    {
 
+        BoardManager.instance.UpdateNeighbors(tile);
+
+        foreach (BoardTile neighbor in tile.neighbors)
+        {
+            if (neighbor == null) continue;
+
+            if (neighbor.GetData() != BoardManager.instance.emptyTileData)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
     // WADIYATALKINABEET

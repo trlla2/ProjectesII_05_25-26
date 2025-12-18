@@ -46,16 +46,13 @@ public class EnemyUIHandler : MonoBehaviour
         GameManager.Instance.OnSetEnemyReference += SetEnemyRef;
     }
 
-    private void Start()
-    {
-        nameText.text = enemyBehaviour.GetEnemyType().Name + ", Level " + enemyBehaviour.GetEnemyType().Level;
-    }
-
     private void SetEnemyRef(EnemyBehaviour reference)
     {
         enemyBehaviour = reference;
         enemyBehaviour.OnHitRecived += ChangeHealthBar;
         enemyBehaviour.OnGetDamage += AddDamageToQueue;
+        nameText.text = enemyBehaviour.GetEnemyType().Name + ", Level " + enemyBehaviour.GetEnemyType().Level;
+
     }
 
     private void Update()

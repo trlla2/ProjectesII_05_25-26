@@ -24,6 +24,10 @@ public class EndPanelBehaviour : MonoBehaviour
     [SerializeField]
     private TranslatorUI loseTranslator;
 
+    [Header("Scenes")]
+    [SerializeField]
+    private string loseScene;
+
 
     private void Start()
     {
@@ -68,7 +72,7 @@ public class EndPanelBehaviour : MonoBehaviour
     public void GoMenu()
     {
         loseTranslator.ToOrigin();
-        SceneTransition.Instance.LoadScene("MainMenu", false);
+        SceneTransition.Instance.LoadScene(loseScene, false);
     }
 
     private void OnDestroy()

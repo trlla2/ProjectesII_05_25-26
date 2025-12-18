@@ -1,112 +1,201 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 [RequireComponent(typeof(SpriteRenderer))]
 public class EnemyBehaviour : MonoBehaviour
 {
-    [Header("EnemyType")]
-    [SerializeField]
-    private EnemyType enemyType;
-    [Header("DeathParticles")]
-    [SerializeField]
-    private GameObject deathParticles;
+    [Header("Configuration")]
+    [SerializeField] private EnemyType enemyType;
+    [SerializeField] private Grid grid;
+
+    [Header("Visual Effects")]
+    [SerializeField] private ParticleSystem deathParticles;
+
+    [Header("Reroll Settings")]
+    [SerializeField] private int rerollScrollTimes = 3;
 
     private SpriteRenderer spriteRenderer;
+    private Animator animator;
 
+    private float currentHealth;
     private bool inBattle = false;
 
-    // Actual stats of the enemy
-    private float health;
-    private float attackTime = 0f;
+    private IEnemySpell activeSpell;
 
+    //Legacy System
     public delegate void GetOnHitRecived(float health);
     public event GetOnHitRecived OnHitRecived;
-    
-    public delegate void GetOnDamageList(List<DamageType> damageList);
-    public event GetOnDamageList OnDamageList;
 
-    public delegate void GetOnAttackTimeChange(float attackTime);
-    public event GetOnAttackTimeChange OnAttackTimeChange;
+    public delegate void GetOnDamageList(DamageType damageType);
+    public event GetOnDamageList OnGetDamage;
+
+
+    private void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
+    }
 
     private void Start()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-
-        spriteRenderer.sprite = enemyType.GetSprite();
-        health = enemyType.GetHealth();
-
-
-        GameManager.Instance.SetEnemyRef(this); // forced DELETE!@!!!!! 
-        InitBatle(); // forced DELETE!@!!!!! 
+        if (GameManager.Instance != null && enemyType == null)
+        {
+            GameManager.Instance.SetEnemyRef(this);
+        }
+        else
+            Debug.LogError("NO GAME MANAGER");
     }
-    
+
+    private void OnEnable()
+    {
+        if (GameManager.Instance != null && enemyType == null)
+        {
+            GameManager.Instance.SetEnemyRef(this);
+        }
+        else
+            Debug.LogError("NO GAME MANAGER");
+    }
+    private void OnDestroy()
+    {
+        StopBattle();
+    }
+
+    private void InitializeEnemy()
+    {
+        if (enemyType == null)
+        {
+            Debug.LogWarning("EnemyBehaviour: No EnemyType assigned!");
+            return;
+        }
+
+        spriteRenderer.sprite = enemyType.EnemySprite;
+        currentHealth = enemyType.Health;
+        animator.runtimeAnimatorController = enemyType.AnimatorController;
+    }
+
     public void SetEnemyType(EnemyType newType)
     {
         enemyType = newType;
-        spriteRenderer.sprite = enemyType.GetSprite();
-        health = enemyType.GetHealth();
+        InitializeEnemy();
     }
 
-    public void InitBatle()
+    public void StartBattle()
     {
+        if (inBattle)
+            return;
+
         inBattle = true;
-        StartCoroutine(Attack());
+
+        CreateAndExecuteSpell();
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnPlayerMove += HandlePlayerMove;
     }
 
-    private IEnumerator Attack()
+    public void StopBattle()
     {
-        while (inBattle)
-        {
-            if (attackTime < enemyType.GetFireRate())
-            {
-                attackTime += Time.deltaTime;
-            }
-            else
-            {
-                attackTime = 0f;
-                GameManager.Instance.AttackPlayer(enemyType.GetDamage());
-            }
-            OnAttackTimeChange?.Invoke(attackTime);
+        if (!inBattle)
+            return;
 
+        inBattle = false;
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnPlayerMove -= HandlePlayerMove;
+
+        if (activeSpell != null && grid != null)
+        {
+            for (int x = 0; x < Grid.GridSize; x++)
+                for (int y = 0; y < Grid.GridSize; y++)
+                {
+                    var pos = new Vector2Int(x, y);
+                    var visual = grid.GetElementVisualAt(pos);
+                    if (visual != null && visual.IsTargetedByEnemy)
+                    {
+                        visual.SetTargetedByEnemy(false);
+                    }
+                }
+        }
+
+        activeSpell = null;
+        StopAllCoroutines();
+    }
+
+    private void CreateAndExecuteSpell()
+    {
+        if (enemyType == null || grid == null)
+            return;
+
+        activeSpell = enemyType.CreateSpell();
+        if (activeSpell != null)
+        {
+            activeSpell.Execute(grid);
+        }
+    }
+
+    private void HandlePlayerMove()
+    {
+        if (!inBattle || activeSpell == null)
+            return;
+
+        activeSpell.Tick(grid, () =>
+        {
+            StartCoroutine(RerollAndRetarget());
+        });
+    }
+
+    private IEnumerator RerollAndRetarget()
+    {
+        if (grid == null || grid.VisualGrid == null)
+        {
+            CreateAndExecuteSpell();
+            yield break;
+        }
+        grid.Reroll(rerollScrollTimes);
+
+        while (grid.CurrentState != GridStateType.Idle)
+        {
             yield return null;
         }
+
+        CreateAndExecuteSpell();
     }
 
-    public void DealDamage(List<DamageType> damageList)
+    public void DealDamage(DamageType damageType)
     {
-        float finalDamage = 0;
+        deathParticles.Play(); // NO FUNCIONA
+        float damage = enemyType.CalculateDamageTaken(damageType.element, damageType.damage);
 
-        List<DamageType> finalDamageList = new List<DamageType>();
+        currentHealth -= damage;
+        currentHealth = Mathf.Max(0, currentHealth);
 
-        foreach (DamageType damageType in damageList)
+        OnHitRecived?.Invoke(currentHealth);
+        OnGetDamage?.Invoke(new DamageType(damageType.element, damage));
+
+        
+
+        Debug.Log($"Enemy {enemyType.name} took {damage} damage. Health: {currentHealth}/{enemyType.Health}");
+
+        if (currentHealth <= 0)
         {
-            finalDamage += enemyType.CalculateDamageTaken(damageType.element, damageType.damage);
-            finalDamageList.Add(new DamageType(damageType.element, enemyType.CalculateDamageTaken(damageType.element, damageType.damage)));
+            Die();
         }
-
-        health -= finalDamage;
-        OnDamageList?.Invoke(finalDamageList);
-        OnHitRecived?.Invoke(health);
-        Debug.Log("Enemy " + enemyType.name + " has taken " + finalDamage + " damage points with " + health + " remaining health points");
-
-        if(health <= 0)
-        {
-            GameObject part = Instantiate(deathParticles, transform.position, Quaternion.identity);
-            part.transform.DetachChildren();
-            GameManager.Instance.OnEnemyDead();
-            StopEnemy();
-            spriteRenderer.enabled = false;
-        }
+        
     }
-    
-    public void StopEnemy()
+
+    private void Die()
     {
-        inBattle = false;
+        StopBattle();
+
+        deathParticles.Play();
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnEnemyDead(); 
+        }
+        spriteRenderer.enabled = false;
+
+        Debug.Log($"Enemy {enemyType.name} has been defeated!");
     }
 
-    public float GetMaxHP() { return enemyType.GetHealth(); }
-    public float GetFireRate() { return enemyType.GetFireRate(); }
-
-    public EnemyType GetEnemyType() { return enemyType; }
+    public float GetMaxHP() => enemyType.Health;
+    public EnemyType GetEnemyType() => enemyType;
 }

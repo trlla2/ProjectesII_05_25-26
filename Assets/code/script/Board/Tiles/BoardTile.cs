@@ -5,6 +5,9 @@ public abstract class BoardTile : MonoBehaviour
 {
     [SerializeField] private BoardTileData _data;
 
+    [SerializeField] private bool isForcedPos;
+    [SerializeField] private Vector2Int forcedPos = new Vector2Int();
+
     private Vector2Int _gridPos;
     private Renderer _renderer;
 
@@ -14,6 +17,8 @@ public abstract class BoardTile : MonoBehaviour
     {
         _renderer = GetComponentInChildren<Renderer>();
         _renderer.material.color = _data.defaultColor;
+        if(isForcedPos)
+            _gridPos = forcedPos;
     }
 
     public void HighlightTile(bool on)
@@ -33,6 +38,9 @@ public abstract class BoardTile : MonoBehaviour
 
     public Vector2Int GetGridPosition() { return _gridPos; }
     public void SetGridPosition(Vector2Int gridPos) { _gridPos = gridPos; }
+
+    public float GetYPosition() { return transform.position.y; }
+    public void SetYPosition(float y) { transform.position = new Vector3(_gridPos.x, y, _gridPos.y); }
 
     public BoardTileData GetData() { return this._data; }
 

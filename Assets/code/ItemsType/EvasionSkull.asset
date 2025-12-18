@@ -9,10 +9,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61b69789835cc3548975089ffa00af3b, type: 3}
+  m_Script: {fileID: 11500000, guid: 2de90ffb221997447a171e015eca53c6, type: 3}
   m_Name: EvasionSkull
   m_EditorClassIdentifier: 
   nameItem: Evasion Skull
-  description: Adds a 4% of evasion to the player
-  enemySprite: {fileID: 3258979074984140082, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
-  evasionBonus: 4
+  description: 'Gives 10% of evasion '
+  Sprite: {fileID: 3258979074984140082, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
+  effects:
+  - rid: 1817717172891811913
+  references:
+    version: 2
+    RefIds:
+    - rid: 1817717172891811913
+      type: {class: BuffEvasionEffect, ns: , asm: Assembly-CSharp}
+      data:
+        amount: 10

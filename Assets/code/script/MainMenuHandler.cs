@@ -21,7 +21,6 @@ public class MainMenuHandler : MonoBehaviour
     private void Awake()
     {
         GameManager.Instance?.Destroy();
-        PlayerStats.Instance?.Destroy();
     }
 
     public void OnBack() 

@@ -1,84 +1,92 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
-
 [CreateAssetMenu(fileName = "NewEnemyType", menuName = "Game/Enemy Type")]
 public class EnemyType : ScriptableObject
 {
+    [Header("Data")]
+    [SerializeField] private string name;
+
     [Header("Basic Stats")]
-    [SerializeField]
-    private float health = 100f;
+    [SerializeField] private float health = 100f;
+    [SerializeField] private float damage = 10f;
+    [SerializeField] private int elementCount = 3;
+    [SerializeField] private int level;
 
-    [SerializeField] 
-    private float damage = 10f;
+    [Header("Elemental Properties")]
+    [SerializeField] private List<ElementType> weaknesses = new List<ElementType>();
+    [SerializeField] private float weaknessMultiplier = 2f;
+    [SerializeField] private List<ElementType> resistances = new List<ElementType>();
+    [SerializeField] private float resistanceMultiplier = 0.5f;
 
-    [SerializeField]
-    private float fireRate = 1f;
+    [Header("Art")]
+    [SerializeField] private Sprite enemySprite;
+    [SerializeField] private RuntimeAnimatorController animatorController;
 
-    
+    [Header("Spell Behavior")]
+    [SerializeField] private EnemySpellType spellType = EnemySpellType.ColumnDestroy;
+    [SerializeField] private float damagePerElement = 4f;
+    [SerializeField] private int moveCount = 2; // number of player moves until spell triggers
 
-    [SerializeField]
-    private List<ElementType> weaknesses = new List<ElementType>();
+    [Header("TimerEnemy")]
+    [SerializeField] private float AtackTimer = 4f;
 
-    [SerializeField]
-    private float weaknessMultiplayer = 2f;
+    public bool excludeBelowTargets = false;
 
-    [SerializeField]
-    private List<ElementType> resistances = new List<ElementType>();
+    public float Health => health;
+    public float Damage => damage;
+    public Sprite EnemySprite => enemySprite;
+    public List<ElementType> Weaknesses => new List<ElementType>(weaknesses);
+    public EnemySpellType SpellType => spellType;
+    public float DamagePerElement => damagePerElement;
+    public int MoveCount => moveCount;
+    public string Name => name;
+    public int Level => level;
+    public RuntimeAnimatorController AnimatorController => animatorController;
 
-    [SerializeField]
-    private float resistanceMultiplayer = 0.5f;
-
-    [Header("Art Stuff")]
-    [SerializeField]
-    private Sprite enemySprite;
-
-    public float CalculateDamageTaken( ElementType elementType, float baseDamage)
+    public float CalculateDamageTaken(ElementType elementType, float baseDamage)
     {
-        float finalDamage = baseDamage;
-
-        foreach (ElementType weakness in weaknesses)
+        if (weaknesses.Contains(elementType))
         {
-            if (weakness == elementType)
-            {
-                finalDamage *= weaknessMultiplayer;
-                Debug.Log("Weakness hit: " + weakness.ToString() + " Multiplyer: " + weaknessMultiplayer + " Total DMG:" + finalDamage);
-                return finalDamage;
-                
-            }
+            float finalDamage = baseDamage * weaknessMultiplier;
+            Debug.Log($"Weakness hit: {elementType} | Multiplier: {weaknessMultiplier} | Total DMG: {finalDamage}");
+            return finalDamage;
+        }
+        if (resistances.Contains(elementType))
+        {
+            return baseDamage * resistanceMultiplier;
         }
 
-        foreach (ElementType resistance in resistances)
-        {
-            if (resistance == elementType)
-            {
-                finalDamage *= resistanceMultiplayer;
-                return finalDamage;
-            }
-        }
-
-        return finalDamage;
+        return baseDamage;
     }
 
     public bool IsWeakTo(ElementType elementType)
     {
-        foreach (ElementType weakness in weaknesses)
-        {
-            if (weakness == elementType)
-            {
-                return true;
-            }
-        }
-        return false;
+        return weaknesses.Contains(elementType);
     }
 
-    public float GetHealth() { return health; }
-    public float GetDamage() { return damage; }
-    public float GetFireRate() { return fireRate; }
-    public Sprite GetSprite() { return enemySprite; }
-    public List<ElementType> GetWeaknesses() { return weaknesses; }
- }
+    public IEnemySpell CreateSpell()
+    {
+        switch (spellType)
+        {
+            case EnemySpellType.ColumnDestroy:
+                return new ColumnDestroySpell(damagePerElement, moveCount, excludeBelowTargets);
 
+            case EnemySpellType.RandomDestroy:
+                return new RandomDestroySpell(elementCount, damagePerElement, moveCount, excludeBelowTargets);
 
+            case EnemySpellType.SingleTimedTarget:
+                return new SingleElementTimedSpell(AtackTimer, damagePerElement, excludeBelowTargets);
 
+            default:
+                return new ColumnDestroySpell(damagePerElement, moveCount, excludeBelowTargets);
+        }
+    }
+}
+
+public enum EnemySpellType
+{
+    ColumnDestroy,
+    RandomDestroy,
+    SingleTimedTarget
+}

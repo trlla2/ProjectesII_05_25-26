@@ -1,181 +1,151 @@
 using System;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
-public class PlayerStats : MonoBehaviour
+public class PlayerStats
 {
-    public static PlayerStats Instance { get; private set; }
-    [Header("Stats")]
+    
 
-    [SerializeField]
-    private float maxHp = 100.0f;
-    private float hp;
+    public float MaxHp;
+    public float Hp;
 
-    private int experiencePoints = 0;
-    private int level = 1;
+    public int ExperiencePoints;
+    public int Level;
+    public Dictionary<ElementType, int> ElementalLevels;
+    public int ElementalLevelMultiplyer;
 
-    [SerializeField]
-    private int money = 10;
+    public int Money;
+    public List<Spell> SpellBook;
 
-    [SerializeField]
-    private List<ItemsType> inventory = new List<ItemsType>();
+    public List<Item> Inventory;
+    public int LimitInventory;
 
-
-    // Events
-    public delegate void GetOnHitRecived(float health);
-    public event GetOnHitRecived OnHitRecived;
-
-    public delegate void GetOnHitEvaded();
-    public event GetOnHitEvaded OnHitEvaded;
-
-    public delegate void GetOnLevelUp();
-    public event GetOnLevelUp OnLevelUp;
-
-    public delegate void GetOnEXPChange();
-    public event GetOnEXPChange OnEXPChange;
-
-    public delegate void GetOnMoneyChange();
-    public event GetOnMoneyChange OnMoneyChange;
-
-    public delegate void GetOnInventoryChange();
-    public event GetOnInventoryChange OnInventoryChange;
-
-    // Add Crit and other stuff...
-    private Dictionary<ElementType, int> elementalLevels = new Dictionary<ElementType, int>() // forced DELETE!@!!!!
-    { 
-        { ElementType.Green, 1}, 
-        { ElementType.Red, 1}, 
-        { ElementType.Yellow, 1}, 
-        { ElementType.Blue, 1}
-    };
-
-    private int elementalLevelMultiplyer = 4;
-
-    private void Awake()
+    public int EvasionPoints;
+    public int ExtraHealth;
+    public int ExtraDamage;
+    public PlayerStats()
     {
-        if (Instance != null)
+        MaxHp = 40.0f;
+        Hp = MaxHp;
+        ExperiencePoints = 0;
+        Level = 1;
+        Money = 10;
+        SpellBook = new List<Spell>();
+        Inventory = new List<Item>();
+        LimitInventory = 3;
+        ElementalLevels = new Dictionary<ElementType, int>()
         {
-            Destroy(this.gameObject);
-            return;
-        }
-
-        Instance = this;
-        DontDestroyOnLoad(this.gameObject);
+            { ElementType.Green, 1},
+            { ElementType.Red, 1},
+            { ElementType.Yellow, 1},
+            { ElementType.Blue, 1}
+        };
+        ElementalLevelMultiplyer = 4;
+    
+        ExtraHealth = 0;
+        EvasionPoints = 0;
     }
 
-    private void Start() // FORCED DELETE !!@@!@!@!!
-    {
-        hp = maxHp;
-    }
-
-
-    public void Attack(Spell spell)
+    public List<DamageType> AttackWithSpell(Spell spell)
     {
         List<DamageType> damages = new List<DamageType>();
         foreach (Element e in spell.Recipe)
         {
-            damages.Add(new DamageType(e.Type, elementalLevelMultiplyer * elementalLevels[e.Type]));
+            damages.Add(new DamageType(e.Type, ElementalLevelMultiplyer * ElementalLevels[e.Type]));
         }
 
-
-        GameManager.Instance.AttackEnemy(damages);
+        return damages;
     }
 
-    public void DealDamage(float damage)
+    public DamageType AttackWithElement(ElementType elementType)
     {
-        // --------------------------- FORCED DELETE
-        float evasionChance = 0;
+        DamageType totalDamage = new DamageType(elementType, ElementalLevelMultiplyer * ElementalLevels[elementType]);
+        totalDamage.damage += ExtraDamage;
 
-        foreach(ItemsType item in inventory)
-            evasionChance += item.evasionBonus;
+        return totalDamage;
+    }
+    
+    public bool EvadeAttack() { return UnityEngine.Random.Range(0f, 100f) < EvasionPoints; }
 
-        if (UnityEngine.Random.Range(0f, 100f) < evasionChance)
-        {
-            OnHitEvaded?.Invoke();
-            return;
-        }
+    public void Damage(float dT) { Hp -= dT; }
 
-        // -----------------------------------------
-
-        hp -= damage;
-        
-        OnHitRecived?.Invoke(hp);
-        
-        if (hp <= 0)
-        {
-            GameManager.Instance.OnPlayerDead();
-        }
+    public void Heal(float amount)
+    {
+        Hp += amount;
+        if (Hp > MaxHp + ExtraHealth)   Hp = MaxHp + ExtraHealth;
     }
 
-    public void OnWinBattle(int exp, int m)
+    public void AddMoney(int amount) { Money += amount; }
+    public bool UseMoney(int amount) 
     {
-        money += m;
-
-        OnMoneyChange.Invoke();
-
-        experiencePoints += exp;
-        OnEXPChange.Invoke();
-
-        if (experiencePoints >= GetEXPForNextLevel())
+        if (Money >= amount)
         {
-            OnLevelUp.Invoke();
-        }
-    }
-
-    public void UpgradeElement(ElementType type)
-    {
-        level++;
-
-        elementalLevels[type]++;
-    }
-
-    public void AddItemToInventory(ItemsType item)
-    {
-        inventory.Add(item);
-        OnInventoryChange?.Invoke();
-    }
-
-
-    public void Heal(int health)
-    {
-        if (hp + health <= maxHp)
-        {
-            Mathf.Clamp(hp += health, 0, maxHp);
-            OnHitRecived.Invoke(hp);
-        }
-        else
-        {
-            hp = maxHp;
-            OnHitRecived.Invoke(hp);
-        }
-    }
-
-    public bool UseMoney(int amount)
-    {
-        if (money >= amount)
-        {
-            money = money - amount;
-            OnMoneyChange.Invoke();
+            Money -= amount;
             return true;
         }
         return false;
     }
 
-    public void Destroy()
-    {
-        Destroy(this.gameObject);
+    public bool AddExp(int amount) 
+    { 
+        ExperiencePoints += amount; 
+
+        if (ExperiencePoints >= GetEXPForNextLevel())
+            return true; // Level up
+
+        return false;
     }
 
-    public int GetEXP() { return experiencePoints; }
-    public int GetMoney() { return money; }
-    public float GetMaxHP() { return maxHp; }
-    
-    public float GetCurrentHP() { return hp; }
-    public int GetLevel() { return level; }
-    public int GetEXPForNextLevel () { return (int)Math.Pow(4, level); }
-    public List<ItemsType> GetInventory() { return inventory; }
+    public void LevelUp()
+    {
+        Level ++;
+    }
 
+    public void UpgradeElementalLevel(ElementType elementType)
+    {
+        ElementalLevels[elementType] += 1;
+    }
 
+    public bool AddItemToInventory(Item item) 
+    {
+        if (Inventory.Count >= LimitInventory) return false;
 
-}
+        Inventory.Add(item);
+        item.ApplyEffects(this);
+
+        return true;// the item was added
+    }
+
+    public void RemoveItemFromInventory(Item item)
+    {
+        if (!Inventory.Contains(item)) return;
+        
+        Inventory.Remove(item);
+        item.RemoveEffects(this);
+        
+    }
+
+    public void AddSpellToSpellBook(Spell spell)
+    {
+        if(SpellBook.Count < 4)
+            SpellBook.Add(spell);
+        Debug.Log("Spell Added");
+    }
+
+    public void ClearSpellBook()  { SpellBook.Clear(); }
+
+    public int GetEXPForLastLevel() 
+    { 
+        if(Level - 1 > 0)
+            return (int)Math.Pow(4, Level - 1);
+
+        return 0;
+    }
+    public int GetEXPForNextLevel() { return (int)Math.Pow(4, Level); }
+    public bool CanLevelUp() { return ExperiencePoints >= GetEXPForNextLevel(); }
+    public bool IsAlive() { return Hp > 0; }
+    public void ModifyEvasion(int amount) { EvasionPoints += amount; }
+    public void ModifyExtraHealth(int amount) { ExtraHealth += amount; }
+    public void ModifyExtraDamage(int amount) { ExtraDamage += amount; }
+
+    }

@@ -7,16 +7,19 @@ public class TileClickHandler : MonoBehaviour
 
     private Ray mouseRay;
     private BoardTile _lastTileHovered;
-    private PlayerMovement player;
+    [SerializeField] PlayerMovement player;
+
+    private bool raycastActive = true;
 
     private void Awake()
     {
-        player = GetComponent<PlayerMovement>();
+        //player = GetComponent<PlayerMovement>();
     }
     void Update()
     {
         mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (!player.isMoving)
+
+        if (!player.isMoving/*FORCED*/ && raycastActive) 
         {
             HandleMouseHover();
             if (Input.GetMouseButtonDown(0))
@@ -52,10 +55,17 @@ public class TileClickHandler : MonoBehaviour
             if (clickedTile == null)
                 return;
 
+            clickedTile.HighlightTile(true);
             player.TryMoveTo(clickedTile, () =>
             {
+                clickedTile.HighlightTile(false);
                 clickedTile.Interact();
             });
         }
+    }
+
+    public void HandleBoardRaycast(bool enable)
+    {
+        raycastActive = enable;
     }
 }

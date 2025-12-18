@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: MAGIC WATER
   m_EditorClassIdentifier: 
   Name: MAGIC WATER
+  Description: Cast a wave of water to a target and deals damage.
   Recipe:
   - {fileID: 11400000, guid: 02288df98d810c14a8b97ec86fb6b86f, type: 2}
-  - {fileID: 11400000, guid: 4be4989cbc43a4648915c11c96e324e5, type: 2}
+  - {fileID: 11400000, guid: 02288df98d810c14a8b97ec86fb6b86f, type: 2}
   - {fileID: 11400000, guid: 1ab200a2191b3a645a4c64114d4fc11a, type: 2}
   OnCast:
     m_PersistentCalls:

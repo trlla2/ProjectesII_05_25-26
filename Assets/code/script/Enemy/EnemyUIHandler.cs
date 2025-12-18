@@ -1,20 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
+using System.Collections.Generic; 
 using TMPro;
-using Unity.Jobs;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class EnemyUIHandler : MonoBehaviour
 {
+    [Header("Description")]
+    [SerializeField]
+    private TMP_Text nameText;
+
     [Header("HealthBar")]
     [SerializeField]
     private Slider healthBar;
 
-    [Header("Attack TimeCircle")]
-    [SerializeField]
-    private Image attackTimeCircle;
-    
     [Header("Damage Text")]
     [SerializeField]
     private TMP_Text damageText;
@@ -22,8 +21,12 @@ public class EnemyUIHandler : MonoBehaviour
     private TranslatorUI damageTextTranslator;
 
     [SerializeField]
-    private float timeToChangeDmg = 0.3f;
-    private float timerChangeDmg = 0;
+    private float timeToChangeDmg = 0.3f; 
+
+    private float currentDamageTimer = 0;
+    private bool isShowingDamage = false;
+
+    private Queue<DamageType> damageQueue = new Queue<DamageType>();
 
     [Header("Weakness Text")]
     [SerializeField]
@@ -33,17 +36,29 @@ public class EnemyUIHandler : MonoBehaviour
 
     [SerializeField]
     private float timeToChangeWeak = 0.3f;
-    private float timerChangeWeak = 0;
+    private float currentWeaknessTimer = 0;
+    private bool isShowingWeakness = false;
 
     private EnemyBehaviour enemyBehaviour;
 
-    private void Start()
+    private void Awake()
     {
-        enemyBehaviour = this.gameObject.GetComponentInParent<EnemyBehaviour>();
+        GameManager.Instance.OnSetEnemyReference += SetEnemyRef;
+    }
 
+    private void SetEnemyRef(EnemyBehaviour reference)
+    {
+        enemyBehaviour = reference;
         enemyBehaviour.OnHitRecived += ChangeHealthBar;
-        enemyBehaviour.OnAttackTimeChange += ChangeAttackTimeCircle;
-        enemyBehaviour.OnDamageList += StartChangeDamageText;
+        enemyBehaviour.OnGetDamage += AddDamageToQueue;
+        nameText.text = enemyBehaviour.GetEnemyType().Name + ", Level " + enemyBehaviour.GetEnemyType().Level;
+
+    }
+
+    private void Update()
+    {
+        HandleDamageQueue();
+        HandleWeaknessTimer();
     }
 
     private void ChangeHealthBar(float health)
@@ -51,58 +66,72 @@ public class EnemyUIHandler : MonoBehaviour
         healthBar.value = health / enemyBehaviour.GetMaxHP();
     }
 
-    private void ChangeAttackTimeCircle(float attackTime)
-    {
-        attackTimeCircle.fillAmount = 1-(attackTime/enemyBehaviour.GetFireRate());
-    }
+    private void AddDamageToQueue(DamageType damageType) { damageQueue.Enqueue(damageType); }
 
-    private void StartChangeDamageText(List<DamageType> damageList)
+    private void HandleDamageQueue()
     {
-        StartCoroutine(ChangeDamageText(damageList));
-    }
-
-    private IEnumerator ChangeDamageText(List<DamageType> damageList)
-    {
-        foreach (DamageType damage in damageList)
+        if (isShowingDamage)
         {
-            damageTextTranslator.ResetPosition();
+            currentDamageTimer += Time.deltaTime;
 
-            damageText.text = damage.damage.ToString();
-            damageTextTranslator.ToTarget();
-
-
-            switch (damage.element)
+            if (currentDamageTimer >= timeToChangeDmg)
             {
-                case ElementType.Red:
-                    damageText.color = Color.red;
-                    break;
-                case ElementType.Blue:
-                    damageText.color = Color.blue;
-                    break;
-                case ElementType.Green:
-                    damageText.color = Color.green;
-                    break;
-                case ElementType.Yellow:
-                    damageText.color = Color.yellow;
-                    break;
+                damageText.text = ""; 
+                damageTextTranslator.ResetPosition(); 
+                isShowingDamage = false; 
+                currentDamageTimer = 0;  
             }
-            if(enemyBehaviour.GetEnemyType().IsWeakTo(damage.element))
-                StartCoroutine(TriggerWeaknessText(damage.element));
-
-            while (timerChangeDmg < timeToChangeDmg)
-            {
-                timerChangeDmg += Time.deltaTime;
-                yield return null;
-            }
-
-            damageTextTranslator.ResetPosition();
-            timerChangeDmg = 0;
-            damageText.text = "";
+        }
+        else if (damageQueue.Count > 0)
+        {
+            ShowNextDamage(damageQueue.Dequeue());
         }
     }
 
-    private IEnumerator TriggerWeaknessText(ElementType elementType)
+    private void ShowNextDamage(DamageType damageInfo)
     {
+        isShowingDamage = true;
+        currentDamageTimer = 0;
+
+        damageTextTranslator.ResetPosition();
+        damageText.text = damageInfo.damage.ToString();
+
+        SetDamageColor(damageInfo.element);
+
+        damageTextTranslator.ToTarget();
+
+        if (enemyBehaviour.GetEnemyType().IsWeakTo(damageInfo.element))
+        {
+            TriggerWeakness(damageInfo.element);
+        }
+    }
+
+    private void SetDamageColor(ElementType element)
+    {
+        switch (element)
+        {
+            case ElementType.Red:
+                damageText.color = Color.red;
+                break;
+            case ElementType.Blue:
+                damageText.color = Color.blue;
+                break;
+            case ElementType.Green:
+                damageText.color = Color.green;
+                break;
+            case ElementType.Yellow:
+                damageText.color = Color.yellow;
+                break;
+            default:
+                damageText.color = Color.white;
+                break;
+        }
+    }
+
+    private void TriggerWeakness(ElementType elementType)
+    {
+        isShowingWeakness = true;
+        currentWeaknessTimer = 0;
         weaknessTextTranslator.ResetPosition();
 
         switch (elementType)
@@ -121,21 +150,27 @@ public class EnemyUIHandler : MonoBehaviour
                 break;
         }
         weaknessTextTranslator.ToTarget();
-        while (timerChangeWeak < timeToChangeWeak)
-        {
-            timerChangeWeak += Time.deltaTime;
-            yield return null;
-        }
+    }
 
-        weaknessTextTranslator.ResetPosition();
-        timerChangeWeak = 0;
+    private void HandleWeaknessTimer()
+    {
+        if (isShowingWeakness)
+        {
+            currentWeaknessTimer += Time.deltaTime;
+            if (currentWeaknessTimer >= timeToChangeWeak)
+            {
+                isShowingWeakness = false;
+                currentWeaknessTimer = 0;
+            }
+        }
     }
 
     private void OnDestroy()
     {
-        enemyBehaviour.OnHitRecived -= ChangeHealthBar;
-        enemyBehaviour.OnAttackTimeChange -= ChangeAttackTimeCircle;
-        enemyBehaviour.OnDamageList -= StartChangeDamageText;
+        if (enemyBehaviour != null)
+        {
+            enemyBehaviour.OnHitRecived -= ChangeHealthBar;
+            enemyBehaviour.OnGetDamage -= AddDamageToQueue;
+        }
     }
 }
-    

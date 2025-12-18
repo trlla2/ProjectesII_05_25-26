@@ -4,18 +4,20 @@ using System.Collections.Generic;
 
 public class BoardManager : MonoBehaviour
 {
-    public static BoardManager instance { get; private set; } = new BoardManager();
+    public static BoardManager instance { get; private set; }
 
     public BoardTile startingTile;
     public BoardTileData emptyTileData;
     public BoardTileData enemyTileData;
     public BoardTileData chestTileData;
+    public BoardTileData bossTileData;
+    public BoardTileData stairsTileData;
 
-    public List<BoardTile> generatedTiles = new List<BoardTile>();
+    public List<BoardTile> generatedTiles;
 
     [SerializeField] private OpenChestScreen openChestPanel;
+    [SerializeField] private NewSpellPanelBehaviour newSpellPanel;
 
-    [SerializeField] private AudioSource openChestSource; // FORCED CHANGE
 
 
     private Camera boardCamera;
@@ -57,11 +59,11 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    public BoardTile CreateNewTile(BoardTileData tileData, Vector2Int gridPosition)
+    public BoardTile CreateNewTile(BoardTileData tileData, Vector2Int gridPosition, Transform parent)
     {
         GameObject newTileInstance = Instantiate(tileData.tilePrefab,
                 new Vector3(gridPosition.x, startingTile.transform.position.y, gridPosition.y),
-                startingTile.gameObject.transform.rotation, this.gameObject.transform);
+                startingTile.gameObject.transform.rotation, parent);
 
         BoardTile newTile = newTileInstance.GetComponent<BoardTile>();
         newTile.SetGridPosition(gridPosition);
@@ -74,11 +76,11 @@ public class BoardManager : MonoBehaviour
 
     public void ReplaceTileType(BoardTile tile, BoardTileData newData)
     {
-        Vector3 pos = tile.transform.position;
-        Quaternion rot = tile.transform.rotation;
-        Transform parent = tile.transform.parent;
+        //Vector3 pos = tile.transform.position;
+        //Quaternion rot = tile.transform.rotation;
+        //Transform parent = tile.transform.parent;
 
-        BoardTile newTile = CreateNewTile(newData, tile.GetGridPosition());
+        BoardTile newTile = CreateNewTile(newData, tile.GetGridPosition(), tile.transform.parent);
         newTile.SetGridPosition(tile.GetGridPosition());
 
         UpdateNeighbors(newTile);
@@ -92,12 +94,20 @@ public class BoardManager : MonoBehaviour
     {
         openChestPanel.openedChest = chestTile;
         openChestPanel.Pull();
-        openChestSource.Play(); // FORCED CHANGE
+
+        boardCamera.gameObject.GetComponent<TileClickHandler>().HandleBoardRaycast(false);
+
         openChestPanel.gameObject.SetActive(true);
+    }
+
+    public void GetNewSpell(NewSpellTile tile)
+    {
+        boardCamera.gameObject.GetComponent<TileClickHandler>().HandleBoardRaycast(false);
+        newSpellPanel.Show(tile);
     }
 
     public void HandleBoardCamera(bool enable)
     {
-        boardCamera.enabled = enable;
+        boardCamera.gameObject.SetActive(enable);
     }
 }

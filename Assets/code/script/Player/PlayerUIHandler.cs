@@ -13,14 +13,16 @@ public class PlayerUIHandler : MonoBehaviour
 
     private void Start()
     {
-        PlayerStats.Instance.OnHitRecived += HitRecived;
-        PlayerStats.Instance.OnHitEvaded += HitEvaded;
-        HitRecived(PlayerStats.Instance.GetCurrentHP());
+        GameManager.Instance.OnPlayerHitRecived += UpdateHealBar;
+        GameManager.Instance.OnPlayerHealed += UpdateHealBar;
+        GameManager.Instance.OnPlayerHitEvaded += HitEvaded;
+
+        UpdateHealBar();
     }
 
-    private void HitRecived(float health)
+    private void UpdateHealBar()
     {
-        healthBar.value = health / PlayerStats.Instance.GetMaxHP();
+        healthBar.value = GameManager.Instance.GetPlayerHPPercentage();
     }
 
     private void HitEvaded()
@@ -30,8 +32,9 @@ public class PlayerUIHandler : MonoBehaviour
 
     private void OnDestroy()
     {
-        PlayerStats.Instance.OnHitRecived -= HitRecived;
-        PlayerStats.Instance.OnHitEvaded -= HitEvaded;
+        GameManager.Instance.OnPlayerHitRecived -= UpdateHealBar;
+        GameManager.Instance.OnPlayerHealed -= UpdateHealBar;
+        GameManager.Instance.OnPlayerHitEvaded -= HitEvaded;
 
     }
 }

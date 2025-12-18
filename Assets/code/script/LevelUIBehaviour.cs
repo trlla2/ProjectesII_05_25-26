@@ -1,10 +1,5 @@
-using System.Collections;
-using System.Security.Cryptography;
-using System.Xml;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-using static UnityEngine.Rendering.DebugUI;
+
 
 public class LevelUIBehaviour : MonoBehaviour
 {
@@ -17,7 +12,7 @@ public class LevelUIBehaviour : MonoBehaviour
 
     private void Start()
     {
-        PlayerStats.Instance.OnLevelUp += StartLevelUpPanel;
+        GameManager.Instance.OnPlayerLevelUp += StartLevelUpPanel;
     }
 
     private void StartLevelUpPanel()
@@ -29,11 +24,11 @@ public class LevelUIBehaviour : MonoBehaviour
 
     public void OnUpgradeElement(int i)
     {
-        PlayerStats.Instance.UpgradeElement((ElementType)i);
+        GameManager.Instance.UpgradePlayerElementLevel((ElementType)i);
     }
 
     private void OnDestroy()
     {
-        PlayerStats.Instance.OnLevelUp -= StartLevelUpPanel;
+        GameManager.Instance.OnPlayerLevelUp -= StartLevelUpPanel;
     }
 }

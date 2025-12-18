@@ -6731,7 +6731,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 0.5, g: 0.004612953, b: 0, a: 1}
-      maxColor: {r: 0.62352943, g: 0, b: 0.3529412, a: 1}
+      maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -14693,6 +14693,34 @@ PrefabInstance:
       propertyPath: playOnAwake
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5875889587266705184, guid: 84cf3f0dbd0553d4d9370de3ef4e2c80, type: 3}
+      propertyPath: InitialModule.gravitySource
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5875889587266705184, guid: 84cf3f0dbd0553d4d9370de3ef4e2c80, type: 3}
+      propertyPath: InitialModule.startSpeed.scalar
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5875889587266705184, guid: 84cf3f0dbd0553d4d9370de3ef4e2c80, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5875889587266705184, guid: 84cf3f0dbd0553d4d9370de3ef4e2c80, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5875889587266705184, guid: 84cf3f0dbd0553d4d9370de3ef4e2c80, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5875889587266705184, guid: 84cf3f0dbd0553d4d9370de3ef4e2c80, type: 3}
+      propertyPath: InitialModule.gravityModifier.maxCurve.m_Curve.Array.data[1].inWeight
+      value: 0.33333334
+      objectReference: {fileID: 0}
+    - target: {fileID: 5875889587266705184, guid: 84cf3f0dbd0553d4d9370de3ef4e2c80, type: 3}
+      propertyPath: InitialModule.gravityModifier.maxCurve.m_Curve.Array.data[0].outWeight
+      value: 0.33333334
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3829089990386203705, guid: 84cf3f0dbd0553d4d9370de3ef4e2c80, type: 3}
     m_RemovedGameObjects: []
@@ -15579,7 +15607,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 0.5, g: 0.004612953, b: 0, a: 1}
-      maxColor: {r: 0.7960785, g: 1, b: 0.09019608, a: 1}
+      maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -24085,8 +24113,16 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2881528849542322018, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
+      propertyPath: InitialModule.gravitySource
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2881528849542322018, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2881528849542322018, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
       propertyPath: InitialModule.startColor.maxColor.g
-      value: 0.035189502
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2881528849542322018, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
       propertyPath: InitialModule.startColor.maxColor.r

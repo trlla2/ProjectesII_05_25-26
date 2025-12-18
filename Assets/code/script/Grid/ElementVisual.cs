@@ -7,6 +7,7 @@ public class ElementVisual : MonoBehaviour
     [SerializeField] private SpriteRenderer elementRenderer;
     [SerializeField] private GameObject deletionEffectPrefab; 
     [SerializeField] private Image targetFillImage;
+    [SerializeField] private GameObject breakEnemyHoverParticles;
 
     private Vector2Int gridPosition;
     private bool canSelect = true;
@@ -119,6 +120,9 @@ public class ElementVisual : MonoBehaviour
 
         if (!targeted)
         {
+            GameObject temp = Instantiate(breakEnemyHoverParticles, transform);
+            temp.transform.SetParent(null);
+            Debug.Log("Hola???");
             StopCountdown();
         }
     }
@@ -177,6 +181,8 @@ public class ElementVisual : MonoBehaviour
 
         if (targetFillImage != null)
         {
+            
+
             targetFillImage.fillAmount = 0f;
             targetFillImage.enabled = false;
         }

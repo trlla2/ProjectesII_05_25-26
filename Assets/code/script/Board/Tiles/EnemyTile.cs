@@ -11,6 +11,9 @@ public class EnemyTile : BoardTile
     [SerializeField] private bool forceSpecificEnemy = false;
     [SerializeField] private EnemyType specificEnemyType;
 
+    [Header("Enemy Scene Settings")]
+    [SerializeField] private string enemyScene = "BattlePhone";
+
     private TileClickHandler _boardRaycast;
 
     private void Start()
@@ -28,7 +31,7 @@ public class EnemyTile : BoardTile
         }
 
         _boardRaycast.HandleBoardRaycast(false);
-        SceneTransition.Instance.LoadScene("BattlePhone", true);
+        SceneTransition.Instance.LoadScene(enemyScene, true);
         GameManager.Instance.EnterBattle();
         GameManager.Instance.OnEndBattle += Replace;
     }

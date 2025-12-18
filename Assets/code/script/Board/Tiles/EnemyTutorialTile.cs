@@ -7,7 +7,7 @@ public class EnemyTutorialTile : BoardTile
     [SerializeField] private int lootRatePercentage;
 
     [SerializeField] private string enemyScene;
-
+    [SerializeField] private EnemyType specificEnemyType;
     private TileClickHandler _boardRaycast;
 
     private void Start()
@@ -18,7 +18,7 @@ public class EnemyTutorialTile : BoardTile
     public override void Interact()
     {
         Debug.Log("starting combat...");
-
+        GameManager.Instance.SetForcedEnemy(specificEnemyType);
         _boardRaycast.HandleBoardRaycast(false);
         SceneTransition.Instance.LoadScene(enemyScene, true);
         GameManager.Instance.EnterBattle();

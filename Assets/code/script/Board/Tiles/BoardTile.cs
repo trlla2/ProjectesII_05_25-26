@@ -18,7 +18,7 @@ public abstract class BoardTile : MonoBehaviour
         _renderer = GetComponentInChildren<Renderer>();
         _renderer.material.color = _data.defaultColor;
         if(isForcedPos)
-            _gridPos = forcedPos;
+            _gridPos = forcedPos; Debug.Log("neighbour asdfa: " + _gridPos + ", " + forcedPos);
     }
 
     public void HighlightTile(bool on)

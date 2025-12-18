@@ -37,6 +37,7 @@ public class BoardManager : MonoBehaviour
 
     public void UpdateNeighbors(BoardTile tile)
     {
+
         List<Vector2Int> possiblePositions = new List<Vector2Int>();
         possiblePositions.Add(new Vector2Int(-1, 0));
         possiblePositions.Add(new Vector2Int(1, 0));
@@ -49,8 +50,9 @@ public class BoardManager : MonoBehaviour
             {
                 if (generatedTiles[i].GetComponent<BoardTile>().GetGridPosition() == tile.GetGridPosition() + possiblePositions[j])
                 {
+
                     if (!tile.neighbors.Contains(generatedTiles[i]))
-                        tile.neighbors.Add(generatedTiles[i]);
+                        tile.neighbors.Add(generatedTiles[i]); 
 
                     if (!generatedTiles[i].neighbors.Contains(tile))
                         generatedTiles[i].neighbors.Add(tile);

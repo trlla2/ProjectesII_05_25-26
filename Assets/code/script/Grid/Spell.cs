@@ -12,17 +12,35 @@ public class Spell : ScriptableObject
 
     public bool Matches(List<Element> path)
     {
-        if (path == null) {Debug.LogWarning("Be carful! tried to match an empty path"); return false; }
+        if (path == null) { Debug.LogWarning("Be careful! tried to match an empty path"); return false; }
 
         if (path.Count != Recipe.Count) return false;
 
+        bool forwardMatch = true;
         for (int i = 0; i < Recipe.Count; i++)
         {
-            if (path[i] == null) return false;
-
-            if (path[i].Type != Recipe[i].Type) return false;
+            if (path[i] == null || path[i].Type != Recipe[i].Type)
+            {
+                forwardMatch = false;
+                break;
+            }
         }
 
-        return true;
+        if (forwardMatch)
+        {
+            return true;
+        }
+
+        bool backwardMatch = true;
+        for (int i = 0; i < Recipe.Count; i++)
+        {
+            if (path[i] == null || path[i].Type != Recipe[Recipe.Count - 1 - i].Type)
+            {
+                backwardMatch = false;
+                break;
+            }
+        }
+        
+        return backwardMatch;
     }
 }

@@ -2,15 +2,10 @@ using UnityEngine;
 
 public class HallOfEgressHandler : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
-        
+        GameManager.Instance.ClearPlayerSpellBook();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+   
 }

@@ -588,6 +588,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
+  isForcedPos: 0
+  forcedPos: {x: 0, y: 0}
   neighbors:
   - {fileID: 1856034665}
   - {fileID: 1108751533}
@@ -1678,6 +1680,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
+  isForcedPos: 0
+  forcedPos: {x: 0, y: 0}
   neighbors:
   - {fileID: 702071340}
   - {fileID: 1815122640}
@@ -1788,6 +1792,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
+  isForcedPos: 0
+  forcedPos: {x: 0, y: 0}
   neighbors:
   - {fileID: 1248598934}
   - {fileID: 1108751533}
@@ -6125,6 +6131,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
+  isForcedPos: 0
+  forcedPos: {x: 0, y: 0}
   neighbors:
   - {fileID: 75721440}
   - {fileID: 1321387669}
@@ -7770,6 +7778,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
+  isForcedPos: 0
+  forcedPos: {x: 0, y: 0}
   neighbors:
   - {fileID: 1863937247}
   - {fileID: 1368102784}
@@ -8411,6 +8421,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
+  isForcedPos: 0
+  forcedPos: {x: 0, y: 0}
   neighbors:
   - {fileID: 1321387669}
   - {fileID: 974525000}
@@ -9248,6 +9260,50 @@ Transform:
   - {fileID: 422498435}
   m_Father: {fileID: 2064752237}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1015820021
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1015820023}
+  - component: {fileID: 1015820022}
+  m_Layer: 0
+  m_Name: HallOfEgressHandler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1015820022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1015820021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d10f38b50d7e75949ac7851a911025fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1015820023
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1015820021}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 585, y: 1266, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1018124575
 GameObject:
   m_ObjectHideFlags: 0
@@ -9365,6 +9421,7 @@ MonoBehaviour:
   stairsTileData: {fileID: 11400000, guid: 5109a009fed6a2d4595e73f54ebbf5c4, type: 2}
   generatedTiles: []
   openChestPanel: {fileID: 137198783}
+  newSpellPanel: {fileID: 0}
 --- !u!82 &1035823811
 AudioSource:
   m_ObjectHideFlags: 0
@@ -10163,6 +10220,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
+  isForcedPos: 0
+  forcedPos: {x: 0, y: 0}
   neighbors:
   - {fileID: 186982399}
   - {fileID: 1863937247}
@@ -10752,6 +10811,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3ddc38c9790bdd44bacbeb43cb61cada, type: 2}
   - {fileID: 11400000, guid: b58a165a179e5564c8881963ab38360b, type: 2}
   - {fileID: 11400000, guid: 5a68dbd4268eb7749b497b05fa080c5c, type: 2}
+  tutorialManager: {fileID: 0}
 --- !u!4 &1135501900
 Transform:
   m_ObjectHideFlags: 0
@@ -11662,6 +11722,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
+  isForcedPos: 0
+  forcedPos: {x: 0, y: 0}
   neighbors:
   - {fileID: 195526932}
   - {fileID: 1863937247}
@@ -12117,6 +12179,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
+  isForcedPos: 0
+  forcedPos: {x: 0, y: 0}
   neighbors:
   - {fileID: 1108751533}
   - {fileID: 889392827}
@@ -12581,6 +12645,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
+  isForcedPos: 0
+  forcedPos: {x: 0, y: 0}
   neighbors:
   - {fileID: 1928510513}
   - {fileID: 2064752233}
@@ -15152,7 +15218,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.0011134523, y: 1242277.5}
+  m_AnchoredPosition: {x: 0.0011134523, y: 1263886}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1618195481
@@ -18579,6 +18645,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
+  isForcedPos: 0
+  forcedPos: {x: 0, y: 0}
   neighbors:
   - {fileID: 1248598934}
   - {fileID: 1928510513}
@@ -19418,6 +19486,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
+  isForcedPos: 0
+  forcedPos: {x: 0, y: 0}
   neighbors:
   - {fileID: 195526932}
   - {fileID: 1368102784}
@@ -20925,6 +20995,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
+  isForcedPos: 0
+  forcedPos: {x: 0, y: 0}
   neighbors:
   - {fileID: 1368102784}
   - {fileID: 974525000}
@@ -21911,3 +21983,4 @@ SceneRoots:
   - {fileID: 1135501900}
   - {fileID: 826760722}
   - {fileID: 798640338}
+  - {fileID: 1015820023}

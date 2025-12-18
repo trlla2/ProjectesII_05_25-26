@@ -25,7 +25,7 @@ public class TutorialManager : MonoBehaviour
     private void Start()
     {
         //debug
-        //ResetTutorial();
+        ResetTutorial();
         if (IsTutorialCompleted())
         {
             enabled = false;

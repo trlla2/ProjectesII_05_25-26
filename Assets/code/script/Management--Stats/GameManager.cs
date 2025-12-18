@@ -176,7 +176,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void AddSpellToPlayerSpellBook(Spell spell) { playerStats.AddSpellToSpellBook(spell); }
-
+    public void ClearPlayerSpellBook() { playerStats.ClearSpellBook(); }
     public void OnPlayerDead()
     {
         enemyInCombat?.StopBattle();

@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
 
 =======
     [SerializeField]private TutorialManager tutorialManager;
+    
 >>>>>>> TutorialBattle
     private int expMultiplyer = 4;
     private int moneyMultiplyer = 4;

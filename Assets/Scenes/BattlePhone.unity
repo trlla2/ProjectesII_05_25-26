@@ -5558,6 +5558,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   enemyDeletionDuration: 1
   blockDuration: 1
+  tutorialManager: {fileID: 0}
 --- !u!224 &190367787
 RectTransform:
   m_ObjectHideFlags: 0
@@ -14057,6 +14058,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3ddc38c9790bdd44bacbeb43cb61cada, type: 2}
   - {fileID: 11400000, guid: b58a165a179e5564c8881963ab38360b, type: 2}
   - {fileID: 11400000, guid: 5a68dbd4268eb7749b497b05fa080c5c, type: 2}
+  tutorialManager: {fileID: 0}
 --- !u!4 &806185222
 Transform:
   m_ObjectHideFlags: 0
@@ -21178,6 +21180,8 @@ MonoBehaviour:
   winTranslator: {fileID: 1594906320}
   loseTranslator: {fileID: 810593951}
   loseScene: HallOfEgress
+  sceneToUnload: BattlePhone
+  goToHallOfEgress: 0
 --- !u!114 &1507392189
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21711,7 +21715,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 47.75
+  m_fontSize: 58.15
   m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -24472,7 +24476,7 @@ PrefabInstance:
     - target: {fileID: 8116796911541987023, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: enemyType
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 11400000, guid: 5a68dbd4268eb7749b497b05fa080c5c, type: 2}
     - target: {fileID: 8116796911541987023, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: deathParticles
       value: 

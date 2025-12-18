@@ -31,7 +31,6 @@ public class TutorialManager : MonoBehaviour
             enabled = false;
             return;
         }
-
         currentStage = PlayerPrefs.GetInt(TUTORIAL_STAGE_KEY, 0);
         InitializeTutorial();
     }

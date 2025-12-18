@@ -19,7 +19,7 @@ public class Grid : MonoBehaviour
     [SerializeField] private AnimationCurve enemyBlinkCurve;
     [SerializeField] private float enemyDeletionDuration = 1f;
     [SerializeField] private float blockDuration = 1f;
-        
+
     public AnimationCurve EnemyTargetFillCurve => enemyBlinkCurve;
     public float EnemyTargetAnimDuration => enemyDeletionDuration;
 
@@ -27,7 +27,7 @@ public class Grid : MonoBehaviour
     private GridGravity gravityHandler;
     private ISpellInserter spellInserter;
     private IGridState currentState;
-    [SerializeField]private TutorialManager tutorialManager;
+    [SerializeField] private TutorialManager tutorialManager;
 
     public GridStateType CurrentState => currentState?.GetStateType() ?? GridStateType.Idle;
     public GridData GridData => gridData;
@@ -54,8 +54,8 @@ public class Grid : MonoBehaviour
 
         InitializeComponents();
         RandomizeBoard(availableElements);
-        
-        if (GameManager.Instance != null && GameManager.Instance.GetPlayerSpellBook() != null 
+
+        if (GameManager.Instance != null && GameManager.Instance.GetPlayerSpellBook() != null
             && GameManager.Instance.GetPlayerSpellBook().Count > 0)
         {
             InsertSpell(GameManager.Instance.GetPlayerSpellBook()[(int)Random.Range(0, GameManager.Instance.GetPlayerSpellBook().Count)].Recipe);
@@ -84,7 +84,7 @@ public class Grid : MonoBehaviour
         gridData.SwapElements(posA, posB);
         visualGrid.Swap(posA, posB, 0.3f);
     }
-    
+
     public void InstantVisualEmpty(List<Vector2Int> positions)
     {
         foreach (Vector2Int pos in positions)
@@ -104,8 +104,12 @@ public class Grid : MonoBehaviour
         if (positions == null || positions.Count == 0)
             return;
 
+        // Tutorial blocks the player action (deleting), but NOT the refill mechanic.
         if (IsTutorialBlocking())
+        {
+            TryStartRefill();
             return;
+        }
 
         foreach (var pos in positions)
         {
@@ -143,7 +147,7 @@ public class Grid : MonoBehaviour
             }
         }
 
-        ChangeState(new RefillState(this, visualGrid));
+        TryStartRefill();
     }
 
     public void BlockElements(float duration, List<Vector2Int> positions)
@@ -163,8 +167,8 @@ public class Grid : MonoBehaviour
             return;
 
         List<Spell> spellsToUse = availableSpells;
-        
-        if (GameManager.Instance != null && GameManager.Instance.GetPlayerSpellBook() != null 
+
+        if (GameManager.Instance != null && GameManager.Instance.GetPlayerSpellBook() != null
             && GameManager.Instance.GetPlayerSpellBook().Count > 0)
         {
             spellsToUse = GameManager.Instance.GetPlayerSpellBook();
@@ -203,7 +207,7 @@ public class Grid : MonoBehaviour
         gridData.SetVisualAt(position, visual);
     }
 
-    public void ProcessEnemySpell(List<Vector2Int> positions, System.Action onComplete = null, 
+    public void ProcessEnemySpell(List<Vector2Int> positions, System.Action onComplete = null,
                                    bool excludeBelowTargets = true, bool rerollAfter = false)
     {
         if (positions == null || positions.Count == 0)
@@ -232,7 +236,6 @@ public class Grid : MonoBehaviour
 
         foreach (Vector2Int pos in positions)
         {
-            // safety
             if (!gridData.IsPositionValid(pos))
                 continue;
 
@@ -310,6 +313,17 @@ public class Grid : MonoBehaviour
         }
 
         return emptyPositions;
+    }
+
+    private void TryStartRefill()
+    {
+        if (CurrentState != GridStateType.Idle)
+            return;
+
+        if (GetEmptyPositions().Count <= 0)
+            return;
+
+        ChangeState(new RefillState(this, visualGrid));
     }
 
     private IEnumerator BlockElementsRoutine(float duration, List<Vector2Int> positions)

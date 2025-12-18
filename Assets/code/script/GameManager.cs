@@ -17,8 +17,12 @@ public class GameManager : MonoBehaviour
     private List<EnemyType> currentEnemyList;
 
     private EnemyBehaviour enemyInCombat;
+<<<<<<< HEAD
     private EnemyType forcedEnemyType;
 
+=======
+    [SerializeField]private TutorialManager tutorialManager;
+>>>>>>> TutorialBattle
     private int expMultiplyer = 4;
     private int moneyMultiplyer = 4;
 
@@ -59,14 +63,26 @@ public class GameManager : MonoBehaviour
 
     public void EnterBattle() { OnEnterBattle?.Invoke(); }
     public void EnterBoard() { OnEnterBoard?.Invoke(); }
+<<<<<<< HEAD
     public void SetForcedEnemy(EnemyType type)
     {
         forcedEnemyType = type;
     }
+=======
+    
+>>>>>>> TutorialBattle
     public void SetEnemyRef(EnemyBehaviour enemyRef)
     {
         enemyInCombat = enemyRef;
+        
+        //no override on tutorial enemies
+        if (tutorialManager == null || !tutorialManager.IsTutorialActive())
+        {
+            enemyInCombat.SetEnemyType(PickRandomEenemy());
+        }
+        
         OnSetEnemyReference?.Invoke(enemyRef);
+<<<<<<< HEAD
 
         EnemyType typeToUse;
 
@@ -82,7 +98,16 @@ public class GameManager : MonoBehaviour
         enemyInCombat.SetEnemyType(typeToUse);
 
         enemyInCombat?.StartBattle();
+=======
+        
+        //no auto-start battle during tutorial
+        if (tutorialManager == null || !tutorialManager.IsTutorialActive())
+        {
+            enemyInCombat?.StartBattle();
+        }
+>>>>>>> TutorialBattle
     }
+    
     private EnemyType PickRandomEenemy()
     {
         int index = Random.Range(0, currentEnemyList.Count);
@@ -97,6 +122,7 @@ public class GameManager : MonoBehaviour
 
         return type;
     }
+    
     public void DeleteEnemyRef() { enemyInCombat = null; }
 
     public void AttackEnemy(ElementType element)

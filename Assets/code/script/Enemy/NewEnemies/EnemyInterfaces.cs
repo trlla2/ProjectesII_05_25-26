@@ -120,7 +120,7 @@ public abstract class EnemySpellBase : IEnemySpell
     protected void DamagePlayerWithAnimation(Grid grid, Vector2Int[] positions, List<Element> elements, float damagePerElement, System.Action onComplete = null)
     {
         SpellPathAnimator enemyAnimator = grid.GetEnemySpellAnimator();
-        
+
         if (enemyAnimator != null)
         {
             enemyAnimator.SetIsPlayerAnimator(false);
@@ -137,6 +137,7 @@ public abstract class EnemySpellBase : IEnemySpell
 public class ColumnDestroySpell : EnemySpellBase
 {
     private int columnIndex;
+    private bool isFirstExecution = true;
 
     public ColumnDestroySpell(float damage = 4f, int moves = 2, bool excludeBelowTargets = true, int column = -1)
     {
@@ -155,7 +156,19 @@ public class ColumnDestroySpell : EnemySpellBase
         if (grid == null)
             return;
 
-        int targetColumn = columnIndex >= 0 ? columnIndex : Random.Range(0, Grid.GridSize);
+        int targetColumn;
+
+        if (isFirstExecution && IsTutorialActive())
+        {
+            isFirstExecution = false;
+            InsertFirstPlayerSpellBottomLeft(grid);
+            targetColumn = Grid.GridSize - 1;
+        }
+        else
+        {
+            isFirstExecution = false;
+            targetColumn = columnIndex >= 0 ? columnIndex : Random.Range(0, Grid.GridSize);
+        }
 
         for (int row = 0; row < Grid.GridSize; row++)
         {
@@ -175,6 +188,48 @@ public class ColumnDestroySpell : EnemySpellBase
                 }
             }
         }
+    }
+
+    private void InsertFirstPlayerSpellBottomLeft(Grid grid)
+    {
+        if (grid == null || GameManager.Instance == null)
+            return;
+
+        List<Spell> spellBook = GameManager.Instance.GetPlayerSpellBook();
+        if (spellBook == null || spellBook.Count == 0)
+            return;
+
+        List<Element> recipe = spellBook[0].Recipe;
+        if (recipe == null || recipe.Count == 0)
+            return;
+
+        int y = 0;
+        int count = Mathf.Min(3, recipe.Count);
+
+        for (int x = 0; x < count; x++)
+        {
+            Vector2Int pos = new Vector2Int(x, y);
+
+            if (!grid.IsPositionValid(pos))
+                continue;
+
+            grid.SetElementAt(pos, recipe[x]);
+
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual != null)
+            {
+                visual.UpdateVisual(recipe[x]);
+            }
+        }
+    }
+
+    private bool IsTutorialActive()
+    {
+        if (GameManager.Instance == null)
+            return false;
+
+        TutorialManager tutorialManager = Object.FindFirstObjectByType<TutorialManager>();
+        return tutorialManager != null && tutorialManager.IsTutorialActive();
     }
 }
 
@@ -404,7 +459,7 @@ public class SingleElementTimedSpell : EnemySpellBase
         }
 
         if (candidates.Count == 0)
-            return new Vector2Int(-1,-1);
+            return new Vector2Int(-1, -1);
 
         int i = Random.Range(0, candidates.Count);
         return candidates[i];

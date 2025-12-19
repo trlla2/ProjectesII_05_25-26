@@ -46,15 +46,7 @@ public class EnemyBehaviour : MonoBehaviour
             Debug.LogError("NO GAME MANAGER");
     }
 
-    private void OnEnable()
-    {
-        if (GameManager.Instance != null && enemyType == null)
-        {
-            GameManager.Instance.SetEnemyRef(this);
-        }
-        else
-            Debug.LogError("NO GAME MANAGER");
-    }
+  
     private void OnDestroy()
     {
         StopBattle();

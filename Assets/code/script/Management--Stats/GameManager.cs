@@ -99,7 +99,7 @@ public class GameManager : MonoBehaviour
             enemyInCombat?.StartBattle();
         }
 
-        OnSetEnemyReference?.Invoke(enemyRef);
+       OnSetEnemyReference?.Invoke(enemyRef);
     }
     
     private EnemyType PickRandomEenemy()

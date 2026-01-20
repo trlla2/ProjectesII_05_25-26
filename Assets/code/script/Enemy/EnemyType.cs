@@ -78,6 +78,9 @@ public class EnemyType : ScriptableObject
             case EnemySpellType.SingleTimedTarget:
                 return new SingleElementTimedSpell(AtackTimer, damagePerElement, excludeBelowTargets);
 
+            case EnemySpellType.DiagonalDestroy:
+                return new DiagonalDestroySpell(damagePerElement, moveCount, excludeBelowTargets);
+
             default:
                 return new ColumnDestroySpell(damagePerElement, moveCount, excludeBelowTargets);
         }
@@ -87,6 +90,7 @@ public class EnemyType : ScriptableObject
 public enum EnemySpellType
 {
     ColumnDestroy,
+    DiagonalDestroy,
     RandomDestroy,
     SingleTimedTarget
 }

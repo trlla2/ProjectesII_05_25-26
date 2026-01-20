@@ -8,14 +8,17 @@ public interface ISpellInserter
 
 public class SpellInserter : ISpellInserter
 {
-    public SpellInserter() { }
+    private static readonly Vector2Int[] HorizontalDirections =
+    {
+        Vector2Int.left,
+        Vector2Int.right
+    };
 
     public bool TryInsertSpell(GridData gridData, List<Element> spellRecipe)
     {
         if (spellRecipe == null || spellRecipe.Count == 0)
             return false;
 
-        // ry random positions multiple times
         int maxAttempts = 50;
         for (int attempt = 0; attempt < maxAttempts; attempt++)
         {
@@ -33,22 +36,22 @@ public class SpellInserter : ISpellInserter
 
     private bool TryPlaceSpellAtPosition(GridData gridData, List<Element> spellRecipe, Vector2Int startPos)
     {
-        Vector2Int currentPos = startPos;
-        List<Vector2Int> positions = new List<Vector2Int> { currentPos };
+        if (spellRecipe.Count > gridData.GridSize)
+            return false;
 
-        for (int i = 1; i < spellRecipe.Count; i++)
-        {
-            Vector2Int direction = GetRandomDirection();
-            Vector2Int nextPos = currentPos + direction;
+        int requiredSpace = spellRecipe.Count - 1;
+        int spaceLeft = startPos.x;
+        int spaceRight = gridData.GridSize - 1 - startPos.x;
 
-            if (!gridData.IsPositionValid(nextPos) || positions.Contains(nextPos))
-                return false;
+        if (spaceLeft + spaceRight < requiredSpace)
+            return false;
 
-            positions.Add(nextPos);
-            currentPos = nextPos;
-        }
+        Vector2Int direction = HorizontalDirections[Random.Range(0, HorizontalDirections.Length)];
+        List<Vector2Int> positions = BuildHorizontalPath(startPos, direction, spellRecipe.Count, gridData.GridSize);
 
-        //Implace the spell elements
+        if (positions == null || positions.Count != spellRecipe.Count)
+            return false;
+
         for (int i = 0; i < spellRecipe.Count; i++)
         {
             gridData.SetElementAt(positions[i], spellRecipe[i]);
@@ -61,16 +64,28 @@ public class SpellInserter : ISpellInserter
         return true;
     }
 
-    private Vector2Int GetRandomDirection()
+    private List<Vector2Int> BuildHorizontalPath(Vector2Int start, Vector2Int direction, int length, int gridSize)
     {
-        Vector2Int[] directions = new Vector2Int[]
-        {
-            Vector2Int.up,
-            Vector2Int.down,
-            Vector2Int.left,
-            Vector2Int.right
-        };
+        List<Vector2Int> positions = new List<Vector2Int> { start };
+        Vector2Int current = start;
 
-        return directions[Random.Range(0, directions.Length)];
+        for (int i = 1; i < length; i++)
+        {
+            Vector2Int next = current + direction;
+
+            if (next.x < 0 || next.x >= gridSize)
+            {
+                direction = -direction;
+                next = current + direction;
+            }
+
+            if (next.x < 0 || next.x >= gridSize || positions.Contains(next))
+                return null;
+
+            positions.Add(next);
+            current = next;
+        }
+
+        return positions;
     }
 }

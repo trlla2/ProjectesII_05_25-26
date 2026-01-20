@@ -8,7 +8,8 @@ public enum GridStateType
     Idle,
     Refill,
     Reroll,
-    Processing
+    Processing,
+    ValidateSpell
 }
 
 public interface IGridState
@@ -178,8 +179,10 @@ public class RefillState : IGridState
                 }
             }
         }
-
         isRefilling = false;
+
+        ValidateSpellState validateState = new ValidateSpellState(grid, GameManager.Instance.GetPlayerSpellBook());
+        grid.ChangeState(validateState);
     }
 }
 
@@ -571,5 +574,57 @@ public class EnemySpellState : IGridState
 
         isProcessing = false;
         onComplete?.Invoke();
+    }
+}
+
+//check if there are available spells to the user  
+public class ValidateSpellState : IGridState
+{
+    private Grid grid;
+    private ISpellValidator spellValidator;
+    private List<Spell> availableSpells;
+    private bool isValidating;
+
+    public ValidateSpellState(Grid gridController, List<Spell> spells)
+    {
+        grid = gridController;
+        spellValidator = new SpellValidator();
+        availableSpells = spells;
+    }
+
+    public void Enter()
+    {
+        isValidating = true;
+        ValidateGrid();
+    }
+
+    public void Update()
+    {
+        if (!isValidating)
+        {
+            grid.ChangeState(new IdleState(grid));
+        }
+    }
+
+    public void Exit()
+    {
+        isValidating = false;
+    }
+
+    public GridStateType GetStateType()
+    {
+        return GridStateType.ValidateSpell;
+    }
+
+    private void ValidateGrid()
+    {
+        bool hasValidSpell = spellValidator.HasValidSpell(grid.GridData, availableSpells);
+
+        if (!hasValidSpell)
+        {
+            grid.Reroll();
+        }
+
+        isValidating = false;
     }
 }

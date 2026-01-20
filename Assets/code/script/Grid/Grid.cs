@@ -359,4 +359,9 @@ public class Grid : MonoBehaviour
     {
         return enemySpellAnimator;
     }
+
+    public void ValidateSpellsOnGrid()
+    {
+        ChangeState(new ValidateSpellState(this, availableSpells));
+    }
 }

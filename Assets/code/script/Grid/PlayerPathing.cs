@@ -45,7 +45,7 @@ public class PlayerPathing : MonoBehaviour
 
     private void InitializeComponents()
     {
-        float adjacencyDistance = xDistanceBetween * 1.47f;//Slightly more than diagonal distance sqrt(2)
+        float adjacencyDistance = xDistanceBetween * 1.1f; //only horizontal
 
         inputHandler = new MouseInputHandler();
         pathValidator = new WorldSpacePathValidator(grid, adjacencyDistance);

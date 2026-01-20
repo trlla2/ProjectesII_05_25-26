@@ -8,8 +8,8 @@ public interface IPathValidator
 
 public class WorldSpacePathValidator : IPathValidator
 {
-    private readonly Grid grid;
-    private readonly float adjacencyDistance;
+    private Grid grid;
+    private float adjacencyDistance;
 
     public WorldSpacePathValidator(Grid gridController, float worldAdjacencyDistance)
     {

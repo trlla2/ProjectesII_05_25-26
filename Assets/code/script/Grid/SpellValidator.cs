@@ -84,7 +84,10 @@ public class SpellValidator : ISpellValidator
         foreach (Spell spell in spells)
         {
             if (spell.Matches(elements))
+            {
+                Debug.Log($"Found VALID matching spell: {spell.Name}");
                 return true;
+            }
         }
         return false;
     }

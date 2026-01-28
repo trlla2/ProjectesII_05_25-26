@@ -164,8 +164,6 @@ public class EnemyBehaviour : MonoBehaviour
 
         
 
-        Debug.Log($"Enemy {enemyType.name} took {damage} damage. Health: {currentHealth}/{enemyType.Health}");
-
         if (currentHealth <= 0)
         {
             Die();

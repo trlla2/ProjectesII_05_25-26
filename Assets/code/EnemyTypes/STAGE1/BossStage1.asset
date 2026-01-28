@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ab529a0c12673a408eb38b86a880060, type: 3}
+  m_Name: BossStage1
+  m_EditorClassIdentifier: 
+  name: BossStage1
+  health: 1000
+  damage: 10
+  elementCount: 0
+  level: 0
+  weaknesses: 00000000
+  weaknessMultiplier: 2
+  resistances: 02000000
+  resistanceMultiplier: 0.5
+  enemySprite: {fileID: 7664224028100684353, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
+  animatorController: {fileID: 0}
+  spellType: 4
+  damagePerElement: 4
+  moveCount: 5
+  AtackTimer: 4
+  excludeBelowTargets: 0

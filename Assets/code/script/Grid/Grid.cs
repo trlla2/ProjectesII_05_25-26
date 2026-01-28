@@ -160,21 +160,22 @@ public class Grid : MonoBehaviour
 
     public void Reroll(int scrollTimes = 5)
     {
-        if (CurrentState != GridStateType.Idle)
-            return;
-
-        if (IsTutorialBlocking())
-            return;
-
-        List<Spell> spellsToUse = availableSpells;
-
-        if (GameManager.Instance != null && GameManager.Instance.GetPlayerSpellBook() != null
-            && GameManager.Instance.GetPlayerSpellBook().Count > 0)
+        if (CurrentState == GridStateType.Idle || CurrentState == GridStateType.ValidateSpell)
         {
-            spellsToUse = GameManager.Instance.GetPlayerSpellBook();
-        }
 
-        ChangeState(new RerollState(this, visualGrid, availableElements, spellsToUse, scrollTimes));
+            if (IsTutorialBlocking())
+                return;
+
+            List<Spell> spellsToUse = availableSpells;
+
+            if (GameManager.Instance != null && GameManager.Instance.GetPlayerSpellBook() != null
+                && GameManager.Instance.GetPlayerSpellBook().Count > 0)
+            {
+                spellsToUse = GameManager.Instance.GetPlayerSpellBook();
+            }
+
+            ChangeState(new RerollState(this, visualGrid, availableElements, spellsToUse, scrollTimes));
+        }
     }
 
     public Element GetElementAt(Vector2Int position)

@@ -1,11 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using DG.Tweening;
 
 public class OrbVisual : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private Image chargeBar;
+    [SerializeField] private Slider chargeBar;
     [SerializeField] private Image orbImage;
     [SerializeField] private ParticleSystem chargeParticles;
     [SerializeField] private ParticleSystem fullChargeParticles;
@@ -20,16 +21,36 @@ public class OrbVisual : MonoBehaviour
     [SerializeField] private float fillAnimationDuration = 0.3f;
     [SerializeField] private AnimationCurve fillCurve;
 
-    private Coroutine fillCoroutine;
+    [Header("Shake Settings")]
+    [SerializeField] private float maxShakeAmount = 0.3f;
+    [SerializeField] private float maxShakeDuration = 0.6f;
+
+    [Header("Scale Settings")]
+    [SerializeField] private float chargedScale = 1.2f;
+    [SerializeField] private float depletedScale = 0.8f;
+    [SerializeField] private float scaleDuration = 0.3f;
+
+    private OrbAnimationEffects animationEffects;
+
+    private void Start()
+    {
+        animationEffects = GetComponent<OrbAnimationEffects>();
+    }
 
     public void UpdateCharge(int current, int max)
     {
         float targetFill = (float)current / max;
 
-        if (fillCoroutine != null)
-            StopCoroutine(fillCoroutine);
+        chargeBar.DOKill();
+        chargeBar.DOValue(targetFill, fillAnimationDuration).SetEase(fillCurve);
 
-        fillCoroutine = StartCoroutine(AnimateFill(targetFill));
+        if (animationEffects != null && current > 0)
+        {
+            float chargePercent = targetFill;
+            float shakeAmount = maxShakeAmount * chargePercent;
+            float shakeDuration = maxShakeDuration * chargePercent;
+            animationEffects.Shake(shakeAmount, shakeDuration);
+        }
     }
 
     public void SetState(OrbState state)
@@ -41,6 +62,8 @@ public class OrbVisual : MonoBehaviour
             case OrbState.Inactive:
                 orbImage.sprite = inactive;
                 PlayDepletedEffect();
+                if (animationEffects != null)
+                    animationEffects.SetScale(depletedScale, scaleDuration);
                 break;
             case OrbState.Charging:
                 orbImage.sprite = charging;
@@ -61,6 +84,7 @@ public class OrbVisual : MonoBehaviour
             fullChargeParticles.Play();
     }
 
+    //future setup required
     public void PlayChargeEffect(int chargeAmount)
     {
         if (chargeParticles != null)
@@ -76,27 +100,16 @@ public class OrbVisual : MonoBehaviour
     {
         if (fullChargeParticles != null)
             fullChargeParticles.Play();
+
+        if (animationEffects != null)
+            animationEffects.SetScale(chargedScale, scaleDuration);
     }
 
     public void PlayDepletedEffect()
     {
+        if (animationEffects != null)
+            animationEffects.SetScale(depletedScale, scaleDuration);
     }
 
     public Vector3 GetPosition() { return transform.position; }
-
-    private IEnumerator AnimateFill(float target)
-    {
-        float start = chargeBar.fillAmount;
-        float elapsed = 0f;
-
-        while (elapsed < fillAnimationDuration)
-        {
-            elapsed += Time.deltaTime;
-            float t = fillCurve.Evaluate(elapsed / fillAnimationDuration);
-            chargeBar.fillAmount = Mathf.Lerp(start, target, t);
-            yield return null;
-        }
-
-        chargeBar.fillAmount = target;
-    }
 }

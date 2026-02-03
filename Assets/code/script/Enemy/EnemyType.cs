@@ -12,6 +12,7 @@ public class EnemyType : ScriptableObject
     [SerializeField] private float damage = 10f;
     [SerializeField] private int elementCount = 3;
     [SerializeField] private int level;
+    [SerializeField] private EnemyDifficulty difficulty;
 
     [Header("Elemental Properties")]
     [SerializeField] private List<ElementType> weaknesses = new List<ElementType>();
@@ -42,6 +43,7 @@ public class EnemyType : ScriptableObject
     public int MoveCount => moveCount;
     public string Name => name;
     public int Level => level;
+    public EnemyDifficulty Difficulty => difficulty;
     public RuntimeAnimatorController AnimatorController => animatorController;
 
     public float CalculateDamageTaken(ElementType elementType, float baseDamage)

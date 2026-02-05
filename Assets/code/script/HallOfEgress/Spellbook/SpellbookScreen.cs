@@ -6,14 +6,19 @@ using static UnityEngine.InputSystem.OnScreen.OnScreenStick;
 
 public class SpellbookScreen : MonoBehaviour
 {
+    [Header("Content")]
     [SerializeField] private List<Spell> _knownSpells;
 
     [SerializeField] private Button _spellButtonPrefab;
 
     [SerializeField] private GameObject _scrollviewContent;
 
+    [Header("Slots")]
+    [SerializeField] 
+    private GameObject _spellSlotPrefab;
+    private SpellSlotBehaviour _spellSlotSelected;
+
     private int _maxSpells = 4;
-    [SerializeField] private TMP_Text _spellCountText;
 
     private TranslatorUI translator;
     private void Awake() { translator = GetComponent<TranslatorUI>(); }
@@ -32,33 +37,17 @@ public class SpellbookScreen : MonoBehaviour
 
             newButton.onClick.AddListener(() =>
             {
-                UpdateSpellCount();
+                //SET SPELL TO THE SLOT
+
             });
         }
-
-        UpdateSpellCount();
     }
-    private void UpdateSpellCount()
-    {
-        int count = 0;
-        SpellButtonBehaviour[] spellsButtons = _scrollviewContent.GetComponentsInChildren<SpellButtonBehaviour>();
-
-        foreach (SpellButtonBehaviour button in spellsButtons)
-        {
-            if (button.IsSelected())
-                count++;
-        }
-
-        _spellCountText.text = count.ToString() + " out of " + _maxSpells + " Spells";
-    }
-
+    
     public void DeleteSpellsButtonList()
     {
         Button[] spellsButtons = _scrollviewContent.GetComponentsInChildren<Button>();
         foreach (Button button in spellsButtons)
             Destroy(button.gameObject);
-
-        _spellCountText.text = "0" + " out of " + _maxSpells + " Spells";
     }
 
     public void SetSelectedSpells()

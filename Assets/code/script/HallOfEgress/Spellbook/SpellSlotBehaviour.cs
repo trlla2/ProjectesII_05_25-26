@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,6 +6,20 @@ public class SpellSlotBehaviour : MonoBehaviour
 {
 
     private bool selected = false;
+
+    [Header("Content")]
+    [SerializeField]
+    private TMP_Text spellNameText;
+    [SerializeField]
+    private GameObject recipieParent;
+    [SerializeField]
+    private GameObject elementSpellSlot;
+
+    [Header("animation")]
+    [SerializeField]
+    private float animationDuration = 0.5f;
+    private float animationTime = 0f;  
+
     [SerializeField]
     private AnimationCurve curve = AnimationCurve.Linear(0, 0, 1, 1);
 
@@ -20,12 +35,24 @@ public class SpellSlotBehaviour : MonoBehaviour
     public void Initialize(Spell s)
     {
         if (s == null) return;
+
         SetSpell(s);
     }
 
     private void Update()
     {
-       // Animation Stuff
+        if(selected && animationTime < animationDuration)
+        {
+            animationTime += Time.deltaTime;
+            float a = curve.Evaluate(animationTime / animationDuration) * 255;
+            selectedBG.color = new Color(selectedBG.color.r, selectedBG.color.g, selectedBG.color.b, a);
+        }
+        else if (!selected && animationTime > 0)
+        {
+            animationTime -= Time.deltaTime;
+            float a = curve.Evaluate(animationTime / animationDuration) * 255;
+            selectedBG.color = new Color(selectedBG.color.r, selectedBG.color.g, selectedBG.color.b, a);
+        }
     }
 
     public void Select() { selected = true; }
@@ -42,7 +69,18 @@ public class SpellSlotBehaviour : MonoBehaviour
     private void SetSpell(Spell spell)
     {
         currentSpell = spell;
-        // Set text and stuff
-        
+
+        spellNameText.text = spell.Name;
+
+        foreach (Transform child in recipieParent.transform)
+            Destroy(child.gameObject);
+
+        for (int i = 0; i < spell.Recipe.Count; i++)
+        {
+            GameObject newElementSlot = Instantiate(elementSpellSlot, recipieParent.transform);
+            newElementSlot.GetComponent<Image>().sprite = spell.Recipe[i].Sprite;
+        }
+
+
     }
 }

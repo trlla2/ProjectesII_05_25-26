@@ -2054,7 +2054,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5317380528222948661, guid: 82f7c0a59c52b904ba4dd528cac5e693, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5317380528222948661, guid: 82f7c0a59c52b904ba4dd528cac5e693, type: 3}
       propertyPath: m_AnchorMin.x
@@ -2062,7 +2062,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5317380528222948661, guid: 82f7c0a59c52b904ba4dd528cac5e693, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5317380528222948661, guid: 82f7c0a59c52b904ba4dd528cac5e693, type: 3}
       propertyPath: m_SizeDelta.x
@@ -2102,11 +2102,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5317380528222948661, guid: 82f7c0a59c52b904ba4dd528cac5e693, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 352.8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5317380528222948661, guid: 82f7c0a59c52b904ba4dd528cac5e693, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -150
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5317380528222948661, guid: 82f7c0a59c52b904ba4dd528cac5e693, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -11536,6 +11536,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
   _spellButtonPrefab: {fileID: 6458121685295711926, guid: 82f7c0a59c52b904ba4dd528cac5e693, type: 3}
   _scrollviewContent: {fileID: 1618195479}
+  _maxSpells: 4
   _spellCountText: {fileID: 0}
 --- !u!114 &1186080336
 MonoBehaviour:

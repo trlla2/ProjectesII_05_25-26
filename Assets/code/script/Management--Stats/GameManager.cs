@@ -46,6 +46,11 @@ public class GameManager : MonoBehaviour
 
     public event System.Action<EnemyBehaviour> OnSetEnemyReference;
 
+    //Boss
+    BossManager bossManager;
+
+    [HideInInspector] public bool isBossBattle = false;
+    [HideInInspector] public ElementType BossWeakElement;
 
     private void Awake()
     {
@@ -59,6 +64,9 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
 
         currentEnemyList = new List<EnemyType>(enemyTypes);
+
+        bossManager = GetComponent<BossManager>();
+        if (bossManager != null) { isBossBattle = true; BossWeakElement = bossManager.WeakElement; }
     }
 
     public void EnterBattle() { OnEnterBattle?.Invoke(); }

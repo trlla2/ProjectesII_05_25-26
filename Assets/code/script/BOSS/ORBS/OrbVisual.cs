@@ -7,6 +7,7 @@ public class OrbVisual : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Slider chargeBar;
+    public Transform ChargeElementTargetPos;
     [SerializeField] private Image orbImage;
     [SerializeField] private ParticleSystem chargeParticles;
     [SerializeField] private ParticleSystem fullChargeParticles;

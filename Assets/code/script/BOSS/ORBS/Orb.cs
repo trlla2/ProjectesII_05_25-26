@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-public class Orb
+public class Orb : MonoBehaviour
 {
     public const int MaxCharge = 10;
 
@@ -12,9 +12,11 @@ public class Orb
     public event Action<int, int> OnChargeChanged;
     public event Action<OrbState> OnStateChanged;
 
-    public Orb(int index)
+    [HideInInspector]
+    public bool IsActive;
+
+    private void Awake()
     {
-        OrbIndex = index;
         CurrentCharge = 0;
         State = OrbState.Inactive;
     }
@@ -28,8 +30,8 @@ public class Orb
 
         if (CurrentCharge != previous)
         {
-            UpdateState();
             OnChargeChanged?.Invoke(previous, CurrentCharge);
+            UpdateState();
         }
     }
 

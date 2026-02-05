@@ -235,12 +235,12 @@ public class PlayerPathing : MonoBehaviour
                 CompleteSpellExecution(spell, positions);
             });
 
-            grid.InstantVisualEmpty(posList);
+            grid.InstantVisualEmpty(posList, chargeOrb: true);
         }
         else
         {
             CompleteSpellExecution(spell, positions);
-            grid.InstantVisualEmpty(posList);
+            grid.InstantVisualEmpty(posList, chargeOrb: true); 
         }
     }
 

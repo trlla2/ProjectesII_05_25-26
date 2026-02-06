@@ -39,7 +39,7 @@ public class SpellbookScreen : MonoBehaviour
 
             newButton.onClick.AddListener(() =>
             {
-                _spellSlotSelected.SetNewSpell(spell);
+                _spellSlotSelected?.SetNewSpell(spell);
             });
         }
 

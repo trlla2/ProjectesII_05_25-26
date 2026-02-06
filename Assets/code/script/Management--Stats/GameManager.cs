@@ -178,6 +178,16 @@ public class GameManager : MonoBehaviour
     }
 
     public void AddSpellToPlayerSpellBook(Spell spell, int slot) { playerStats.AddSpellToSpellBook(spell, slot); }
+    public bool SpellExistOnPlayerSpellBook(Spell spell)
+    {
+        foreach(Spell s in playerStats.SpellBook)
+        {
+            Debug.Log($"{spell.name} is {s}");
+            if(s == spell)
+                return true;
+        }
+        return false;
+    }
     public void ClearPlayerSpellBook() { playerStats.ClearSpellBook(); }
     public void OnPlayerDead()
     {

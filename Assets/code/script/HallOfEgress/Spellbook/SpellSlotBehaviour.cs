@@ -69,7 +69,7 @@ public class SpellSlotBehaviour : MonoBehaviour
 
     private void SetSpell(Spell spell)
     {
-        if (spell = null) return;
+        if (spell == null || GameManager.Instance.SpellExistOnPlayerSpellBook(spell)) return;
 
         currentSpell = spell;
 
@@ -83,7 +83,5 @@ public class SpellSlotBehaviour : MonoBehaviour
             GameObject newElementSlot = Instantiate(elementSpellSlot, recipieParent.transform);
             newElementSlot.GetComponent<Image>().sprite = spell.Recipe[i].Sprite;
         }
-
-
     }
 }

@@ -177,7 +177,7 @@ public class GameManager : MonoBehaviour
         playerStats.LevelUp();
     }
 
-    public void AddSpellToPlayerSpellBook(Spell spell) { playerStats.AddSpellToSpellBook(spell); }
+    public void AddSpellToPlayerSpellBook(Spell spell, int slot) { playerStats.AddSpellToSpellBook(spell, slot); }
     public void ClearPlayerSpellBook() { playerStats.ClearSpellBook(); }
     public void OnPlayerDead()
     {
@@ -225,7 +225,8 @@ public class GameManager : MonoBehaviour
     public int GetPlayerEXPForNextLevel() => playerStats.GetEXPForNextLevel();
     public int GetPlayerEXPForLastLevel() => playerStats.GetEXPForLastLevel();
     public int GetPlayerMoney() => playerStats.Money;
-    public List<Spell> GetPlayerSpellBook() => playerStats.SpellBook;
+    public List<Spell> GetPlayerSpellBook() => new List<Spell>(playerStats.SpellBook);
+    public int PlayerSpellBookSize => playerStats.SpellBookSize;
     public List<Item> GetPlayerInventory() => playerStats.Inventory;
     public EnemyBehaviour GetEnemyRef() => enemyInCombat;
 }

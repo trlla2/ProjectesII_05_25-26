@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.InputSystem.OnScreen.OnScreenStick;
@@ -14,11 +15,12 @@ public class SpellbookScreen : MonoBehaviour
     [SerializeField] private GameObject _scrollviewContent;
 
     [Header("Slots")]
+    [SerializeField]
+    private GameObject _slotsParent;
     [SerializeField] 
     private GameObject _spellSlotPrefab;
-    private SpellSlotBehaviour _spellSlotSelected;
 
-    private int _maxSpells = 4;
+    private SpellSlotBehaviour _spellSlotSelected;
 
     private TranslatorUI translator;
     private void Awake() { translator = GetComponent<TranslatorUI>(); }
@@ -37,9 +39,28 @@ public class SpellbookScreen : MonoBehaviour
 
             newButton.onClick.AddListener(() =>
             {
-                //SET SPELL TO THE SLOT
-
+                _spellSlotSelected.SetNewSpell(spell);
             });
+        }
+
+        for (int i = 0; i < GameManager.Instance.PlayerSpellBookSize; i++)
+        {
+            GameObject temp = Instantiate(_spellSlotPrefab, _slotsParent.transform);
+            SpellSlotBehaviour slot = temp.GetComponent<SpellSlotBehaviour>();
+                
+            slot.Initialize(null, i);
+
+            
+
+            temp.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                _spellSlotSelected?.UnSelect();
+
+                _spellSlotSelected = slot;  
+
+                _spellSlotSelected?.Select();
+            });
+
         }
     }
     
@@ -48,20 +69,5 @@ public class SpellbookScreen : MonoBehaviour
         Button[] spellsButtons = _scrollviewContent.GetComponentsInChildren<Button>();
         foreach (Button button in spellsButtons)
             Destroy(button.gameObject);
-    }
-
-    public void SetSelectedSpells()
-    {
-        GameManager.Instance.GetPlayerSpellBook().Clear();
-
-        SpellButtonBehaviour[] spellsButtons = _scrollviewContent.GetComponentsInChildren<SpellButtonBehaviour>();
-        foreach (Spell spell in _knownSpells)
-        {
-            foreach(SpellButtonBehaviour button in spellsButtons)
-            {
-                if (spell.name == button.GetSpellName() && button.IsSelected())
-                    GameManager.Instance.AddSpellToPlayerSpellBook(spell);
-            }
-        }
     }
 }

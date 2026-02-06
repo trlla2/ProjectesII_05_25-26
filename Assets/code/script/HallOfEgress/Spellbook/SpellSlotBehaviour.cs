@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
+[RequireComponent(typeof(Button))]
 public class SpellSlotBehaviour : MonoBehaviour
 {
 
@@ -27,14 +27,20 @@ public class SpellSlotBehaviour : MonoBehaviour
 
     private Spell currentSpell;
 
+    private int slotIndex;
+
     private void Start()
     {
         selectedBG = GetComponent<Image>();
     }
 
-    public void Initialize(Spell s)
+    public void Initialize(Spell s, int slot)
     {
         if (s == null) return;
+
+        slotIndex = slot;
+
+        selectedBG.color = new Color(selectedBG.color.r, selectedBG.color.g, selectedBG.color.b, 0);
 
         SetSpell(s);
     }
@@ -44,13 +50,13 @@ public class SpellSlotBehaviour : MonoBehaviour
         if(selected && animationTime < animationDuration)
         {
             animationTime += Time.deltaTime;
-            float a = curve.Evaluate(animationTime / animationDuration) * 255;
+            float a = curve.Evaluate(animationTime / animationDuration);
             selectedBG.color = new Color(selectedBG.color.r, selectedBG.color.g, selectedBG.color.b, a);
         }
         else if (!selected && animationTime > 0)
         {
             animationTime -= Time.deltaTime;
-            float a = curve.Evaluate(animationTime / animationDuration) * 255;
+            float a = curve.Evaluate(animationTime / animationDuration);
             selectedBG.color = new Color(selectedBG.color.r, selectedBG.color.g, selectedBG.color.b, a);
         }
     }
@@ -59,9 +65,9 @@ public class SpellSlotBehaviour : MonoBehaviour
 
     public void UnSelect() { selected = false; }
 
-    public void AddNewSpell(Spell spell)
+    public void SetNewSpell(Spell spell)
     {
-        // remove spell stuff
+        GameManager.Instance.AddSpellToPlayerSpellBook(spell, slotIndex);
 
         SetSpell(spell);
     }

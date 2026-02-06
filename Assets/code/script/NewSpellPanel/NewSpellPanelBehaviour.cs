@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -49,7 +50,8 @@ public class NewSpellPanelBehaviour : MonoBehaviour
 
     public void AcceptSpell()
     {
-        GameManager.Instance.AddSpellToPlayerSpellBook(spellTile.Spell);
+        //GameManager.Instance.AddSpellToPlayerSpellBook(spellTile.Spell);
+        Debug.LogError("CAN NOT ADD NEW SPELL TO THE PLAYER");
         spellTile.Replace();
         spellTile = null;
         translatorUI.ToOrigin();

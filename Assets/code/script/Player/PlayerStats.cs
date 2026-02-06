@@ -15,7 +15,10 @@ public class PlayerStats
     public int ElementalLevelMultiplyer;
 
     public int Money;
-    public List<Spell> SpellBook;
+
+    private const int spellBookSize = 4;
+    public int SpellBookSize => spellBookSize;
+    public Spell[] SpellBook;
 
     public List<Item> Inventory;
     public int LimitInventory;
@@ -30,7 +33,7 @@ public class PlayerStats
         ExperiencePoints = 0;
         Level = 1;
         Money = 10;
-        SpellBook = new List<Spell>();
+        SpellBook = new Spell[spellBookSize];
         Inventory = new List<Item>();
         LimitInventory = 3;
         ElementalLevels = new Dictionary<ElementType, int>()
@@ -125,14 +128,20 @@ public class PlayerStats
         
     }
 
-    public void AddSpellToSpellBook(Spell spell)
+    public void AddSpellToSpellBook(Spell spell, int slot)
     {
-        if(SpellBook.Count < 4)
-            SpellBook.Add(spell);
+        if (spell == null || slot < 0 || slot > spellBookSize - 1) return;
+
+        SpellBook[slot] = spell;
+
         Debug.Log("Spell Added");
     }
 
-    public void ClearSpellBook()  { SpellBook.Clear(); }
+    public void ClearSpellBook()  
+    {
+        for (int i = 0; i < spellBookSize; i++)
+            SpellBook[i] = null;
+    }
 
     public int GetEXPForLastLevel() 
     { 

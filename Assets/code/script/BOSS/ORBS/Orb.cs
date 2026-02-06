@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 public class Orb : MonoBehaviour
 {
@@ -9,16 +10,84 @@ public class Orb : MonoBehaviour
     public OrbState State;
     public int OrbIndex;
 
+    [Header("QTE Reference")]
+    [SerializeField] private Orb1QTE qteController;
+
     public event Action<int, int> OnChargeChanged;
     public event Action<OrbState> OnStateChanged;
+    public event Action OnOrbActivated;
 
     [HideInInspector]
     public bool IsActive;
+
+    private Button orbButton;
 
     private void Awake()
     {
         CurrentCharge = 0;
         State = OrbState.Inactive;
+
+        orbButton = GetComponent<Button>();
+
+        orbButton.onClick.AddListener(OnOrbClicked);
+    }
+
+    private void OnDestroy()
+    {
+        if (qteController != null)
+        {
+            qteController.OnQTEComplete -= HandleQTEComplete;
+        }
+    }
+
+    private void OnOrbClicked()
+    {
+        if (State != OrbState.Charged)
+        {
+            Debug.Log("Orb cannot be activated, not fully charged!");
+            return;
+        }
+
+        if (qteController == null)
+        {
+            Debug.LogError("Orb has no QTE controller assigned!");
+            return;
+        }
+
+        if (qteController.IsActive)
+        {
+            Debug.LogWarning("QTE already in progress!");
+            return;
+        }
+
+        ActivateOrb();
+    }
+
+    private void ActivateOrb()
+    {
+
+        OnOrbActivated?.Invoke();
+
+        qteController.OnQTEComplete += HandleQTEComplete;
+
+        qteController.StartQTE();
+    }
+
+    private void HandleQTEComplete(bool success)
+    {
+        qteController.OnQTEComplete -= HandleQTEComplete;
+
+        if (success)
+        {
+            // QTE succeeded - deplete the orb
+            Debug.Log("QTE Success!");
+            Deplete();
+        }
+        else
+        {
+            CurrentCharge -= 4; //failure Penalty
+            Debug.Log("QTE Failed!");
+        }
     }
 
     public void AddCharge(int amount)
@@ -42,7 +111,7 @@ public class Orb : MonoBehaviour
         OnStateChanged?.Invoke(State);
     }
 
-    public void Reset()
+    public void ResetCharge()
     {
         CurrentCharge = 0;
         State = OrbState.Inactive;

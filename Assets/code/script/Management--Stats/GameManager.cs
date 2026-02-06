@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class GameManager : MonoBehaviour
 {
@@ -126,9 +127,14 @@ public class GameManager : MonoBehaviour
     
     public void DeleteEnemyRef() { enemyInCombat = null; }
 
+    public void AttackBoss(float percent)
+    {
+        enemyInCombat?.dealBossDamage(percent);
+    }
+
     public void AttackEnemy(ElementType element)
     {
-        enemyInCombat?.DealDamage(playerStats.AttackWithElement(element) );
+        enemyInCombat?.DealDamage(playerStats.AttackWithElement(element));
     }
 
     public void NotifyPlayerMove()

@@ -10,6 +10,7 @@ public class SequentialTracePhase : IQTEPhase
     private float revealDuration;
     private float inputDuration;
     private Grid grid;
+    private QTEVisualController visualController;
 
     private List<Vector2Int> tracePoints;
     private int currentTargetIndex;
@@ -18,10 +19,13 @@ public class SequentialTracePhase : IQTEPhase
     private bool isRevealing;
     private int revealedCount;
     private float revealTimer;
+    private bool wasPressingLastFrame;
+    private Vector2Int? lastTouchedPosition;
 
-    public SequentialTracePhase(Grid grid, int points = 6, float revealTime = 3f, float inputTime = 4f)
+    public SequentialTracePhase(Grid grid, QTEVisualController visual, int points = 6, float revealTime = 3f, float inputTime = 4f)
     {
         this.grid = grid;
+        this.visualController = visual;
         pointCount = points;
         revealDuration = revealTime;
         inputDuration = inputTime;
@@ -35,6 +39,13 @@ public class SequentialTracePhase : IQTEPhase
         isRevealing = true;
         revealedCount = 0;
         revealTimer = 0f;
+        wasPressingLastFrame = false;
+        lastTouchedPosition = null;
+
+        if (visualController != null)
+        {
+            visualController.StartQTE();
+        }
     }
 
     public void Update()
@@ -47,10 +58,12 @@ public class SequentialTracePhase : IQTEPhase
 
         if (!isInputPhase) return;
 
-        timer -= Time.deltaTime;
+        timer -= Time.unscaledDeltaTime; // Use unscaled time
         if (timer <= 0)
         {
             OnPhaseComplete?.Invoke(false);
+            if (visualController != null)
+                visualController.OnTraceComplete(false);
             return;
         }
 
@@ -60,6 +73,10 @@ public class SequentialTracePhase : IQTEPhase
     public void Exit()
     {
         tracePoints?.Clear();
+        if (visualController != null)
+        {
+            visualController.EndQTE();
+        }
     }
 
     private void GenerateTracePoints()
@@ -81,7 +98,7 @@ public class SequentialTracePhase : IQTEPhase
 
     private void UpdateReveal()
     {
-        revealTimer += Time.deltaTime;
+        revealTimer += Time.unscaledDeltaTime; // Use unscaled time
         float interval = revealDuration / pointCount;
 
         while (revealedCount < pointCount && revealTimer >= interval * (revealedCount + 1))
@@ -100,28 +117,71 @@ public class SequentialTracePhase : IQTEPhase
 
     private void RevealPoint(int index)
     {
-        // Visual feedback handled by QTEVisualController
+        if (visualController != null && index < tracePoints.Count)
+        {
+            visualController.RevealNumber(index + 1, tracePoints[index], 0f);
+        }
     }
 
     private void CheckInput()
     {
-        if (!Input.GetMouseButton(0)) return;
-
+        bool isPressing = Input.GetMouseButton(0);
         Vector2Int? gridPos = GetGridPositionFromInput();
-        if (!gridPos.HasValue) return;
 
-        if (gridPos.Value == tracePoints[currentTargetIndex])
-        {
-            currentTargetIndex++;
-            if (currentTargetIndex >= pointCount)
-            {
-                OnPhaseComplete?.Invoke(true);
-            }
-        }
-        else if (currentTargetIndex > 0)
+        //Check if finger/mouse lifted, fail if already started
+        if (wasPressingLastFrame && !isPressing && currentTargetIndex > 0)
         {
             OnPhaseComplete?.Invoke(false);
+            if (visualController != null)
+                visualController.OnTraceComplete(false);
+            return;
         }
+
+        //Update trail preview
+        if (isPressing && visualController != null && gridPos.HasValue)
+        {
+            Vector3 worldPos = grid.VisualGrid.GridToWorldPosition(gridPos.Value);
+            visualController.UpdateTrailToPosition(worldPos);
+        }
+
+        //Check for valid next number
+        if (isPressing && gridPos.HasValue)
+        {
+            if (!lastTouchedPosition.HasValue || lastTouchedPosition.Value != gridPos.Value)
+            {
+                if (gridPos.Value == tracePoints[currentTargetIndex])
+                {
+                    //Correct number
+                    if (visualController != null)
+                    {
+                        visualController.OnNumberTouched(currentTargetIndex + 1, gridPos.Value);
+                    }
+
+                    lastTouchedPosition = gridPos.Value;
+                    currentTargetIndex++;
+
+                    if (currentTargetIndex >= pointCount)
+                    {
+                        //Success!
+                        OnPhaseComplete?.Invoke(true);
+                        if (visualController != null)
+                            visualController.OnTraceComplete(true);
+                    }
+                }
+                else
+                {
+                    //Wrong number touched, fail if we've already started
+                    if (currentTargetIndex > 0)
+                    {
+                        OnPhaseComplete?.Invoke(false);
+                        if (visualController != null)
+                            visualController.OnTraceComplete(false);
+                    }
+                }
+            }
+        }
+
+        wasPressingLastFrame = isPressing;
     }
 
     private Vector2Int? GetGridPositionFromInput()

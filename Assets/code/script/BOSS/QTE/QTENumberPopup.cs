@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
+using UnityEngine.UIElements;
 
 public class QTENumberPopup : MonoBehaviour
 {
@@ -30,9 +31,7 @@ public class QTENumberPopup : MonoBehaviour
 
     public GameObject CreatePopup(int number, Vector3 worldPosition)
     {
-        GameObject popup = numberPopupPrefab != null
-            ? Instantiate(numberPopupPrefab, qteCanvas.transform)
-            : new GameObject("NumberPopup");
+        GameObject popup = Instantiate(numberPopupPrefab, qteCanvas.transform);
 
         // Position in world space
         Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPosition);
@@ -50,18 +49,16 @@ public class QTENumberPopup : MonoBehaviour
         }
 
         text.text = number.ToString();
-        text.fontSize = 72;
-        text.alignment = TextAlignmentOptions.Center;
         
-        // Apply color with glow
+        //Apply color
         Color numberColor = number - 1 < numberColors.Length ? numberColors[number - 1] : Color.white;
         text.color = numberColor * numberGlowIntensity;
-        text.fontStyle = FontStyles.Bold;
 
-        // Scale in animation
+        popup.GetComponent<Image>().tintColor = numberColor * Color.grey * numberGlowIntensity;
+
+        //Scale animation
         popup.transform.localScale = Vector3.zero;
-        popup.transform.DOScale(Vector3.one * 1.2f, popupScaleInDuration)
-            .SetEase(popupScaleCurve)
+        popup.transform.DOScale(Vector3.one * 1.2f, popupScaleInDuration).SetEase(popupScaleCurve)
             .OnComplete(() => {
                 popup.transform.DOScale(Vector3.one, 0.1f);
             });
@@ -77,7 +74,7 @@ public class QTENumberPopup : MonoBehaviour
         GameObject popup = activePopups[index];
         if (popup == null) return;
 
-        // Particle burst effect
+        //Particle explode effect
         popup.transform.DOScale(Vector3.one * 1.5f, 0.1f).OnComplete(() => {
             popup.transform.DOScale(Vector3.zero, 0.2f).OnComplete(() => Destroy(popup));
         });

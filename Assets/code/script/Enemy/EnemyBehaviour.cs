@@ -150,6 +150,20 @@ public class EnemyBehaviour : MonoBehaviour
 
         CreateAndExecuteSpell();
     }
+    public void dealBossDamage(float percent)
+    {
+        float damage = enemyType.Health * percent;
+        currentHealth -= damage;
+        currentHealth = Mathf.Max(0, currentHealth);
+
+        OnHitRecived?.Invoke(currentHealth);
+        OnGetDamage?.Invoke(new DamageType(ElementType.EMPTY, damage));
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
 
     public void DealDamage(DamageType damageType)
     {

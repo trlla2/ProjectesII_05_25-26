@@ -34,23 +34,18 @@ public class QTECircleMarker : MonoBehaviour
 
     public GameObject CreateCircle(Vector3 worldPosition, Color color)
     {
-        GameObject circle = circlePrefab != null 
-            ? Instantiate(circlePrefab, worldPosition, Quaternion.identity, transform)
-            : new GameObject("Circle");
+        GameObject circle = Instantiate(circlePrefab, worldPosition, Quaternion.identity, transform);
 
         circle.transform.position = worldPosition;
-        circle.transform.localScale = Vector3.zero;
 
         SpriteRenderer sr = circle.GetComponent<SpriteRenderer>();
-        if (sr == null)
-            sr = circle.AddComponent<SpriteRenderer>();
 
         sr.color = new Color(color.r, color.g, color.b, 0.5f);
 
-        // Scale in animation
+        //Enter Scale animation
         circle.transform.DOScale(Vector3.one, scaleInDuration).SetEase(scaleCurve);
 
-        // Start continuous pulse animation
+        //Start continuous pulse animation while active
         Coroutine pulseCoroutine = StartCoroutine(PulseCircle(circle));
         
         activeCircles.Add(circle);
@@ -63,7 +58,7 @@ public class QTECircleMarker : MonoBehaviour
     {
         while (circle != null && isActive)
         {
-            float t = Mathf.PingPong(Time.time * circlePulseSpeed, 1f);
+            float t = Mathf.Abs(Mathf.Sin(Time.time * circlePulseSpeed));
             float scale = Mathf.Lerp(circleMinScale, circleMaxScale, t);
             circle.transform.localScale = Vector3.one * scale;
             yield return null;

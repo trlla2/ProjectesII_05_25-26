@@ -47,8 +47,8 @@ public class SpellbookScreen : MonoBehaviour
         {
             GameObject temp = Instantiate(_spellSlotPrefab, _slotsParent.transform);
             SpellSlotBehaviour slot = temp.GetComponent<SpellSlotBehaviour>();
-                
-            slot.Initialize(null, i);
+            
+            slot.Initialize(i);
 
             
 

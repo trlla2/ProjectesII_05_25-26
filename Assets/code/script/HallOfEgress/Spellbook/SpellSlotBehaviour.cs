@@ -34,15 +34,10 @@ public class SpellSlotBehaviour : MonoBehaviour
         selectedBG = GetComponent<Image>();
     }
 
-    public void Initialize(Spell s, int slot)
+    public void Initialize(int slot)
     {
-        if (s == null) return;
-
         slotIndex = slot;
-
-        selectedBG.color = new Color(selectedBG.color.r, selectedBG.color.g, selectedBG.color.b, 0);
-
-        SetSpell(s);
+        SetSpell(GameManager.Instance.GetSpellFromPlayerSpellBook(slot));
     }
 
     private void Update()
@@ -74,6 +69,8 @@ public class SpellSlotBehaviour : MonoBehaviour
 
     private void SetSpell(Spell spell)
     {
+        if (spell = null) return;
+
         currentSpell = spell;
 
         spellNameText.text = spell.Name;

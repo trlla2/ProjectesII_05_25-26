@@ -226,6 +226,7 @@ public class GameManager : MonoBehaviour
     public int GetPlayerEXPForLastLevel() => playerStats.GetEXPForLastLevel();
     public int GetPlayerMoney() => playerStats.Money;
     public List<Spell> GetPlayerSpellBook() => new List<Spell>(playerStats.SpellBook);
+    public Spell GetSpellFromPlayerSpellBook(int slotIndex) => playerStats.SpellBook[slotIndex];
     public int PlayerSpellBookSize => playerStats.SpellBookSize;
     public List<Item> GetPlayerInventory() => playerStats.Inventory;
     public EnemyBehaviour GetEnemyRef() => enemyInCombat;

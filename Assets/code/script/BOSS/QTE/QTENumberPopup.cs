@@ -31,6 +31,7 @@ public class QTENumberPopup : MonoBehaviour
 
     public GameObject CreatePopup(int number, Vector3 worldPosition)
     {
+        print("Spawning number");
         GameObject popup = Instantiate(numberPopupPrefab, qteCanvas.transform);
 
         // Position in world space

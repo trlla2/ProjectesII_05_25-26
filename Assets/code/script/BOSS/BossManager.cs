@@ -28,6 +28,7 @@ public class BossManager : MonoBehaviour
         currentOrb = orbs[0];
         currentOrbIndex = 0;
 
+
         for (int i = 0; i < orbs.Length; i++)
         {
             //como que estamos pasando lambdas, tenemos que guardar el index en una variable local para evitar problemas de variables
@@ -39,6 +40,7 @@ public class BossManager : MonoBehaviour
 
     public void TryChargeOrb(List<Vector3> elementStartPositions, List<Element> matchingElements)
     {
+        print("Trying to charge orb with " + matchingElements.Count + " elements.");
         if (currentOrb == null || matchingElements == null || matchingElements.Count == 0)
             return;
         if (currentOrb.State == OrbState.Activated || currentOrb.State == OrbState.Charged)

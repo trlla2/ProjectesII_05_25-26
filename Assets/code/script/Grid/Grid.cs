@@ -365,7 +365,7 @@ public class Grid : MonoBehaviour
 
     private void CollectAndChargeWeakElements(List<Vector2Int> positions)
     {
-        BossManager bossManager = GameManager.Instance.GetComponent<BossManager>();
+        BossManager bossManager = GameManager.Instance.bossManager;
         if (bossManager == null)
             return;
 
@@ -391,7 +391,7 @@ public class Grid : MonoBehaviour
                 }
             }
         }
-
+        print("HEREEEE");
         if (matchingElements.Count > 0)
         {
             bossManager.TryChargeOrb(matchingStartPositions, matchingElements);

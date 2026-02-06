@@ -7,7 +7,7 @@ public class QTETrailRenderer : MonoBehaviour
     [Header("Trail Settings")]
     [SerializeField] private LineRenderer lineRenderer;
     [SerializeField] private float trailWidth = 0.15f;
-    [SerializeField] private Color trailColor = new Color(0.6f, 0.3f, 1f, 1f);
+    [SerializeField] public Color trailColor = new Color(0.6f, 0.3f, 1f, 1f);
     [SerializeField] private Material trailMaterial;
     [SerializeField] private GameObject trailParticlesPrefab;
 

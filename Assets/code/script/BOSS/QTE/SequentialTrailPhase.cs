@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,14 +12,13 @@ public class SequentialTracePhase : IQTEPhase
     private float inputDuration;
     private Grid grid;
     private QTEVisualController visualController;
+    private MonoBehaviour coroutineRunner;
 
     private List<Vector2Int> tracePoints;
     private int currentTargetIndex;
     private bool isInputPhase;
     private float timer;
     private bool isRevealing;
-    private int revealedCount;
-    private float revealTimer;
     private bool wasPressingLastFrame;
     private Vector2Int? lastTouchedPosition;
 
@@ -26,6 +26,7 @@ public class SequentialTracePhase : IQTEPhase
     {
         this.grid = grid;
         this.visualController = visual;
+        this.coroutineRunner = visual; // QTEVisualController is a MonoBehaviour, we need to run coroutines in behabour obj not playn classes
         pointCount = points;
         revealDuration = revealTime;
         inputDuration = inputTime;
@@ -37,28 +38,28 @@ public class SequentialTracePhase : IQTEPhase
         currentTargetIndex = 0;
         isInputPhase = false;
         isRevealing = true;
-        revealedCount = 0;
-        revealTimer = 0f;
         wasPressingLastFrame = false;
         lastTouchedPosition = null;
 
         if (visualController != null)
         {
             visualController.StartQTE();
+            StartSequentialReveal();
         }
     }
 
     public void Update()
     {
+        // Don't manually handle reveal timing anymore, the coroutine handles it
         if (isRevealing)
         {
-            UpdateReveal();
+            // Just wait for the sequential reveal to finish
             return;
         }
 
         if (!isInputPhase) return;
 
-        timer -= Time.unscaledDeltaTime; // Use unscaled time
+        timer -= Time.unscaledDeltaTime;
         if (timer <= 0)
         {
             OnPhaseComplete?.Invoke(false);
@@ -96,31 +97,36 @@ public class SequentialTracePhase : IQTEPhase
         }
     }
 
-    private void UpdateReveal()
+    private void StartSequentialReveal()
     {
-        revealTimer += Time.unscaledDeltaTime; // Use unscaled time
-        float interval = revealDuration / pointCount;
-
-        while (revealedCount < pointCount && revealTimer >= interval * (revealedCount + 1))
+        // Build list of (number, position) tuples
+        List<(int number, Vector2Int position)> numbersToReveal = new List<(int, Vector2Int)>();
+        
+        for (int i = 0; i < tracePoints.Count; i++)
         {
-            RevealPoint(revealedCount);
-            revealedCount++;
+            numbersToReveal.Add((i + 1, tracePoints[i]));
         }
 
-        if (revealedCount >= pointCount)
+        // Calculate delay between each reveal
+        float delayBetween = revealDuration / pointCount;
+
+        // Start the sequential reveal coroutine
+        visualController.RevealNumbersSequential(numbersToReveal, delayBetween);
+
+        // Schedule the transition to input phase using the coroutineRunner
+        if (coroutineRunner != null)
         {
-            isRevealing = false;
-            isInputPhase = true;
-            timer = inputDuration;
+            coroutineRunner.StartCoroutine(WaitForRevealComplete());
         }
     }
 
-    private void RevealPoint(int index)
+    private IEnumerator WaitForRevealComplete()
     {
-        if (visualController != null && index < tracePoints.Count)
-        {
-            visualController.RevealNumber(index + 1, tracePoints[index], 0f);
-        }
+        yield return new WaitForSecondsRealtime(revealDuration);
+        
+        isRevealing = false;
+        isInputPhase = true;
+        timer = inputDuration;
     }
 
     private void CheckInput()

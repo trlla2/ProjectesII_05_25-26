@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class QTEVisualController : MonoBehaviour
@@ -7,26 +8,6 @@ public class QTEVisualController : MonoBehaviour
     [SerializeField] private QTENumberPopup numberPopupManager;
     [SerializeField] private QTECircleMarker circleMarkerManager;
     [SerializeField] private QTETrailRenderer trailRendererManager;
-
-    [Header("Popup Settings")]
-    [SerializeField] private GameObject numberPopupPrefab;
-    [SerializeField] private float popupScaleInDuration = 0.3f;
-    [SerializeField] private AnimationCurve popupScaleCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
-    [SerializeField] private Color[] numberColors = new Color[] { Color.cyan, Color.magenta, Color.yellow, Color.green, Color.red, Color.white };
-    [SerializeField] private float numberGlowIntensity = 2f;
-
-    [Header("Circle Settings")]
-    [SerializeField] private GameObject circlePrefab;
-    [SerializeField] private float circlePulseSpeed = 2f;
-    [SerializeField] private float circleMinScale = 0.9f;
-    [SerializeField] private float circleMaxScale = 1.1f;
-
-    [Header("Trail Settings")]
-    [SerializeField] private LineRenderer trailRenderer;
-    [SerializeField] private float trailWidth = 0.15f;
-    [SerializeField] private Color trailColor = new Color(0.6f, 0.3f, 1f, 1f);
-    [SerializeField] private Material trailMaterial;
-    [SerializeField] private GameObject trailParticlesPrefab;
 
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
@@ -40,40 +21,6 @@ public class QTEVisualController : MonoBehaviour
 
     private bool isActive = false;
 
-    private void Awake()
-    {
-        InitializeComponents();
-    }
-
-    private void InitializeComponents()
-    {
-        // Auto-create components if not assigned
-        if (numberPopupManager == null)
-        {
-            GameObject popupObj = new GameObject("NumberPopupManager");
-            popupObj.transform.SetParent(transform);
-            numberPopupManager = popupObj.AddComponent<QTENumberPopup>();
-        }
-
-        if (circleMarkerManager == null)
-        {
-            GameObject circleObj = new GameObject("CircleMarkerManager");
-            circleObj.transform.SetParent(transform);
-            circleMarkerManager = circleObj.AddComponent<QTECircleMarker>();
-        }
-
-        if (trailRendererManager == null)
-        {
-            GameObject trailObj = new GameObject("TrailRendererManager");
-            trailObj.transform.SetParent(transform);
-            trailRendererManager = trailObj.AddComponent<QTETrailRenderer>();
-        }
-
-        // Initialize each component with settings
-        numberPopupManager.Initialize(qteCanvas, numberPopupPrefab, popupScaleInDuration, popupScaleCurve, numberColors, numberGlowIntensity);
-        circleMarkerManager.Initialize(circlePrefab, circlePulseSpeed, circleMinScale, circleMaxScale, popupScaleInDuration, popupScaleCurve);
-        trailRendererManager.Initialize(trailRenderer, trailWidth, trailColor, trailMaterial, trailParticlesPrefab);
-    }
 
     public void Initialize(Grid gridController)
     {
@@ -103,12 +50,13 @@ public class QTEVisualController : MonoBehaviour
 
     private IEnumerator RevealNumberRoutine(int number, Vector2Int gridPosition, float delay)
     {
-        yield return new WaitForSecondsRealtime(delay);
+        if (delay > 0f)
+            yield return new WaitForSecondsRealtime(delay);
 
         Vector3 worldPos = grid.VisualGrid.GridToWorldPosition(gridPosition);
 
         // Create glowing circle
-        circleMarkerManager.CreateCircle(worldPos, trailColor);
+        circleMarkerManager.CreateCircle(worldPos, trailRendererManager.trailColor);
 
         // Create number popup
         numberPopupManager.CreatePopup(number, worldPos);
@@ -129,16 +77,16 @@ public class QTEVisualController : MonoBehaviour
 
         Vector3 worldPos = grid.VisualGrid.GridToWorldPosition(gridPosition);
 
-        // Add point to trail
+        //Add point to trail
         trailRendererManager.AddPoint(worldPos);
 
-        // Explode number popup
+        //Explode number popup
         numberPopupManager.ExplodePopup(number - 1);
 
-        // Remove circle
+        //Remove circle
         circleMarkerManager.RemoveCircle(number - 1);
 
-        // Play audio
+        //Play audio --- NOT IMPLEMENTED YET
         PlayNumberTouchAudio(number);
 
         // Haptic feedback
@@ -209,6 +157,34 @@ public class QTEVisualController : MonoBehaviour
         if (audioSource != null && trailCompleteSound != null)
         {
             audioSource.PlayOneShot(trailCompleteSound);
+        }
+    }
+
+    public void RevealNumbersSequential(List<(int number, Vector2Int position)> numbersToReveal, float delayBetween = 0.5f)
+    {
+        if (!isActive || grid == null) return;
+        StartCoroutine(RevealNumbersSequentialRoutine(numbersToReveal, delayBetween));
+    }
+
+    private IEnumerator RevealNumbersSequentialRoutine(List<(int number, Vector2Int position)> numbersToReveal, float delayBetween)
+    {
+        foreach (var item in numbersToReveal)
+        {
+            Vector3 worldPos = grid.VisualGrid.GridToWorldPosition(item.position);
+
+            // Create circle and number at the same time
+            circleMarkerManager.CreateCircle(worldPos, trailRendererManager.trailColor);
+            numberPopupManager.CreatePopup(item.number, worldPos);
+            
+            PlayNumberRevealAudio(item.number);
+
+            if (HapticsManager.Instance != null)
+            {
+                HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.Selection);
+            }
+
+            // Wait for specified delay BEFORE revealing next number
+            yield return new WaitForSecondsRealtime(delayBetween);
         }
     }
 }

@@ -15,11 +15,17 @@ public class QTEVisualEffects : MonoBehaviour
     [SerializeField] private Color flashColor = Color.white;
     [SerializeField] private float flashDuration = 0.2f;
 
-    [Header("Camera Shake")]
-    [SerializeField] private CameraShake cameraShake;
+    CameraShake cameraShake;
 
     private bool isActive = false;
 
+    void Start()
+    {
+        if (darkOverlay != null)
+            darkOverlay.gameObject.SetActive(false);
+        if (flashImage != null)
+            flashImage.gameObject.SetActive(false);
+    }   
     public void ShowOverlay(bool instant = false)
     {
         if (darkOverlay == null) return;
@@ -87,6 +93,7 @@ public class QTEVisualEffects : MonoBehaviour
 
     public void ShakeCamera(float intensity, float duration)
     {
+        cameraShake = Camera.main.GetComponent<CameraShake>();
         if (cameraShake != null)
         {
             cameraShake.Shake(intensity, duration);

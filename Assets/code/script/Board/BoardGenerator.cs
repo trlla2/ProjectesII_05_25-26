@@ -188,11 +188,22 @@ public class BoardGenerator : MonoBehaviour
             // evitar volver sobre la propia rama (excepto el origen)
             neighbors.RemoveAll(p => branch.Skip(1).Any(b => b.GetGridPosition() == p));
 
-            // filtrar por separación mínima y que no estén ocupadas
-            var freeNeighbors = neighbors.Where(p =>
-                !occupiedAll.Contains(p) &&
-                HasMinSeparationFromOtherPaths(p, branch)
-            ).ToList();
+            List<Vector2Int> freeNeighbors;
+            if (current == origin)
+            {
+                freeNeighbors = neighbors.Where(p =>
+                    !occupiedAll.Contains(p) 
+                ).ToList();
+            }
+            else // filtrar por separación mínima y que no estén ocupadas
+            {
+                freeNeighbors = neighbors.Where(p =>
+                    !occupiedAll.Contains(p) &&
+                    HasMinSeparationFromOtherPaths(p, branch)
+                ).ToList();
+            }
+                
+            
 
             if (freeNeighbors.Count > 0)
             {
@@ -244,8 +255,12 @@ public class BoardGenerator : MonoBehaviour
                 else continue;
             }
 
-            int manhattan = Mathf.Abs(candidatePos.x - otherPos.x) + Mathf.Abs(candidatePos.y - otherPos.y);
-            if (manhattan <= _minSeparationTiles)
+            //BoardTile firstTileOfPath = currentBranch.First();
+            //if (candidatePos == firstTileOfPath.GetGridPosition() && firstTileOfPath.neighbors.Count > 1) 
+            //    return false;
+
+            int distBetweenPaths = Mathf.Abs(candidatePos.x - otherPos.x) + Mathf.Abs(candidatePos.y - otherPos.y);
+            if (distBetweenPaths <= _minSeparationTiles)
                 return false;
         }
         return true;

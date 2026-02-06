@@ -541,7 +541,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 58.15
+  m_fontSize: 47.75
   m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1201,16 +1201,16 @@ MonoBehaviour:
   _numOfEgressTiles: 0
   _reserveTilesAtEndForMainStairs: 6
   _startZoneReserveTiles: 5
-  _minBranches: 3
-  _maxBranches: 5
-  _maxBranchLength: 21
+  _minBranches: 1
+  _maxBranches: 2
+  _maxBranchLength: 15
   _branchProbabilityPerCandidate: 0.5
-  _minBranchLengthBeforeRejoin: 3
-  _minSeparationTiles: 1
+  _minBranchLengthBeforeRejoin: 9
+  _minSeparationTiles: 2
   AllowBranchUp: 1
   AllowBranchDown: 0
-  AllowBranchLeft: 0
-  AllowBranchRight: 1
+  AllowBranchLeft: 1
+  AllowBranchRight: 0
 --- !u!1 &1106537844
 GameObject:
   m_ObjectHideFlags: 0

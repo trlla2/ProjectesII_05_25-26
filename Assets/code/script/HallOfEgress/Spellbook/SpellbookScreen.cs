@@ -50,7 +50,13 @@ public class SpellbookScreen : MonoBehaviour
             
             slot.Initialize(i);
 
-            
+            if (i == 0)// select the first slot by default
+            { 
+                _spellSlotSelected = slot;
+                slot.Select(); 
+
+            }
+
 
             temp.GetComponent<Button>().onClick.AddListener(() =>
             {
@@ -64,10 +70,14 @@ public class SpellbookScreen : MonoBehaviour
         }
     }
     
-    public void DeleteSpellsButtonList()
+    public void DeleteSpellsButtonListAndSlotsList()
     {
         Button[] spellsButtons = _scrollviewContent.GetComponentsInChildren<Button>();
         foreach (Button button in spellsButtons)
             Destroy(button.gameObject);
+
+        SpellSlotBehaviour[] spellSlots = _slotsParent.GetComponentsInChildren<SpellSlotBehaviour>();
+        foreach (SpellSlotBehaviour slot in spellSlots)
+            Destroy(slot.gameObject);
     }
 }

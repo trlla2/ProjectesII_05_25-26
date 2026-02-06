@@ -62,6 +62,8 @@ public class SpellSlotBehaviour : MonoBehaviour
 
     public void SetNewSpell(Spell spell)
     {
+        if (spell == null || GameManager.Instance.SpellExistOnPlayerSpellBook(spell)) return;
+        
         GameManager.Instance.AddSpellToPlayerSpellBook(spell, slotIndex);
 
         SetSpell(spell);
@@ -69,7 +71,7 @@ public class SpellSlotBehaviour : MonoBehaviour
 
     private void SetSpell(Spell spell)
     {
-        if (spell == null || GameManager.Instance.SpellExistOnPlayerSpellBook(spell)) return;
+        if (spell == null) return;
 
         currentSpell = spell;
 

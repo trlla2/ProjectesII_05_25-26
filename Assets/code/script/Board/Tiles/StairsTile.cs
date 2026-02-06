@@ -15,7 +15,7 @@ public class StairsTile : BoardTile
 
     public override void Interact()
     {
-        if (GameManager.Instance.GetPlayerSpellBook().Count > 0)
+        if (GameManager.Instance.GetPlayerSpellBook().Count == GameManager.Instance.PlayerSpellBookSize)
             SceneTransition.Instance.LoadScene(_sceneToLoadWhenInteract, false);
         else
         {

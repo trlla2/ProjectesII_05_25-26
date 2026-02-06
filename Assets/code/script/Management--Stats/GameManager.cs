@@ -180,10 +180,9 @@ public class GameManager : MonoBehaviour
     public void AddSpellToPlayerSpellBook(Spell spell, int slot) { playerStats.AddSpellToSpellBook(spell, slot); }
     public bool SpellExistOnPlayerSpellBook(Spell spell)
     {
-        foreach(Spell s in playerStats.SpellBook)
+        for(int i = 0; i < PlayerSpellBookSize; i++)
         {
-            Debug.Log($"{spell.name} is {s}");
-            if(s == spell)
+            if(playerStats.SpellBook[i] == spell)
                 return true;
         }
         return false;
@@ -235,7 +234,19 @@ public class GameManager : MonoBehaviour
     public int GetPlayerEXPForNextLevel() => playerStats.GetEXPForNextLevel();
     public int GetPlayerEXPForLastLevel() => playerStats.GetEXPForLastLevel();
     public int GetPlayerMoney() => playerStats.Money;
-    public List<Spell> GetPlayerSpellBook() => new List<Spell>(playerStats.SpellBook);
+    public List<Spell> GetPlayerSpellBook()
+    {
+        List<Spell> spelL = new List<Spell>();
+
+        for(int i = 0; i < PlayerSpellBookSize; i ++)
+        {
+            if(playerStats.SpellBook[i] != null)
+                spelL.Add(playerStats.SpellBook[i]);
+        }
+
+        return spelL;
+    }
+
     public Spell GetSpellFromPlayerSpellBook(int slotIndex) => playerStats.SpellBook[slotIndex];
     public int PlayerSpellBookSize => playerStats.SpellBookSize;
     public List<Item> GetPlayerInventory() => playerStats.Inventory;

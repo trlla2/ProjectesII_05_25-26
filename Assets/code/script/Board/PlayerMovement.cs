@@ -4,20 +4,26 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [Header("Parameters")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpHeight;
     [SerializeField] private float jumpDuration;
-    [SerializeField] private ParticleSystem jumpParticles;
-    private float _jumpParticlesDuration;
     [SerializeField] private float waitTimeBetweenTilesInSeconds;
 
+    [Header("Particles")]
+    [SerializeField] private ParticleSystem jumpParticles;
+    private float _jumpParticlesDuration;
+
+    [Header("Board")]
+    [SerializeField] private BoardManager _boardManager;
     private BoardTile currentTile;
+
     public bool isMoving { get; private set; } = false;
 
     void Start()
     {
-        currentTile = BoardManager.instance.startingTile;
-        transform.position = BoardManager.instance.startingTile.transform.position;
+        currentTile = _boardManager.startingTile;
+        transform.position = _boardManager.startingTile.transform.position;
         _jumpParticlesDuration = jumpParticles.main.duration;
     }
 
@@ -100,7 +106,7 @@ public class PlayerMovement : MonoBehaviour
         //foreach (var tile in BoardManager.instance.generatedTiles)
         //    if (Vector3.Distance(transform.position, tile.transform.position) < 0.5)
         //        currentTile = tile;
-        currentTile = BoardManager.instance.generatedTiles[BoardManager.instance.generatedTiles.Count - 1];
+        currentTile = _boardManager.generatedTiles[_boardManager.generatedTiles.Count - 1];
     }
 
 }

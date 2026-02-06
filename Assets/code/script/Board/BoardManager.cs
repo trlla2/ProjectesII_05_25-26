@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class BoardManager : MonoBehaviour
 {
-    public static BoardManager instance { get; private set; }
+    //public static BoardManager instance { get; private set; }
 
     public BoardTile startingTile;
     public BoardTileData emptyTileData;
@@ -24,10 +24,10 @@ public class BoardManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance != null && instance != this) 
-            Destroy(this.gameObject);
-        else
-            instance = this;
+        //if (instance != null && instance != this) 
+        //    Destroy(this.gameObject);
+        //else
+        //    instance = this;
 
         startingTile.SetGridPosition(new Vector2Int(0, 0));
         generatedTiles.Add(startingTile);
@@ -67,6 +67,7 @@ public class BoardManager : MonoBehaviour
 
         BoardTile newTile = newTileInstance.GetComponent<BoardTile>();
         newTile.SetGridPosition(gridPosition);
+        newTile.SetBoardManager(this);
 
         generatedTiles.Add(newTile);
         Debug.Log($"casilla generada en{gridPosition}");

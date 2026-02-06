@@ -12,12 +12,12 @@ public class NewSpellTile : BoardTile
     {
         newSpellSFX.Play();
         Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(false);
-        BoardManager.instance.GetNewSpell(this);
+        _boardManager.GetNewSpell(this);
 
     }
 
     public void Replace()
     {
-        BoardManager.instance.ReplaceTileType(this, postInteractionTile);
+        _boardManager.ReplaceTileType(this, postInteractionTile);
     }
 }

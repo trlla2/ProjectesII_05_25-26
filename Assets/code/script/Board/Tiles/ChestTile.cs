@@ -11,12 +11,12 @@ public class ChestTile : BoardTile
         Debug.Log("opening chest...");
         openChestSource.Play();
         Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(false);
-        BoardManager.instance.OpenChest(this);
+        _boardManager.OpenChest(this);
     }
 
     public void Replace()
     {
-        BoardManager.instance.ReplaceTileType(this, _postInteractionTile);
+        _boardManager.ReplaceTileType(this, _postInteractionTile);
     }
     
 

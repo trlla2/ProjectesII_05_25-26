@@ -26,6 +26,7 @@ public class PlayerPathing : MonoBehaviour
 
     private bool isPathing = false;
     private bool canPath = true;
+    private bool isQTEActive = false;
 
     private void Awake()
     {
@@ -73,6 +74,10 @@ public class PlayerPathing : MonoBehaviour
         {
             GameManager.Instance.OnEndBattle += HandleBattleEnd;
         }
+
+        // Subscribe to QTE events
+        Orb1QTE.OnQTEStarted += HandleQTEStarted;
+        Orb1QTE.OnQTEEnded += HandleQTEEnded;
     }
 
     private void UnsubscribeFromEvents()
@@ -81,13 +86,39 @@ public class PlayerPathing : MonoBehaviour
         {
             GameManager.Instance.OnEndBattle -= HandleBattleEnd;
         }
+
+        // Unsubscribe from QTE events
+        Orb1QTE.OnQTEStarted -= HandleQTEStarted;
+        Orb1QTE.OnQTEEnded -= HandleQTEEnded;
+    }
+
+    private void HandleQTEStarted()
+    {
+        isQTEActive = true;
+        Debug.Log("[PlayerPathing] QTE started - disabling pathing");
+        
+        // Force end any active pathing
+        if (isPathing)
+        {
+            ForceEndPathing();
+        }
+    }
+
+    private void HandleQTEEnded()
+    {
+        isQTEActive = false;
+        Debug.Log("[PlayerPathing] QTE ended - enabling pathing");
     }
 
     private void Update()
     {
-
         if (grid.CurrentState != GridStateType.Idle)
             return;
+        
+        // Disable pathing during QTE
+        if (isQTEActive)
+            return;
+        
         if (!canPath)
             return;
 

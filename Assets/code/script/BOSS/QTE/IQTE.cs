@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 public interface IQTE
 {
-    void Start();
-    void Update();
+    void start();
+    void update();
     void Cancel();
 
     List<IQTEPhase> Phases { get; }

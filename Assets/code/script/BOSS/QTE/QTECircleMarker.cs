@@ -1,30 +1,47 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using DG.Tweening;
 
 public class QTECircleMarker : MonoBehaviour
 {
     [Header("Circle Settings")]
-    [SerializeField] private GameObject circlePrefab;
+    [SerializeField] private GameObject circleUIPrefab;
     [SerializeField] private float circlePulseSpeed = 2f;
     [SerializeField] private float circleMinScale = 0.9f;
     [SerializeField] private float circleMaxScale = 1.1f;
     [SerializeField] private float scaleInDuration = 0.3f;
     [SerializeField] private AnimationCurve scaleCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
+    [Header("References")]
+    [SerializeField] private Canvas qteCanvas;
+    [SerializeField] private Camera mainCamera;
+
     private List<GameObject> activeCircles = new List<GameObject>();
     private List<Coroutine> pulseCoroutines = new List<Coroutine>();
     private bool isActive = false;
 
-    public void Initialize(GameObject prefab, float pulseSpeed, float minScale, float maxScale, float scaleIn, AnimationCurve curve)
+    public void Initialize(Canvas canvas, Camera camera, GameObject prefab)
     {
-        circlePrefab = prefab;
-        circlePulseSpeed = pulseSpeed;
-        circleMinScale = minScale;
-        circleMaxScale = maxScale;
-        scaleInDuration = scaleIn;
-        scaleCurve = curve;
+        if (canvas != null)
+        {
+            qteCanvas = canvas;
+        }
+
+        if (camera != null)
+        {
+            mainCamera = camera;
+        }
+        else if (mainCamera == null)
+        {
+            mainCamera = Camera.main;
+        }
+        
+        if (prefab != null)
+        {
+            circleUIPrefab = prefab;
+        }
     }
 
     public void SetActive(bool active)
@@ -34,18 +51,39 @@ public class QTECircleMarker : MonoBehaviour
 
     public GameObject CreateCircle(Vector3 worldPosition, Color color)
     {
-        GameObject circle = Instantiate(circlePrefab, worldPosition, Quaternion.identity, transform);
+        if (circleUIPrefab == null || qteCanvas == null || mainCamera == null)
+        {
+            Debug.LogError("NUll references!!");
+            return null;
+        }
 
-        circle.transform.position = worldPosition;
+        // Instantiate as child of canvas
+        GameObject circle = Instantiate(circleUIPrefab, qteCanvas.transform);
 
-        SpriteRenderer sr = circle.GetComponent<SpriteRenderer>();
+        // Convert world position to canvas position
+        Vector2 canvasPosition = WorldToCanvasPosition(worldPosition);
+        RectTransform rt = circle.GetComponent<RectTransform>();
+        if (rt == null)
+        {
+            rt = circle.AddComponent<RectTransform>();
+        }
+        
+        rt.anchoredPosition = canvasPosition;
 
-        sr.color = new Color(color.r, color.g, color.b, 0.5f);
+        // Setup Image component color
+        Image img = circle.GetComponent<Image>();
+        if (img != null)
+        {
+            img.color = new Color(color.r, color.g, color.b, 0.5f);
+        }
 
-        //Enter Scale animation
-        circle.transform.DOScale(Vector3.one, scaleInDuration).SetEase(scaleCurve);
+        // Enter Scale animation
+        circle.transform.localScale = Vector3.zero;
+        circle.transform.DOScale(Vector3.one, scaleInDuration)
+            .SetEase(scaleCurve)
+            .SetUpdate(true); // Use unscaled time for paused game
 
-        //Start continuous pulse animation while active
+        //Start continuous pulse animation
         Coroutine pulseCoroutine = StartCoroutine(PulseCircle(circle));
         
         activeCircles.Add(circle);
@@ -54,11 +92,25 @@ public class QTECircleMarker : MonoBehaviour
         return circle;
     }
 
+    private Vector2 WorldToCanvasPosition(Vector3 worldPosition)
+    {
+        RectTransform canvasRect = qteCanvas.GetComponent<RectTransform>();
+        Vector2 viewportPosition = mainCamera.WorldToViewportPoint(worldPosition);
+
+        //Convert viewport position to canvas position
+        Vector2 canvasPosition = new Vector2(
+            (viewportPosition.x * canvasRect.sizeDelta.x) - (canvasRect.sizeDelta.x * 0.5f),
+            (viewportPosition.y * canvasRect.sizeDelta.y) - (canvasRect.sizeDelta.y * 0.5f)
+        );
+
+        return canvasPosition;
+    }
+
     private IEnumerator PulseCircle(GameObject circle)
     {
         while (circle != null && isActive)
         {
-            float t = Mathf.Abs(Mathf.Sin(Time.time * circlePulseSpeed));
+            float t = Mathf.Abs(Mathf.Sin(Time.unscaledTime * circlePulseSpeed));
             float scale = Mathf.Lerp(circleMinScale, circleMaxScale, t);
             circle.transform.localScale = Vector3.one * scale;
             yield return null;
@@ -67,12 +119,23 @@ public class QTECircleMarker : MonoBehaviour
 
     public void RemoveCircle(int index)
     {
-        if (index < 0 || index >= activeCircles.Count) return;
+        if (index < 0 || index >= activeCircles.Count)
+        {
+            return;
+        }
 
         GameObject circle = activeCircles[index];
         if (circle != null)
         {
-            circle.transform.DOScale(Vector3.zero, 0.2f).OnComplete(() => Destroy(circle));
+            Image img = circle.GetComponent<Image>();
+            if (img != null)
+            {
+                img.DOFade(0f, 0.2f).SetUpdate(true);
+            }
+
+            circle.transform.DOScale(Vector3.zero, 0.2f)
+                .SetUpdate(true)
+                .OnComplete(() => Destroy(circle));
         }
 
         if (index < pulseCoroutines.Count && pulseCoroutines[index] != null)
@@ -98,8 +161,8 @@ public class QTECircleMarker : MonoBehaviour
         activeCircles.Clear();
     }
 
-    public int GetCircleCount()
+    private void OnDestroy()
     {
-        return activeCircles.Count;
+        ClearAll();
     }
 }

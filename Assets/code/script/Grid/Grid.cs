@@ -391,7 +391,6 @@ public class Grid : MonoBehaviour
                 }
             }
         }
-        print("HEREEEE");
         if (matchingElements.Count > 0)
         {
             bossManager.TryChargeOrb(matchingStartPositions, matchingElements);

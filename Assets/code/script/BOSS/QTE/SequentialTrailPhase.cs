@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using DG.Tweening;
 
 public class SequentialTracePhase : IQTEPhase
 {
@@ -13,6 +15,7 @@ public class SequentialTracePhase : IQTEPhase
     private Grid grid;
     private QTEVisualController visualController;
     private MonoBehaviour coroutineRunner;
+    private Camera mainCamera;
 
     private List<Vector2Int> tracePoints;
     private int currentTargetIndex;
@@ -30,6 +33,10 @@ public class SequentialTracePhase : IQTEPhase
         pointCount = points;
         revealDuration = revealTime;
         inputDuration = inputTime;
+
+        // Get references
+        if (mainCamera == null)
+            mainCamera = Camera.main;
     }
 
     public void Enter()
@@ -48,9 +55,8 @@ public class SequentialTracePhase : IQTEPhase
         }
     }
 
-    public void Update()
+    public void update()
     {
-        // Don't manually handle reveal timing anymore, the coroutine handles it
         if (isRevealing)
         {
             // Just wait for the sequential reveal to finish
@@ -132,16 +138,7 @@ public class SequentialTracePhase : IQTEPhase
     private void CheckInput()
     {
         bool isPressing = Input.GetMouseButton(0);
-        Vector2Int? gridPos = GetGridPositionFromInput();
-
-        //Check if finger/mouse lifted, fail if already started
-        if (wasPressingLastFrame && !isPressing && currentTargetIndex > 0)
-        {
-            OnPhaseComplete?.Invoke(false);
-            if (visualController != null)
-                visualController.OnTraceComplete(false);
-            return;
-        }
+        Vector2Int? gridPos = GetGridPositionFromUIInput();
 
         //Update trail preview
         if (isPressing && visualController != null && gridPos.HasValue)
@@ -150,14 +147,15 @@ public class SequentialTracePhase : IQTEPhase
             visualController.UpdateTrailToPosition(worldPos);
         }
 
-        //Check for valid next number
+        //Check for valid next number - only collect if it's the correct one in sequence
         if (isPressing && gridPos.HasValue)
         {
+            // Only process if this is a new position (not the last one we touched)
             if (!lastTouchedPosition.HasValue || lastTouchedPosition.Value != gridPos.Value)
             {
+                // Only collect if it's the correct next number in the sequence
                 if (gridPos.Value == tracePoints[currentTargetIndex])
                 {
-                    //Correct number
                     if (visualController != null)
                     {
                         visualController.OnNumberTouched(currentTargetIndex + 1, gridPos.Value);
@@ -174,37 +172,45 @@ public class SequentialTracePhase : IQTEPhase
                             visualController.OnTraceComplete(true);
                     }
                 }
-                else
-                {
-                    //Wrong number touched, fail if we've already started
-                    if (currentTargetIndex > 0)
-                    {
-                        OnPhaseComplete?.Invoke(false);
-                        if (visualController != null)
-                            visualController.OnTraceComplete(false);
-                    }
-                }
             }
         }
 
         wasPressingLastFrame = isPressing;
     }
 
-    private Vector2Int? GetGridPositionFromInput()
+    private Vector2Int? GetGridPositionFromUIInput()
     {
-        Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-        for (int x = 0; x < Grid.GridSize; x++)
+        // Use UI raycasting since we're working with UI elements
+        PointerEventData pointerData = new PointerEventData(EventSystem.current)
         {
-            for (int y = 0; y < Grid.GridSize; y++)
-            {
-                Vector2Int pos = new Vector2Int(x, y);
-                Vector3 cellWorld = grid.VisualGrid.GridToWorldPosition(pos);
+            position = Input.mousePosition
+        };
 
-                if (Vector2.Distance(worldPos, cellWorld) < 0.5f)
-                    return pos;
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerData, results);
+
+        //Also check world space positions for grid cells
+        Vector3 worldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        worldPos.z = 0;
+
+        //Check against each trace point to see if we're close enough
+        float hitRadius = 1f;
+        
+        for (int i = 0; i < tracePoints.Count; i++)
+        {
+            Vector2Int gridPos = tracePoints[i];
+            Vector3 cellWorldPos = grid.VisualGrid.GridToWorldPosition(gridPos);
+            cellWorldPos.z = 0;
+
+            float distance = Vector2.Distance(new Vector2(worldPos.x, worldPos.y), 
+                                             new Vector2(cellWorldPos.x, cellWorldPos.y));
+
+            if (distance < hitRadius)
+            {
+                return gridPos;
             }
         }
+
         return null;
     }
 

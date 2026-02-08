@@ -4,7 +4,7 @@ using System;
 public interface IQTEPhase
 {
     void Enter();
-    void Update();
+    void update();
     void Exit();
     event Action<bool> OnPhaseComplete;
 }

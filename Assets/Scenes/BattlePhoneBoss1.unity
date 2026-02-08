@@ -12970,7 +12970,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2560900565088196347, guid: b7a77fe064d666340ab50545369cb9b7, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3538501437869707854, guid: b7a77fe064d666340ab50545369cb9b7, type: 3}
       propertyPath: m_Pivot.x
@@ -13855,7 +13855,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lineRenderer: {fileID: 565765725}
-  trailWidth: 0.15
+  trailWidth: 0.3
   trailColor: {r: 0.6, g: 0.3, b: 1, a: 1}
   trailMaterial: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
   trailParticlesPrefab: {fileID: 1767301791}
@@ -13927,9 +13927,9 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 1, b: 1, a: 1}
-      key1: {r: 1, g: 1, b: 1, a: 1}
-      key2: {r: 0, g: 0, b: 0, a: 0}
+      key0: {r: 0.6, g: 0.3019608, b: 1, a: 1}
+      key1: {r: 0.19166619, g: 0.039248843, b: 0.3962264, a: 1}
+      key2: {r: 0, g: 0, b: 0, a: 1}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
       key5: {r: 0, g: 0, b: 0, a: 0}
@@ -13944,17 +13944,17 @@ LineRenderer:
       ctime6: 0
       ctime7: 0
       atime0: 0
-      atime1: 65535
-      atime2: 0
+      atime1: 60716
+      atime2: 65535
       atime3: 0
       atime4: 0
       atime5: 0
       atime6: 0
       atime7: 0
       m_Mode: 0
-      m_ColorSpace: -1
+      m_ColorSpace: 0
       m_NumColorKeys: 2
-      m_NumAlphaKeys: 2
+      m_NumAlphaKeys: 3
     numCornerVertices: 0
     numCapVertices: 0
     alignment: 0
@@ -22110,7 +22110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 582b4031d36b23a49a76348d354ebc6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  circlePrefab: {fileID: 85668393604555052, guid: 359b7ed3d28a1224aada81c176ec665c, type: 3}
+  circleUIPrefab: {fileID: 0}
   circlePulseSpeed: 2
   circleMinScale: 0.9
   circleMaxScale: 1.1
@@ -22139,6 +22139,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  qteCanvas: {fileID: 0}
+  mainCamera: {fileID: 0}
 --- !u!1 &1452289980
 GameObject:
   m_ObjectHideFlags: 0
@@ -22715,7 +22717,9 @@ MonoBehaviour:
   - {r: 1, g: 0, b: 0, a: 1}
   - {r: 1, g: 1, b: 1, a: 1}
   numberGlowIntensity: 2
+  fontSize: 48
   qteCanvas: {fileID: 822420877}
+  mainCamera: {fileID: 0}
 --- !u!1 &1562077889
 GameObject:
   m_ObjectHideFlags: 0
@@ -35677,8 +35681,9 @@ MonoBehaviour:
   numberRevealSounds: []
   numberTouchSound: {fileID: 0}
   trailCompleteSound: {fileID: 0}
-  grid: {fileID: 190367786}
   qteCanvas: {fileID: 822420877}
+  grid: {fileID: 190367786}
+  mainCamera: {fileID: 0}
 --- !u!114 &2144799610
 MonoBehaviour:
   m_ObjectHideFlags: 0

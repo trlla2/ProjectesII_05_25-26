@@ -16,7 +16,7 @@ public class Orb1QTE : MonoBehaviour, IQTE
     [SerializeField] private QTETimerUI timerUI;
 
     [Header("Damage Settings")]
-    [SerializeField] private float successDamagePercent = 0.5f; // 50% boss HP
+    [SerializeField] private float successDamagePercent = 0.5f;
 
     private SequentialTracePhase currentPhase;
     private bool isActive = false;
@@ -25,14 +25,23 @@ public class Orb1QTE : MonoBehaviour, IQTE
     public bool IsActive => isActive;
 
     public event Action<bool> OnQTEComplete;
+    
+    //Global events for QTE state changes (player pathing needs it)
+    public static event Action OnQTEStarted;
+    public static event Action OnQTEEnded;
 
     private void Awake()
     {
         Phases = new List<IQTEPhase>();
         
-        if (visualController != null)
+        visualController.Initialize(grid);
+    }
+
+    private void Update()
+    {
+        if (isActive)
         {
-            visualController.Initialize(grid);
+            update();
         }
     }
 
@@ -40,39 +49,40 @@ public class Orb1QTE : MonoBehaviour, IQTE
     {
         if (isActive)
         {
-            Debug.LogWarning("QTE already active!");
             return;
         }
 
-        if (grid == null || visualController == null)
+        if (!ValidateReferences())
         {
-            Debug.LogError("Missing required references for QTE!");
+            Debug.LogError("Cannot start QTE,,missing  references!");
             return;
         }
 
-        Start();
+        start();
     }
 
-    public void Start()
+    private bool ValidateReferences()
+    {
+        return grid != null && visualController != null;
+    }
+
+    public void start()
     {
         isActive = true;
 
-        // Show visual effects
+        OnQTEStarted?.Invoke();
+
         if (visualEffects != null)
         {
             visualEffects.ShowOverlay();
         }
-
-        // Show timer UI
         if (timerUI != null)
         {
             timerUI.StartTimer(sequentialInputTime);
         }
 
-        // Pause game
         Time.timeScale = 0f;
 
-        // Create and start the sequential trace phase
         currentPhase = new SequentialTracePhase(
             grid, 
             visualController, 
@@ -87,14 +97,14 @@ public class Orb1QTE : MonoBehaviour, IQTE
         currentPhase.Enter();
     }
 
-    public void Update()
+    public void update()
     {
-        if (!isActive) return;
+        if (!isActive || currentPhase == null) return;
 
-        currentPhase?.Update();
+        currentPhase.update();
 
-        // Update timer UI
-        if (timerUI != null && currentPhase != null)
+        //Update timer UI
+        if (timerUI != null)
         {
             timerUI.UpdateTimer(currentPhase.GetRemainingTime(), sequentialInputTime);
         }
@@ -119,16 +129,13 @@ public class Orb1QTE : MonoBehaviour, IQTE
         isActive = false;
         Phases.Clear();
 
-        // Hide timer UI
         if (timerUI != null)
         {
             timerUI.HideTimer();
         }
 
-        // Resume game
         Time.timeScale = 1f;
 
-        // Play visual effects
         if (visualEffects != null)
         {
             if (success)
@@ -143,20 +150,22 @@ public class Orb1QTE : MonoBehaviour, IQTE
             visualEffects.HideOverlay();
         }
 
-        // Apply damage or handle failure
         if (success)
         {
             ApplyDamageToBoss();
         }
 
-        // Notify listeners
+        OnQTEEnded?.Invoke();
+
         OnQTEComplete?.Invoke(success);
     }
 
     private void ApplyDamageToBoss()
     {
-        GameManager.Instance.AttackBoss(successDamagePercent);
-        Debug.Log($"Applying {successDamagePercent * 100}% damage to boss!");
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.AttackBoss(successDamagePercent);
+        }
     }
 
     private void OnDestroy()
@@ -165,16 +174,21 @@ public class Orb1QTE : MonoBehaviour, IQTE
         {
             currentPhase.OnPhaseComplete -= HandlePhaseComplete;
         }
+
+        if (isActive)
+        {
+            Time.timeScale = 1f;
+            OnQTEEnded?.Invoke();
+        }
     }
 
-    // Public method for external systems to check if QTE is in progress
-    public float GetRemainingTime()
-    {
-        return currentPhase.GetRemainingTime();
-    }
+    //public float GetRemainingTime()
+    //{
+    //    return currentPhase?.GetRemainingTime() ?? 0f;
+    //}
 
-    public int GetCurrentProgress()
-    {
-        return currentPhase.GetCurrentTarget();
-    }
+    //public int GetCurrentProgress()
+    //{
+    //    return currentPhase?.GetCurrentTarget() ?? 0;
+    //}
 }

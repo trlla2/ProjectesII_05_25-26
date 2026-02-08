@@ -15,59 +15,92 @@ public class QTEVisualController : MonoBehaviour
     [SerializeField] private AudioClip numberTouchSound;
     [SerializeField] private AudioClip trailCompleteSound;
 
+    [Header("Canvas Reference")]
+    [SerializeField] private Canvas qteCanvas;
+
     [Header("References")]
     [SerializeField] private Grid grid;
-    [SerializeField] private Canvas qteCanvas;
+    [SerializeField] private Camera mainCamera;
 
     private bool isActive = false;
 
-
+    private void Awake()
+    {        
+        if (mainCamera == null)
+            mainCamera = Camera.main;
+    }
     public void Initialize(Grid gridController)
     {
         grid = gridController;
-        if (audioSource == null)
-            audioSource = GetComponent<AudioSource>();
+        
+        if (mainCamera == null)
+            mainCamera = Camera.main;
+        
+        //Initialize all sub-components
+        if (numberPopupManager != null && qteCanvas != null)
+        {
+            numberPopupManager.Initialize(qteCanvas, mainCamera, null);
+        }
+
+        if (circleMarkerManager != null && qteCanvas != null)
+        {
+            circleMarkerManager.Initialize(qteCanvas, mainCamera, null);
+        }
+
+        if (trailRendererManager != null)
+        {
+            trailRendererManager.Initialize(null, 0, Color.white, null, null);
+        }
     }
 
     public void StartQTE()
     {
         isActive = true;
-        circleMarkerManager.SetActive(true);
+        
+        if (circleMarkerManager != null)
+            circleMarkerManager.SetActive(true);
+        
         ClearAll();
     }
 
     public void EndQTE()
     {
         isActive = false;
-        circleMarkerManager.SetActive(false);
+        
+        if (circleMarkerManager != null)
+            circleMarkerManager.SetActive(false);
     }
 
-    public void RevealNumber(int number, Vector2Int gridPosition, float delay = 0f)
+    public void RevealNumbersSequential(List<(int number, Vector2Int position)> numbersToReveal, float delayBetween = 0.5f)
     {
-        if (!isActive || grid == null) return;
-        StartCoroutine(RevealNumberRoutine(number, gridPosition, delay));
-    }
-
-    private IEnumerator RevealNumberRoutine(int number, Vector2Int gridPosition, float delay)
-    {
-        if (delay > 0f)
-            yield return new WaitForSecondsRealtime(delay);
-
-        Vector3 worldPos = grid.VisualGrid.GridToWorldPosition(gridPosition);
-
-        // Create glowing circle
-        circleMarkerManager.CreateCircle(worldPos, trailRendererManager.trailColor);
-
-        // Create number popup
-        numberPopupManager.CreatePopup(number, worldPos);
-
-        // Play audio
-        PlayNumberRevealAudio(number);
-
-        // Haptic feedback
-        if (HapticsManager.Instance != null)
+        if (!isActive || grid == null)
         {
-            HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.Selection);
+            return;
+        }
+        
+        StartCoroutine(RevealNumbersSequentialRoutine(numbersToReveal, delayBetween));
+    }
+
+    private IEnumerator RevealNumbersSequentialRoutine(List<(int number, Vector2Int position)> numbersToReveal, float delayBetween)
+    {
+        foreach (var item in numbersToReveal)
+        {
+            Vector3 worldPos = grid.VisualGrid.GridToWorldPosition(item.position);
+
+            if (numberPopupManager != null)
+            {
+                GameObject popup = numberPopupManager.CreatePopup(item.number, worldPos);
+            }
+            
+            PlayNumberRevealAudio(item.number);
+
+            if (HapticsManager.Instance != null)
+            {
+                HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.Selection);
+            }
+
+            //Wait for specified delay BEFORE revealing next number
+            yield return new WaitForSecondsRealtime(delayBetween);
         }
     }
 
@@ -77,19 +110,14 @@ public class QTEVisualController : MonoBehaviour
 
         Vector3 worldPos = grid.VisualGrid.GridToWorldPosition(gridPosition);
 
-        //Add point to trail
-        trailRendererManager.AddPoint(worldPos);
+        if (trailRendererManager != null)
+            trailRendererManager.AddPoint(worldPos);
 
-        //Explode number popup
-        numberPopupManager.ExplodePopup(number - 1);
+        if (numberPopupManager != null)
+            numberPopupManager.ExplodePopup(number - 1);
 
-        //Remove circle
-        circleMarkerManager.RemoveCircle(number - 1);
-
-        //Play audio --- NOT IMPLEMENTED YET
         PlayNumberTouchAudio(number);
 
-        // Haptic feedback
         if (HapticsManager.Instance != null)
         {
             HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.LightImpact);
@@ -100,38 +128,48 @@ public class QTEVisualController : MonoBehaviour
     {
         if (!isActive) return;
 
-        if (success)
+        if (trailRendererManager != null)
         {
-            StartCoroutine(trailRendererManager.SolidifyTrail());
-            PlayTrailCompleteAudio();
-            
-            if (HapticsManager.Instance != null)
+            if (success)
             {
-                HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.Success);
+                StartCoroutine(trailRendererManager.SolidifyTrail());
+                PlayTrailCompleteAudio();
+                
+                if (HapticsManager.Instance != null)
+                {
+                    HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.Success);
+                }
             }
-        }
-        else
-        {
-            StartCoroutine(trailRendererManager.ShatterTrail());
-            
-            if (HapticsManager.Instance != null)
+            else
             {
-                HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.Failure);
+                StartCoroutine(trailRendererManager.ShatterTrail());
+                
+                if (HapticsManager.Instance != null)
+                {
+                    HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.Failure);
+                }
             }
         }
     }
 
     public void UpdateTrailToPosition(Vector3 worldPosition)
     {
-        if (!isActive || trailRendererManager.GetPointCount() == 0) return;
+        if (!isActive || trailRendererManager == null || trailRendererManager.GetPointCount() == 0) 
+            return;
+        
         trailRendererManager.UpdatePreview(worldPosition);
     }
 
     public void ClearAll()
     {
-        numberPopupManager.ClearAll();
-        circleMarkerManager.ClearAll();
-        trailRendererManager.Clear();
+        if (numberPopupManager != null)
+            numberPopupManager.ClearAll();
+        
+        if (circleMarkerManager != null)
+            circleMarkerManager.ClearAll();
+        
+        if (trailRendererManager != null)
+            trailRendererManager.Clear();
     }
 
     private void PlayNumberRevealAudio(int number)
@@ -160,31 +198,8 @@ public class QTEVisualController : MonoBehaviour
         }
     }
 
-    public void RevealNumbersSequential(List<(int number, Vector2Int position)> numbersToReveal, float delayBetween = 0.5f)
+    private void OnDestroy()
     {
-        if (!isActive || grid == null) return;
-        StartCoroutine(RevealNumbersSequentialRoutine(numbersToReveal, delayBetween));
-    }
-
-    private IEnumerator RevealNumbersSequentialRoutine(List<(int number, Vector2Int position)> numbersToReveal, float delayBetween)
-    {
-        foreach (var item in numbersToReveal)
-        {
-            Vector3 worldPos = grid.VisualGrid.GridToWorldPosition(item.position);
-
-            // Create circle and number at the same time
-            circleMarkerManager.CreateCircle(worldPos, trailRendererManager.trailColor);
-            numberPopupManager.CreatePopup(item.number, worldPos);
-            
-            PlayNumberRevealAudio(item.number);
-
-            if (HapticsManager.Instance != null)
-            {
-                HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.Selection);
-            }
-
-            // Wait for specified delay BEFORE revealing next number
-            yield return new WaitForSecondsRealtime(delayBetween);
-        }
+        ClearAll();
     }
 }

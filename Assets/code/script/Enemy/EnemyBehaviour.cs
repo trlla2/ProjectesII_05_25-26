@@ -160,7 +160,7 @@ public class EnemyBehaviour : MonoBehaviour
         currentHealth = Mathf.Max(0, currentHealth);
 
         OnHitRecived?.Invoke(currentHealth);
-        OnGetDamage?.Invoke(new DamageType(damageType.element, damage));
+        OnGetDamage?.Invoke(new DamageType(damageType.element, damage, damageType.IsCrit));
 
         
 

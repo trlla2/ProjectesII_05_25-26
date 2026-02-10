@@ -14,11 +14,20 @@ public struct DamageType
 {
     public ElementType element;
     public float damage;
+    public bool IsCrit;
 
     public DamageType(ElementType element, float damage)
     {
         this.element = element;
         this.damage = damage;
+        this.IsCrit = false;
+    }
+
+    public DamageType(ElementType element, float damage, bool isCrit)
+    {
+        this.element = element;
+        this.damage = damage;
+        this.IsCrit = isCrit;
     }
 }
 

@@ -1,52 +1,82 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
+using UnityEditor.Experimental;
 using UnityEngine;
 
 public class PlayerStats
 {
-    
 
-    public float MaxHp;
-    public float Hp;
+    // combat stats
+    private float maxHp;
+    public float MaxHp => maxHp;
+    private float hp;
+    public float Hp => hp;
 
-    public int ExperiencePoints;
-    public int Level;
-    public Dictionary<ElementType, int> ElementalLevels;
-    public int ElementalLevelMultiplyer;
+    private int evasionPoints;
+    private int extraHealth;
+    public int ExtraHealth => extraHealth;
+    private int extraDamage;
+    private float defense;
+    private int critPercentage;
+    private const float critMultiplayer = 1.5f;
 
-    public int Money;
+    // level stats
+    private int experiencePoints;
+    public int ExperiencePoints => experiencePoints;
+    private int level;
+    public int Level => level;
+    private Dictionary<ElementType, int> elementalLevels;
+    private int elementalLevelMultiplyer;
 
+    // currency 
+    private int money;
+    public int Money => money;
+
+    // spells  & Items
     private const int spellBookSize = 4;
     public int SpellBookSize => spellBookSize;
-    public Spell[] SpellBook;
+    private Spell[] spellBook;
+    public Spell[] SpellBook => spellBook;
 
-    public List<Item> Inventory;
-    public int LimitInventory;
 
-    public int EvasionPoints;
-    public int ExtraHealth;
-    public int ExtraDamage;
+    private List<Item> inventory;
+    public List<Item> Inventory => inventory;
+    private int limitInventory;
+
+
     public PlayerStats()
     {
-        MaxHp = 40.0f;
-        Hp = MaxHp;
-        ExperiencePoints = 0;
-        Level = 1;
-        Money = 10;
-        SpellBook = new Spell[spellBookSize];
-        Inventory = new List<Item>();
-        LimitInventory = 3;
-        ElementalLevels = new Dictionary<ElementType, int>()
+        // combat stats
+        maxHp = 40.0f;
+        hp = maxHp;
+
+        evasionPoints = 0;
+        extraHealth = 0;
+        extraDamage = 0;
+        defense = 0;
+        critPercentage = 0;
+
+        // level stats
+        experiencePoints = 0;
+        level = 1;
+        elementalLevels = new Dictionary<ElementType, int>()
         {
             { ElementType.Green, 1},
             { ElementType.Red, 1},
             { ElementType.Yellow, 1},
             { ElementType.Blue, 1}
         };
-        ElementalLevelMultiplyer = 4;
-    
-        ExtraHealth = 0;
-        EvasionPoints = 0;
+        elementalLevelMultiplyer = 4;
+
+        // currency 
+        money = 10;
+
+        // spells  & Items
+        spellBook = new Spell[spellBookSize];
+        inventory = new List<Item>();
+        limitInventory = 3;
+
     }
 
     public List<DamageType> AttackWithSpell(Spell spell)
@@ -54,7 +84,7 @@ public class PlayerStats
         List<DamageType> damages = new List<DamageType>();
         foreach (Element e in spell.Recipe)
         {
-            damages.Add(new DamageType(e.Type, ElementalLevelMultiplyer * ElementalLevels[e.Type]));
+            damages.Add(AttackWithElement(e.Type));
         }
 
         return damages;
@@ -62,38 +92,51 @@ public class PlayerStats
 
     public DamageType AttackWithElement(ElementType elementType)
     {
-        DamageType totalDamage = new DamageType(elementType, ElementalLevelMultiplyer * ElementalLevels[elementType]);
-        totalDamage.damage += ExtraDamage;
+        DamageType totalDamage = new DamageType(elementType, elementalLevelMultiplyer * elementalLevels[elementType]);
+        totalDamage.damage += extraDamage;
+
+        if (UnityEngine.Random.Range(0f, 100f) < critPercentage)
+        {
+            totalDamage.damage *= critMultiplayer;
+            totalDamage.IsCrit = true;
+        }
 
         return totalDamage;
     }
-    
-    public bool EvadeAttack() { return UnityEngine.Random.Range(0f, 100f) < EvasionPoints; }
 
-    public void Damage(float dT) { Hp -= dT; }
+    public bool EvadeAttack() { return UnityEngine.Random.Range(0f, 100f) < evasionPoints; }
+
+    public void Damage(float damage)
+    {
+        float totalDamage = damage - defense;
+        if (totalDamage <= 0f)
+            return;
+
+        hp -= damage;
+    }
 
     public void Heal(float amount)
     {
-        Hp += amount;
-        if (Hp > MaxHp + ExtraHealth)   Hp = MaxHp + ExtraHealth;
+        hp += amount;
+        if (hp > maxHp + extraHealth) hp = maxHp + extraHealth;
     }
 
-    public void AddMoney(int amount) { Money += amount; }
-    public bool UseMoney(int amount) 
+    public void AddMoney(int amount) { money += amount; }
+    public bool UseMoney(int amount)
     {
-        if (Money >= amount)
+        if (money >= amount)
         {
-            Money -= amount;
+            money -= amount;
             return true;
         }
         return false;
     }
 
-    public bool AddExp(int amount) 
-    { 
-        ExperiencePoints += amount; 
+    public bool AddExp(int amount)
+    {
+        experiencePoints += amount;
 
-        if (ExperiencePoints >= GetEXPForNextLevel())
+        if (experiencePoints >= GetEXPForNextLevel())
             return true; // Level up
 
         return false;
@@ -101,19 +144,19 @@ public class PlayerStats
 
     public void LevelUp()
     {
-        Level ++;
+        level++;
     }
 
     public void UpgradeElementalLevel(ElementType elementType)
     {
-        ElementalLevels[elementType] += 1;
+        elementalLevels[elementType] += 1;
     }
 
-    public bool AddItemToInventory(Item item) 
+    public bool AddItemToInventory(Item item)
     {
-        if (Inventory.Count >= LimitInventory) return false;
+        if (inventory.Count >= limitInventory) return false;
 
-        Inventory.Add(item);
+        inventory.Add(item);
         item.ApplyEffects(this);
 
         return true;// the item was added
@@ -121,40 +164,42 @@ public class PlayerStats
 
     public void RemoveItemFromInventory(Item item)
     {
-        if (!Inventory.Contains(item)) return;
-        
-        Inventory.Remove(item);
+        if (!inventory.Contains(item)) return;
+
+        inventory.Remove(item);
         item.RemoveEffects(this);
-        
+
     }
 
     public void AddSpellToSpellBook(Spell spell, int slot)
     {
         if (spell == null || slot < 0 || slot > spellBookSize - 1) return;
 
-        SpellBook[slot] = spell;
+        spellBook[slot] = spell;
 
         Debug.Log("Spell Added");
     }
 
-    public void ClearSpellBook()  
+    public void ClearSpellBook()
     {
         for (int i = 0; i < spellBookSize; i++)
-            SpellBook[i] = null;
+            spellBook[i] = null;
     }
 
-    public int GetEXPForLastLevel() 
-    { 
-        if(Level - 1 > 0)
-            return (int)Math.Pow(4, Level - 1);
+    public int GetEXPForLastLevel()
+    {
+        if (level - 1 > 0)
+            return (int)Math.Pow(4, level - 1);
 
         return 0;
     }
-    public int GetEXPForNextLevel() { return (int)Math.Pow(4, Level); }
-    public bool CanLevelUp() { return ExperiencePoints >= GetEXPForNextLevel(); }
-    public bool IsAlive() { return Hp > 0; }
-    public void ModifyEvasion(int amount) { EvasionPoints += amount; }
-    public void ModifyExtraHealth(int amount) { ExtraHealth += amount; }
-    public void ModifyExtraDamage(int amount) { ExtraDamage += amount; }
+    public int GetEXPForNextLevel() { return (int)Math.Pow(4, level); }
+    public bool CanLevelUp() { return experiencePoints >= GetEXPForNextLevel(); }
+    public bool IsAlive() { return hp > 0; }
+    public void ModifyEvasion(int amount) { evasionPoints += amount; }
+    public void ModifyExtraHealth(int amount) { extraHealth += amount; }
+    public void ModifyExtraDamage(int amount) { extraDamage += amount; }
+    public void ModifyDefense(float amount) { defense += amount; }
+    public void ModifyCritPercentage(int amount) { critPercentage += amount; }
 
-    }
+}

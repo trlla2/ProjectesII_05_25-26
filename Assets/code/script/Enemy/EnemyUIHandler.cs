@@ -19,6 +19,8 @@ public class EnemyUIHandler : MonoBehaviour
     private TMP_Text damageText;
     [SerializeField]
     private TranslatorUI damageTextTranslator;
+    [SerializeField]
+    private GameObject critImage; 
 
     [SerializeField]
     private float timeToChangeDmg = 0.3f; 
@@ -78,7 +80,8 @@ public class EnemyUIHandler : MonoBehaviour
             {
                 damageText.text = ""; 
                 damageTextTranslator.ResetPosition(); 
-                isShowingDamage = false; 
+                isShowingDamage = false;
+                critImage.SetActive(true);
                 currentDamageTimer = 0;  
             }
         }
@@ -95,6 +98,8 @@ public class EnemyUIHandler : MonoBehaviour
 
         damageTextTranslator.ResetPosition();
         damageText.text = damageInfo.damage.ToString();
+        if (damageInfo.IsCrit)
+            critImage.SetActive(true);
 
         SetDamageColor(damageInfo.element);
 

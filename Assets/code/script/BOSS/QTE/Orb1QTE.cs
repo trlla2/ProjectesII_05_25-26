@@ -14,12 +14,14 @@ public class Orb1QTE : MonoBehaviour, IQTE
     [SerializeField] private QTEVisualController visualController;
     [SerializeField] private QTEVisualEffects visualEffects;
     [SerializeField] private QTETimerUI timerUI;
+    [SerializeField] private Transform orbTransform;
 
     [Header("Damage Settings")]
     [SerializeField] private float successDamagePercent = 0.5f;
 
-    private SequentialTracePhase currentPhase;
+    private IQTEPhase currentPhase;
     private bool isActive = false;
+    private bool isWaitingForSuccessAnimation = false;
 
     public List<IQTEPhase> Phases { get; private set; }
     public bool IsActive => isActive;
@@ -69,6 +71,7 @@ public class Orb1QTE : MonoBehaviour, IQTE
     public void start()
     {
         isActive = true;
+        isWaitingForSuccessAnimation = false;
 
         OnQTEStarted?.Invoke();
 
@@ -83,7 +86,7 @@ public class Orb1QTE : MonoBehaviour, IQTE
 
         Time.timeScale = 0f;
 
-        currentPhase = new SequentialTracePhase(
+        SequentialTracePhase sequentialPhase = new SequentialTracePhase(
             grid, 
             visualController, 
             sequentialPointCount, 
@@ -91,22 +94,23 @@ public class Orb1QTE : MonoBehaviour, IQTE
             sequentialInputTime
         );
 
-        currentPhase.OnPhaseComplete += HandlePhaseComplete;
-        Phases.Add(currentPhase);
+        sequentialPhase.OnPhaseComplete += HandleSequentialPhaseComplete;
+        Phases.Add(sequentialPhase);
 
+        currentPhase = sequentialPhase;
         currentPhase.Enter();
     }
 
     public void update()
     {
-        if (!isActive || currentPhase == null) return;
+        if (!isActive || currentPhase == null || isWaitingForSuccessAnimation) return;
 
         currentPhase.update();
 
-        //Update timer UI
-        if (timerUI != null)
+        //Update timer UI only for sequential phase
+        if (currentPhase is SequentialTracePhase sequentialPhase && timerUI != null)
         {
-            timerUI.UpdateTimer(currentPhase.GetRemainingTime(), sequentialInputTime);
+            timerUI.UpdateTimer(sequentialPhase.GetRemainingTime(), sequentialInputTime);
         }
     }
 
@@ -114,25 +118,81 @@ public class Orb1QTE : MonoBehaviour, IQTE
     {
         if (!isActive) return;
 
-        HandlePhaseComplete(false);
+        HandleFinalComplete(false);
     }
 
-    private void HandlePhaseComplete(bool success)
+    private void HandleSequentialPhaseComplete(bool success)
     {
         if (currentPhase != null)
         {
-            currentPhase.OnPhaseComplete -= HandlePhaseComplete;
+            currentPhase.OnPhaseComplete -= HandleSequentialPhaseComplete;
             currentPhase.Exit();
-            currentPhase = null;
         }
-
-        isActive = false;
-        Phases.Clear();
 
         if (timerUI != null)
         {
             timerUI.HideTimer();
         }
+
+        if (success)
+        {
+            StartSuccessAnimationPhase();
+        }
+        else
+        {
+            HandleFinalComplete(false);
+        }
+    }
+
+    private void StartSuccessAnimationPhase()
+    {
+        isWaitingForSuccessAnimation = true;
+
+        Vector3 targetOrbPosition = Vector3.zero;
+        if (orbTransform != null)
+        {
+            targetOrbPosition = orbTransform.position;
+        }
+        else
+        {
+            OrbVisual orbVisual = GameManager.Instance.bossManager.GetCurrentOrbVisual();
+            if (orbVisual != null)
+            {
+                targetOrbPosition = orbVisual.GetPosition();
+            }
+        }
+
+        TrailSuccessAnimationPhase animPhase = new TrailSuccessAnimationPhase(
+            visualController,
+            targetOrbPosition,
+            this
+        );
+
+        animPhase.OnPhaseComplete += HandleSuccessAnimationComplete;
+        Phases.Add(animPhase);
+
+        currentPhase = animPhase;
+        currentPhase.Enter();
+    }
+
+    private void HandleSuccessAnimationComplete(bool success)
+    {
+        if (currentPhase != null)
+        {
+            currentPhase.OnPhaseComplete -= HandleSuccessAnimationComplete;
+            currentPhase.Exit();
+            currentPhase = null;
+        }
+
+        isWaitingForSuccessAnimation = false;
+        HandleFinalComplete(true);
+    }
+
+    private void HandleFinalComplete(bool success)
+    {
+        isActive = false;
+        Phases.Clear();
+        currentPhase = null;
 
         Time.timeScale = 1f;
 
@@ -172,7 +232,8 @@ public class Orb1QTE : MonoBehaviour, IQTE
     {
         if (currentPhase != null)
         {
-            currentPhase.OnPhaseComplete -= HandlePhaseComplete;
+            currentPhase.OnPhaseComplete -= HandleSequentialPhaseComplete;
+            currentPhase.OnPhaseComplete -= HandleSuccessAnimationComplete;
         }
 
         if (isActive)
@@ -181,14 +242,4 @@ public class Orb1QTE : MonoBehaviour, IQTE
             OnQTEEnded?.Invoke();
         }
     }
-
-    //public float GetRemainingTime()
-    //{
-    //    return currentPhase?.GetRemainingTime() ?? 0f;
-    //}
-
-    //public int GetCurrentProgress()
-    //{
-    //    return currentPhase?.GetCurrentTarget() ?? 0;
-    //}
 }

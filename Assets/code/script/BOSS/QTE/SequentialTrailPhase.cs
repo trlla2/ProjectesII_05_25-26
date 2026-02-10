@@ -105,7 +105,6 @@ public class SequentialTracePhase : IQTEPhase
 
     private void StartSequentialReveal()
     {
-        // Build list of (number, position) tuples
         List<(int number, Vector2Int position)> numbersToReveal = new List<(int, Vector2Int)>();
         
         for (int i = 0; i < tracePoints.Count; i++)
@@ -113,13 +112,11 @@ public class SequentialTracePhase : IQTEPhase
             numbersToReveal.Add((i + 1, tracePoints[i]));
         }
 
-        // Calculate delay between each reveal
         float delayBetween = revealDuration / pointCount;
 
-        // Start the sequential reveal coroutine
         visualController.RevealNumbersSequential(numbersToReveal, delayBetween);
 
-        // Schedule the transition to input phase using the coroutineRunner
+        //Schedule the transition to input phase
         if (coroutineRunner != null)
         {
             coroutineRunner.StartCoroutine(WaitForRevealComplete());
@@ -138,38 +135,45 @@ public class SequentialTracePhase : IQTEPhase
     private void CheckInput()
     {
         bool isPressing = Input.GetMouseButton(0);
-        Vector2Int? gridPos = GetGridPositionFromUIInput();
+        
+        Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorldPos.z = 0;
 
-        //Update trail preview
-        if (isPressing && visualController != null && gridPos.HasValue)
+        //Always update trail preview with mouse position when pressing
+        if (isPressing && visualController != null)
         {
-            Vector3 worldPos = grid.VisualGrid.GridToWorldPosition(gridPos.Value);
-            visualController.UpdateTrailToPosition(worldPos);
+            visualController.UpdateTrailToPosition(mouseWorldPos);
+        }
+        else if (!isPressing && visualController != null)
+        {
+            visualController.ClearTrailPreview();
         }
 
-        //Check for valid next number - only collect if it's the correct one in sequence
-        if (isPressing && gridPos.HasValue)
+        if (isPressing)
         {
-            // Only process if this is a new position (not the last one we touched)
-            if (!lastTouchedPosition.HasValue || lastTouchedPosition.Value != gridPos.Value)
+            Vector2Int? gridPos = GetGridPositionFromUIInput();
+            
+            if (gridPos.HasValue)
             {
-                // Only collect if it's the correct next number in the sequence
-                if (gridPos.Value == tracePoints[currentTargetIndex])
+                if (!lastTouchedPosition.HasValue || lastTouchedPosition.Value != gridPos.Value)
                 {
-                    if (visualController != null)
+                    if (gridPos.Value == tracePoints[currentTargetIndex])
                     {
-                        visualController.OnNumberTouched(currentTargetIndex + 1, gridPos.Value);
-                    }
-
-                    lastTouchedPosition = gridPos.Value;
-                    currentTargetIndex++;
-
-                    if (currentTargetIndex >= pointCount)
-                    {
-                        //Success!
-                        OnPhaseComplete?.Invoke(true);
                         if (visualController != null)
-                            visualController.OnTraceComplete(true);
+                        {
+                            visualController.OnNumberTouched(currentTargetIndex + 1, gridPos.Value);
+                        }
+
+                        lastTouchedPosition = gridPos.Value;
+                        currentTargetIndex++;
+
+                        if (currentTargetIndex >= pointCount)
+                        {
+                            //Success!
+                            OnPhaseComplete?.Invoke(true);
+                            if (visualController != null)
+                                visualController.OnTraceComplete(true);
+                        }
                     }
                 }
             }
@@ -180,7 +184,7 @@ public class SequentialTracePhase : IQTEPhase
 
     private Vector2Int? GetGridPositionFromUIInput()
     {
-        // Use UI raycasting since we're working with UI elements
+        //Use UI raycasting since we're working with UI elements
         PointerEventData pointerData = new PointerEventData(EventSystem.current)
         {
             position = Input.mousePosition
@@ -189,11 +193,9 @@ public class SequentialTracePhase : IQTEPhase
         List<RaycastResult> results = new List<RaycastResult>();
         EventSystem.current.RaycastAll(pointerData, results);
 
-        //Also check world space positions for grid cells
         Vector3 worldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         worldPos.z = 0;
 
-        //Check against each trace point to see if we're close enough
         float hitRadius = 1f;
         
         for (int i = 0; i < tracePoints.Count; i++)

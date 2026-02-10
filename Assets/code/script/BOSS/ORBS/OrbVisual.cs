@@ -62,9 +62,6 @@ public class OrbVisual : MonoBehaviour
         {
             case OrbState.Inactive:
                 orbImage.sprite = inactive;
-                PlayDepletedEffect();
-                if (animationEffects != null)
-                    animationEffects.SetScale(depletedScale, scaleDuration);
                 break;
             case OrbState.Charging:
                 orbImage.sprite = charging;
@@ -109,7 +106,10 @@ public class OrbVisual : MonoBehaviour
     public void PlayDepletedEffect()
     {
         if (animationEffects != null)
+        {
             animationEffects.SetScale(depletedScale, scaleDuration);
+            animationEffects.Shake(maxShakeAmount * 1.5f, maxShakeDuration);
+        }
     }
 
     public Vector3 GetPosition() { return transform.position; }

@@ -13857,7 +13857,7 @@ MonoBehaviour:
   lineRenderer: {fileID: 565765725}
   trailWidth: 0.3
   trailColor: {r: 0.6, g: 0.3, b: 1, a: 1}
-  trailMaterial: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  trailMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   trailParticlesPrefab: {fileID: 1767301791}
 --- !u!120 &565765725
 LineRenderer:
@@ -13883,7 +13883,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -13901,12 +13901,11 @@ LineRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -1431173605
+  m_SortingLayer: 1
+  m_SortingOrder: 8
   m_Positions:
   - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 1}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -13915,13 +13914,13 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0.5000076
         inSlope: 0
         outSlope: 0
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
+        inWeight: 0
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -13955,15 +13954,15 @@ LineRenderer:
       m_ColorSpace: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 3
-    numCornerVertices: 0
-    numCapVertices: 0
+    numCornerVertices: 50
+    numCapVertices: 43
     alignment: 0
     textureMode: 0
     textureScale: {x: 1, y: 1}
     shadowBias: 0.5
     generateLightingData: 0
   m_MaskInteraction: 0
-  m_UseWorldSpace: 1
+  m_UseWorldSpace: 0
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
 --- !u!1 &573940070
@@ -15557,7 +15556,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 883489811}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 810cae2be3c51d746aded33021f8e973, type: 3}
   m_Name: 
@@ -22116,10 +22115,8 @@ MonoBehaviour:
   circleMaxScale: 1.1
   scaleInDuration: 0.3
   scaleCurve:
-    serializedVersion: 2
     m_Curve:
-    - serializedVersion: 3
-      time: 0
+    - time: 0
       value: 0
       inSlope: 0
       outSlope: 0
@@ -22127,8 +22124,7 @@ MonoBehaviour:
       weightedMode: 0
       inWeight: 0
       outWeight: 0
-    - serializedVersion: 3
-      time: 1
+    - time: 1
       value: 1
       inSlope: 0
       outSlope: 0
@@ -22141,6 +22137,8 @@ MonoBehaviour:
     m_RotationOrder: 4
   qteCanvas: {fileID: 0}
   mainCamera: {fileID: 0}
+  activeCircles: []
+  isActive: 0
 --- !u!1 &1452289980
 GameObject:
   m_ObjectHideFlags: 0
@@ -28686,7 +28684,7 @@ ParticleSystem:
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 1
-  looping: 0
+  looping: 1
   prewarm: 0
   playOnAwake: 0
   useUnscaledTime: 0
@@ -29508,7 +29506,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0
+      scalar: 28.8
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -29611,66 +29609,8 @@ ParticleSystem:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-    m_BurstCount: 1
-    m_Bursts:
-    - serializedVersion: 2
-      time: 0
-      countCurve:
-        serializedVersion: 2
-        minMaxState: 0
-        scalar: 30
-        minScalar: 30
-        maxCurve:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: 0
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-        minCurve:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: 0
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-      cycleCount: 1
-      repeatInterval: 0.01
-      probability: 1
+    m_BurstCount: 0
+    m_Bursts: []
   SizeModule:
     enabled: 1
     curve:
@@ -34614,11 +34554,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sequentialPointCount: 6
   sequentialRevealTime: 3
-  sequentialInputTime: 4
+  sequentialInputTime: Infinity
   grid: {fileID: 190367786}
   visualController: {fileID: 2144799609}
   visualEffects: {fileID: 2144799608}
   timerUI: {fileID: 2144799612}
+  orbTransform: {fileID: 0}
   successDamagePercent: 0.5
 --- !u!114 &1992799289
 MonoBehaviour:
@@ -35675,7 +35616,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numberPopupManager: {fileID: 1549735280}
-  circleMarkerManager: {fileID: 1364876374}
   trailRendererManager: {fileID: 565765724}
   audioSource: {fileID: 0}
   numberRevealSounds: []
@@ -35712,7 +35652,7 @@ Transform:
   m_GameObject: {fileID: 2144799607}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.73384404, y: 0.44357774, z: 0.024379237}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

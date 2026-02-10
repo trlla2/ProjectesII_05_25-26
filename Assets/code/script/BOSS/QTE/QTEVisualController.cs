@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,6 @@ public class QTEVisualController : MonoBehaviour
 {
     [Header("Component References")]
     [SerializeField] private QTENumberPopup numberPopupManager;
-    [SerializeField] private QTECircleMarker circleMarkerManager;
     [SerializeField] private QTETrailRenderer trailRendererManager;
 
     [Header("Audio")]
@@ -29,6 +29,7 @@ public class QTEVisualController : MonoBehaviour
         if (mainCamera == null)
             mainCamera = Camera.main;
     }
+
     public void Initialize(Grid gridController)
     {
         grid = gridController;
@@ -41,34 +42,18 @@ public class QTEVisualController : MonoBehaviour
         {
             numberPopupManager.Initialize(qteCanvas, mainCamera, null);
         }
-
-        if (circleMarkerManager != null && qteCanvas != null)
-        {
-            circleMarkerManager.Initialize(qteCanvas, mainCamera, null);
-        }
-
-        if (trailRendererManager != null)
-        {
-            trailRendererManager.Initialize(null, 0, Color.white, null, null);
-        }
     }
 
     public void StartQTE()
     {
         isActive = true;
-        
-        if (circleMarkerManager != null)
-            circleMarkerManager.SetActive(true);
-        
+         
         ClearAll();
     }
 
     public void EndQTE()
     {
         isActive = false;
-        
-        if (circleMarkerManager != null)
-            circleMarkerManager.SetActive(false);
     }
 
     public void RevealNumbersSequential(List<(int number, Vector2Int position)> numbersToReveal, float delayBetween = 0.5f)
@@ -108,19 +93,30 @@ public class QTEVisualController : MonoBehaviour
     {
         if (!isActive) return;
 
-        Vector3 worldPos = grid.VisualGrid.GridToWorldPosition(gridPosition);
-
+        // Only add committed point if this is the correct number in sequence
         if (trailRendererManager != null)
-            trailRendererManager.AddPoint(worldPos);
-
-        if (numberPopupManager != null)
-            numberPopupManager.ExplodePopup(number - 1);
-
-        PlayNumberTouchAudio(number);
-
-        if (HapticsManager.Instance != null)
         {
-            HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.LightImpact);
+            int expectedNumber = trailRendererManager.GetPointCount() + 1;
+            
+            if (number == expectedNumber)
+            {
+                Vector3 worldPos = grid.VisualGrid.GridToWorldPosition(gridPosition);
+                trailRendererManager.AddPoint(worldPos);
+
+                if (numberPopupManager != null)
+                    numberPopupManager.ExplodePopup(number - 1);
+
+                PlayNumberTouchAudio(number);
+
+                if (HapticsManager.Instance != null)
+                {
+                    HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.LightImpact);
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"Attempted to add point {number} but expected {expectedNumber}");
+            }
         }
     }
 
@@ -154,22 +150,33 @@ public class QTEVisualController : MonoBehaviour
 
     public void UpdateTrailToPosition(Vector3 worldPosition)
     {
-        if (!isActive || trailRendererManager == null || trailRendererManager.GetPointCount() == 0) 
+        if (!isActive || trailRendererManager == null) 
             return;
         
         trailRendererManager.UpdatePreview(worldPosition);
+    }
+
+    public void ClearTrailPreview()
+    {
+        if (trailRendererManager != null)
+        {
+            trailRendererManager.ClearPreview();
+        }
     }
 
     public void ClearAll()
     {
         if (numberPopupManager != null)
             numberPopupManager.ClearAll();
-        
-        if (circleMarkerManager != null)
-            circleMarkerManager.ClearAll();
+     
         
         if (trailRendererManager != null)
             trailRendererManager.Clear();
+    }
+
+    public QTETrailRenderer GetTrailRenderer()
+    {
+        return trailRendererManager;
     }
 
     private void PlayNumberRevealAudio(int number)

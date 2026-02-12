@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2de90ffb221997447a171e015eca53c6, type: 3}
+  m_Name: Bandana
+  m_EditorClassIdentifier: 
+  nameItem: Bandana
+  description: Gives a chance to deal critical damage
+  rarity: 0
+  sprite: {fileID: 1508313600, guid: 71176c8eaa438204183310174053306d, type: 3}
+  effect:
+    rid: -2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

@@ -2,17 +2,34 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class BuffEvasionEffect : IItemEffect
+public class BuffEvasionEffect : IItemEffect, ISerializationCallbackReceiver
 {
+    private Dictionary<ItemLevel, int> amounts = new Dictionary<ItemLevel, int>();
+
     [SerializeField]
-    private Dictionary<ItemLevel, int> amount = new Dictionary<ItemLevel, int>();
+    private List<ItemLevelData<int>> inspectorAmount = new List<ItemLevelData<int>>();
     public void Equip(PlayerStats target, ItemLevel level)
     {
-        target.ModifyEvasion(amount[level]);
+        target.ModifyEvasion(amounts[level]);
     }
 
     public void UnEquip(PlayerStats target, ItemLevel level)
     {
-        target.ModifyEvasion(-amount[level]);
+        target.ModifyEvasion(-amounts[level]);
+    }
+
+    public void OnBeforeSerialize() { }
+
+    public void OnAfterDeserialize()
+    {
+        amounts = new Dictionary<ItemLevel, int>();
+
+        foreach (var a in inspectorAmount)
+        {
+            if (!amounts.ContainsKey(a.level))
+            {
+                amounts[a.level] = a.amount;
+            }
+        }
     }
 }

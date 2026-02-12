@@ -21,7 +21,7 @@ public class Item : ScriptableObject
     [Header("Behaviour")]
     [SerializeReference]
     [SerializeField]
-    private List<IItemEffect> effects = new List<IItemEffect>();
+    private IItemEffect effect;
 
     public string NameItem =>nameItem;
     public string Description =>description;
@@ -30,18 +30,12 @@ public class Item : ScriptableObject
     public Sprite Sprite =>sprite;
     public void ApplyEffects(PlayerStats player)
     {
-        foreach (var effect in effects)
-        {
-            if (effect != null) effect.Equip(player, level);
-        }
+        if (effect != null) effect.Equip(player, level);
     }
 
     public void RemoveEffects(PlayerStats player)
     {
-        foreach (var effect in effects)
-        {
-            if (effect != null) effect.UnEquip(player, level);
-        }
+        if (effect != null) effect.UnEquip(player, level);
     }
 
 }

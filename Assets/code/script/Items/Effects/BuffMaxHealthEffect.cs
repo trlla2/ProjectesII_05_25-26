@@ -2,18 +2,36 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class BuffMaxHealthEffect : IItemEffect
+public class BuffMaxHealthEffect : IItemEffect, ISerializationCallbackReceiver
 {
+    private Dictionary<ItemLevel, int> amounts = new Dictionary<ItemLevel, int>();
+
     [SerializeField]
-    private Dictionary<ItemLevel, int> amount = new Dictionary<ItemLevel, int>();
+    private List<ItemLevelData<int>> inspectorAmount = new List<ItemLevelData<int>>();
+    
+
     public void Equip(PlayerStats target, ItemLevel level)
     {
-        target.ModifyExtraHealth(amount[level]);
-        target.Heal(amount[level]);
+        target.ModifyExtraHealth(amounts[level]);
+        target.Heal(amounts[level]);
     }
-
     public void UnEquip(PlayerStats target, ItemLevel level)
     {
-        target.ModifyExtraHealth(-amount[level]);
+        target.ModifyExtraHealth(-amounts[level]);
+    }
+
+    public void  OnBeforeSerialize() {}
+
+    public void OnAfterDeserialize()
+    {
+        amounts = new Dictionary<ItemLevel, int>();
+    
+        foreach(var a in inspectorAmount)
+        {
+            if (!amounts.ContainsKey(a.level))
+            {
+                amounts[a.level] = a.amount;
+            }
+        }
     }
 }

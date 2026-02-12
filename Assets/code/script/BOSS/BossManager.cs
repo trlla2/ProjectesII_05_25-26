@@ -35,6 +35,7 @@ public class BossManager : MonoBehaviour
             int index = i;
             orbs[i].OnChargeChanged += (prev, curr) => OnOrbChargeChanged(index, prev, curr);
             orbs[i].OnStateChanged += (state) => OnOrbStateChanged(index, state);
+            orbs[i].OnOrbDepleted += () => OnOrbDepleted(index);
         }
     }
 
@@ -83,6 +84,38 @@ public class BossManager : MonoBehaviour
         if (orbVisuals != null && orbIndex < orbVisuals.Length && orbVisuals[orbIndex] != null)
         {
             orbVisuals[orbIndex].SetState(state);
+        }
+    }
+
+    private void OnOrbDepleted(int orbIndex)
+    {
+        Debug.Log($"Orb {orbIndex} depleted! Activating next orb...");
+        
+        if (orbVisuals != null && orbIndex < orbVisuals.Length && orbVisuals[orbIndex] != null)
+        {
+            orbVisuals[orbIndex].UpdateCharge(0, Orb.MaxCharge);
+        }
+
+        ActivateNextOrb();
+    }
+
+    private void ActivateNextOrb()
+    {
+        if (currentOrb != null)
+        {
+            currentOrb.IsActive = false;
+        }
+        currentOrbIndex++;
+
+        if (currentOrbIndex < orbs.Length)
+        {
+            currentOrb = orbs[currentOrbIndex];
+            currentOrb.IsActive = true;
+            currentOrb.ResetCharge();
+        }
+        else
+        {
+            currentOrb = null;
         }
     }
 }

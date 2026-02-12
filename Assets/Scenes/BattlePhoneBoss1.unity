@@ -21686,8 +21686,8 @@ GameObject:
   - component: {fileID: 1279878341}
   - component: {fileID: 1279878344}
   - component: {fileID: 1279878345}
-  - component: {fileID: 1279878347}
   - component: {fileID: 1279878346}
+  - component: {fileID: 1279878347}
   m_Layer: 5
   m_Name: ORB (1)
   m_TagString: Untagged
@@ -21834,7 +21834,7 @@ MonoBehaviour:
   CurrentCharge: 0
   State: 0
   OrbIndex: 0
-  qteController: {fileID: 0}
+  qteController: {fileID: 1279878346}
   IsActive: 0
 --- !u!114 &1279878346
 MonoBehaviour:
@@ -21897,7 +21897,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 1992799284}
+  m_TargetGraphic: {fileID: 1279878342}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []

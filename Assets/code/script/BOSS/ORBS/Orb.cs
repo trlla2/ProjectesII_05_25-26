@@ -16,6 +16,7 @@ public class Orb : MonoBehaviour
     public event Action<int, int> OnChargeChanged;
     public event Action<OrbState> OnStateChanged;
     public event Action OnOrbActivated;
+    public event Action OnOrbDepleted;
 
     [HideInInspector]
     public bool IsActive;
@@ -79,14 +80,25 @@ public class Orb : MonoBehaviour
 
         if (success)
         {
-            // QTE succeeded - deplete the orb
             Debug.Log("QTE Success!");
             Deplete();
         }
         else
         {
-            CurrentCharge -= 4; //failure Penalty
             Debug.Log("QTE Failed!");
+            int previousCharge = CurrentCharge;
+            CurrentCharge = Mathf.Max(0, CurrentCharge - 4);
+
+            if (qteController != null)
+            {
+                qteController.ResetVisuals();
+            }
+            
+            if (CurrentCharge != previousCharge)
+            {
+                OnChargeChanged?.Invoke(previousCharge, CurrentCharge);
+                UpdateState();
+            }
         }
     }
 
@@ -109,6 +121,7 @@ public class Orb : MonoBehaviour
         State = OrbState.Activated;
         CurrentCharge = 0;
         OnStateChanged?.Invoke(State);
+        OnOrbDepleted?.Invoke(); // Notify that this orb is depleted
     }
 
     public void ResetCharge()

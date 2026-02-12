@@ -101,6 +101,14 @@ public class Orb1QTE : MonoBehaviour, IQTE
         currentPhase.Enter();
     }
 
+    public void ResetVisuals()
+    {
+        if (visualController != null)
+        {
+            visualController.ClearAll();
+        }
+    }
+
     public void update()
     {
         if (!isActive || currentPhase == null || isWaitingForSuccessAnimation) return;

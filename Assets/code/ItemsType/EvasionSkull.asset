@@ -17,9 +17,19 @@ MonoBehaviour:
   rarity: 1
   sprite: {fileID: 0}
   effect:
-    rid: -2
+    rid: 1839098413479624788
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 1839098413479624788
+      type: {class: BuffEvasionEffect, ns: , asm: Assembly-CSharp}
+      data:
+        inspectorAmount:
+        - level: 0
+          amount: 5
+        - level: 1
+          amount: 7
+        - level: 2
+          amount: 9
+        - level: 3
+          amount: 11

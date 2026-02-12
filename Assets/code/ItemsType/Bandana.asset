@@ -17,9 +17,19 @@ MonoBehaviour:
   rarity: 0
   sprite: {fileID: 1508313600, guid: 71176c8eaa438204183310174053306d, type: 3}
   effect:
-    rid: -2
+    rid: 1839098413479624786
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 1839098413479624786
+      type: {class: CritEffect, ns: , asm: Assembly-CSharp}
+      data:
+        inspectorAmount:
+        - level: 0
+          amount: 5
+        - level: 1
+          amount: 10
+        - level: 2
+          amount: 15
+        - level: 3
+          amount: 20

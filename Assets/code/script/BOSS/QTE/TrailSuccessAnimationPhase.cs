@@ -11,8 +11,9 @@ public class TrailSuccessAnimationPhase : IQTEPhase
     private Vector3 orbPosition;
     private MonoBehaviour coroutineRunner;
     
-    private float accelerationDuration = 1.5f;
-    private float maxSpeedDuration = 1f;
+    private float accelerationDuration = 0.5f;
+    private float maxSpeedDuration = 0.5f;
+    private float scaleDownDuration = 1.8f;
     private float moveToOrbDuration = 0.5f;
     private float finalScale = 0.1f;
     private float fadeOutDuration = 0.2f;
@@ -66,7 +67,8 @@ public class TrailSuccessAnimationPhase : IQTEPhase
     private IEnumerator PlaySuccessAnimation()
     {
         yield return coroutineRunner.StartCoroutine(RotateAndPulse());
-        yield return coroutineRunner.StartCoroutine(MoveToOrbAndShrink());
+        yield return coroutineRunner.StartCoroutine(ScaleDownAtMaxSpeed());
+        yield return coroutineRunner.StartCoroutine(MoveToOrb());
         yield return coroutineRunner.StartCoroutine(trailRenderer.FadeOut(fadeOutDuration));
 
         isAnimating = false;
@@ -113,13 +115,36 @@ public class TrailSuccessAnimationPhase : IQTEPhase
         }
     }
 
-    private IEnumerator MoveToOrbAndShrink()
+    private IEnumerator ScaleDownAtMaxSpeed()
     {
-        Vector3 startPosition = trailRenderer.transform.position;
         Vector3 startScale = trailRenderer.transform.localScale;
         Vector3 targetScale = startScale * finalScale;
+        float maxRotationSpeed = 360f * 3f;
 
         float elapsed = 0f;
+
+        while (elapsed < scaleDownDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = elapsed / scaleDownDuration;
+
+            float easedT = Mathf.SmoothStep(0f, 1f, t);
+            trailRenderer.transform.localScale = Vector3.Lerp(startScale, targetScale, easedT);
+
+            trailRenderer.transform.Rotate(0f, 0f, maxRotationSpeed * Time.unscaledDeltaTime);
+
+            yield return null;
+        }
+
+        //Ensure final scale is set
+        trailRenderer.transform.localScale = targetScale;
+    }
+
+    private IEnumerator MoveToOrb()
+    {
+        Vector3 startPosition = trailRenderer.transform.position;
+        float elapsed = 0f;
+        float maxRotationSpeed = 360f * 3f;
 
         while (elapsed < moveToOrbDuration)
         {
@@ -130,16 +155,13 @@ public class TrailSuccessAnimationPhase : IQTEPhase
             float easedT = Mathf.SmoothStep(0f, 1f, t);
 
             trailRenderer.transform.position = Vector3.Lerp(startPosition, orbPosition, easedT);
-            trailRenderer.transform.localScale = Vector3.Lerp(startScale, targetScale, easedT);
 
             float rotationT = 1f - easedT;
-            trailRenderer.transform.Rotate(0f, 0f, 180f * rotationT * Time.unscaledDeltaTime);
+            trailRenderer.transform.Rotate(0f, 0f, maxRotationSpeed * rotationT * Time.unscaledDeltaTime);
 
             yield return null;
         }
 
-        //Ensure final values
         trailRenderer.transform.position = orbPosition;
-        trailRenderer.transform.localScale = targetScale;
     }
 }

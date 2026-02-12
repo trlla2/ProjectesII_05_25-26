@@ -1,14 +1,17 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CritEffect : IItemEffect
 {
-    public void Equip(PlayerStats target)
+    [SerializeField]
+    private Dictionary<ItemLevel, int> amount = new Dictionary<ItemLevel, int>();
+    public void Equip(PlayerStats target, ItemLevel level)
     {
-        throw new System.NotImplementedException();
+        target.ModifyCritPercentage(amount[level]);
     }
 
-    public void UnEquip(PlayerStats target)
+    public void UnEquip(PlayerStats target, ItemLevel level)
     {
-        throw new System.NotImplementedException();
+        target.ModifyCritPercentage(-amount[level]);
     }
 }

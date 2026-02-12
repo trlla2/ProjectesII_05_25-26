@@ -1,5 +1,5 @@
 public interface IItemEffect 
 {
-    public void Equip(PlayerStats target); 
-    public void UnEquip(PlayerStats target); 
+    public void Equip(PlayerStats target, ItemLevel level); 
+    public void UnEquip(PlayerStats target, ItemLevel level); 
 }

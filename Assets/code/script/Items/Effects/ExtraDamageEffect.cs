@@ -1,16 +1,17 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ExtraDamageEffect : IItemEffect
 {
     [SerializeField]
-    private int amount = 1;
-    public void Equip(PlayerStats target)
+    private Dictionary<ItemLevel, int> amount = new Dictionary<ItemLevel, int>();
+    public void Equip(PlayerStats target, ItemLevel level)
     {
-        target.ModifyExtraDamage(amount);
+        target.ModifyExtraDamage(amount[level]);
     }
 
-    public void UnEquip(PlayerStats target)
+    public void UnEquip(PlayerStats target, ItemLevel level)
     {
-        target.ModifyExtraDamage(-amount);
+        target.ModifyExtraDamage(-amount[level]);
     }
 }

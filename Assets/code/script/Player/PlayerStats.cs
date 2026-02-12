@@ -1,7 +1,5 @@
-using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
-using UnityEditor.Experimental;
 using UnityEngine;
 
 public class PlayerStats
@@ -20,6 +18,8 @@ public class PlayerStats
     private float defense;
     private int critPercentage;
     private const float critMultiplayer = 1.5f;
+    private int spikeDamage;
+    public int SpikeDamage => spikeDamage;
 
     // level stats
     private int experiencePoints;
@@ -56,6 +56,7 @@ public class PlayerStats
         extraDamage = 0;
         defense = 0;
         critPercentage = 0;
+        spikeDamage = 0;
 
         // level stats
         experiencePoints = 0;
@@ -201,5 +202,6 @@ public class PlayerStats
     public void ModifyExtraDamage(int amount) { extraDamage += amount; }
     public void ModifyDefense(float amount) { defense += amount; }
     public void ModifyCritPercentage(int amount) { critPercentage += amount; }
+    public void ModifySipkeDamage(int amount) { spikeDamage += amount; }
 
 }

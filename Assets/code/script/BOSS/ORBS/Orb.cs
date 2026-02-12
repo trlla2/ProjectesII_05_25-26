@@ -1,0 +1,146 @@
+using UnityEngine;
+using System;
+using UnityEngine.UI;
+
+public class Orb : MonoBehaviour
+{
+    public const int MaxCharge = 10;
+
+    public int CurrentCharge;
+    public OrbState State;
+    public int OrbIndex;
+
+    [Header("QTE Reference")]
+    [SerializeField] private Orb1QTE qteController;
+
+    public event Action<int, int> OnChargeChanged;
+    public event Action<OrbState> OnStateChanged;
+    public event Action OnOrbActivated;
+
+    [HideInInspector]
+    public bool IsActive;
+
+    private Button orbButton;
+
+    private void Awake()
+    {
+        CurrentCharge = 0;
+        State = OrbState.Inactive;
+
+        orbButton = GetComponent<Button>();
+
+        orbButton.onClick.AddListener(OnOrbClicked);
+    }
+
+    private void OnDestroy()
+    {
+        if (qteController != null)
+        {
+            qteController.OnQTEComplete -= HandleQTEComplete;
+        }
+    }
+
+    private void OnOrbClicked()
+    {
+        if (State != OrbState.Charged)
+        {
+            Debug.Log("Orb cannot be activated, not fully charged!");
+            return;
+        }
+
+        if (qteController == null)
+        {
+            Debug.LogError("Orb has no QTE controller assigned!");
+            return;
+        }
+
+        if (qteController.IsActive)
+        {
+            Debug.LogWarning("QTE already in progress!");
+            return;
+        }
+
+        ActivateOrb();
+    }
+
+    private void ActivateOrb()
+    {
+
+        OnOrbActivated?.Invoke();
+
+        qteController.OnQTEComplete += HandleQTEComplete;
+
+        qteController.StartQTE();
+    }
+
+    private void HandleQTEComplete(bool success)
+    {
+        qteController.OnQTEComplete -= HandleQTEComplete;
+
+        if (success)
+        {
+            // QTE succeeded - deplete the orb
+            Debug.Log("QTE Success!");
+            Deplete();
+        }
+        else
+        {
+            CurrentCharge -= 4; //failure Penalty
+            Debug.Log("QTE Failed!");
+        }
+    }
+
+    public void AddCharge(int amount)
+    {
+        if (State == OrbState.Activated) return;
+
+        int previous = CurrentCharge;
+        CurrentCharge = Mathf.Clamp(CurrentCharge + amount, 0, MaxCharge);
+
+        if (CurrentCharge != previous)
+        {
+            OnChargeChanged?.Invoke(previous, CurrentCharge);
+            UpdateState();
+        }
+    }
+
+    public void Deplete()
+    {
+        State = OrbState.Activated;
+        CurrentCharge = 0;
+        OnStateChanged?.Invoke(State);
+    }
+
+    public void ResetCharge()
+    {
+        CurrentCharge = 0;
+        State = OrbState.Inactive;
+        OnStateChanged?.Invoke(State);
+    }
+
+    private void UpdateState()
+    {
+        OrbState newState;
+
+        switch (CurrentCharge)
+        {
+            case 0:
+                newState = OrbState.Inactive;
+                break;
+
+            case MaxCharge:
+                newState = OrbState.Charged;
+                break;
+
+            default:
+                newState = OrbState.Charging;
+                break;
+        }
+
+        if (newState != State)
+        {
+            State = newState;
+            OnStateChanged?.Invoke(State);
+        }
+    }
+}

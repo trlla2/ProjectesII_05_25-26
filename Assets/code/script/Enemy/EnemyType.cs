@@ -83,6 +83,9 @@ public class EnemyType : ScriptableObject
             case EnemySpellType.DiagonalDestroy:
                 return new DiagonalDestroySpell(damagePerElement, moveCount, excludeBelowTargets);
 
+            case EnemySpellType.BossStage1Attack:
+                return new BossStage1Spell(damagePerElement, moveCount, excludeBelowTargets);
+
             default:
                 return new ColumnDestroySpell(damagePerElement, moveCount, excludeBelowTargets);
         }
@@ -94,5 +97,6 @@ public enum EnemySpellType
     ColumnDestroy,
     DiagonalDestroy,
     RandomDestroy,
-    SingleTimedTarget
+    SingleTimedTarget,
+    BossStage1Attack
 }

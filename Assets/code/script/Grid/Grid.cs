@@ -85,17 +85,26 @@ public class Grid : MonoBehaviour
         visualGrid.Swap(posA, posB, 0.3f);
     }
 
-    public void InstantVisualEmpty(List<Vector2Int> positions)
+    public void InstantVisualEmpty(List<Vector2Int> positions, bool chargeOrb = false)
     {
+        //Only charge orb if explicitly requested, so  called from playerpathing
+        if (chargeOrb && GameManager.Instance.isBossBattle)
+        {
+            CollectAndChargeWeakElements(positions);
+        }
+
         foreach (Vector2Int pos in positions)
         {
             ElementVisual visual = gridData.GetVisualAt(pos);
-            if (visual.IsTargetedByEnemy)
+            if (visual != null && visual.IsTargetedByEnemy)
             {
                 visual.SetTargetedByEnemy(false);
             }
             gridData.SetElementAt(pos, emptyElement);
-            visualGrid.GetVisualAt(pos).UpdateVisual(emptyElement);
+            if (visualGrid.GetVisualAt(pos) != null)
+            {
+                visualGrid.GetVisualAt(pos).UpdateVisual(emptyElement);
+            }
         }
     }
 
@@ -104,7 +113,7 @@ public class Grid : MonoBehaviour
         if (positions == null || positions.Count == 0)
             return;
 
-        // Tutorial blocks the player action (deleting), but NOT the refill mechanic.
+        //Tutorial blocks the player deleting, but NOT the refill mechanic.
         if (IsTutorialBlocking())
         {
             TryStartRefill();
@@ -114,7 +123,10 @@ public class Grid : MonoBehaviour
         foreach (var pos in positions)
         {
             gridData.SetElementAt(pos, emptyElement);
-            visualGrid.GetVisualAt(pos).UpdateVisual(emptyElement);
+            if (visualGrid.GetVisualAt(pos) != null)
+            {
+                visualGrid.GetVisualAt(pos).UpdateVisual(emptyElement);
+            }
 
             if (visualGrid != null)
             {
@@ -160,21 +172,22 @@ public class Grid : MonoBehaviour
 
     public void Reroll(int scrollTimes = 5)
     {
-        if (CurrentState != GridStateType.Idle)
-            return;
-
-        if (IsTutorialBlocking())
-            return;
-
-        List<Spell> spellsToUse = availableSpells;
-
-        if (GameManager.Instance != null && GameManager.Instance.GetPlayerSpellBook() != null
-            && GameManager.Instance.GetPlayerSpellBook().Count > 0)
+        if (CurrentState == GridStateType.Idle || CurrentState == GridStateType.ValidateSpell)
         {
-            spellsToUse = GameManager.Instance.GetPlayerSpellBook();
-        }
 
-        ChangeState(new RerollState(this, visualGrid, availableElements, spellsToUse, scrollTimes));
+            if (IsTutorialBlocking())
+                return;
+
+            List<Spell> spellsToUse = availableSpells;
+
+            if (GameManager.Instance != null && GameManager.Instance.GetPlayerSpellBook() != null
+                && GameManager.Instance.GetPlayerSpellBook().Count > 0)
+            {
+                spellsToUse = GameManager.Instance.GetPlayerSpellBook();
+            }
+
+            ChangeState(new RerollState(this, visualGrid, availableElements, spellsToUse, scrollTimes));
+        }
     }
 
     public Element GetElementAt(Vector2Int position)
@@ -347,6 +360,40 @@ public class Grid : MonoBehaviour
             {
                 visual.SetSelectable(true);
             }
+        }
+    }
+
+    private void CollectAndChargeWeakElements(List<Vector2Int> positions)
+    {
+        BossManager bossManager = GameManager.Instance.bossManager;
+        if (bossManager == null)
+            return;
+
+        ElementType weakElement = bossManager.WeakElement;
+
+        List<Vector3> matchingStartPositions = new List<Vector3>();
+        List<Element> matchingElements = new List<Element>();
+
+        foreach (Vector2Int pos in positions)
+        {
+            if (!gridData.IsPositionValid(pos))
+                continue;
+
+            Element element = gridData.GetElementAt(pos);
+            
+            if (element != null && element != emptyElement && element.Type == weakElement)
+            {
+                ElementVisual visual = gridData.GetVisualAt(pos);
+                if (visual != null)
+                {
+                    matchingStartPositions.Add(visual.GetWorldPosition());
+                    matchingElements.Add(element);
+                }
+            }
+        }
+        if (matchingElements.Count > 0)
+        {
+            bossManager.TryChargeOrb(matchingStartPositions, matchingElements);
         }
     }
 

@@ -577,7 +577,7 @@ public class EnemySpellState : IGridState
     }
 }
 
-//check if there are available spells to the user  
+//check if there are available spells to the player
 public class ValidateSpellState : IGridState
 {
     private Grid grid;

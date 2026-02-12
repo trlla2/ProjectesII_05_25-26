@@ -21,7 +21,7 @@ public class InventoryUIHandler : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        foreach (Item item in GameManager.Instance.GetPlayerInventory())
+        foreach (Item item in GameManager.Instance.GetPlayerInventory()) 
         {
             GameObject itemUI = Instantiate(itemUIPrefab, transform);
             itemUI.GetComponent<Image>().sprite = item.Sprite;

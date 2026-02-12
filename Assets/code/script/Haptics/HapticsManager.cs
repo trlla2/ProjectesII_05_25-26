@@ -28,7 +28,7 @@ public class HapticsManager : MonoBehaviour
 
     public void GenerateHapticFeedback(HapticTypes hapticType)
     {
-        Debug.Log("Generating Haptic Feedback: " + hapticType);
+     //   Debug.Log("Generating Haptic Feedback: " + hapticType);
         Solo.MOST_IN_ONE.MOST_HapticFeedback.Generate((Solo.MOST_IN_ONE.MOST_HapticFeedback.HapticTypes)hapticType);
     }
 

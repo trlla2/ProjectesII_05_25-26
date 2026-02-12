@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class GameManager : MonoBehaviour
 {
@@ -46,6 +47,11 @@ public class GameManager : MonoBehaviour
 
     public event System.Action<EnemyBehaviour> OnSetEnemyReference;
 
+    //Boss
+    public BossManager bossManager;
+
+    [HideInInspector] public bool isBossBattle = false;
+    [HideInInspector] public ElementType BossWeakElement;
 
     private void Awake()
     {
@@ -59,6 +65,8 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
 
         currentEnemyList = new List<EnemyType>(enemyTypes);
+
+        if (bossManager != null) { isBossBattle = true; BossWeakElement = bossManager.WeakElement;}
     }
 
     public void EnterBattle() { OnEnterBattle?.Invoke(); }
@@ -75,7 +83,6 @@ public class GameManager : MonoBehaviour
 
 
         EnemyType typeToUse;
-        Debug.Log("aaaaaaaaaaaaaaaaaaaa");
 
         if (forcedEnemyType != null)
         {
@@ -119,9 +126,14 @@ public class GameManager : MonoBehaviour
     
     public void DeleteEnemyRef() { enemyInCombat = null; }
 
+    public void AttackBoss(float percent)
+    {
+        enemyInCombat?.dealBossDamage(percent);
+    }
+
     public void AttackEnemy(ElementType element)
     {
-        enemyInCombat?.DealDamage(playerStats.AttackWithElement(element) );
+        enemyInCombat?.DealDamage(playerStats.AttackWithElement(element));
     }
 
     public void NotifyPlayerMove()

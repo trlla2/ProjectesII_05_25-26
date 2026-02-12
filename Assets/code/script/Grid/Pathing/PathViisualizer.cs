@@ -1,5 +1,4 @@
 using UnityEngine;
-using static Solo.MOST_IN_ONE.MOST_HapticFeedback;
 
 public class PathVisualizer : MonoBehaviour
 {

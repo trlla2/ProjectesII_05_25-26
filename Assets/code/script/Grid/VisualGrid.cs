@@ -381,6 +381,7 @@ public class VisualGrid : MonoBehaviour
                     );
 
                     GameObject cloneObj = Instantiate(elementVisualPrefab, spawnPos, Quaternion.identity, transform);
+
                     SpriteRenderer sr = cloneObj.GetComponentInChildren<SpriteRenderer>();
                     GameObject cloneBackground = cloneObj.transform.Find("Background")?.gameObject;
                     if (sr != null && element != null)
@@ -485,11 +486,6 @@ public class VisualGrid : MonoBehaviour
                     if (clones[i].renderer != null)
                     {
                         clones[i].renderer.enabled = isVisible;
-                    }
-
-                    if (clones[i].background != null)
-                    {
-                        clones[i].background.SetActive(isVisible);
                     }
                 }
             }

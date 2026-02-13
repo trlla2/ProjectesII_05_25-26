@@ -14966,10 +14966,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stageLevel: 1
   enemyTypes:
-  - {fileID: 11400000, guid: 3ddc38c9790bdd44bacbeb43cb61cada, type: 2}
-  - {fileID: 11400000, guid: b58a165a179e5564c8881963ab38360b, type: 2}
-  - {fileID: 11400000, guid: 5a68dbd4268eb7749b497b05fa080c5c, type: 2}
+  - {fileID: 11400000, guid: 79d07f17a589c324d9832fa0d07aa8f0, type: 2}
+  - {fileID: 11400000, guid: 8da2630b56083c44abb033c12f629f0e, type: 2}
+  - {fileID: 11400000, guid: 5d98f1c5df92ad7479bd352825842b75, type: 2}
   tutorialManager: {fileID: 1311944230}
+  bossManager: {fileID: 0}
+  isBossBattle: 0
+  BossWeakElement: 0
 --- !u!4 &806185222
 Transform:
   m_ObjectHideFlags: 0
@@ -26187,6 +26190,7 @@ MonoBehaviour:
   healthBar: {fileID: 1474826783}
   damageText: {fileID: 1937170125}
   damageTextTranslator: {fileID: 1937170124}
+  critImage: {fileID: 0}
   timeToChangeDmg: 0.2
   weaknessText: {fileID: 1070558224}
   weaknessTextTranslator: {fileID: 1070558223}

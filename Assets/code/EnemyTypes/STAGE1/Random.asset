@@ -17,14 +17,17 @@ MonoBehaviour:
   damage: 10
   elementCount: 4
   level: 1
+  difficulty: 0
   weaknesses: 01000000
   weaknessMultiplier: 2
   resistances: 02000000
   resistanceMultiplier: 0.5
   enemySprite: {fileID: -1402350852106452376, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
   animatorController: {fileID: 9100000, guid: 762dffe4e2be2c54d8021d908eb1f3af, type: 2}
-  spellType: 1
+  spellType: 2
   damagePerElement: 4
   moveCount: 3
   AtackTimer: 6
+  lvl2Delay: 5
+  lvl2Countdown: 15
   excludeBelowTargets: 0

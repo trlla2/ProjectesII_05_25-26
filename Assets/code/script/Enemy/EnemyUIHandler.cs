@@ -46,6 +46,8 @@ public class EnemyUIHandler : MonoBehaviour
     private void Awake()
     {
         GameManager.Instance.OnSetEnemyReference += SetEnemyRef;
+
+        critImage.SetActive(false);
     }
 
     private void SetEnemyRef(EnemyBehaviour reference)
@@ -81,7 +83,7 @@ public class EnemyUIHandler : MonoBehaviour
                 damageText.text = ""; 
                 damageTextTranslator.ResetPosition(); 
                 isShowingDamage = false;
-                critImage.SetActive(true);
+                critImage.SetActive(false);
                 currentDamageTimer = 0;  
             }
         }

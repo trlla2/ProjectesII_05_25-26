@@ -1,6 +1,4 @@
-using System;
 using TMPro;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class NewSpellPanelBehaviour : MonoBehaviour

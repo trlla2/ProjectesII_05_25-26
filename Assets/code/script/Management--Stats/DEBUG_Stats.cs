@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class DEBUG_Stats : MonoBehaviour
@@ -13,18 +12,21 @@ public class DEBUG_Stats : MonoBehaviour
 
     private void Start()
     {
-
-        for (int i = 0; i < GameManager.Instance.PlayerSpellBookSize; i++)
+        if (spells.Count > 0)
         {
-            if (spells[i] == null)
-                break;
+            for (int i = 0; i < GameManager.Instance.PlayerSpellBookSize; i++)
+            {
+                if (spells[i] == null)
+                    break;
 
-            GameManager.Instance.AddSpellToPlayerSpellBook(spells[i], i);
+                GameManager.Instance.AddSpellToPlayerSpellBook(spells[i], i);
+            }
         }
+
 
         foreach (Item item in items)
             GameManager.Instance.AddItemToPlayerInventory(item);
-        
 
+        Debug.Log(GameManager.Instance.GetPlayerInventory().Count);
     }
 }

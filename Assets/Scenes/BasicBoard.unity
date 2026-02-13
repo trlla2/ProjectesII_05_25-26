@@ -1190,14 +1190,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cbd7450e55ac9f448c1660ea6a36444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _spaceBetweenTiles: 0
+  _boardManager: {fileID: 0}
+  _stageLevel: 0
   _numOfEmptyTiles: 20
-  _numOfStairs: 1
   _numOfEnemyTiles: 4
   _numOfMiniBossTiles: 0
-  _numOfBossesTiles: 0
   _numOfChestTiles: 4
-  _numOfEgressTiles: 0
+  _endZoneReservedTiles: 0
+  _bossTileDistanceFromEnd: 0
+  _startZoneReserveTiles: 0
+  _minBranches: 0
+  _maxBranches: 0
+  _minBranchLengthBeforeRejoin: 0
+  _maxBranchLength: 0
+  _branchProbabilityPerCandidate: 0
+  _minDistBetweenPaths: 0
+  AllowBranchUp: 0
+  AllowBranchDown: 0
+  AllowBranchLeft: 0
+  AllowBranchRight: 0
 --- !u!1 &1106537844
 GameObject:
   m_ObjectHideFlags: 0
@@ -1402,6 +1413,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b58a165a179e5564c8881963ab38360b, type: 2}
   - {fileID: 11400000, guid: 5a68dbd4268eb7749b497b05fa080c5c, type: 2}
   tutorialManager: {fileID: 0}
+  bossManager: {fileID: 0}
+  isBossBattle: 0
+  BossWeakElement: 0
 --- !u!4 &1135501900
 Transform:
   m_ObjectHideFlags: 0
@@ -2077,8 +2091,9 @@ MonoBehaviour:
   moveSpeed: 3
   jumpHeight: 0
   jumpDuration: 0
-  jumpParticles: {fileID: 0}
   waitTimeBetweenTilesInSeconds: 0
+  jumpParticles: {fileID: 0}
+  _boardManager: {fileID: 0}
 --- !u!114 &1660267100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2675,6 +2690,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5583812689237297437, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
+      propertyPath: _itemsPool.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5583812689237297437, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
+      propertyPath: '_itemsPool.Array.data[3]'
+      value: 
+      objectReference: {fileID: 11400000, guid: ef79256ca3e204e4cb33bc2532e89133, type: 2}
+    - target: {fileID: 5583812689237297437, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
+      propertyPath: '_itemsPool.Array.data[4]'
+      value: 
+      objectReference: {fileID: 11400000, guid: fa17eac532c173e4e82b8a71b2782204, type: 2}
+    - target: {fileID: 5583812689237297437, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
+      propertyPath: '_itemsPool.Array.data[5]'
+      value: 
+      objectReference: {fileID: 11400000, guid: a785f2fc7cdab0b4b85fd01c2b46ec55, type: 2}
     - target: {fileID: 6033838540390410605, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
       propertyPath: m_Type
       value: 1

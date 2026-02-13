@@ -33,8 +33,8 @@ public class OpenChestScreen : MonoBehaviour
     {
         _selectedItem = _itemsPool[Random.Range(0, _itemsPool.Count)];
 
-        _itemNameText.text = _selectedItem.nameItem;
-        _itemDescriptionText.text = _selectedItem.description;
+        _itemNameText.text = _selectedItem.NameItem;
+        _itemDescriptionText.text = _selectedItem.Description;
         _itemSprite.sprite = _selectedItem.Sprite;
 
         Debug.Log("New item pulled");

@@ -14,13 +14,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameItem: Evasion Skull
   description: 'Gives 10% of evasion '
-  Sprite: {fileID: 3258979074984140082, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
-  effects:
-  - rid: 1817717172891811913
+  rarity: 1
+  sprite: {fileID: 0}
+  effect:
+    rid: 1839098413479624788
   references:
     version: 2
     RefIds:
-    - rid: 1817717172891811913
+    - rid: 1839098413479624788
       type: {class: BuffEvasionEffect, ns: , asm: Assembly-CSharp}
       data:
-        amount: 10
+        inspectorAmount:
+        - level: 0
+          amount: 5
+        - level: 1
+          amount: 7
+        - level: 2
+          amount: 9
+        - level: 3
+          amount: 11

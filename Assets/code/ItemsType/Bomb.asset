@@ -14,13 +14,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameItem: Bomb
   description: Gives you extra damage
-  Sprite: {fileID: -7886143704497696660, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
-  effects:
-  - rid: 1817717290826465377
+  rarity: 0
+  sprite: {fileID: 1855830003490570330, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
+  effect:
+    rid: 1839098413479624787
   references:
     version: 2
     RefIds:
-    - rid: 1817717290826465377
+    - rid: 1839098413479624787
       type: {class: ExtraDamageEffect, ns: , asm: Assembly-CSharp}
       data:
-        amount: 1
+        inspectorAmount:
+        - level: 0
+          amount: 1
+        - level: 1
+          amount: 2
+        - level: 2
+          amount: 4
+        - level: 3
+          amount: 8

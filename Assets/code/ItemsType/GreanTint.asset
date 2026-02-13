@@ -14,13 +14,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameItem: Green Tint
   description: Augments the maximum of health points
-  Sprite: {fileID: 8151029797025180017, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
-  effects:
-  - rid: 1817717290826465376
+  rarity: 0
+  sprite: {fileID: 8151029797025180017, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
+  effect:
+    rid: 1839098413479624783
   references:
     version: 2
     RefIds:
-    - rid: 1817717290826465376
+    - rid: 1839098413479624783
       type: {class: BuffMaxHealthEffect, ns: , asm: Assembly-CSharp}
       data:
-        amount: 10
+        inspectorAmount:
+        - level: 0
+          amount: 10
+        - level: 1
+          amount: 20
+        - level: 2
+          amount: 30
+        - level: 3
+          amount: 40

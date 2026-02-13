@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,30 +6,36 @@ using UnityEngine;
 public class Item : ScriptableObject
 {
     [Header("SETUP")]
-    public string nameItem;
-    public string description;
-
+    [SerializeField]
+    private string nameItem;
+    [SerializeField]
+    private string description;
+    [SerializeField]
+    private ItemRarity rarity;
+    private ItemLevel level = ItemLevel.LVL1;
 
     [Header("Art Stuff")]
-    public Sprite Sprite;
+    [SerializeField]
+    private Sprite sprite;
 
     [Header("Behaviour")]
     [SerializeReference]
-    public List<IItemEffect> effects = new List<IItemEffect>();
+    [SerializeField]
+    private IItemEffect effect;
 
+    public string NameItem =>nameItem;
+    public string Description =>description;
+    public ItemRarity Rarity =>rarity;
+    public ItemLevel Level =>level;
+    public Sprite Sprite =>sprite;
     public void ApplyEffects(PlayerStats player)
     {
-        foreach (var effect in effects)
-        {
-            if (effect != null) effect.Equip(player);
-        }
+        if (effect != null) effect.Equip(player, level);
     }
 
     public void RemoveEffects(PlayerStats player)
     {
-        foreach (var effect in effects)
-        {
-            if (effect != null) effect.UnEquip(player);
-        }
+        if (effect != null) effect.UnEquip(player, level);
     }
+
 }

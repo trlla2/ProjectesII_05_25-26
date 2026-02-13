@@ -149,6 +149,9 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        if (playerStats.SpikeDamage > 0)
+            enemyInCombat?.DealDamage(new DamageType(ElementType.EMPTY, playerStats.SpikeDamage));
+
         playerStats.Damage(damage);
         Camera.main.GetComponent<CameraShake>().Shake(0.2f);
 

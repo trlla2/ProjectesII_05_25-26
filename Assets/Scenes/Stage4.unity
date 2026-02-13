@@ -1191,26 +1191,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _boardManager: {fileID: 1035823810}
-  _spaceBetweenTiles: 0
+  _stageLevel: 4
   _numOfEmptyTiles: 21
-  _numOfStairs: 0
   _numOfEnemyTiles: 4
   _numOfMiniBossTiles: 0
-  _numOfBossesTiles: 0
   _numOfChestTiles: 4
-  _numOfEgressTiles: 0
-  _reserveTilesAtEndForMainStairs: 6
+  _endZoneReservedTiles: 5
+  _bossTileDistanceFromEnd: 4
   _startZoneReserveTiles: 5
   _minBranches: 1
   _maxBranches: 2
+  _minBranchLengthBeforeRejoin: 9
   _maxBranchLength: 15
   _branchProbabilityPerCandidate: 0.5
-  _minBranchLengthBeforeRejoin: 9
-  _minSeparationTiles: 2
-  AllowBranchUp: 0
-  AllowBranchDown: 1
-  AllowBranchLeft: 1
-  AllowBranchRight: 0
+  _minDistBetweenPaths: 2
+  AllowBranchUp: 1
+  AllowBranchDown: 0
+  AllowBranchLeft: 0
+  AllowBranchRight: 1
 --- !u!1 &1106537844
 GameObject:
   m_ObjectHideFlags: 0

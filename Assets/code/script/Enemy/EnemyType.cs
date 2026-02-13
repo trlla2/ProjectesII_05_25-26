@@ -32,6 +32,10 @@ public class EnemyType : ScriptableObject
     [Header("TimerEnemy")]
     [SerializeField] private float AtackTimer = 4f;
 
+    [Header("Lvl2 Timed Settings")]
+    [SerializeField] private float lvl2Delay = 5f;
+    [SerializeField] private float lvl2Countdown = 15f;
+
     public bool excludeBelowTargets = false;
 
     public float Health => health;
@@ -86,6 +90,15 @@ public class EnemyType : ScriptableObject
             case EnemySpellType.BossStage1Attack:
                 return new BossStage1Spell(damagePerElement, moveCount, excludeBelowTargets);
 
+            case EnemySpellType.ColumnDestroyLvl2:
+                return new ColumnDestroyLvl2Spell(damagePerElement, lvl2Delay, lvl2Countdown, excludeBelowTargets);
+
+            case EnemySpellType.DiagonalDestroyLvl2:
+                return new DiagonalDestroyLvl2Spell(damagePerElement, lvl2Delay, lvl2Countdown, excludeBelowTargets);
+
+            case EnemySpellType.RandomDestroyLvl2:
+                return new RandomDestroyLvl2Spell(elementCount, damagePerElement, lvl2Delay, lvl2Countdown, excludeBelowTargets);
+
             default:
                 return new ColumnDestroySpell(damagePerElement, moveCount, excludeBelowTargets);
         }
@@ -98,5 +111,8 @@ public enum EnemySpellType
     DiagonalDestroy,
     RandomDestroy,
     SingleTimedTarget,
-    BossStage1Attack
+    BossStage1Attack,
+    ColumnDestroyLvl2,
+    DiagonalDestroyLvl2,
+    RandomDestroyLvl2
 }

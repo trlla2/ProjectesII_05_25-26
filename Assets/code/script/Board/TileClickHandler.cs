@@ -14,10 +14,11 @@ public class TileClickHandler : MonoBehaviour
     private void Awake()
     {
         //player = GetComponent<PlayerMovement>();
+        cam = gameObject.GetComponent<Camera>();
     }
     void Update()
     {
-        mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        mouseRay = cam.ScreenPointToRay(Input.mousePosition);
 
         if (!player.isMoving/*FORCED*/ && raycastActive) 
         {

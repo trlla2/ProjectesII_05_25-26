@@ -12,6 +12,7 @@ public abstract class BoardTile : MonoBehaviour
     private Renderer _renderer;
 
     public List<BoardTile> neighbors = new List<BoardTile>();
+    protected BoardManager _boardManager;
 
     private void Awake()
     {
@@ -46,5 +47,7 @@ public abstract class BoardTile : MonoBehaviour
 
     public Renderer GetRenderer() { return _renderer; }
 
-    
+    public void SetBoardManager(BoardManager boardManager) { _boardManager = boardManager; }
+
+
 }

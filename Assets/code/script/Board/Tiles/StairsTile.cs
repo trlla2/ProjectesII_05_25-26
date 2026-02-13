@@ -6,11 +6,14 @@ public class StairsTile : BoardTile
 
     [SerializeField] private EmptySpellBookAlertHandler _emptySpellbookAlert;
 
+    private int _stageLevel;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        if (_sceneToLoadWhenInteract.Equals(""))
-            _sceneToLoadWhenInteract = "HallOfEgress";
+        //if (_sceneToLoadWhenInteract.Equals(""))
+        //    _sceneToLoadWhenInteract = "HallOfEgress";
+
     }
 
     public override void Interact()
@@ -24,6 +27,22 @@ public class StairsTile : BoardTile
                 Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(false);
                 _emptySpellbookAlert.Show();
             }
+        }
+    }
+
+    public void SetStageLevel(int level)
+    {
+        _stageLevel = level;
+        switch (_stageLevel)
+        {
+            case 1: _sceneToLoadWhenInteract = "Stage2";
+                break;
+            case 2: _sceneToLoadWhenInteract = "Stage3";
+                break;
+            case /*>=*/ 3: _sceneToLoadWhenInteract = "Stage4";
+                break;
+            case 4: _sceneToLoadWhenInteract = "HallOfEgress";
+                break;
         }
     }
 }

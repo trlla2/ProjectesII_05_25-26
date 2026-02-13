@@ -47,7 +47,7 @@ public class SceneTransition : MonoBehaviour
             AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
             while (!asyncLoad.isDone)
                 yield return null;
-            BoardManager.instance?.HandleBoardCamera(false); // FORCED CHANGE!!!!!!
+            //BoardManager.instance?.HandleBoardCamera(false); // FORCED CHANGE!!!!!!
         }
         else
             SceneManager.LoadScene(sceneName);
@@ -62,7 +62,7 @@ public class SceneTransition : MonoBehaviour
     {
         yield return StartCoroutine(Fade(1f));
         SceneManager.UnloadSceneAsync(sceneName);
-        BoardManager.instance.HandleBoardCamera(true); // FORCED CHANGE!!!!!!
+        //BoardManager.instance.HandleBoardCamera(true); // FORCED CHANGE!!!!!!
         yield return StartCoroutine(Fade(0f));
     }
 

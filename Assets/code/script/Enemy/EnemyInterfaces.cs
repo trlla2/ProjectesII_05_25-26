@@ -65,7 +65,7 @@ public abstract class EnemySpellBase : IEnemySpell
         }
     }
 
-    protected virtual void ApplyEffect(Grid grid, System.Action onComplete = null)
+    protected virtual void ApplyEffect(Grid grid, System.Action onComplete = null, bool rerollAfter = false)
     {
         if (grid == null)
         {
@@ -106,11 +106,11 @@ public abstract class EnemySpellBase : IEnemySpell
             grid.ProcessEnemySpell(finalPositions, () =>
             {
                 DamagePlayerWithAnimation(grid, finalPositions.ToArray(), elements, damagePerElement, onComplete);
-            }, excludeBelowTargets);
+            }, excludeBelowTargets, rerollAfter);
         }
         else
         {
-            // nothing to process, continue immediately
+            // nothing to process, continue
             onComplete?.Invoke();
         }
 

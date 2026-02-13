@@ -328,7 +328,7 @@ public class Grid : MonoBehaviour
         return emptyPositions;
     }
 
-    private void TryStartRefill()
+    public void TryStartRefill()
     {
         if (CurrentState != GridStateType.Idle)
             return;

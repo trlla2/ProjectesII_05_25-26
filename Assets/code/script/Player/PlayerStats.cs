@@ -45,6 +45,12 @@ public class PlayerStats
     private int limitInventory;
 
 
+    //Events
+    public event System.Action OnEXPChange;
+    public event System.Action OnLevelUp;
+    public event System.Action OnMoneyChange;
+    public event System.Action OnInventoryChange;
+
     public PlayerStats()
     {
         // combat stats
@@ -122,26 +128,33 @@ public class PlayerStats
         if (hp > maxHp + extraHealth) hp = maxHp + extraHealth;
     }
 
-    public void AddMoney(int amount) { money += amount; }
+    public void AddMoney(int amount) 
+    {
+        money += amount;
+        OnMoneyChange?.Invoke();
+    }
     public bool UseMoney(int amount)
     {
         if (money >= amount)
         {
             money -= amount;
+            OnMoneyChange?.Invoke();
             return true;
         }
         return false;
     }
 
-    public bool AddExp(int amount)
+    public void AddExp(int amount)
     {
         experiencePoints += amount;
 
-        if (experiencePoints >= GetEXPForNextLevel())
-            return true; // Level up
+        OnEXPChange?.Invoke();
 
-        return false;
+        if (CanLevelUp())
+            OnLevelUp.Invoke();
     }
+
+
 
     public void LevelUp()
     {
@@ -151,6 +164,7 @@ public class PlayerStats
     public void UpgradeElementalLevel(ElementType elementType)
     {
         elementalLevels[elementType] += 1;
+        LevelUp();
     }
 
     public bool AddItemToInventory(Item item)

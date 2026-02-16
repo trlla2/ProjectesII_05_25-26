@@ -54,7 +54,7 @@ public class Palanca : MonoBehaviour
 
     private bool TryConsumeCost()
     {
-        return GameManager.Instance.UsePlayerMoney(cost);
+        return G.GM.PlayerStats.UseMoney(cost);
     }
 
     private void ExecuteLeverPull()
@@ -71,7 +71,7 @@ public class Palanca : MonoBehaviour
     {
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.OnEndBattle += HandleBattleEnd;
+            G.GM.CombatHandler.OnEndBattle += HandleBattleEnd;
         }
     }
 
@@ -79,7 +79,7 @@ public class Palanca : MonoBehaviour
     {
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.OnEndBattle -= HandleBattleEnd;
+            G.GM.CombatHandler.OnEndBattle -= HandleBattleEnd;
         }
     }
 

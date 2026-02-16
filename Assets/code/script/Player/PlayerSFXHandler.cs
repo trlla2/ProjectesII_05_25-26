@@ -11,7 +11,7 @@ public class PlayerSFXHandler : MonoBehaviour
 
     private void Start()
     {
-        GameManager.Instance.OnPlayerHitRecived += HandlePlayerHit;
+        G.GM.CombatHandler.OnPlayerHitRecived += HandlePlayerHit;
     }
 
     private void HandlePlayerHit()
@@ -19,12 +19,12 @@ public class PlayerSFXHandler : MonoBehaviour
 
         hitSource.Play();
 
-        if (GameManager.Instance.GetPlayerHP() <= 0)
+        if (G.GM.PlayerStats.Hp <= 0)
             deathSource.Play();
     }
         
     private void OnDestroy()
     {
-        GameManager.Instance.OnPlayerHitRecived -= HandlePlayerHit;
+        G.GM.CombatHandler.OnPlayerHitRecived -= HandlePlayerHit;
     }
 }

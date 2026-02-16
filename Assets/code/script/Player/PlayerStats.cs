@@ -213,7 +213,7 @@ public class PlayerStats
         }
         return false;
     }
-    public List<Spell> GetPlayerSpellBook()
+    public List<Spell> GetSpellBook()
     {
         List<Spell> spelL = new List<Spell>();
 

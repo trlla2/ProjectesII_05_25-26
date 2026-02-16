@@ -40,7 +40,7 @@ public class EnemyBehaviour : MonoBehaviour
     {
         if (GameManager.Instance != null && enemyType == null)
         {
-            GameManager.Instance.SetEnemyRef(this);
+            G.GM.CombatHandler.SetEnemyRef(this);
         }
         else
             Debug.LogError("NO GAME MANAGER");
@@ -191,9 +191,9 @@ public class EnemyBehaviour : MonoBehaviour
 
         deathParticles.Play();
 
-        if (GameManager.Instance != null)
+        if (G.GM != null)
         {
-            GameManager.Instance.OnEnemyDead(); 
+            G.GM.CombatHandler.OnEnemyDead(); 
         }
         spriteRenderer.enabled = false;
 

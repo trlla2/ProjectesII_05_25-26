@@ -41,8 +41,8 @@ public class LevelBarHandle : MonoBehaviour
             }
         }
 
-        GameManager.Instance.OnPlayerLevelUp += StartLevelUpAnimation;
-        GameManager.Instance.OnPlayerEXPChange += UpdateEXPBar;
+        G.GM.PlayerStats.OnLevelUp += StartLevelUpAnimation;
+        G.GM.PlayerStats.OnEXPChange += UpdateEXPBar;
 
         UpdateEXPBar();
     }
@@ -63,8 +63,8 @@ public class LevelBarHandle : MonoBehaviour
 
         float interpolateValue = interpolationCurve.Evaluate(interpolationTime / interpolationDuration);
 
-        float currentExp = GameManager.Instance.GetPlayerEXP() - GameManager.Instance.GetPlayerEXPForLastLevel();
-        float nextLevelExp = GameManager.Instance.GetPlayerEXPForNextLevel() - GameManager.Instance.GetPlayerEXPForLastLevel();
+        float currentExp = G.GM.PlayerStats.ExperiencePoints - G.GM.PlayerStats.GetEXPForLastLevel();
+        float nextLevelExp = G.GM.PlayerStats.GetEXPForNextLevel() - G.GM.PlayerStats.GetEXPForLastLevel();
 
         if (nextLevelExp > 0)
         {
@@ -122,7 +122,7 @@ public class LevelBarHandle : MonoBehaviour
 
     private void UpdateEXPBar()
     {
-        lvlText.text = GameManager.Instance.GetPlayerLevel() + "lvl";
+        lvlText.text = G.GM.PlayerStats.Level + "lvl";
 
         interpolationTime = 0.0f;
         isInterpolating = true;
@@ -144,8 +144,8 @@ public class LevelBarHandle : MonoBehaviour
     {
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.OnPlayerLevelUp -= StartLevelUpAnimation;
-            GameManager.Instance.OnPlayerEXPChange -= UpdateEXPBar;
+            G.GM.PlayerStats.OnLevelUp -= StartLevelUpAnimation;
+            G.GM.PlayerStats.OnEXPChange -= UpdateEXPBar;
         }
     }
 }

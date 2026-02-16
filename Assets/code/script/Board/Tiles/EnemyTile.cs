@@ -24,13 +24,13 @@ public class EnemyTile : BoardTile
 
         if (forceSpecificEnemy && specificEnemyType != null)
         {
-            GameManager.Instance.SetForcedEnemy(specificEnemyType);
+            G.GM.SetForcedEnemy(specificEnemyType);
         }
 
         _boardRaycast.HandleBoardRaycast(false);
         SceneTransition.Instance.LoadScene("BattlePhone", true);
-        GameManager.Instance.EnterBattle();
-        GameManager.Instance.OnEndBattle += Replace;
+        G.GM.EnterBattle();
+        G.GM.CombatHandler.OnEndBattle += Replace;
     }
 
     public void Replace(bool win, int xp, int money) 
@@ -42,6 +42,6 @@ public class EnemyTile : BoardTile
 
     private void OnDestroy()
     {
-        GameManager.Instance.OnEndBattle -= Replace;
+        G.GM.CombatHandler.OnEndBattle -= Replace;
     }
 }

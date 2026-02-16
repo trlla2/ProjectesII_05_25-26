@@ -10,18 +10,18 @@ public class MoneyUIHandler : MonoBehaviour
     private void Start()
     {
         moneyText = GetComponent<TMP_Text>();
-        GameManager.Instance.OnPlayerMoneyChange += UpdateMoneyUI;
+        G.GM.PlayerStats.OnMoneyChange += UpdateMoneyUI; 
         UpdateMoneyUI();
     }
 
 
     private void UpdateMoneyUI()
     {
-        moneyText.text = GameManager.Instance.GetPlayerMoney().ToString() + "$";
+        moneyText.text = G.GM.PlayerStats.Money.ToString() + "$";
     }
 
     private void OnDestroy()
     {
-        GameManager.Instance.OnPlayerMoneyChange -= UpdateMoneyUI;
+        G.GM.PlayerStats.OnMoneyChange -= UpdateMoneyUI;
     }
 }

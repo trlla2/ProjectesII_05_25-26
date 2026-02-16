@@ -72,7 +72,7 @@ public class PlayerPathing : MonoBehaviour
     {
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.OnEndBattle += HandleBattleEnd;
+            G.GM.CombatHandler.OnEndBattle += HandleBattleEnd;
         }
 
         // Subscribe to QTE events
@@ -84,7 +84,7 @@ public class PlayerPathing : MonoBehaviour
     {
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.OnEndBattle -= HandleBattleEnd;
+            G.GM.CombatHandler.OnEndBattle -= HandleBattleEnd;
         }
 
         // Unsubscribe from QTE events
@@ -290,7 +290,7 @@ public class PlayerPathing : MonoBehaviour
     {
         GameManager.Instance.NotifyPlayerMove();
 
-        if (spell.Name == "HEAL") GameManager.Instance.HealPlayer(5);
+        if (spell.Name == "HEAL") G.GM.CombatHandler.HealPlayer(5);
     }
 
     private void UpdateVisuals()
@@ -365,7 +365,7 @@ public class PlayerPathing : MonoBehaviour
 
     private List<Spell> GetAvailableSpells()
     {
-        return GameManager.Instance.GetPlayerSpellBook();
+        return G.GM.PlayerStats.GetSpellBook();
     }
 
     private void TryCompleteTutorialStep()

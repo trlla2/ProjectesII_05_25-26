@@ -21,6 +21,7 @@ public class EnemyBehaviour : MonoBehaviour
     private bool inBattle = false;
 
     private IEnemySpell activeSpell;
+    private Coroutine timedSpellMonitor;
 
     //Legacy System
     public delegate void GetOnHitRecived(float health);
@@ -108,6 +109,11 @@ public class EnemyBehaviour : MonoBehaviour
         }
 
         activeSpell = null;
+        if (timedSpellMonitor != null)
+        {
+            StopCoroutine(timedSpellMonitor);
+            timedSpellMonitor = null;
+        }
         StopAllCoroutines();
     }
 
@@ -120,6 +126,12 @@ public class EnemyBehaviour : MonoBehaviour
         if (activeSpell != null)
         {
             activeSpell.Execute(grid);
+
+            // For timed spells, monitor when the timer expires and auto-trigger Tick
+            if (activeSpell is TimedDestroySpellBase)
+            {
+                timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
+            }
         }
     }
 
@@ -128,10 +140,68 @@ public class EnemyBehaviour : MonoBehaviour
         if (!inBattle || activeSpell == null)
             return;
 
+        // For timed spells, player moves don't trigger Tick (the timer does)
+        if (activeSpell is TimedDestroySpellBase)
+            return;
+
         activeSpell.Tick(grid, () =>
         {
             StartCoroutine(RerollAndRetarget());
         });
+    }
+
+    private IEnumerator MonitorTimedSpell()
+    {
+        TimedDestroySpellBase timedSpell = activeSpell as TimedDestroySpellBase;
+        if (timedSpell == null) yield break;
+
+        // Wait until the timer has expired
+        while (!timedSpell.IsTimerExpired())
+        {
+            if (!inBattle || grid == null)
+                yield break;
+            yield return null;
+        }
+
+        if (!inBattle || grid == null)
+            yield break;
+
+        // This prevents colliding with a player-triggered refill in progress.
+        while (grid != null && grid.CurrentState != GridStateType.Idle)
+            yield return null;
+
+        if (!inBattle || grid == null)
+            yield break;
+
+        bool effectDone = false;
+        timedSpell.Tick(grid, () => effectDone = true);
+
+        //Wait for the effect to finish processing
+        while (!effectDone)
+        {
+            if (!inBattle || grid == null)
+                yield break;
+            yield return null;
+        }
+
+        // Wait for grid to settle
+        while (grid != null && grid.CurrentState != GridStateType.Idle)
+            yield return null;
+
+        if (!inBattle || grid == null)
+            yield break;
+
+        timedSpellMonitor = null;
+
+        // Only reroll and retarget if the spell wants to
+        if (timedSpell.ShouldRerollAfterAttack)
+        {
+            StartCoroutine(RerollAndRetarget());
+        }
+        else
+        {
+            CreateAndExecuteSpell();
+        }
     }
 
     private IEnumerator RerollAndRetarget()

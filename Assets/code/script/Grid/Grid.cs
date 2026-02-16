@@ -55,14 +55,28 @@ public class Grid : MonoBehaviour
         InitializeComponents();
         RandomizeBoard(availableElements);
 
-        if (GameManager.Instance != null && GameManager.Instance.GetPlayerSpellBook() != null
-            && GameManager.Instance.GetPlayerSpellBook().Count > 0)
+        if (GameManager.Instance != null)
         {
             InsertSpell(GameManager.Instance.GetPlayerSpellBook()[(int)Random.Range(0, GameManager.Instance.GetPlayerSpellBook().Count)].Recipe);
+            Debug.Log("Inserting");
+        }
+        else
+        {
+            StartCoroutine(WaitNextFrameForSpells());
         }
 
         ChangeState(new IdleState(this));
         visualGrid.FillEmpty(GetEmptyPositions(), 0.5f);
+    }
+
+    IEnumerator WaitNextFrameForSpells()
+    {
+        yield return new WaitForEndOfFrame(); 
+        if (GameManager.Instance != null)
+        {
+            InsertSpell(GameManager.Instance.GetPlayerSpellBook()[(int)Random.Range(0, GameManager.Instance.GetPlayerSpellBook().Count)].Recipe);
+            Debug.Log("Inserting");
+        }
     }
 
     public void InsertSpell(List<Element> spellRecipe)

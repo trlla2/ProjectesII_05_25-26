@@ -9,9 +9,10 @@ public interface IEnemySpell
     void Tick(Grid grid, System.Action onComplete = null);
     int RemainingMoves { get; }
     string GetSpellName();
+    bool ShouldRerollAfterAttack { get; }
 }
 
-public abstract class EnemySpellBase : IEnemySpell
+public abstract class EnemySpellBase : IEnemySpell  
 {
     protected int remainingMoves;
     protected int initialMoves;
@@ -20,9 +21,11 @@ public abstract class EnemySpellBase : IEnemySpell
     protected List<Vector2Int> targetedPositions = new List<Vector2Int>();
 
     protected bool excludeBelowTargets = true;
+    protected bool shouldRerollAfterAttack = true;
 
     public int RemainingMoves => remainingMoves;
     public string GetSpellName() => spellName;
+    public bool ShouldRerollAfterAttack => shouldRerollAfterAttack;
 
     public abstract void Execute(Grid grid);
 
@@ -60,9 +63,21 @@ public abstract class EnemySpellBase : IEnemySpell
 
         if (remainingMoves <= 0)
         {
-            // forward excludeBelowTargets flag into ProcessEnemySpell
             ApplyEffect(grid, onComplete);
         }
+    }
+
+    protected bool HasAnyValidTarget(Grid grid)
+    {
+        if (grid == null) return false;
+
+        foreach (var pos in targetedPositions)
+        {
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual != null && visual.IsTargetedByEnemy)
+                return true;
+        }
+        return false;
     }
 
     protected virtual void ApplyEffect(Grid grid, System.Action onComplete = null, bool rerollAfter = false)

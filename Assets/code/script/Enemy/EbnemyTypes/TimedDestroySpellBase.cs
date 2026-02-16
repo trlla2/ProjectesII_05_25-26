@@ -2,110 +2,79 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//we have an abstract function
 public abstract class TimedDestroySpellBase : EnemySpellBase
 {
-    private float delaySeconds;
-    private float countdownSeconds;
-    private Grid Grid;
+    private SpellTimer spellTimer;
+    private Grid cachedGrid;
+    private bool timerExpired;
 
     protected TimedDestroySpellBase(float delay, float countdown, float damage, bool excludeBelow)
     {
-        delaySeconds = delay;
-        countdownSeconds = countdown;
+        spellTimer = new SpellTimer(delay, countdown);
         damagePerElement = damage;
-        remainingMoves = 0;
-        initialMoves = 0;
+        remainingMoves = 1;
+        initialMoves = 1;
         this.excludeBelowTargets = excludeBelow;
     }
 
     public override void Execute(Grid grid)
     {
         targetedPositions.Clear();
-        Grid = grid;
+        cachedGrid = grid;
+        timerExpired = false;
+        remainingMoves = 1;
+
         if (grid == null) return;
 
         SelectTargets(grid);
-        grid.StartCoroutine(TimedAttackRoutine());
-    }
 
-    //Abstract method our diferent enemyspell patterns can implement
+        //timer; delay -> countdown visuals -> auto tick
+        spellTimer.Start(grid,
+            onDelayComplete: () => OnDelayComplete(grid),
+            onCountdownExpired: () => OnCountdownExpired(grid)
+        );
+    }
+    
+    // we need this abstract class to implement their specific spells
     protected abstract void SelectTargets(Grid grid);
 
-    public override void Tick(Grid grid, System.Action onComplete = null) { }
-
-    private IEnumerator TimedAttackRoutine()
+    // For timed spells, Tick() is ignored during player moves.
+    // It only fires the effect when the timer has expired.
+    public override void Tick(Grid grid, System.Action onComplete = null)
     {
-        while (true)
+        if (!timerExpired)
+            return;
+
+        if (!HasAnyValidTarget(grid))
         {
-            //DElay 5 seconds firts
-            float elapsed = 0f;
-            while (elapsed < delaySeconds)
-            {
-                if (Grid == null) yield break;
-                elapsed += Time.deltaTime;
-                yield return null;
-            }
-
-            if (Grid == null) yield break;
-
-            foreach (var pos in targetedPositions)
-            {
-                ElementVisual visual = Grid.GetElementVisualAt(pos);
-                if (visual != null && visual.IsTargetedByEnemy)
-                    visual.StartCountdown(countdownSeconds);
-            }
-
-            elapsed = 0f;
-            bool timerExpired = false;
-            while (elapsed < countdownSeconds)
-            {
-                if (Grid == null) yield break;
-                if (!HasAnyValidTarget())
-                    break;
-
-                elapsed += Time.deltaTime;
-                yield return null;
-            }
-
-            if (elapsed >= countdownSeconds)
-                timerExpired = true;
-
-            if (Grid == null) yield break;
-
-            if (timerExpired && HasAnyValidTarget())
-            {
-                bool attackDone = false;
-                ApplyEffect(Grid, () => attackDone = true, true);
-
-                while (!attackDone)
-                {
-                    if (Grid == null) yield break;
-                    yield return null;
-                }
-            }
-
-            while (Grid != null && Grid.CurrentState != GridStateType.Idle)
-                yield return null;
-
-            if (Grid == null) yield break;
-
             targetedPositions.Clear();
-            SelectTargets(Grid);
-            yield return null;
+            onComplete?.Invoke();
+            return;
         }
+
+        base.Tick(grid, onComplete);
     }
 
-    private bool HasAnyValidTarget()
+    private void OnDelayComplete(Grid grid)
     {
-        if (Grid == null) return false;
+        if (grid == null) return;
 
         foreach (var pos in targetedPositions)
         {
-            ElementVisual visual = Grid.GetElementVisualAt(pos);
+            ElementVisual visual = grid.GetElementVisualAt(pos);
             if (visual != null && visual.IsTargetedByEnemy)
-                return true;
+                visual.StartCountdown(spellTimer.CountdownSeconds);
         }
-        return false;
     }
+
+    private void OnCountdownExpired(Grid grid)
+    {
+        if (grid == null) return;
+        timerExpired = true;
+
+        // EnemyBehaviour will handle retargeting via the onComplete callback
+        // EnemyBehaviour will be notified to retarget through its coroutine monitoring.
+    }
+
+    public bool IsTimerExpired() => timerExpired;
 }

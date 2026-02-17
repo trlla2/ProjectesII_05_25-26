@@ -40,6 +40,9 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
             
         SelectTargets(grid);
 
+        // Start blink animation for targeted elements
+        StartDelayBlinkAnimation(grid);
+
         spellTimer.Start(grid,
             onDelayComplete: () => OnDelayComplete(grid),
             onCountdownExpired: () => OnCountdownExpired(grid)
@@ -65,14 +68,12 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
             return;
         }
 
-        // Decrement move counter
         remainingMoves--;
         remainingMoves = Mathf.Max(0, remainingMoves);
 
         // Update move visual to show remaining moves
         UpdateMoveVisuals(grid);
 
-        // Check if moves depleted - trigger spell
         if (remainingMoves <= 0)
         {
             effectApplied = true;
@@ -108,8 +109,30 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
         }
 
         effectApplied = true;
-        ClearAllVisuals(grid); // Clear both visuals when spell triggers
+        ClearAllVisuals(grid);
         ApplyEffect(grid, onComplete);
+    }
+
+    private void StartDelayBlinkAnimation(Grid grid)
+    {
+        if (grid == null) return;
+
+        float blinkStrength = 0.05f;
+        float blinkFrequency = 1f; 
+        float delayDuration = spellTimer.delaySeconds;
+
+        foreach (var pos in targetedPositions)
+        {
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual != null && visual.IsTargetedByEnemy)
+            {
+                ScaleAnimator scaleAnimator = visual.GetComponent<ScaleAnimator>();
+                if (scaleAnimator != null)
+                {
+                    scaleAnimator.PlayDelayBlink(blinkStrength, blinkFrequency, delayDuration);
+                }
+            }
+        }
     }
 
     private void UpdateMoveVisuals(Grid grid)

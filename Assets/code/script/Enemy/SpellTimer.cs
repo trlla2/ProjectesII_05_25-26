@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class SpellTimer
 {
-    private float delaySeconds;
-    private float countdownSeconds;
+    public float delaySeconds;
+    public float countdownSeconds;
     private Coroutine activeCoroutine;
 
     public float CountdownSeconds => countdownSeconds;

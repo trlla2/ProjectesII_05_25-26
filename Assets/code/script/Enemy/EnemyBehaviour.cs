@@ -140,14 +140,56 @@ public class EnemyBehaviour : MonoBehaviour
         if (!inBattle || activeSpell == null)
             return;
 
-        // For timed spells, player moves don't trigger Tick (the timer does)
-        if (activeSpell is TimedDestroySpellBase)
-            return;
+        if (activeSpell is TimedDestroySpellBase timedSpell)
+        {
+            if (timedSpell.UseMoveTicks)
+            {
+                if (timedSpell.IsEffectApplied())
+                    return;
 
+                timedSpell.TickPlayerMove(grid, () =>
+                {
+                    if (timedSpell.IsEffectApplied())
+                    {
+                        // Stop the timer monitor since we're done
+                        if (timedSpellMonitor != null)
+                        {
+                            StopCoroutine(timedSpellMonitor);
+                            timedSpellMonitor = null;
+                        }
+                        StartCoroutine(WaitAndRetarget());
+                    }
+                });
+            }
+            // Pure timed spells don't tick on player moves
+            return;
+        }
+
+        // Regular move-based spells
         activeSpell.Tick(grid, () =>
         {
             StartCoroutine(RerollAndRetarget());
         });
+    }
+
+    private IEnumerator WaitAndRetarget()
+    {
+        // Wait for grid to settle
+        while (grid != null && grid.CurrentState != GridStateType.Idle)
+            yield return null;
+
+        if (!inBattle || grid == null)
+            yield break;
+
+        TimedDestroySpellBase timedSpell = activeSpell as TimedDestroySpellBase;
+        if (timedSpell != null && timedSpell.ShouldRerollAfterAttack)
+        {
+            StartCoroutine(RerollAndRetarget());
+        }
+        else
+        {
+            CreateAndExecuteSpell();
+        }
     }
 
     private IEnumerator MonitorTimedSpell()
@@ -155,12 +197,19 @@ public class EnemyBehaviour : MonoBehaviour
         TimedDestroySpellBase timedSpell = activeSpell as TimedDestroySpellBase;
         if (timedSpell == null) yield break;
 
-        // Wait until the timer has expired
-        while (!timedSpell.IsTimerExpired())
+        // Wait until the timer has expired or effect was already applied (by moves)
+        while (!timedSpell.IsTimerExpired() && !timedSpell.IsEffectApplied())
         {
             if (!inBattle || grid == null)
                 yield break;
             yield return null;
+        }
+
+        // If effect was already applied by moves, exit
+        if (timedSpell.IsEffectApplied())
+        {
+            timedSpellMonitor = null;
+            yield break;
         }
 
         if (!inBattle || grid == null)

@@ -2,10 +2,12 @@ using UnityEngine;
 
 public class ColumnDestroyLvl2Spell : TimedDestroySpellBase
 {
-    public ColumnDestroyLvl2Spell(float damage = 4f, float delay = 5f, float countdown = 15f, bool excludeBelow = true)
+    public ColumnDestroyLvl2Spell(float damage = 4f, float delay = 5f, float countdown = 15f, bool excludeBelow = true, int moveCount = 3)
         : base(delay, countdown, damage, excludeBelow)
     {
         spellName = "Column Destroy Lvl2";
+        useMoveTicks = true;
+        SetMoveCount(moveCount);
     }
 
     protected override void SelectTargets(Grid grid)
@@ -25,7 +27,7 @@ public class ColumnDestroyLvl2Spell : TimedDestroySpellBase
                 if (visual != null)
                 {
                     visual.SetTargetedByEnemy(true);
-                    visual.UpdateTargetVisual(1, 1, grid.EnemyTargetAnimDuration, grid.EnemyTargetFillCurve);
+                    visual.UpdateTargetVisual(remainingMoves, initialMoves, grid.EnemyTargetAnimDuration, grid.EnemyTargetFillCurve);
                 }
             }
         }

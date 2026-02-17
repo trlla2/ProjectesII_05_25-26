@@ -22,7 +22,6 @@ public class SingleElementTimedSpell : TimedDestroySpellBase
         if (visual != null)
         {
             visual.SetTargetedByEnemy(true);
-            visual.UpdateTargetVisual(1, 1, grid.EnemyTargetAnimDuration, grid.EnemyTargetFillCurve);
         }
     }
 

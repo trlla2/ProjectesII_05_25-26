@@ -7,12 +7,14 @@ public class ElementVisual : MonoBehaviour
     [SerializeField] private SpriteRenderer elementRenderer;
     [SerializeField] private GameObject deletionEffectPrefab; 
     [SerializeField] private Image targetFillImage;
+    [SerializeField] private Image targetFillTimedImage;
     [SerializeField] private GameObject breakEnemyHoverParticles;
 
     private Vector2Int gridPosition;
     private bool canSelect = true;
     private bool isTargetedByEnemy;
     private Coroutine fillCoroutine;
+    private Coroutine timedFillCoroutine;
 
     public Vector2Int GridPosition => gridPosition;
     public bool CanSelect => canSelect;
@@ -22,16 +24,18 @@ public class ElementVisual : MonoBehaviour
     {
         gridPosition = position;
         UpdateVisual(element);
-        if (targetFillImage != null)
+        
+        if (!isTargetedByEnemy)
         {
-            if (!isTargetedByEnemy)
+            if (targetFillImage != null)
             {
                 targetFillImage.enabled = false;
                 targetFillImage.fillAmount = 0f;
             }
-            else
+            if (targetFillTimedImage != null)
             {
-                targetFillImage.enabled = true;
+                targetFillTimedImage.enabled = false;
+                targetFillTimedImage.fillAmount = 0f;
             }
         }
     }
@@ -57,6 +61,11 @@ public class ElementVisual : MonoBehaviour
         {
             targetFillImage.rectTransform.position = position;
         }
+
+        if (targetFillTimedImage != null)
+        {
+            targetFillTimedImage.rectTransform.position = position;
+        }
     }
 
     public Vector3 GetWorldPosition()
@@ -77,6 +86,9 @@ public class ElementVisual : MonoBehaviour
 
         if (targetFillImage != null)
             targetFillImage.rectTransform.localPosition = localPosition;
+
+        if (targetFillTimedImage != null)
+            targetFillTimedImage.rectTransform.localPosition = localPosition;
     }
 
     public void SetSpriteWorldPosition(Vector3 worldPosition)
@@ -94,6 +106,9 @@ public class ElementVisual : MonoBehaviour
 
         if (targetFillImage != null)
             targetFillImage.rectTransform.localScale = scale;
+
+        if (targetFillTimedImage != null)
+            targetFillTimedImage.rectTransform.localScale = scale;
     }
 
     public void ResetSpriteTransform()
@@ -123,6 +138,7 @@ public class ElementVisual : MonoBehaviour
             GameObject temp = Instantiate(breakEnemyHoverParticles, transform);
             temp.transform.SetParent(null);
             StopCountdown();
+            StopTimedCountdown();
         }
     }
 
@@ -170,6 +186,38 @@ public class ElementVisual : MonoBehaviour
         }
     }
 
+    public void StartTimedCountdown(float totalSeconds)
+    {
+        if (targetFillTimedImage == null)
+            return;
+
+        totalSeconds = Mathf.Max(0.0001f, totalSeconds);
+
+        if (timedFillCoroutine != null)
+        {
+            StopCoroutine(timedFillCoroutine);
+            timedFillCoroutine = null;
+        }
+
+        targetFillTimedImage.enabled = true;
+        timedFillCoroutine = StartCoroutine(TimedCountdownRoutine(totalSeconds));
+    }
+
+    public void StopTimedCountdown()
+    {
+        if (timedFillCoroutine != null)
+        {
+            StopCoroutine(timedFillCoroutine);
+            timedFillCoroutine = null;
+        }
+
+        if (targetFillTimedImage != null)
+        {
+            targetFillTimedImage.fillAmount = 0f;
+            targetFillTimedImage.enabled = false;
+        }
+    }
+
     public void ClearTargetVisual()
     {
         if (fillCoroutine != null)
@@ -180,12 +228,16 @@ public class ElementVisual : MonoBehaviour
 
         if (targetFillImage != null)
         {
-            
-
             targetFillImage.fillAmount = 0f;
             targetFillImage.enabled = false;
         }
     }
+
+    public void ClearTimedTargetVisual()
+    {
+        StopTimedCountdown();
+    }
+
     private IEnumerator FillRoutine(float targetFill, float duration, AnimationCurve curve)
     {
         if (targetFillImage == null)
@@ -240,5 +292,26 @@ public class ElementVisual : MonoBehaviour
 
         targetFillImage.fillAmount = 0f;
         fillCoroutine = null;
+    }
+
+    private IEnumerator TimedCountdownRoutine(float totalSeconds)
+    {
+        if (targetFillTimedImage == null)
+            yield break;
+
+        float elapsed = 0f;
+
+        targetFillTimedImage.fillAmount = 1f;
+
+        while (elapsed < totalSeconds)
+        {
+            elapsed += Time.deltaTime;
+            float remainingFraction = Mathf.Clamp01(Mathf.Max(0f, 1f - (elapsed / totalSeconds)));
+            targetFillTimedImage.fillAmount = remainingFraction;
+            yield return null;
+        }
+
+        targetFillTimedImage.fillAmount = 0f;
+        timedFillCoroutine = null;
     }
 }

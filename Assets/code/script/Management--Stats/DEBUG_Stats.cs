@@ -27,6 +27,5 @@ public class DEBUG_Stats : MonoBehaviour
         foreach (Item item in items)
             G.GM.PlayerStats.AddItemToInventory(item);
 
-        Debug.Log(G.GM.PlayerStats.Inventory.Count);
     }
 }

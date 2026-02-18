@@ -15,6 +15,12 @@ public class CombatHandler : MonoBehaviour
     [HideInInspector] public bool isBossBattle = false;
     [HideInInspector] public ElementType BossWeakElement;
 
+    [Header("Debug")]
+    [SerializeField]
+    private bool isEnemyTypeForced = false;
+    [SerializeField]
+    private EnemyType forcedEnemyType;
+
     // Events
     public delegate void GetOnEndBattle(bool isWin, int exp, int money);
     public event GetOnEndBattle OnEndBattle;
@@ -42,37 +48,41 @@ public class CombatHandler : MonoBehaviour
 
     public void SetEnemyRef(EnemyBehaviour enemyRef)
     {
+        
+        enemyInCombat = enemyRef;
+        enemyInCombat.SetEnemyType(null);
 
-        Debug.LogError("SetEnemyRef ON COMBATHANDLER NOT IMPLEMENTED");
-        //enemyInCombat = enemyRef;
-        //enemyInCombat.SetEnemyType(null);
 
+        EnemyType typeToUse;
 
-        //EnemyType typeToUse;
+        if (forcedEnemyType != null && isEnemyTypeForced)
+        {
+            typeToUse = forcedEnemyType;
 
-        //if (forcedEnemyType != null)
-        //{
-        //    typeToUse = forcedEnemyType;
-        //    forcedEnemyType = null;
-        //}
-        //else
-        //{
-        //    typeToUse = PickRandomEenemy();
-        //}
+            enemyInCombat.SetEnemyType(typeToUse);//?
+            enemyInCombat?.StartBattle();//?
+            OnSetEnemyReference?.Invoke(enemyRef); //?
+            return; // DELETE ME 
+
+        }
+        else
+        {
+            Debug.LogError("SetEnemyRef ON COMBATHANDLER NOT IMPLEMENTED");
+
+            //    typeToUse = PickRandomEenemy();
+        }
 
         ////no override on tutorial enemies
-        //if (tutorialManager == null || !tutorialManager.IsTutorialActive())
-        //{
-        //    enemyInCombat.SetEnemyType(typeToUse);
-        //}
-
         ////no auto-start battle during tutorial
         //if (tutorialManager == null || !tutorialManager.IsTutorialActive())
         //{
         //    enemyInCombat?.StartBattle();
+        //    enemyInCombat.SetEnemyType(typeToUse);
         //}
 
-        //OnSetEnemyReference?.Invoke(enemyRef);
+        
+
+        OnSetEnemyReference?.Invoke(enemyRef);
     }
 
     public void DeleteEnemyRef() { enemyInCombat = null; }

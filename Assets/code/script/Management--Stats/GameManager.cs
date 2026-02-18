@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
     }
 
-    public void SetCombatHandler(CombatHandler cHRef) {  cH = cHRef; }
+    public void SetCombatHandler(CombatHandler cHRef) { cH = cHRef;  }
     public void EnterBoard() { OnEnterBoard?.Invoke(); }
     public void EnterBattle() { OnEnterBattle?.Invoke(); }
 

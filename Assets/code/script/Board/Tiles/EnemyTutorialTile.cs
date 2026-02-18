@@ -21,8 +21,8 @@ public class EnemyTutorialTile : BoardTile
 
         _boardRaycast.HandleBoardRaycast(false);
         SceneTransition.Instance.LoadScene(enemyScene, true);
-        GameManager.Instance.EnterBattle();
-        GameManager.Instance.OnEndBattle += Replace;
+        G.GM.EnterBattle();
+        G.GM.CombatHandler.OnEndBattle += Replace;
     }
 
     public void Replace(bool win, int xp, int money)
@@ -34,6 +34,6 @@ public class EnemyTutorialTile : BoardTile
 
     private void OnDestroy()
     {
-        GameManager.Instance.OnEndBattle -= Replace;
+        G.GM.CombatHandler.OnEndBattle -= Replace;
     }
 }

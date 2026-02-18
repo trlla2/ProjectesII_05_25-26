@@ -40,7 +40,7 @@ public class SpellbookScreen : MonoBehaviour
             });
         }
 
-        for (int i = 0; i < GameManager.Instance.PlayerSpellBookSize; i++)
+        for (int i = 0; i < G.GM.PlayerStats.SpellBookSize; i++)
         {
             GameObject temp = Instantiate(_spellSlotPrefab, _slotsParent.transform);
             SpellSlotBehaviour slot = temp.GetComponent<SpellSlotBehaviour>();

@@ -12,7 +12,7 @@ public class LevelUIBehaviour : MonoBehaviour
 
     private void Start()
     {
-        GameManager.Instance.OnPlayerLevelUp += StartLevelUpPanel;
+        G.GM.PlayerStats.OnLevelUp += StartLevelUpPanel;
     }
 
     private void StartLevelUpPanel()
@@ -24,11 +24,11 @@ public class LevelUIBehaviour : MonoBehaviour
 
     public void OnUpgradeElement(int i)
     {
-        GameManager.Instance.UpgradePlayerElementLevel((ElementType)i);
+       G.GM.PlayerStats.UpgradeElementalLevel((ElementType)i);
     }
 
     private void OnDestroy()
     {
-        GameManager.Instance.OnPlayerLevelUp -= StartLevelUpPanel;
+        G.GM.PlayerStats.OnLevelUp -= StartLevelUpPanel;
     }
 }

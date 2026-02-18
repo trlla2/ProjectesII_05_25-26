@@ -10,19 +10,19 @@ public class PlayerHandler : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private void Start()
     {
-        GameManager.Instance.OnPlayerHitRecived += HandlePlayerHit;
+        G.GM.CombatHandler.OnPlayerHitRecived += HandlePlayerHit;
     }
 
     private void HandlePlayerHit()
     {
         killParticles.Play();
 
-        if (GameManager.Instance.GetPlayerHP() <= 0)
+        if (G.GM.PlayerStats.Hp <= 0)
             spriteRenderer.enabled = false;
     }
 
     private void OnDestroy()
     {
-        GameManager.Instance.OnPlayerHitRecived -= HandlePlayerHit;
+        G.GM.CombatHandler.OnPlayerHitRecived -= HandlePlayerHit;
     }
 }

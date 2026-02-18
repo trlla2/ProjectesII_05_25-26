@@ -4,7 +4,7 @@ public class HallOfEgressHandler : MonoBehaviour
 {
     private void Start()
     {
-        GameManager.Instance.ClearPlayerSpellBook();
+       G.GM.PlayerStats.ClearSpellBook();
     }
 
    

@@ -8,7 +8,7 @@ public class PlayerAnimationHandler : MonoBehaviour
     {
         animator = GetComponent<Animator>();
 
-        GameManager.Instance.OnPlayerHitRecived += HitAnimation;
+        G.GM.CombatHandler.OnPlayerHitRecived += HitAnimation;
     }
 
     private void HitAnimation()
@@ -18,6 +18,6 @@ public class PlayerAnimationHandler : MonoBehaviour
 
     private void OnDestroy()
     {
-        GameManager.Instance.OnPlayerHitRecived -= HitAnimation;
+        G.GM.CombatHandler.OnPlayerHitRecived -= HitAnimation;
     }
 }

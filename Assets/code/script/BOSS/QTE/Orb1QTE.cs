@@ -163,7 +163,7 @@ public class Orb1QTE : MonoBehaviour, IQTE
         }
         else
         {
-            OrbVisual orbVisual = GameManager.Instance.bossManager.GetCurrentOrbVisual();
+            OrbVisual orbVisual = G.GM.CombatHandler.bossManager.GetCurrentOrbVisual();
             if (orbVisual != null)
             {
                 targetOrbPosition = orbVisual.GetPosition();
@@ -232,7 +232,7 @@ public class Orb1QTE : MonoBehaviour, IQTE
     {
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.AttackBoss(successDamagePercent);
+            G.GM.CombatHandler.AttackBoss(successDamagePercent);
         }
     }
 

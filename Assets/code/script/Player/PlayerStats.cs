@@ -45,6 +45,12 @@ public class PlayerStats
     private int limitInventory;
 
 
+    //Events
+    public event System.Action OnEXPChange;
+    public event System.Action OnLevelUp;
+    public event System.Action OnMoneyChange;
+    public event System.Action OnInventoryChange;
+
     public PlayerStats()
     {
         // combat stats
@@ -122,28 +128,35 @@ public class PlayerStats
         if (hp > maxHp + extraHealth) hp = maxHp + extraHealth;
     }
 
-    public void AddMoney(int amount) { money += amount; }
+    public void AddMoney(int amount) 
+    {
+        money += amount;
+        OnMoneyChange?.Invoke();
+    }
     public bool UseMoney(int amount)
     {
         if (money >= amount)
         {
             money -= amount;
+            OnMoneyChange?.Invoke();
             return true;
         }
         return false;
     }
 
-    public bool AddExp(int amount)
+    public void AddExp(int amount)
     {
         experiencePoints += amount;
 
-        if (experiencePoints >= GetEXPForNextLevel())
-            return true; // Level up
+        OnEXPChange?.Invoke();
 
-        return false;
+        if (CanLevelUp())
+            OnLevelUp.Invoke();
     }
 
-    public void LevelUp()
+
+
+    private void LevelUp()
     {
         level++;
     }
@@ -151,6 +164,7 @@ public class PlayerStats
     public void UpgradeElementalLevel(ElementType elementType)
     {
         elementalLevels[elementType] += 1;
+        LevelUp();
     }
 
     public bool AddItemToInventory(Item item)
@@ -159,6 +173,8 @@ public class PlayerStats
 
         inventory.Add(item);
         item.ApplyEffects(this);
+
+        OnInventoryChange?.Invoke();
 
         return true;// the item was added
     }
@@ -169,6 +185,7 @@ public class PlayerStats
 
         inventory.Remove(item);
         item.RemoveEffects(this);
+        OnInventoryChange?.Invoke();
 
     }
 
@@ -187,6 +204,30 @@ public class PlayerStats
             spellBook[i] = null;
     }
 
+    public bool ExistSpellOnSpellBook(Spell spell)
+    {
+        for (int i = 0; i < SpellBookSize; i++)
+        {
+            if (SpellBook[i] == spell)
+                return true;
+        }
+        return false;
+    }
+    public List<Spell> GetSpellBook()
+    {
+        List<Spell> spelL = new List<Spell>();
+
+        for (int i = 0; i < SpellBookSize; i++)
+        {
+            if (SpellBook[i] != null)
+                spelL.Add(SpellBook[i]);
+        }
+
+        return spelL;
+    }
+
+
+
     public int GetEXPForLastLevel()
     {
         if (level - 1 > 0)
@@ -197,6 +238,7 @@ public class PlayerStats
     public int GetEXPForNextLevel() { return (int)Math.Pow(4, level); }
     public bool CanLevelUp() { return experiencePoints >= GetEXPForNextLevel(); }
     public bool IsAlive() { return hp > 0; }
+    public float GetHPPercentage() => Hp / (MaxHp + ExtraHealth);
     public void ModifyEvasion(int amount) { evasionPoints += amount; }
     public void ModifyExtraHealth(int amount) { extraHealth += amount; }
     public void ModifyExtraDamage(int amount) { extraDamage += amount; }

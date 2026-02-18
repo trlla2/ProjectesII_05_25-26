@@ -14,19 +14,18 @@ public class DEBUG_Stats : MonoBehaviour
     {
         if (spells.Count > 0)
         {
-            for (int i = 0; i < GameManager.Instance.PlayerSpellBookSize; i++)
+            for (int i = 0; i < G.GM.PlayerStats.SpellBookSize; i++)
             {
                 if (spells[i] == null)
                     break;
 
-                GameManager.Instance.AddSpellToPlayerSpellBook(spells[i], i);
+                G.GM.PlayerStats.AddSpellToSpellBook(spells[i], i);
             }
         }
 
 
         foreach (Item item in items)
-            GameManager.Instance.AddItemToPlayerInventory(item);
+            G.GM.PlayerStats.AddItemToInventory(item);
 
-        Debug.Log(GameManager.Instance.GetPlayerInventory().Count);
     }
 }

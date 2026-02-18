@@ -62,7 +62,7 @@ public class ColumnDestroySpell : EnemySpellBase
         if (grid == null || GameManager.Instance == null)
             return;
 
-        List<Spell> spellBook = GameManager.Instance.GetPlayerSpellBook();
+        List<Spell> spellBook = G.GM.PlayerStats.GetSpellBook();
         if (spellBook == null || spellBook.Count == 0)
             return;
 

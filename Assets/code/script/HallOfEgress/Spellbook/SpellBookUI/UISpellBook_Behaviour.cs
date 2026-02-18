@@ -7,7 +7,7 @@ public class UISpellBook_Behaviour : MonoBehaviour
     private GameObject spellUI;
     private void Start()
     {
-        foreach(Spell s in GameManager.Instance.GetPlayerSpellBook())
+        foreach (Spell s in G.GM.PlayerStats.GetSpellBook())
         {
             GameObject spellUIGO = Instantiate(spellUI, this.transform);
             UISpell_Behaviour spellUIBehaviour = spellUIGO.GetComponent<UISpell_Behaviour>();

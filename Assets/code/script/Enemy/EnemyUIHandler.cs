@@ -1,6 +1,5 @@
 using System.Collections.Generic; 
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -45,7 +44,7 @@ public class EnemyUIHandler : MonoBehaviour
 
     private void Awake()
     {
-        GameManager.Instance.OnSetEnemyReference += SetEnemyRef;
+        G.GM.CombatHandler.OnSetEnemyReference += SetEnemyRef;
 
         critImage.SetActive(false);
     }

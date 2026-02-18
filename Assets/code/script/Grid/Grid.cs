@@ -57,7 +57,7 @@ public class Grid : MonoBehaviour
 
         if (GameManager.Instance != null)
         {
-            InsertSpell(GameManager.Instance.GetPlayerSpellBook()[(int)Random.Range(0, GameManager.Instance.GetPlayerSpellBook().Count)].Recipe);
+            InsertSpell(G.GM.PlayerStats.GetSpellBook()[(int)Random.Range(0, G.GM.PlayerStats.GetSpellBook().Count)].Recipe);
             Debug.Log("Inserting");
         }
         else
@@ -102,7 +102,7 @@ public class Grid : MonoBehaviour
     public void InstantVisualEmpty(List<Vector2Int> positions, bool chargeOrb = false)
     {
         //Only charge orb if explicitly requested, so  called from playerpathing
-        if (chargeOrb && GameManager.Instance.isBossBattle)
+        if (chargeOrb && GameManager.Instance.CombatHandler.isBossBattle)
         {
             CollectAndChargeWeakElements(positions);
         }
@@ -194,10 +194,10 @@ public class Grid : MonoBehaviour
 
             List<Spell> spellsToUse = availableSpells;
 
-            if (GameManager.Instance != null && GameManager.Instance.GetPlayerSpellBook() != null
-                && GameManager.Instance.GetPlayerSpellBook().Count > 0)
+            if (GameManager.Instance != null && G.GM.PlayerStats.GetSpellBook() != null
+                && G.GM.PlayerStats.GetSpellBook().Count > 0)
             {
-                spellsToUse = GameManager.Instance.GetPlayerSpellBook();
+                spellsToUse = G.GM.PlayerStats.GetSpellBook();
             }
 
             ChangeState(new RerollState(this, visualGrid, availableElements, spellsToUse, scrollTimes));
@@ -379,7 +379,7 @@ public class Grid : MonoBehaviour
 
     private void CollectAndChargeWeakElements(List<Vector2Int> positions)
     {
-        BossManager bossManager = GameManager.Instance.bossManager;
+        BossManager bossManager = GameManager.Instance.CombatHandler.bossManager;
         if (bossManager == null)
             return;
 

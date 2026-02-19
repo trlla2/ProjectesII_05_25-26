@@ -10,7 +10,7 @@ public class DEBUG_Stats : MonoBehaviour
     [SerializeField]
     private List<Spell> spells = new List<Spell>();
 
-    private void Start()
+    private void Awake()
     {
         if (spells.Count > 0)
         {

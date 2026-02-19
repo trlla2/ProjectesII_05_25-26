@@ -74,7 +74,7 @@ public class Grid : MonoBehaviour
         yield return new WaitForEndOfFrame(); 
         if (GameManager.Instance != null)
         {
-            InsertSpell(GameManager.Instance.GetPlayerSpellBook()[(int)Random.Range(0, GameManager.Instance.GetPlayerSpellBook().Count)].Recipe);
+            InsertSpell(G.GM.PlayerStats.GetSpellBook()[(int)Random.Range(0, G.GM.PlayerStats.GetSpellBook().Count)].Recipe);
             Debug.Log("Inserting");
         }
     }

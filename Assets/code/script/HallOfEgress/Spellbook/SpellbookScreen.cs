@@ -17,6 +17,7 @@ public class SpellbookScreen : MonoBehaviour
 
     private SpellSlotBehaviour _spellSlotSelected;
 
+
     private TranslatorUI translator;
     private void Awake() { translator = GetComponent<TranslatorUI>(); }
     public void OpenSpellBook()
@@ -38,13 +39,14 @@ public class SpellbookScreen : MonoBehaviour
             });
         }
 
-        for (int i = 0; i < G.GM.PlayerStats.SpellBookSize; i++)
+        SpellSlotBehaviour previuSlot = null;
+
+        for (int i = G.GM.PlayerStats.SpellBookSize - 1; i >= 0 ; i--)
         {
             GameObject temp = Instantiate(_spellSlotPrefab, _slotsParent.transform);
             SpellSlotBehaviour slot = temp.GetComponent<SpellSlotBehaviour>();
-            
-            slot.Initialize(i);
-
+            slot.Initialize(i, previuSlot);
+            previuSlot = slot;
             if (i == 0)// select the first slot by default
             { 
                 _spellSlotSelected = slot;
@@ -56,7 +58,7 @@ public class SpellbookScreen : MonoBehaviour
             temp.GetComponent<Button>().onClick.AddListener(() =>
             {
                 _spellSlotSelected?.UnSelect();
-
+                asdfasdf
                 _spellSlotSelected = slot;  
 
                 _spellSlotSelected?.Select();

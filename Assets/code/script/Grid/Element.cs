@@ -6,7 +6,8 @@ public enum ElementType
     Blue = 1,
     Green = 2,
     Yellow = 3,
-    EMPTY
+    EMPTY,
+    Bomb
 }
 
 [System.Serializable]

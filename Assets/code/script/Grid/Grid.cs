@@ -9,6 +9,7 @@ public class Grid : MonoBehaviour
     [Header("Configuration")]
     [SerializeField] private List<Element> availableElements;
     [SerializeField] private Element emptyElement;
+    [SerializeField] private Element bombElement;    
     [SerializeField] private List<Spell> availableSpells;
 
     [Header("References")]
@@ -33,6 +34,7 @@ public class Grid : MonoBehaviour
     public GridData GridData => gridData;
     public GridGravity GravityHandler => gravityHandler;
     public Element EmptyElement => emptyElement;
+    public Element BombElement => bombElement;         
     public List<Element> AvailableElements => availableElements;
     public VisualGrid VisualGrid => visualGrid;
 

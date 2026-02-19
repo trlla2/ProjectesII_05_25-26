@@ -8,6 +8,7 @@ public class ElementVisual : MonoBehaviour
     [SerializeField] private GameObject deletionEffectPrefab; 
     [SerializeField] private Image targetFillImage;
     [SerializeField] private Image targetFillTimedImage;
+    [SerializeField] private Image targetFillBombImage;
     [SerializeField] private GameObject breakEnemyHoverParticles;
 
     private Vector2Int gridPosition;
@@ -15,6 +16,12 @@ public class ElementVisual : MonoBehaviour
     private bool isTargetedByEnemy;
     private Coroutine fillCoroutine;
     private Coroutine timedFillCoroutine;
+
+    private bool isBombTarget;
+    private Color bombOriginalColor = Color.white;
+    private bool bombAnimationStarted;
+
+    private Element currentElement;
 
     public Vector2Int GridPosition => gridPosition;
     public bool CanSelect => canSelect;
@@ -37,6 +44,11 @@ public class ElementVisual : MonoBehaviour
                 targetFillTimedImage.enabled = false;
                 targetFillTimedImage.fillAmount = 0f;
             }
+            if (targetFillBombImage != null)
+            {
+                targetFillBombImage.enabled = false;
+                targetFillBombImage.fillAmount = 0f;
+            }
         }
     }
 
@@ -47,6 +59,11 @@ public class ElementVisual : MonoBehaviour
 
         elementRenderer.sprite = element.Sprite;
         elementRenderer.color = element.Color;
+
+        currentElement = element;
+
+        if (isBombTarget)
+            bombOriginalColor = element.Color;
     }
 
     public void SetWorldPosition(Vector3 position)
@@ -65,6 +82,11 @@ public class ElementVisual : MonoBehaviour
         if (targetFillTimedImage != null)
         {
             targetFillTimedImage.rectTransform.position = position;
+        }
+
+        if (targetFillBombImage != null)
+        {
+            targetFillBombImage.rectTransform.position = position;
         }
     }
 
@@ -89,6 +111,9 @@ public class ElementVisual : MonoBehaviour
 
         if (targetFillTimedImage != null)
             targetFillTimedImage.rectTransform.localPosition = localPosition;
+
+        if (targetFillBombImage != null)
+            targetFillBombImage.rectTransform.localPosition = localPosition;
     }
 
     public void SetSpriteWorldPosition(Vector3 worldPosition)
@@ -109,6 +134,9 @@ public class ElementVisual : MonoBehaviour
 
         if (targetFillTimedImage != null)
             targetFillTimedImage.rectTransform.localScale = scale;
+
+        if (targetFillBombImage != null)
+            targetFillBombImage.rectTransform.localScale = scale;
     }
 
     public void ResetSpriteTransform()
@@ -119,6 +147,9 @@ public class ElementVisual : MonoBehaviour
 
     public void SetSelectable(bool selectable)
     {
+        if (selectable && currentElement != null && currentElement.Type == ElementType.Bomb)
+            return;
+
         canSelect = selectable;
     }
 
@@ -139,6 +170,9 @@ public class ElementVisual : MonoBehaviour
             temp.transform.SetParent(null);
             StopCountdown();
             StopTimedCountdown();
+
+            if (isBombTarget)
+                SetBombVisual(false, 0f);
         }
     }
 
@@ -236,6 +270,54 @@ public class ElementVisual : MonoBehaviour
     public void ClearTimedTargetVisual()
     {
         StopTimedCountdown();
+    }
+
+    public void SetBombVisual(bool active, float progress)
+    {
+        if (targetFillBombImage != null)
+        {
+            targetFillBombImage.enabled = active;
+            targetFillBombImage.fillAmount = active ? Mathf.Clamp01(progress) : 0f;
+        }
+
+        if (elementRenderer != null)
+        {
+            if (active)
+            {
+                if (!isBombTarget)
+                {
+                    bombOriginalColor = elementRenderer.color;
+                    isBombTarget = true;
+                }
+                elementRenderer.color = Color.Lerp(bombOriginalColor, new Color(1f, 0.3f, 0.3f), progress * 0.5f);
+            }
+            else if (isBombTarget)
+            {
+                elementRenderer.color = bombOriginalColor;
+                isBombTarget = false;
+            }
+        }
+
+        ScaleAnimator scaleAnimator = GetComponent<ScaleAnimator>();
+        if (scaleAnimator != null)
+        {
+            if (active)
+            {
+                scaleAnimator.loopStrength = 0.05f + progress * 0.15f;
+                if (!bombAnimationStarted)
+                {
+                    scaleAnimator.PlayAlways();
+                    bombAnimationStarted = true;
+                }
+            }
+            else if (bombAnimationStarted)
+            {
+                scaleAnimator.alwaysPlay = false;
+                scaleAnimator.enabled = false;
+                scaleAnimator.enabled = true;
+                bombAnimationStarted = false;
+            }
+        }
     }
 
     private IEnumerator FillRoutine(float targetFill, float duration, AnimationCurve curve)

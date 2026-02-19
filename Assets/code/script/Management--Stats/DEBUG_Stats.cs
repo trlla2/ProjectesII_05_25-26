@@ -10,6 +10,9 @@ public class DEBUG_Stats : MonoBehaviour
     [SerializeField]
     private List<Spell> spells = new List<Spell>();
 
+    [SerializeField]
+    private List<Spell> knownSpells = new List<Spell>();
+
     private void Awake()
     {
         if (spells.Count > 0)
@@ -23,6 +26,11 @@ public class DEBUG_Stats : MonoBehaviour
             }
         }
 
+
+        foreach(Spell s in knownSpells)
+        {
+            G.GM.PlayerStats.AddKnownSpell(s);
+        }
 
         foreach (Item item in items)
             G.GM.PlayerStats.AddItemToInventory(item);

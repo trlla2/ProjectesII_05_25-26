@@ -5,8 +5,6 @@ using UnityEngine.UI;
 public class SpellbookScreen : MonoBehaviour
 {
     [Header("Content")]
-    [SerializeField] private List<Spell> _knownSpells;
-
     [SerializeField] private Button _spellButtonPrefab;
 
     [SerializeField] private GameObject _scrollviewContent;
@@ -29,7 +27,8 @@ public class SpellbookScreen : MonoBehaviour
 
     public void CreateSpellsButtons()
     {
-        foreach (Spell spell in _knownSpells)
+        Debug.Log($"KnownSpells: {G.GM.PlayerStats.KnownSpells.Count}");
+        foreach (Spell spell in G.GM.PlayerStats.KnownSpells)
         {
             Button newButton = Instantiate(_spellButtonPrefab, _scrollviewContent.transform);
             newButton.GetComponent<SpellButtonBehaviour>().SetButtonToSpellValues(spell);

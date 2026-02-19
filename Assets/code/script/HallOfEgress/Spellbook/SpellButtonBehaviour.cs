@@ -5,9 +5,10 @@ using TMPro;
 
 public class SpellButtonBehaviour : MonoBehaviour
 {
-    [SerializeField] TMP_Text _spellname;
-    [SerializeField] List<Image> _elementsImages;
-    [SerializeField] TMP_Text _spellDescription;
+    [SerializeField] private TMP_Text _spellname;
+    [SerializeField] private TMP_Text _spellDescription;
+    [SerializeField] private GameObject recipieParent;
+    [SerializeField] private GameObject ElementPrefab;
    
     public void SetButtonToSpellValues(Spell spell)
     {
@@ -15,7 +16,8 @@ public class SpellButtonBehaviour : MonoBehaviour
         _spellDescription.text = spell.Description;
         for (int i = 0; i < spell.Recipe.Count; i++)
         {
-            _elementsImages[i].sprite = spell.Recipe[i].Sprite;
+            GameObject temp = Instantiate(ElementPrefab, recipieParent.transform);
+            temp.GetComponent<Image>().sprite = spell.Recipe[i].Sprite;
         }
     }
 }

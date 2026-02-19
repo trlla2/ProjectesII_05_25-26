@@ -27,7 +27,6 @@ public class SpellbookScreen : MonoBehaviour
 
     public void CreateSpellsButtons()
     {
-        Debug.Log($"KnownSpells: {G.GM.PlayerStats.KnownSpells.Count}");
         foreach (Spell spell in G.GM.PlayerStats.KnownSpells)
         {
             Button newButton = Instantiate(_spellButtonPrefab, _scrollviewContent.transform);

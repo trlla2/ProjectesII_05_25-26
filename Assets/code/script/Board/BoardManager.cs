@@ -4,8 +4,6 @@ using System.Collections.Generic;
 
 public class BoardManager : MonoBehaviour
 {
-    //public static BoardManager instance { get; private set; }
-
     public BoardTile startingTile;
     public BoardTileData emptyTileData;
     public BoardTileData enemyTileData;
@@ -18,21 +16,22 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private OpenChestScreen openChestPanel;
     [SerializeField] private NewSpellPanelBehaviour newSpellPanel;
 
+    [Header("Encounters")]
+    private EncountersManager _encountersManager;
+    private int _enemiesDefeated = 0;
+    [SerializeField] private List<StageLevelData> stageLevelDatas;
 
 
     private Camera boardCamera;
 
     private void Awake()
     {
-        //if (instance != null && instance != this) 
-        //    Destroy(this.gameObject);
-        //else
-        //    instance = this;
-
         startingTile.SetGridPosition(new Vector2Int(0, 0));
         generatedTiles.Add(startingTile);
 
         boardCamera = Camera.main;
+
+        _encountersManager = gameObject.GetComponent<EncountersManager>();
     }
 
     public void UpdateNeighbors(BoardTile tile)
@@ -110,5 +109,15 @@ public class BoardManager : MonoBehaviour
     public void HandleBoardCamera(bool enable)
     {
         boardCamera.gameObject.SetActive(enable);
+    }
+
+    public void IncrementEnemyDefeatedCount()
+    {
+        _enemiesDefeated++;
+    }
+
+    private void LoadStageEncounterList()
+    {
+        //_encountersManager.LoadEnemyEncounters(stageLevelDatas[G.GM.StageLevel].)
     }
 }

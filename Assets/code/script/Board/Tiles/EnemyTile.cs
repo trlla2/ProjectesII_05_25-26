@@ -37,7 +37,10 @@ public class EnemyTile : BoardTile
     {
         _boardRaycast.HandleBoardRaycast(true);
         if (win)
+        {
             _boardManager.ReplaceTileType(this, _postInteractionTile);
+            _boardManager.IncrementEnemyDefeatedCount();
+        }
     }
 
     private void OnDestroy()

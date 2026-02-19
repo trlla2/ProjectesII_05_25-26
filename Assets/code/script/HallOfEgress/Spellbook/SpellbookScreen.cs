@@ -36,37 +36,49 @@ public class SpellbookScreen : MonoBehaviour
             newButton.onClick.AddListener(() =>
             {
                 _spellSlotSelected?.SetNewSpell(spell);
+                _spellSlotSelected?.UnSelect();
+
+                if (_spellSlotSelected?.NextSlot != null)
+                {
+                    Debug.Log($"Next Slot Selected {_spellSlotSelected.NextSlot.name}");
+                    _spellSlotSelected = _spellSlotSelected.NextSlot;
+                }
+
+                _spellSlotSelected?.Select();
             });
         }
 
-        SpellSlotBehaviour previuSlot = null;
+        int bookSize = G.GM.PlayerStats.SpellBookSize;
+        SpellSlotBehaviour[] createdSlots = new SpellSlotBehaviour[bookSize];
 
-        for (int i = G.GM.PlayerStats.SpellBookSize - 1; i >= 0 ; i--)
+        for (int i = 0; i < bookSize; i++)
         {
             GameObject temp = Instantiate(_spellSlotPrefab, _slotsParent.transform);
             SpellSlotBehaviour slot = temp.GetComponent<SpellSlotBehaviour>();
-            slot.Initialize(i, previuSlot);
-            previuSlot = slot;
-            if (i == 0)// select the first slot by default
-            { 
-                _spellSlotSelected = slot;
-                slot.Select(); 
-
-            }
-
+            createdSlots[i] = slot;
 
             temp.GetComponent<Button>().onClick.AddListener(() =>
             {
                 _spellSlotSelected?.UnSelect();
-                asdfasdf
-                _spellSlotSelected = slot;  
-
+                _spellSlotSelected = slot;
                 _spellSlotSelected?.Select();
             });
+        }
 
+        for (int i = 0; i < bookSize; i++)
+        {
+            SpellSlotBehaviour nextSlot = (i + 1 < bookSize) ? createdSlots[i + 1] : null;
+
+            createdSlots[i].Initialize(i, nextSlot);
+
+            if (i == 0) 
+            {
+                _spellSlotSelected = createdSlots[i];
+                createdSlots[i].Select();
+            }
         }
     }
-    
+
     public void DeleteSpellsButtonListAndSlotsList()
     {
         Button[] spellsButtons = _scrollviewContent.GetComponentsInChildren<Button>();

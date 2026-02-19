@@ -31,6 +31,8 @@ public class SpellSlotBehaviour : MonoBehaviour
 
     private SpellSlotBehaviour nextSlot;
 
+    public SpellSlotBehaviour NextSlot => nextSlot;
+
     private void Start()
     {
         selectedBG = GetComponent<Image>();
@@ -40,6 +42,7 @@ public class SpellSlotBehaviour : MonoBehaviour
     {
         slotIndex = slot;
         SetSpell(G.GM.PlayerStats.SpellBook[slot]);
+        this.nextSlot = nextSlot;
     }
 
     private void Update()

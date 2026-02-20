@@ -44,14 +44,14 @@ public class BoardManager : MonoBehaviour
             return;
         }
 
-        if (G.GM == null)
+        if (GameManager.Instance == null)
         {
             Debug.LogError("BoardManager: GameManager (G.GM) es null. La escena de tablero se está cargando sin GameManager.");
             enabled = false;
             return;
         }
 
-        currentStageLevelData = G.GM.GetCurrentStageData();
+        currentStageLevelData = GameManager.Instance.GetCurrentStageData();
         if (currentStageLevelData == null)
         {
             Debug.LogError("BoardManager: currentStageLevelData es null. Revisa _stageDatas y stageLevel en GameManager.");

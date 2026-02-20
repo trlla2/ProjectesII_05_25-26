@@ -15,25 +15,25 @@ public class DEBUG_Stats : MonoBehaviour
 
     private void Awake()
     {
-        if (spells.Count > 0)
+        if (spells.Count > 0 && GameManager.Instance.PlayerStats.SpellBookSize == 0)
         {
-            for (int i = 0; i < G.GM.PlayerStats.SpellBookSize; i++)
+            for (int i = 0; i < GameManager.Instance.PlayerStats.SpellBookSize; i++)
             {
                 if (spells[i] == null)
                     break;
 
-                G.GM.PlayerStats.AddSpellToSpellBook(spells[i], i);
+                GameManager.Instance.PlayerStats.AddSpellToSpellBook(spells[i], i);
             }
         }
 
 
         foreach(Spell s in knownSpells)
         {
-            G.GM.PlayerStats.AddKnownSpell(s);
+            GameManager.Instance.PlayerStats.AddKnownSpell(s);
         }
 
         foreach (Item item in items)
-            G.GM.PlayerStats.AddItemToInventory(item);
+            GameManager.Instance.PlayerStats.AddItemToInventory(item);
 
     }
 }

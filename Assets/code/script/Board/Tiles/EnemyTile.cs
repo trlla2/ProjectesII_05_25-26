@@ -23,13 +23,13 @@ public class EnemyTile : BoardTile
             return;
         }
 
-        G.GM.SetPendingEnemy(enemyToFight);
+        GameManager.Instance.SetPendingEnemy(enemyToFight);
 
         _boardRaycast.HandleBoardRaycast(false);
         SceneTransition.Instance.LoadScene("BattlePhone", true);
-        G.GM.EnterBattle();
+        GameManager.Instance.EnterBattle();
 
-        G.GM.OnEnterBoard += Replace;
+        GameManager.Instance.OnEnterBoard += Replace;
         //if (G.GM.CombatHandler != null)
         //    G.GM.CombatHandler.OnEndBattle += Replace;
     }
@@ -60,8 +60,8 @@ public class EnemyTile : BoardTile
     {
         _boardRaycast.HandleBoardRaycast(true);
 
-        if (G.GM != null && G.GM.CombatHandler != null)
-            G.GM.CombatHandler.OnEndBattle -= ReplaceWhenWin;
+        if (GameManager.Instance != null && GameManager.Instance.CombatHandler != null)
+            GameManager.Instance.CombatHandler.OnEndBattle -= ReplaceWhenWin;
 
         if (win)
         {
@@ -72,7 +72,7 @@ public class EnemyTile : BoardTile
 
     private void OnDestroy()
     {
-        if (G.GM != null && G.GM.CombatHandler != null)
-            G.GM.OnEnterBoard -= Replace;
+        if (GameManager.Instance != null && GameManager.Instance.CombatHandler != null)
+            GameManager.Instance.OnEnterBoard -= Replace;
     }
 }

@@ -223,11 +223,11 @@ public class SpellPathAnimator : MonoBehaviour
             
             if (isPlayerAnimator)
             {
-                G.GM.CombatHandler.AttackEnemy(element.Type);
+                GameManager.Instance.CombatHandler.AttackEnemy(element.Type);
             }
             else
             {
-                G.GM.CombatHandler.AttackPlayer(damagePerElement);
+                GameManager.Instance.CombatHandler.AttackPlayer(damagePerElement);
             }
         }
 

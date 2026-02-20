@@ -22,7 +22,7 @@ public class SpellHoverHandler : MonoBehaviour
 
     private void Start()
     {
-        G.GM.CombatHandler.SetHoverHandlerRef(this);
+        GameManager.Instance.CombatHandler.SetHoverHandlerRef(this);
     }
     public void SetupSpellUI(Spell spell)
     {
@@ -51,6 +51,6 @@ public class SpellHoverHandler : MonoBehaviour
 
     private void OnDestroy()
     {
-        G.GM.CombatHandler.DeleteEnemyRef();
+        GameManager.Instance.CombatHandler.DeleteEnemyRef();
     }
 }

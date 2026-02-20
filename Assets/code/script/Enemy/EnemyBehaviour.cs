@@ -41,7 +41,7 @@
         {
             if (GameManager.Instance != null && enemyType == null)
             {
-                G.GM.CombatHandler.SetEnemyRef(this);
+                GameManager.Instance.CombatHandler.SetEnemyRef(this);
             }
             else
                 Debug.LogError("NO GAME MANAGER");
@@ -313,9 +313,9 @@
 
             deathParticles.Play();
 
-            if (G.GM != null)
+            if (GameManager.Instance != null)
             {
-                G.GM.CombatHandler.OnEnemyDead(); 
+                GameManager.Instance.CombatHandler.OnEnemyDead(); 
             }
             spriteRenderer.enabled = false;
 

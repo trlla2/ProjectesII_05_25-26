@@ -10,6 +10,7 @@ public interface IEnemySpell
     int RemainingMoves { get; }
     string GetSpellName();
     bool ShouldRerollAfterAttack { get; }
+    void Cleanup(Grid grid); // For spells taht use spelcial elements
 }
 
 public abstract class EnemySpellBase : IEnemySpell  
@@ -28,6 +29,9 @@ public abstract class EnemySpellBase : IEnemySpell
     public bool ShouldRerollAfterAttack => shouldRerollAfterAttack;
 
     public abstract void Execute(Grid grid);
+
+    // Default no-op — only spells that place persistent grid state need to override this
+    public virtual void Cleanup(Grid grid) { }
 
     public virtual void Tick(Grid grid, System.Action onComplete = null)
     {
@@ -125,7 +129,6 @@ public abstract class EnemySpellBase : IEnemySpell
         }
         else
         {
-            // nothing to process, continue
             onComplete?.Invoke();
         }
 

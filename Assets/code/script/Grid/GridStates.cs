@@ -181,7 +181,7 @@ public class RefillState : IGridState
         }
         isRefilling = false;
 
-        ValidateSpellState validateState = new ValidateSpellState(grid, G.GM.PlayerStats.GetSpellBook());
+        ValidateSpellState validateState = new ValidateSpellState(grid, GameManager.Instance.PlayerStats.GetSpellBook());
         grid.ChangeState(validateState);
     }
 }
@@ -218,7 +218,7 @@ public class RerollState : IGridState
     {
         if (!isAnimating)
         {
-            grid.ChangeState(new ValidateSpellState(grid, G.GM.PlayerStats.GetSpellBook()));
+            grid.ChangeState(new ValidateSpellState(grid, GameManager.Instance.PlayerStats.GetSpellBook()));
         }
     }
 
@@ -434,7 +434,7 @@ public class EnemySpellState : IGridState
             if (rerollAfterProcess)
             {
                 grid.ChangeState(new RerollState(grid, visualGrid, grid.AvailableElements,
-                    G.GM.PlayerStats.GetSpellBook(), 3));
+                    GameManager.Instance.PlayerStats.GetSpellBook(), 3));
             }
             else
             {

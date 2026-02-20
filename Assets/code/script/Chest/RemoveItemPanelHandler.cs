@@ -28,7 +28,7 @@ public class RemoveItemPanelHandler : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        foreach (Item item in G.GM.PlayerStats.Inventory)
+        foreach (Item item in GameManager.Instance.PlayerStats.Inventory)
         {
             GameObject itemUI = Instantiate(itemSelectablePrefab, itemsPanel);
             itemUI.GetComponent<ItemSelectable>().SetItem(this,item);
@@ -44,7 +44,7 @@ public class RemoveItemPanelHandler : MonoBehaviour
     {
         if (currentSelectedItem != null)
         {
-            G.GM.PlayerStats.RemoveItemFromInventory(currentSelectedItem.Item);
+            GameManager.Instance.PlayerStats.RemoveItemFromInventory(currentSelectedItem.Item);
             translatorUI.ResetPosition();
         }
     }

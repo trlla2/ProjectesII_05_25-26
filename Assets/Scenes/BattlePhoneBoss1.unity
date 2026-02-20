@@ -12410,7 +12410,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Delegates:
-  - eventID: 2
+  - eventID: 4
     callback:
       m_PersistentCalls:
         m_Calls:
@@ -12928,7 +12928,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Delegates:
-  - eventID: 2
+  - eventID: 4
     callback:
       m_PersistentCalls:
         m_Calls:
@@ -14908,13 +14908,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3e28b4d5dfb1854d86fa2d297d76476, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stageLevel: 1
-  enemyTypes:
-  - {fileID: 11400000, guid: 9168d9f4aa1ee834ea1164744d0e797d, type: 2}
   tutorialManager: {fileID: 0}
-  bossManager: {fileID: 2144799610}
-  isBossBattle: 0
-  BossWeakElement: 0
 --- !u!4 &806185222
 Transform:
   m_ObjectHideFlags: 0
@@ -14951,6 +14945,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e02a4c0454b986845a065ad209d800cd, type: 2}
   - {fileID: 11400000, guid: e9afe958fcdfa78458bbde73be344e18, type: 2}
   - {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
+  knownSpells: []
 --- !u!1 &809243521
 GameObject:
   m_ObjectHideFlags: 0
@@ -28646,7 +28641,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Delegates:
-  - eventID: 2
+  - eventID: 4
     callback:
       m_PersistentCalls:
         m_Calls:
@@ -34386,7 +34381,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Delegates:
-  - eventID: 2
+  - eventID: 4
     callback:
       m_PersistentCalls:
         m_Calls:
@@ -35084,6 +35079,7 @@ MonoBehaviour:
   healthBar: {fileID: 1474826783}
   damageText: {fileID: 1937170125}
   damageTextTranslator: {fileID: 1937170124}
+  critImage: {fileID: 0}
   timeToChangeDmg: 0.2
   weaknessText: {fileID: 1070558224}
   weaknessTextTranslator: {fileID: 1070558223}

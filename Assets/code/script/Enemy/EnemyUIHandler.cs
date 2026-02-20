@@ -44,7 +44,7 @@ public class EnemyUIHandler : MonoBehaviour
 
     private void Awake()
     {
-        G.GM.CombatHandler.OnSetEnemyReference += SetEnemyRef;
+        GameManager.Instance.CombatHandler.OnSetEnemyReference += SetEnemyRef;
 
         critImage.SetActive(false);
     }

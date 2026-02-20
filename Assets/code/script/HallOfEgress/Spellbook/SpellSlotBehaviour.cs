@@ -41,7 +41,7 @@ public class SpellSlotBehaviour : MonoBehaviour
     public void Initialize(int slot, SpellSlotBehaviour nextSlot)
     {
         slotIndex = slot;
-        SetSpell(G.GM.PlayerStats.SpellBook[slot]);
+        SetSpell(GameManager.Instance.PlayerStats.SpellBook[slot]);
         this.nextSlot = nextSlot;
     }
 
@@ -67,9 +67,9 @@ public class SpellSlotBehaviour : MonoBehaviour
 
     public void SetNewSpell(Spell spell)
     {
-        if (spell == null || G.GM.PlayerStats.ExistSpellOnSpellBook(spell)) return;
+        if (spell == null || GameManager.Instance.PlayerStats.ExistSpellOnSpellBook(spell)) return;
         
-        G.GM.PlayerStats.AddSpellToSpellBook(spell, slotIndex);
+        GameManager.Instance.PlayerStats.AddSpellToSpellBook(spell, slotIndex);
 
         SetSpell(spell);
     }

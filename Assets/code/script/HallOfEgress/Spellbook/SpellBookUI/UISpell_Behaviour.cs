@@ -24,6 +24,6 @@ public class UISpell_Behaviour : MonoBehaviour
         }
     }
 
-    public void HoverSpell() { G.GM.CombatHandler.HoverSpell(currentSpell); }
-    public void UnHoverSpell() { G.GM.CombatHandler.UnHoverSpell(); }
+    public void HoverSpell() { GameManager.Instance.CombatHandler.HoverSpell(currentSpell); }
+    public void UnHoverSpell() { GameManager.Instance.CombatHandler.UnHoverSpell(); }
 }

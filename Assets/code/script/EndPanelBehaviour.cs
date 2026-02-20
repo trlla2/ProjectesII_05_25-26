@@ -28,7 +28,7 @@ public class EndPanelBehaviour : MonoBehaviour
     [SerializeField]
     private string loseScene;
     [SerializeField]
-    private string sceneToUnload = "BattlePhone";
+    private string sceneToUnload;
     [SerializeField]
     private bool goToHallOfEgress = false;
 

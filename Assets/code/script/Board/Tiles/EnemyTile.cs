@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class EnemyTile : BoardTile
 {
+    [SerializeField] private string _combatSceneName;
     [SerializeField] private BoardTileData _postInteractionTile;
     [SerializeField] private int lootRatePercentage;
 
@@ -26,7 +27,7 @@ public class EnemyTile : BoardTile
         G.GM.SetPendingEnemy(enemyToFight);
 
         _boardRaycast.HandleBoardRaycast(false);
-        SceneTransition.Instance.LoadScene("BattlePhone", true);
+        SceneTransition.Instance.LoadScene(_combatSceneName, true);
         G.GM.EnterBattle();
 
         G.GM.OnEnterBoard += Replace;

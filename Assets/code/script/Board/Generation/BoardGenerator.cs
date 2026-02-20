@@ -6,13 +6,11 @@ public class BoardGenerator : MonoBehaviour
 {
     [SerializeField] private BoardManager _boardManager;
 
-    [SerializeField] int _stageLevel;
-
     [Header("Main")]
-    [SerializeField] int _numOfEmptyTiles;
-    [SerializeField] int _numOfEnemyTiles;
-    [SerializeField] int _numOfMiniBossTiles;
-    [SerializeField] int _numOfChestTiles;
+    private int _numOfEmptyTiles;
+    private int _numOfEnemyTiles;
+    private int _numOfMiniBossTiles;
+    private int _numOfChestTiles;
 
     [Header("Reserved Zones")]
     [SerializeField] int _endZoneReservedTiles;
@@ -20,12 +18,12 @@ public class BoardGenerator : MonoBehaviour
     [SerializeField] int _startZoneReserveTiles;
 
     [Header("Branched Paths")]
-    [SerializeField] int _minBranches;
-    [SerializeField] int _maxBranches;
-    [SerializeField] int _minBranchLengthBeforeRejoin;
-    [SerializeField] int _maxBranchLength;
-    [SerializeField, Range(0f, 1f)] float _branchProbabilityPerCandidate;
     [SerializeField, Range(0, 2)] int _minDistBetweenPaths;
+    private int _minBranches;
+    private int _maxBranches;
+    private int _minBranchLengthBeforeRejoin;
+    private int _maxBranchLength;
+    private float _branchProbabilityPerCandidate;
 
     [Header("Branch Neighbor Tiles Spawn")]
     [SerializeField] bool AllowBranchUp;    // (0, +1)
@@ -39,16 +37,41 @@ public class BoardGenerator : MonoBehaviour
 
     private void Awake()
     {
-        _numOfTotalTilesInBoard = _numOfEmptyTiles + _numOfEnemyTiles + _numOfChestTiles;
+        
     }
 
     void Start()
     {
+        SetBoardData(_boardManager.currentStageLevelData);
+        _numOfTotalTilesInBoard = _numOfEmptyTiles + _numOfEnemyTiles + _numOfChestTiles;
+
         InstanceBoard(this.transform);
+    }
+
+    void SetBoardData(StageLevelData boardData)
+    {
+        _numOfEmptyTiles = boardData.GetNumOfEmptyTiles();
+        _numOfEnemyTiles = boardData.GetNumOfEnemyTiles();
+        _numOfMiniBossTiles = boardData.GetNumOfMiniBossTiles();
+        _numOfChestTiles = boardData.GetNumOfChestTiles();
+
+        _minBranches = boardData.GetMinBranches();
+        _maxBranches = boardData.GetMaxBranches();
+        _minBranchLengthBeforeRejoin = boardData.GetMinBranchLengthBeforeRejoin();
+        _maxBranchLength = boardData.GetMaxBranchLength();
+        _branchProbabilityPerCandidate = boardData.GetBranchProbabilityPerCandidate();
     }
 
     void InstanceBoard(Transform parent)
     {
+        if (parent.childCount > 1)
+            foreach (Transform child in parent)
+            {
+                if (child == _boardManager.startingTile.transform) continue;
+                Destroy(child.gameObject);
+            }
+                
+
         List<BoardTile> mainPath = GenerateMainPath(parent);
         _paths.Add(mainPath);
 
@@ -333,7 +356,7 @@ public class BoardGenerator : MonoBehaviour
             return; 
         }
 
-        _boardManager.generatedTiles.Where(t => t.GetGridPosition() == stairsPos).ToList()[0].GetComponent<StairsTile>()?.SetStageLevel(_stageLevel);
+        //_boardManager.generatedTiles.Where(t => t.GetGridPosition() == stairsPos).ToList()[0].GetComponent<StairsTile>()?.SetStageLevel(G.GM.StageLevel);
         
         // instance bossTile
         int bossIndex = path.Count - _bossTileDistanceFromEnd;

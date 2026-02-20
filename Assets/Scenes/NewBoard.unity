@@ -541,7 +541,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 47.75
+  m_fontSize: 58.15
   m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1062,6 +1062,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0597bd5aea80b64f933872fe18968e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentStageLevelData: {fileID: 0}
   startingTile: {fileID: 195526932}
   emptyTileData: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   enemyTileData: {fileID: 11400000, guid: 27551c8f56ed7724a8d92062277b60c2, type: 2}
@@ -1071,6 +1072,7 @@ MonoBehaviour:
   generatedTiles: []
   openChestPanel: {fileID: 2114031267}
   newSpellPanel: {fileID: 0}
+  stageLevelDatas: []
 --- !u!114 &1035823811
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1083,6 +1085,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b1fa9a62efcd3741952322c4288878f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _enemyList: []
+  _bossList: []
 --- !u!1 &1085485580
 GameObject:
   m_ObjectHideFlags: 0
@@ -1204,11 +1208,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _boardManager: {fileID: 1035823810}
-  _stageLevel: 1
-  _numOfEmptyTiles: 21
-  _numOfEnemyTiles: 4
-  _numOfMiniBossTiles: 0
-  _numOfChestTiles: 4
   _endZoneReservedTiles: 5
   _bossTileDistanceFromEnd: 4
   _startZoneReserveTiles: 5
@@ -1420,15 +1419,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3e28b4d5dfb1854d86fa2d297d76476, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stageLevel: 1
-  enemyTypes:
-  - {fileID: 11400000, guid: 3ddc38c9790bdd44bacbeb43cb61cada, type: 2}
-  - {fileID: 11400000, guid: b58a165a179e5564c8881963ab38360b, type: 2}
-  - {fileID: 11400000, guid: 5a68dbd4268eb7749b497b05fa080c5c, type: 2}
+  _stageDatas:
+  - {fileID: 11400000, guid: ffbf1d07f71dd274da37d2c7d1440376, type: 2}
+  - {fileID: 11400000, guid: 3adfaf796b57ec44a8e236e9e19ae547, type: 2}
+  - {fileID: 11400000, guid: 20f7342cad719c249985527955b8c733, type: 2}
+  - {fileID: 11400000, guid: d73137ddb966da6469706f8daa160521, type: 2}
+  - {fileID: 11400000, guid: 28f19c24be260ed49a04de8225287f3a, type: 2}
   tutorialManager: {fileID: 0}
-  bossManager: {fileID: 0}
-  isBossBattle: 0
-  BossWeakElement: 0
 --- !u!4 &1135501900
 Transform:
   m_ObjectHideFlags: 0

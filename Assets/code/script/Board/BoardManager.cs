@@ -1,9 +1,10 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-
 public class BoardManager : MonoBehaviour
 {
+    public StageLevelData currentStageLevelData;
+
     public BoardTile startingTile;
     public BoardTileData emptyTileData;
     public BoardTileData enemyTileData;
@@ -17,36 +18,43 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private NewSpellPanelBehaviour newSpellPanel;
 
     [Header("Encounters")]
-    private EncountersManager _encountersManager;
+    [SerializeField] private EncountersManager encountersManager;
+    public EncountersManager EncountersManager => encountersManager;
     private int _enemiesDefeated = 0;
-    [SerializeField] private List<StageLevelData> stageLevelDatas;
-
 
     private Camera boardCamera;
 
     private void Awake()
     {
+        if (encountersManager == null)
+            encountersManager = GetComponent<EncountersManager>();
+
+        currentStageLevelData = G.GM.GetCurrentStageData();
+        encountersManager.LoadEnemyEncounters(currentStageLevelData.GetEnemyEncounters());
+        encountersManager.LoadEnemyEncountersOrder(currentStageLevelData.GetEncountersOrder());
+        encountersManager.LoadBossesEncounters(currentStageLevelData.GetBossEncounters());
+
         startingTile.SetGridPosition(new Vector2Int(0, 0));
         generatedTiles.Add(startingTile);
 
         boardCamera = Camera.main;
-
-        _encountersManager = gameObject.GetComponent<EncountersManager>();
     }
 
     public void UpdateNeighbors(BoardTile tile)
     {
-        List<Vector2Int> possiblePositions = new List<Vector2Int>();
-        possiblePositions.Add(new Vector2Int(-1, 0));
-        possiblePositions.Add(new Vector2Int(1, 0));
-        possiblePositions.Add(new Vector2Int(0, -1));
-        possiblePositions.Add(new Vector2Int(0, 1));
+        List<Vector2Int> possiblePositions = new List<Vector2Int>
+        {
+            new Vector2Int(-1, 0),
+            new Vector2Int(1, 0),
+            new Vector2Int(0, -1),
+            new Vector2Int(0, 1)
+        };
 
         for (int i = 0; i < generatedTiles.Count; i++)
         {
             for (int j = 0; j < possiblePositions.Count; j++)
             {
-                if (generatedTiles[i].GetComponent<BoardTile>().GetGridPosition() == tile.GetGridPosition() + possiblePositions[j])
+                if (generatedTiles[i].GetGridPosition() == tile.GetGridPosition() + possiblePositions[j])
                 {
                     if (!tile.neighbors.Contains(generatedTiles[i]))
                         tile.neighbors.Add(generatedTiles[i]);
@@ -69,17 +77,13 @@ public class BoardManager : MonoBehaviour
         newTile.SetBoardManager(this);
 
         generatedTiles.Add(newTile);
-        Debug.Log($"casilla generada en{gridPosition}");
+        Debug.Log($"casilla generada en {gridPosition}");
 
         return newTile;
     }
 
     public void ReplaceTileType(BoardTile tile, BoardTileData newData)
     {
-        //Vector3 pos = tile.transform.position;
-        //Quaternion rot = tile.transform.rotation;
-        //Transform parent = tile.transform.parent;
-
         BoardTile newTile = CreateNewTile(newData, tile.GetGridPosition(), tile.transform.parent);
         newTile.SetGridPosition(tile.GetGridPosition());
 
@@ -114,10 +118,5 @@ public class BoardManager : MonoBehaviour
     public void IncrementEnemyDefeatedCount()
     {
         _enemiesDefeated++;
-    }
-
-    private void LoadStageEncounterList()
-    {
-        //_encountersManager.LoadEnemyEncounters(stageLevelDatas[G.GM.StageLevel].)
     }
 }

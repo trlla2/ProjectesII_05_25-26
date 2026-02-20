@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class StairsTile : BoardTile
 {
-    [SerializeField] string _sceneToLoadWhenInteract;
+    [SerializeField] string _sceneToLoadWhenInteract = "NewBoard";
 
     [SerializeField] private EmptySpellBookAlertHandler _emptySpellbookAlert;
 
@@ -30,19 +30,19 @@ public class StairsTile : BoardTile
         }
     }
 
-    public void SetStageLevel(int level)
-    {
-        _stageLevel = level;
-        switch (_stageLevel)
-        {
-            case 1: _sceneToLoadWhenInteract = "Stage2";
-                break;
-            case 2: _sceneToLoadWhenInteract = "Stage3";
-                break;
-            case /*>=*/ 3: _sceneToLoadWhenInteract = "Stage4";
-                break;
-            case 4: _sceneToLoadWhenInteract = "HallOfEgress";
-                break;
-        }
-    }
+    //public void SetStageLevel(int level)
+    //{
+    //    _stageLevel = level;
+    //    switch (_stageLevel)
+    //    {
+    //        case 1: _sceneToLoadWhenInteract = "Stage2";
+    //            break;
+    //        case 2: _sceneToLoadWhenInteract = "Stage3";
+    //            break;
+    //        case /*>=*/ 3: _sceneToLoadWhenInteract = "Stage4";
+    //            break;
+    //        case 4: _sceneToLoadWhenInteract = "HallOfEgress";
+    //            break;
+    //    }
+    //}
 }

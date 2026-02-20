@@ -1,10 +1,8 @@
-using System.Collections;
 using UnityEngine;
 
 public class EnemyTile : BoardTile
 {
     [SerializeField] private BoardTileData _postInteractionTile;
-
     [SerializeField] private int lootRatePercentage;
 
     [Header("Force Enemy Settings")]
@@ -22,20 +20,44 @@ public class EnemyTile : BoardTile
     {
         Debug.Log("starting combat...");
 
-        if (forceSpecificEnemy && specificEnemyType != null)
+        EnemyType enemyToFight = ResolveEnemy();
+        if (enemyToFight == null)
         {
-            G.GM.SetForcedEnemy(specificEnemyType);
+            Debug.LogError("EnemyTile: ResolveEnemy() devolvió null, no se inicia combate.");
+            return;
         }
+
+        G.GM.SetPendingEnemy(enemyToFight);
 
         _boardRaycast.HandleBoardRaycast(false);
         SceneTransition.Instance.LoadScene("BattlePhone", true);
         G.GM.EnterBattle();
-        G.GM.CombatHandler.OnEndBattle += Replace;
+
+        if (G.GM.CombatHandler != null)
+            G.GM.CombatHandler.OnEndBattle += Replace;
     }
 
-    public void Replace(bool win, int xp, int money) 
+    private EnemyType ResolveEnemy()
+    {
+        if (forceSpecificEnemy && specificEnemyType != null)
+            return specificEnemyType;
+
+        if (_boardManager == null || _boardManager.EncountersManager == null)
+        {
+            Debug.LogError("EnemyTile: BoardManager o EncountersManager es null.");
+            return null;
+        }
+
+        return _boardManager.EncountersManager.GetNextEncounter();
+    }
+
+    public void Replace(bool win, int xp, int money)
     {
         _boardRaycast.HandleBoardRaycast(true);
+
+        if (G.GM != null && G.GM.CombatHandler != null)
+            G.GM.CombatHandler.OnEndBattle -= Replace;
+
         if (win)
         {
             _boardManager.ReplaceTileType(this, _postInteractionTile);
@@ -45,6 +67,7 @@ public class EnemyTile : BoardTile
 
     private void OnDestroy()
     {
-        G.GM.CombatHandler.OnEndBattle -= Replace;
+        if (G.GM != null && G.GM.CombatHandler != null)
+            G.GM.CombatHandler.OnEndBattle -= Replace;
     }
 }

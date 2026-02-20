@@ -22,7 +22,7 @@ public class TileClickHandler : MonoBehaviour
 
         if (!player.isMoving/*FORCED*/ && raycastActive) 
         {
-            HandleMouseHover();
+            //HandleMouseHover();
             if (Input.GetMouseButtonDown(0))
                 HandleTileClick();
         }

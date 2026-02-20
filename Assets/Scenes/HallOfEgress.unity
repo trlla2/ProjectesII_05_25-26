@@ -9957,6 +9957,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0597bd5aea80b64f933872fe18968e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentStageLevelData: {fileID: 0}
   startingTile: {fileID: 195526932}
   emptyTileData: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   enemyTileData: {fileID: 11400000, guid: 27551c8f56ed7724a8d92062277b60c2, type: 2}
@@ -9966,6 +9967,7 @@ MonoBehaviour:
   generatedTiles: []
   openChestPanel: {fileID: 137198783}
   newSpellPanel: {fileID: 0}
+  encountersManager: {fileID: 0}
 --- !u!82 &1035823811
 AudioSource:
   m_ObjectHideFlags: 0
@@ -11351,15 +11353,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3e28b4d5dfb1854d86fa2d297d76476, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stageLevel: 1
-  enemyTypes:
-  - {fileID: 11400000, guid: 79d07f17a589c324d9832fa0d07aa8f0, type: 2}
-  - {fileID: 11400000, guid: 8da2630b56083c44abb033c12f629f0e, type: 2}
-  - {fileID: 11400000, guid: 5d98f1c5df92ad7479bd352825842b75, type: 2}
+  _stageDatas:
+  - {fileID: 11400000, guid: ffbf1d07f71dd274da37d2c7d1440376, type: 2}
+  - {fileID: 11400000, guid: 3adfaf796b57ec44a8e236e9e19ae547, type: 2}
+  - {fileID: 11400000, guid: 20f7342cad719c249985527955b8c733, type: 2}
+  - {fileID: 11400000, guid: d73137ddb966da6469706f8daa160521, type: 2}
+  - {fileID: 11400000, guid: 28f19c24be260ed49a04de8225287f3a, type: 2}
   tutorialManager: {fileID: 0}
-  bossManager: {fileID: 0}
-  isBossBattle: 0
-  BossWeakElement: 0
 --- !u!4 &1135501900
 Transform:
   m_ObjectHideFlags: 0
@@ -15660,7 +15660,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.0011134523, y: -1916.8247}
+  m_AnchoredPosition: {x: 0.0011134523, y: -2605.669}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1618195481
@@ -18287,7 +18287,7 @@ PrefabInstance:
       objectReference: {fileID: 178646698}
     - target: {fileID: 2795308709534367793, guid: 016115c5e3fabf3499b6d8c5640a8a8c, type: 3}
       propertyPath: _sceneToLoadWhenInteract
-      value: NewBoard (Stage1)
+      value: NewBoard
       objectReference: {fileID: 0}
     - target: {fileID: 5110594593294184157, guid: 016115c5e3fabf3499b6d8c5640a8a8c, type: 3}
       propertyPath: m_Name

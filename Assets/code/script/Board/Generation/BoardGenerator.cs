@@ -62,7 +62,7 @@ public class BoardGenerator : MonoBehaviour
         _branchProbabilityPerCandidate = boardData.GetBranchProbabilityPerCandidate();
     }
 
-    void InstanceBoard(Transform parent)
+    public void InstanceBoard(Transform parent)
     {
         if (parent.childCount > 1)
             foreach (Transform child in parent)
@@ -70,7 +70,10 @@ public class BoardGenerator : MonoBehaviour
                 if (child == _boardManager.startingTile.transform) continue;
                 Destroy(child.gameObject);
             }
-                
+
+        //if (_boardManager.GetPlayer().transform.position != _boardManager.startingTile.gameObject.transform.position)
+        //    _boardManager.GetPlayer().InitPlayer();
+
 
         List<BoardTile> mainPath = GenerateMainPath(parent);
         _paths.Add(mainPath);

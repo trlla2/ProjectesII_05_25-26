@@ -12,6 +12,8 @@ public class BoardManager : MonoBehaviour
     public BoardTileData bossTileData;
     public BoardTileData stairsTileData;
 
+    [SerializeField] private BoardGenerator boardGenerator;
+
     public List<BoardTile> generatedTiles;
 
     [SerializeField] private OpenChestScreen openChestPanel;
@@ -23,6 +25,8 @@ public class BoardManager : MonoBehaviour
     private int _enemiesDefeated = 0;
 
     private Camera boardCamera;
+
+    //public PlayerMovement player;
 
     private void Awake()
     {
@@ -69,19 +73,6 @@ public class BoardManager : MonoBehaviour
         generatedTiles.Add(startingTile);
 
         boardCamera = Camera.main;
-        G.GM.SetBoardClickHandler(boardCamera.GetComponent<TileClickHandler>());
-        //if (encountersManager == null)
-        //    encountersManager = GetComponent<EncountersManager>();
-
-        //currentStageLevelData = G.GM.GetCurrentStageData();
-        //encountersManager.LoadEnemyEncounters(currentStageLevelData.GetEnemyEncounters());
-        //encountersManager.LoadEnemyEncountersOrder(currentStageLevelData.GetEncountersOrder());
-        //encountersManager.LoadBossesEncounters(currentStageLevelData.GetBossEncounters());
-
-        //startingTile.SetGridPosition(new Vector2Int(0, 0));
-        //generatedTiles.Add(startingTile);
-
-        //boardCamera = Camera.main;
     }
 
     public void UpdateNeighbors(BoardTile tile)
@@ -164,4 +155,8 @@ public class BoardManager : MonoBehaviour
     {
         _enemiesDefeated++;
     }
+
+    //public PlayerMovement GetPlayer() { return player; }
+
+    public BoardGenerator GetBoardGenerator() { return boardGenerator; }
 }

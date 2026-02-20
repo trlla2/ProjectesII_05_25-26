@@ -15,7 +15,8 @@ public class Grid : MonoBehaviour
     [Header("References")]
     [SerializeField] private VisualGrid visualGrid;
     [SerializeField] private SpellPathAnimator enemySpellAnimator;
-    
+    public ExplosionTrigger explosionTrigger;
+
     [Header("Animation Settings")]
     [SerializeField] private AnimationCurve enemyBlinkCurve;
     [SerializeField] private float enemyDeletionDuration = 1f;

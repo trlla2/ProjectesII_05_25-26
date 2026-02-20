@@ -50,7 +50,6 @@ public class CombatHandler : MonoBehaviour
     {
         
         enemyInCombat = enemyRef;
-        enemyInCombat.SetEnemyType(null);
 
 
         EnemyType typeToUse;
@@ -58,7 +57,7 @@ public class CombatHandler : MonoBehaviour
         if (forcedEnemyType != null && isEnemyTypeForced)
         {
             typeToUse = forcedEnemyType;
-
+            print("FORCED ENEMY TYPE: " + typeToUse);
             enemyInCombat.SetEnemyType(typeToUse);//?
             enemyInCombat?.StartBattle();//?
             OnSetEnemyReference?.Invoke(enemyRef); //?

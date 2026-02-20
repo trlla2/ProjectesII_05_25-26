@@ -11,8 +11,6 @@ public class ElementVisual : MonoBehaviour
     [SerializeField] private Image targetFillBombImage;
     [SerializeField] private GameObject breakEnemyHoverParticles;
 
-    //public ExplosionTrigger explosionTrigger;
-
     private Vector2Int gridPosition;
     private bool canSelect = true;
     private bool isTargetedByEnemy;

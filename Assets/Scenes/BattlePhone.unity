@@ -5682,6 +5682,7 @@ GameObject:
   m_Component:
   - component: {fileID: 190367787}
   - component: {fileID: 190367786}
+  - component: {fileID: 190367790}
   - component: {fileID: 190367788}
   - component: {fileID: 190367789}
   m_Layer: 0
@@ -5717,6 +5718,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
   visualGrid: {fileID: 2040530735}
   enemySpellAnimator: {fileID: 964765496}
+  explosionTrigger: {fileID: 190367790}
   enemyBlinkCurve:
     serializedVersion: 2
     m_Curve:
@@ -5957,6 +5959,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &190367790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190367785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 247cbfd3faee80146a976cfddf86a463, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explosionPrefab: {fileID: 4242241795355642415, guid: 3e0b14a4a999dbb46be1802c243b6ffd, type: 3}
+  explosionDuration: 0.5
 --- !u!1 &191384467
 GameObject:
   m_ObjectHideFlags: 0
@@ -24280,7 +24296,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4242241795355642415, guid: 3e0b14a4a999dbb46be1802c243b6ffd, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8594301903341538902, guid: 3e0b14a4a999dbb46be1802c243b6ffd, type: 3}
       propertyPath: m_LocalPosition.x

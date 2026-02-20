@@ -81,10 +81,6 @@ public class BombSpell : EnemySpellBase
 
         if (AllCardinalsCleared(grid))
         {
-            //ElementVisual bombVisual = grid.GetElementVisualAt(bombPosition);
-            //if (bombVisual == null) Debug.Log("no bomb visual");
-            //bombVisual.explosionTrigger.Explode();
-
             ClearBombVisual(grid);
             RemoveBombElement(grid);
             targetedPositions.Clear();
@@ -111,6 +107,10 @@ public class BombSpell : EnemySpellBase
 
         if (remainingMoves <= 0)
         {
+            Debug.Log("Bomb defused!");
+            grid.explosionTrigger.Explode(grid.VisualGrid.GridToWorldPosition(bombPosition - new Vector2Int(1,0)));
+            Camera.main.GetComponent<CameraShake>().Shake(0.4f, 0.5f);
+
             // Remove bomb element before explosion so EnemySpellState refills the slot
             ClearBombVisual(grid);
             RemoveBombElement(grid);

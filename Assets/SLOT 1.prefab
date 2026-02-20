@@ -166,7 +166,6 @@ GameObject:
   - component: {fileID: 1342581851594023797}
   - component: {fileID: 6615864335302080099}
   - component: {fileID: 2154929571846906713}
-  - component: {fileID: 1902620776693346580}
   m_Layer: 0
   m_Name: SLOT 1
   m_TagString: Untagged
@@ -414,21 +413,6 @@ MonoBehaviour:
   targetFillTimedImage: {fileID: 3337448413337435500}
   targetFillBombImage: {fileID: 3868742652679726170}
   breakEnemyHoverParticles: {fileID: 47084697860822780, guid: 3c3466539aaf9584f926203257558bf4, type: 3}
-  explosionTrigger: {fileID: 1902620776693346580}
---- !u!114 &1902620776693346580
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5074324612046381537}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 247cbfd3faee80146a976cfddf86a463, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  explosionPrefab: {fileID: 4242241795355642415, guid: 3e0b14a4a999dbb46be1802c243b6ffd, type: 3}
-  explosionDuration: 0.5
 --- !u!1 &5853473086742218126
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,9 +6,9 @@ public class ExplosionTrigger : MonoBehaviour
     [SerializeField] private GameObject explosionPrefab;
     [SerializeField] private float explosionDuration = 0.5f;
     
-    public void Explode()
+    public void Explode(Vector2 position)
     {
-        print("KABOOOM");
-        GameObject explosion = Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        Debug.Log("KABOOOM");
+        GameObject explosion = Instantiate(explosionPrefab, position, Quaternion.identity);
     }
 }

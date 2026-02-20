@@ -29,15 +29,20 @@ public class SpellSlotBehaviour : MonoBehaviour
 
     private int slotIndex;
 
+    private SpellSlotBehaviour nextSlot;
+
+    public SpellSlotBehaviour NextSlot => nextSlot;
+
     private void Start()
     {
         selectedBG = GetComponent<Image>();
     }
 
-    public void Initialize(int slot)
+    public void Initialize(int slot, SpellSlotBehaviour nextSlot)
     {
         slotIndex = slot;
         SetSpell(G.GM.PlayerStats.SpellBook[slot]);
+        this.nextSlot = nextSlot;
     }
 
     private void Update()

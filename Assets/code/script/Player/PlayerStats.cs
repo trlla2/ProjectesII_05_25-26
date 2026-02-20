@@ -38,6 +38,8 @@ public class PlayerStats
     public int SpellBookSize => spellBookSize;
     private Spell[] spellBook;
     public Spell[] SpellBook => spellBook;
+    private List<Spell> knownSpells;
+    public List<Spell> KnownSpells => knownSpells;
 
 
     private List<Item> inventory;
@@ -81,6 +83,7 @@ public class PlayerStats
 
         // spells  & Items
         spellBook = new Spell[spellBookSize];
+        knownSpells = new List<Spell>();
         inventory = new List<Item>();
         limitInventory = 3;
 
@@ -226,7 +229,13 @@ public class PlayerStats
         return spelL;
     }
 
+    public void AddKnownSpell(Spell spell)
+    {
+            if (knownSpells.Contains(spell))
+                return;
 
+        knownSpells.Add(spell);
+    }
 
     public int GetEXPForLastLevel()
     {

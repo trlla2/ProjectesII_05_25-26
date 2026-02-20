@@ -12,7 +12,7 @@ public class HapticsButtonHandler : MonoBehaviour, IPointerDownHandler
         Feedback();
     }
 
-    private void Feedback()
+    public void Feedback()
     {
         HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.RigidImpact);
     }

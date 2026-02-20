@@ -81,6 +81,10 @@ public class BombSpell : EnemySpellBase
 
         if (AllCardinalsCleared(grid))
         {
+            //ElementVisual bombVisual = grid.GetElementVisualAt(bombPosition);
+            //if (bombVisual == null) Debug.Log("no bomb visual");
+            //bombVisual.explosionTrigger.Explode();
+
             ClearBombVisual(grid);
             RemoveBombElement(grid);
             targetedPositions.Clear();

@@ -218,7 +218,7 @@ public class RerollState : IGridState
     {
         if (!isAnimating)
         {
-            grid.ChangeState(new IdleState(grid));
+            grid.ChangeState(new ValidateSpellState(grid, G.GM.PlayerStats.GetSpellBook()));
         }
     }
 
@@ -257,12 +257,20 @@ public class RerollState : IGridState
     {
         int size = grid.GridData.GridSize;
         Element[,] result = new Element[size, size];
+        Element bombEl = grid.BombElement;
 
         for (int x = 0; x < size; x++)
         {
             for (int y = 0; y < size; y++)
             {
-                result[x, y] = availableElements[Random.Range(0, availableElements.Count)];
+                Vector2Int pos = new Vector2Int(x, y);
+                Element current = grid.GridData.GetElementAt(pos);
+
+                // Preserve the bomb element so the active BombSpell stays valid
+                if (bombEl != null && current == bombEl)
+                    result[x, y] = bombEl;
+                else
+                    result[x, y] = availableElements[Random.Range(0, availableElements.Count)];
             }
         }
 
@@ -277,8 +285,18 @@ public class RerollState : IGridState
             return;
 
         int size = targetGrid.GetLength(0);
-        
-        // Try multiple attempts to find a valid path
+
+        //Collect bomb positions so spell paths never overwrite them, mb overrkillusing a hashset but we can use 2 bombs in the future mb?
+        HashSet<Vector2Int> bombPositions = new HashSet<Vector2Int>();
+        Element bombEl = grid.BombElement;
+        if (bombEl != null)
+        {
+            for (int x = 0; x < size; x++)
+                for (int y = 0; y < size; y++)
+                    if (targetGrid[x, y] == bombEl)
+                        bombPositions.Add(new Vector2Int(x, y));
+        }
+
         int maxAttempts = 50;
         for (int attempt = 0; attempt < maxAttempts; attempt++)
         {
@@ -287,8 +305,11 @@ public class RerollState : IGridState
                 Random.Range(0, size)
             );
 
-            List<Vector2Int> path = GenerateRandomPathFromStart(size, recipe.Count, startPos);
-            
+            if (bombPositions.Contains(startPos))
+                continue;
+
+            List<Vector2Int> path = GenerateRandomPathFromStart(size, recipe.Count, startPos, bombPositions);
+
             if (path != null && path.Count == recipe.Count)
             {
                 for (int i = 0; i < recipe.Count; i++)
@@ -301,7 +322,7 @@ public class RerollState : IGridState
         }
     }
 
-    private List<Vector2Int> GenerateRandomPathFromStart(int gridSize, int length, Vector2Int start)
+    private List<Vector2Int> GenerateRandomPathFromStart(int gridSize, int length, Vector2Int start, HashSet<Vector2Int> excluded = null)
     {
         if (length > gridSize * gridSize)
             return null;
@@ -319,7 +340,10 @@ public class RerollState : IGridState
             foreach (var dir in directions)
             {
                 Vector2Int next = current + dir;
-                if (next.x >= 0 && next.x < gridSize && next.y >= 0 && next.y < gridSize && !visited.Contains(next))
+                if (next.x >= 0 && next.x < gridSize &&
+                    next.y >= 0 && next.y < gridSize &&
+                    !visited.Contains(next) &&
+                    (excluded == null || !excluded.Contains(next)))
                 {
                     neighbors.Add(next);
                 }

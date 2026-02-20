@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class CombatHandler : MonoBehaviour
 {
-
     private EnemyBehaviour enemyInCombat;
 
     private SpellHoverHandler spellHoverHandler;
@@ -16,10 +15,8 @@ public class CombatHandler : MonoBehaviour
     [HideInInspector] public ElementType BossWeakElement;
 
     [Header("Debug")]
-    [SerializeField]
-    private bool isEnemyTypeForced = false;
-    [SerializeField]
-    private EnemyType forcedEnemyType;
+    [SerializeField] private bool isEnemyTypeForced = false;
+    [SerializeField] private EnemyType forcedEnemyType;
 
     // Events
     public delegate void GetOnEndBattle(bool isWin, int exp, int money);
@@ -31,58 +28,50 @@ public class CombatHandler : MonoBehaviour
 
     public event System.Action<EnemyBehaviour> OnSetEnemyReference;
 
+    
 
     public void Awake()
     {
         G.GM.SetCombatHandler(this);
     }
+
     private void Start()
     {
-        if (bossManager != null) { isBossBattle = true; BossWeakElement = bossManager.WeakElement;}
-    }
-    public void OnDestroy()
-    {
-        G.GM.SetCombatHandler(null);
+        if (bossManager != null)
+        {
+            isBossBattle = true;
+            BossWeakElement = bossManager.WeakElement;
+        }
     }
 
+    public void OnDestroy()
+    {
+        if (G.GM != null && G.GM.CombatHandler == this)
+            G.GM.SetCombatHandler(null);
+    }
 
     public void SetEnemyRef(EnemyBehaviour enemyRef)
     {
-        
         enemyInCombat = enemyRef;
-        enemyInCombat.SetEnemyType(null);
 
-
-        EnemyType typeToUse;
-
-        if (forcedEnemyType != null && isEnemyTypeForced)
+        EnemyType typeToUse = ResolveEnemyType();
+        if (typeToUse == null)
         {
-            typeToUse = forcedEnemyType;
-
-            enemyInCombat.SetEnemyType(typeToUse);//?
-            enemyInCombat?.StartBattle();//?
-            OnSetEnemyReference?.Invoke(enemyRef); //?
-            return; // DELETE ME 
-
-        }
-        else
-        {
-            Debug.LogError("SetEnemyRef ON COMBATHANDLER NOT IMPLEMENTED");
-
-            //    typeToUse = PickRandomEenemy();
+            Debug.LogError("CombatHandler: no se pudo resolver un EnemyType para este combate.");
+            return;
         }
 
-        ////no override on tutorial enemies
-        ////no auto-start battle during tutorial
-        //if (tutorialManager == null || !tutorialManager.IsTutorialActive())
-        //{
-        //    enemyInCombat?.StartBattle();
-        //    enemyInCombat.SetEnemyType(typeToUse);
-        //}
-
-        
-
+        enemyInCombat.SetEnemyType(typeToUse);
+        enemyInCombat.StartBattle();
         OnSetEnemyReference?.Invoke(enemyRef);
+    }
+
+    private EnemyType ResolveEnemyType()
+    {
+        if (isEnemyTypeForced && forcedEnemyType != null)
+            return forcedEnemyType;
+
+        return G.GM.ClearPendingEnemy();
     }
 
     public void DeleteEnemyRef() { enemyInCombat = null; }
@@ -90,8 +79,6 @@ public class CombatHandler : MonoBehaviour
     public void AttackBoss(float percent) { enemyInCombat?.dealBossDamage(percent); }
 
     public void AttackEnemy(ElementType element) { enemyInCombat?.DealDamage(G.GM.PlayerStats.AttackWithElement(element)); }
-
-    
 
     public void AttackPlayer(float damage)
     {
@@ -107,7 +94,7 @@ public class CombatHandler : MonoBehaviour
         G.GM.PlayerStats.Damage(damage);
         Camera.main.GetComponent<CameraShake>().Shake(0.2f);
 
-        OnPlayerHitRecived.Invoke();
+        OnPlayerHitRecived?.Invoke();
 
         if (!G.GM.PlayerStats.IsAlive())
             OnPlayerDead();
@@ -122,7 +109,7 @@ public class CombatHandler : MonoBehaviour
     public void OnPlayerDead()
     {
         enemyInCombat?.StopBattle();
-        OnEndBattle?.Invoke(false, 0, 0); // 0 cause player lose
+        OnEndBattle?.Invoke(false, 0, 0);
     }
 
     public void OnEnemyDead()
@@ -131,16 +118,12 @@ public class CombatHandler : MonoBehaviour
         int money = G.GM.StageLevel * moneyMultiplyer;
 
         G.GM.PlayerStats.AddExp(exp);
-
         G.GM.PlayerStats.AddMoney(money);
 
         DeleteEnemyRef();
-
-       
-
+        //_boardClickHandler.HandleBoardRaycast(true);
         OnEndBattle?.Invoke(true, exp, money);
     }
-
 
     public void SetHoverHandlerRef(SpellHoverHandler spellHover) { spellHoverHandler = spellHover; }
     public void DeleteHoverHandlerRef() { spellHoverHandler = null; }
@@ -152,5 +135,4 @@ public class CombatHandler : MonoBehaviour
     public void UnHoverSpell() { spellHoverHandler.UnShow(); }
 
     public EnemyBehaviour GetEnemyRef() => enemyInCombat;
-
 }

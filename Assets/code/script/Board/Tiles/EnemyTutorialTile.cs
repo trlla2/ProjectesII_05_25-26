@@ -34,6 +34,7 @@ public class EnemyTutorialTile : BoardTile
 
     private void OnDestroy()
     {
-        G.GM.CombatHandler.OnEndBattle -= Replace;
+        if (G.GM != null && G.GM.CombatHandler != null)
+            G.GM.CombatHandler.OnEndBattle -= Replace;
     }
 }

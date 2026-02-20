@@ -1,4 +1,6 @@
+//using UnityEditor.SearchService;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class StairsTile : BoardTile
 {
@@ -19,7 +21,10 @@ public class StairsTile : BoardTile
     public override void Interact()
     {
         if (G.GM.PlayerStats.GetSpellBook().Count == G.GM.PlayerStats.SpellBookSize)
+        {
+            if (SceneManager.GetActiveScene().name == _sceneToLoadWhenInteract) G.GM.AdvanceStageLevel();
             SceneTransition.Instance.LoadScene(_sceneToLoadWhenInteract, false);
+        }
         else
         {
             if (_emptySpellbookAlert != null) 
@@ -30,19 +35,4 @@ public class StairsTile : BoardTile
         }
     }
 
-    public void SetStageLevel(int level)
-    {
-        _stageLevel = level;
-        switch (_stageLevel)
-        {
-            case 1: _sceneToLoadWhenInteract = "Stage2";
-                break;
-            case 2: _sceneToLoadWhenInteract = "Stage3";
-                break;
-            case /*>=*/ 3: _sceneToLoadWhenInteract = "Stage4";
-                break;
-            case 4: _sceneToLoadWhenInteract = "HallOfEgress";
-                break;
-        }
-    }
 }

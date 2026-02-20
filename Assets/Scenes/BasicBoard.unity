@@ -1061,15 +1061,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0597bd5aea80b64f933872fe18968e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentStageLevelData: {fileID: 0}
   startingTile: {fileID: 195526932}
   emptyTileData: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   enemyTileData: {fileID: 11400000, guid: 27551c8f56ed7724a8d92062277b60c2, type: 2}
   chestTileData: {fileID: 11400000, guid: d22ce5231cab6564988711f5ec7898de, type: 2}
   bossTileData: {fileID: 11400000, guid: bc3587d48929d3347ab647196bf11cde, type: 2}
   stairsTileData: {fileID: 11400000, guid: 5109a009fed6a2d4595e73f54ebbf5c4, type: 2}
+  boardGenerator: {fileID: 0}
   generatedTiles: []
   openChestPanel: {fileID: 2114031267}
   newSpellPanel: {fileID: 0}
+  encountersManager: {fileID: 0}
 --- !u!1 &1085485580
 GameObject:
   m_ObjectHideFlags: 0
@@ -1191,19 +1194,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _boardManager: {fileID: 0}
-  _stageLevel: 0
-  _numOfEmptyTiles: 20
-  _numOfEnemyTiles: 4
-  _numOfMiniBossTiles: 0
-  _numOfChestTiles: 4
   _endZoneReservedTiles: 0
   _bossTileDistanceFromEnd: 0
   _startZoneReserveTiles: 0
-  _minBranches: 0
-  _maxBranches: 0
-  _minBranchLengthBeforeRejoin: 0
-  _maxBranchLength: 0
-  _branchProbabilityPerCandidate: 0
   _minDistBetweenPaths: 0
   AllowBranchUp: 0
   AllowBranchDown: 0
@@ -1377,6 +1370,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cam: {fileID: 1106537846}
   player: {fileID: 2033243885}
+  raycastActive: 1
 --- !u!1 &1135501898
 GameObject:
   m_ObjectHideFlags: 0
@@ -1407,15 +1401,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3e28b4d5dfb1854d86fa2d297d76476, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stageLevel: 1
-  enemyTypes:
-  - {fileID: 11400000, guid: 3ddc38c9790bdd44bacbeb43cb61cada, type: 2}
-  - {fileID: 11400000, guid: b58a165a179e5564c8881963ab38360b, type: 2}
-  - {fileID: 11400000, guid: 5a68dbd4268eb7749b497b05fa080c5c, type: 2}
+  _stageDatas: []
   tutorialManager: {fileID: 0}
-  bossManager: {fileID: 0}
-  isBossBattle: 0
-  BossWeakElement: 0
 --- !u!4 &1135501900
 Transform:
   m_ObjectHideFlags: 0
@@ -1438,7 +1425,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1135501898}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5089faa8aa8f981468d790dfeaa1fece, type: 3}
   m_Name: 
@@ -1449,6 +1436,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e02a4c0454b986845a065ad209d800cd, type: 2}
   - {fileID: 11400000, guid: e9afe958fcdfa78458bbde73be344e18, type: 2}
   - {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
+  knownSpells: []
 --- !u!1 &1217863286
 GameObject:
   m_ObjectHideFlags: 0

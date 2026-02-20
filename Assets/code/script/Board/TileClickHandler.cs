@@ -9,7 +9,7 @@ public class TileClickHandler : MonoBehaviour
     private BoardTile _lastTileHovered;
     [SerializeField] PlayerMovement player;
 
-    private bool raycastActive = true;
+    [SerializeField] private bool raycastActive = true;
 
     private void Awake()
     {
@@ -22,7 +22,7 @@ public class TileClickHandler : MonoBehaviour
 
         if (!player.isMoving/*FORCED*/ && raycastActive) 
         {
-            HandleMouseHover();
+            //HandleMouseHover();
             if (Input.GetMouseButtonDown(0))
                 HandleTileClick();
         }

@@ -9,12 +9,14 @@ public class Grid : MonoBehaviour
     [Header("Configuration")]
     [SerializeField] private List<Element> availableElements;
     [SerializeField] private Element emptyElement;
+    [SerializeField] private Element bombElement;    
     [SerializeField] private List<Spell> availableSpells;
 
     [Header("References")]
     [SerializeField] private VisualGrid visualGrid;
     [SerializeField] private SpellPathAnimator enemySpellAnimator;
-    
+    public ExplosionTrigger explosionTrigger;
+
     [Header("Animation Settings")]
     [SerializeField] private AnimationCurve enemyBlinkCurve;
     [SerializeField] private float enemyDeletionDuration = 1f;
@@ -33,6 +35,7 @@ public class Grid : MonoBehaviour
     public GridData GridData => gridData;
     public GridGravity GravityHandler => gravityHandler;
     public Element EmptyElement => emptyElement;
+    public Element BombElement => bombElement;         
     public List<Element> AvailableElements => availableElements;
     public VisualGrid VisualGrid => visualGrid;
 

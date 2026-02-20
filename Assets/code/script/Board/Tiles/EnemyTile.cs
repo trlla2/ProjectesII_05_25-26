@@ -1,15 +1,9 @@
-using System.Collections;
 using UnityEngine;
 
 public class EnemyTile : BoardTile
 {
     [SerializeField] private BoardTileData _postInteractionTile;
-
     [SerializeField] private int lootRatePercentage;
-
-    [Header("Force Enemy Settings")]
-    [SerializeField] private bool forceSpecificEnemy = false;
-    [SerializeField] private EnemyType specificEnemyType;
 
     private TileClickHandler _boardRaycast;
 
@@ -22,26 +16,63 @@ public class EnemyTile : BoardTile
     {
         Debug.Log("starting combat...");
 
-        if (forceSpecificEnemy && specificEnemyType != null)
+        EnemyType enemyToFight = ResolveEnemy();
+        if (enemyToFight == null)
         {
-            G.GM.SetForcedEnemy(specificEnemyType);
+            Debug.LogError("EnemyTile: ResolveEnemy() devolvió null, no se inicia combate.");
+            return;
         }
+
+        G.GM.SetPendingEnemy(enemyToFight);
 
         _boardRaycast.HandleBoardRaycast(false);
         SceneTransition.Instance.LoadScene("BattlePhone", true);
         G.GM.EnterBattle();
-        G.GM.CombatHandler.OnEndBattle += Replace;
+
+        G.GM.OnEnterBoard += Replace;
+        //if (G.GM.CombatHandler != null)
+        //    G.GM.CombatHandler.OnEndBattle += Replace;
     }
 
-    public void Replace(bool win, int xp, int money) 
+    protected virtual EnemyType ResolveEnemy()
+    {
+        if (_boardManager == null || _boardManager.EncountersManager == null)
+        {
+            Debug.LogError("EnemyTile: BoardManager o EncountersManager es null.");
+            return null;
+        }
+
+        return _boardManager.EncountersManager.GetNextEncounter();
+    }
+
+    public void Replace()
     {
         _boardRaycast.HandleBoardRaycast(true);
+
+        //if (G.GM != null && G.GM.CombatHandler != null)
+        //    G.GM.CombatHandler.OnEndBattle -= Replace;
+
+        _boardManager.ReplaceTileType(this, _postInteractionTile);
+        _boardManager.IncrementEnemyDefeatedCount();
+    }
+
+    public void ReplaceWhenWin(bool win, int xp, int money)
+    {
+        _boardRaycast.HandleBoardRaycast(true);
+
+        if (G.GM != null && G.GM.CombatHandler != null)
+            G.GM.CombatHandler.OnEndBattle -= ReplaceWhenWin;
+
         if (win)
+        {
             _boardManager.ReplaceTileType(this, _postInteractionTile);
+            _boardManager.IncrementEnemyDefeatedCount();
+        }
     }
 
     private void OnDestroy()
     {
-        G.GM.CombatHandler.OnEndBattle -= Replace;
+        if (G.GM != null && G.GM.CombatHandler != null)
+            G.GM.OnEnterBoard -= Replace;
     }
 }

@@ -28,6 +28,8 @@ public class CombatHandler : MonoBehaviour
 
     public event System.Action<EnemyBehaviour> OnSetEnemyReference;
 
+    
+
     public void Awake()
     {
         G.GM.SetCombatHandler(this);
@@ -119,6 +121,7 @@ public class CombatHandler : MonoBehaviour
         G.GM.PlayerStats.AddMoney(money);
 
         DeleteEnemyRef();
+        //_boardClickHandler.HandleBoardRaycast(true);
         OnEndBattle?.Invoke(true, exp, money);
     }
 

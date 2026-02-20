@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2250125317099942975}
   - component: {fileID: 8243461375327121259}
-  - component: {fileID: 2944163443859777390}
+  - component: {fileID: -9211120686496809142}
   - component: {fileID: 3803366454304776247}
   - component: {fileID: 2739174559555057217}
   m_Layer: 3
@@ -64,7 +64,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2944163443859777390
+--- !u!114 &-9211120686496809142
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -73,10 +73,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 5110594593294184157}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 09019ae3f4e1fe94ebf8cf4deb7235c4, type: 3}
+  m_Script: {fileID: 11500000, guid: c48a1332c0b504648a35a704532728c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _data: {fileID: 11400000, guid: bc3587d48929d3347ab647196bf11cde, type: 2}
+  isForcedPos: 0
+  forcedPos: {x: 0, y: 0}
   neighbors: []
   _postInteractionTile: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   lootRatePercentage: 33

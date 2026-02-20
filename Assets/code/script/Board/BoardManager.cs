@@ -26,18 +26,62 @@ public class BoardManager : MonoBehaviour
 
     private void Awake()
     {
+        Debug.Log($"[BoardManager] Awake en '{name}'. encountersManager (serializado) = {encountersManager}");
+
         if (encountersManager == null)
             encountersManager = GetComponent<EncountersManager>();
 
+        Debug.Log($"[BoardManager] Tras GetComponent, encountersManager = {encountersManager}");
+
+        if (encountersManager == null)
+        {
+            Debug.LogError("BoardManager: EncountersManager es null. Asegúrate de que el componente está en el mismo GameObject o asignado en el inspector.");
+            enabled = false;
+            return;
+        }
+
+        if (G.GM == null)
+        {
+            Debug.LogError("BoardManager: GameManager (G.GM) es null. La escena de tablero se está cargando sin GameManager.");
+            enabled = false;
+            return;
+        }
+
         currentStageLevelData = G.GM.GetCurrentStageData();
-        encountersManager.LoadEnemyEncounters(currentStageLevelData.GetEnemyEncounters());
-        encountersManager.LoadEnemyEncountersOrder(currentStageLevelData.GetEncountersOrder());
-        encountersManager.LoadBossesEncounters(currentStageLevelData.GetBossEncounters());
+        if (currentStageLevelData == null)
+        {
+            Debug.LogError("BoardManager: currentStageLevelData es null. Revisa _stageDatas y stageLevel en GameManager.");
+            enabled = false;
+            return;
+        }
+
+        var enemies = currentStageLevelData.GetEnemyEncounters() ?? new List<EnemyType>();
+        var order = currentStageLevelData.GetEncountersOrder() ?? new List<EnemyDifficulty>();
+        var bosses = currentStageLevelData.GetBossEncounters() ?? new List<EnemyType>();
+
+        Debug.Log($"BoardManager: cargando StageLevelData con {enemies.Count} enemigos, {order.Count} encuentros, {bosses.Count} bosses.");
+
+        encountersManager.LoadEnemyEncounters(enemies);
+        encountersManager.LoadEnemyEncountersOrder(order);
+        encountersManager.LoadBossesEncounters(bosses);
 
         startingTile.SetGridPosition(new Vector2Int(0, 0));
         generatedTiles.Add(startingTile);
 
         boardCamera = Camera.main;
+        G.GM.SetBoardClickHandler(boardCamera.GetComponent<TileClickHandler>());
+        //if (encountersManager == null)
+        //    encountersManager = GetComponent<EncountersManager>();
+
+        //currentStageLevelData = G.GM.GetCurrentStageData();
+        //encountersManager.LoadEnemyEncounters(currentStageLevelData.GetEnemyEncounters());
+        //encountersManager.LoadEnemyEncountersOrder(currentStageLevelData.GetEncountersOrder());
+        //encountersManager.LoadBossesEncounters(currentStageLevelData.GetBossEncounters());
+
+        //startingTile.SetGridPosition(new Vector2Int(0, 0));
+        //generatedTiles.Add(startingTile);
+
+        //boardCamera = Camera.main;
     }
 
     public void UpdateNeighbors(BoardTile tile)
@@ -84,6 +128,7 @@ public class BoardManager : MonoBehaviour
 
     public void ReplaceTileType(BoardTile tile, BoardTileData newData)
     {
+        if (tile == null) return;
         BoardTile newTile = CreateNewTile(newData, tile.GetGridPosition(), tile.transform.parent);
         newTile.SetGridPosition(tile.GetGridPosition());
 

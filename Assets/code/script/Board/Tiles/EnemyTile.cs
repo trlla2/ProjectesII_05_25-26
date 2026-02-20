@@ -5,10 +5,6 @@ public class EnemyTile : BoardTile
     [SerializeField] private BoardTileData _postInteractionTile;
     [SerializeField] private int lootRatePercentage;
 
-    [Header("Force Enemy Settings")]
-    [SerializeField] private bool forceSpecificEnemy = false;
-    [SerializeField] private EnemyType specificEnemyType;
-
     private TileClickHandler _boardRaycast;
 
     private void Start()
@@ -33,15 +29,13 @@ public class EnemyTile : BoardTile
         SceneTransition.Instance.LoadScene("BattlePhone", true);
         G.GM.EnterBattle();
 
-        if (G.GM.CombatHandler != null)
-            G.GM.CombatHandler.OnEndBattle += Replace;
+        G.GM.OnEnterBoard += Replace;
+        //if (G.GM.CombatHandler != null)
+        //    G.GM.CombatHandler.OnEndBattle += Replace;
     }
 
-    private EnemyType ResolveEnemy()
+    protected virtual EnemyType ResolveEnemy()
     {
-        if (forceSpecificEnemy && specificEnemyType != null)
-            return specificEnemyType;
-
         if (_boardManager == null || _boardManager.EncountersManager == null)
         {
             Debug.LogError("EnemyTile: BoardManager o EncountersManager es null.");
@@ -51,12 +45,23 @@ public class EnemyTile : BoardTile
         return _boardManager.EncountersManager.GetNextEncounter();
     }
 
-    public void Replace(bool win, int xp, int money)
+    public void Replace()
+    {
+        _boardRaycast.HandleBoardRaycast(true);
+
+        //if (G.GM != null && G.GM.CombatHandler != null)
+        //    G.GM.CombatHandler.OnEndBattle -= Replace;
+
+        _boardManager.ReplaceTileType(this, _postInteractionTile);
+        _boardManager.IncrementEnemyDefeatedCount();
+    }
+
+    public void ReplaceWhenWin(bool win, int xp, int money)
     {
         _boardRaycast.HandleBoardRaycast(true);
 
         if (G.GM != null && G.GM.CombatHandler != null)
-            G.GM.CombatHandler.OnEndBattle -= Replace;
+            G.GM.CombatHandler.OnEndBattle -= ReplaceWhenWin;
 
         if (win)
         {
@@ -68,6 +73,6 @@ public class EnemyTile : BoardTile
     private void OnDestroy()
     {
         if (G.GM != null && G.GM.CombatHandler != null)
-            G.GM.CombatHandler.OnEndBattle -= Replace;
+            G.GM.OnEnterBoard -= Replace;
     }
 }

@@ -13961,7 +13961,7 @@ MonoBehaviour:
   bossManager: {fileID: 0}
   isBossBattle: 0
   BossWeakElement: 0
-  isEnemyTypeForced: 1
+  isEnemyTypeForced: 0
   forcedEnemyType: {fileID: 11400000, guid: 5a68dbd4268eb7749b497b05fa080c5c, type: 2}
 --- !u!4 &733892386
 Transform:
@@ -14286,6 +14286,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3e28b4d5dfb1854d86fa2d297d76476, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _stageDatas: []
   tutorialManager: {fileID: 0}
 --- !u!4 &806185222
 Transform:

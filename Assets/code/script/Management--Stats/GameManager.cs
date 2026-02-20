@@ -26,6 +26,8 @@ public class GameManager : MonoBehaviour
     public event System.Action OnEnterBattle;
     public event System.Action OnPlayerMove;
 
+    [SerializeField] private TileClickHandler _boardClickHandler;
+
     private void Awake()
     {
         if (Instance != null)
@@ -39,7 +41,8 @@ public class GameManager : MonoBehaviour
     }
 
     public void SetCombatHandler(CombatHandler cHRef) { cH = cHRef; }
-    public void EnterBoard() { OnEnterBoard?.Invoke(); }
+    public void SetBoardClickHandler(TileClickHandler tch) { _boardClickHandler = tch; }
+    public void EnterBoard() { OnEnterBoard?.Invoke(); /*_boardClickHandler.HandleBoardRaycast(true);*/ }
     public void EnterBattle() { OnEnterBattle?.Invoke(); }
 
     public void SetPendingEnemy(EnemyType type)

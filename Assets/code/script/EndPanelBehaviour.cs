@@ -35,7 +35,7 @@ public class EndPanelBehaviour : MonoBehaviour
 
     private void Start()
     {
-        G.GM.CombatHandler.OnEndBattle += SetWinLosePanel;
+        GameManager.Instance.CombatHandler.OnEndBattle += SetWinLosePanel;
 
         winPanel.SetActive(false);
         losePanel.SetActive(false);
@@ -85,6 +85,6 @@ public class EndPanelBehaviour : MonoBehaviour
     private void OnDestroy()
     {
         GameManager.Instance.EnterBoard();
-        G.GM.CombatHandler.OnEndBattle -= SetWinLosePanel;
+        GameManager.Instance.CombatHandler.OnEndBattle -= SetWinLosePanel;
     }
 }

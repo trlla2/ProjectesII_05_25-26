@@ -99,6 +99,9 @@ public class EnemyType : ScriptableObject
             case EnemySpellType.RandomDestroyLvl2:
                 return new RandomDestroyLvl2Spell(elementCount, damagePerElement, lvl2Delay, lvl2Countdown, excludeBelowTargets);
 
+            case EnemySpellType.BombAttack:
+                return new BombSpell(damagePerElement, moveCount, excludeBelowTargets);
+
             default:
                 return new ColumnDestroySpell(damagePerElement, moveCount, excludeBelowTargets);
         }
@@ -114,5 +117,6 @@ public enum EnemySpellType
     BossStage1Attack,
     ColumnDestroyLvl2,
     DiagonalDestroyLvl2,
-    RandomDestroyLvl2
+    RandomDestroyLvl2,
+    BombAttack
 }

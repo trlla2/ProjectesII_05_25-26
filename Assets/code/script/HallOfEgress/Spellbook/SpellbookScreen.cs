@@ -28,7 +28,7 @@ public class SpellbookScreen : MonoBehaviour
 
     public void CreateSpellsButtons()
     {
-        foreach (Spell spell in G.GM.PlayerStats.KnownSpells)
+        foreach (Spell spell in GameManager.Instance.PlayerStats.KnownSpells)
         {
             Button newButton = Instantiate(_spellButtonPrefab, _scrollviewContent.transform);
             newButton.GetComponent<SpellButtonBehaviour>().SetButtonToSpellValues(spell);
@@ -48,7 +48,7 @@ public class SpellbookScreen : MonoBehaviour
             });
         }
 
-        int bookSize = G.GM.PlayerStats.SpellBookSize;
+        int bookSize = GameManager.Instance.PlayerStats.SpellBookSize;
         SpellSlotBehaviour[] createdSlots = new SpellSlotBehaviour[bookSize];
 
         for (int i = 0; i < bookSize; i++)

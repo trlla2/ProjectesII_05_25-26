@@ -32,7 +32,7 @@ public class CombatHandler : MonoBehaviour
 
     public void Awake()
     {
-        G.GM.SetCombatHandler(this);
+        GameManager.Instance.SetCombatHandler(this);
     }
 
     private void Start()
@@ -46,8 +46,8 @@ public class CombatHandler : MonoBehaviour
 
     public void OnDestroy()
     {
-        if (G.GM != null && G.GM.CombatHandler == this)
-            G.GM.SetCombatHandler(null);
+        if (GameManager.Instance != null && GameManager.Instance.CombatHandler == this)
+            GameManager.Instance.SetCombatHandler(null);
     }
 
     public void SetEnemyRef(EnemyBehaviour enemyRef)
@@ -71,38 +71,38 @@ public class CombatHandler : MonoBehaviour
         if (isEnemyTypeForced && forcedEnemyType != null)
             return forcedEnemyType;
 
-        return G.GM.ClearPendingEnemy();
+        return GameManager.Instance.ClearPendingEnemy();
     }
 
     public void DeleteEnemyRef() { enemyInCombat = null; }
 
     public void AttackBoss(float percent) { enemyInCombat?.dealBossDamage(percent); }
 
-    public void AttackEnemy(ElementType element) { enemyInCombat?.DealDamage(G.GM.PlayerStats.AttackWithElement(element)); }
+    public void AttackEnemy(ElementType element) { enemyInCombat?.DealDamage(GameManager.Instance.PlayerStats.AttackWithElement(element)); }
 
     public void AttackPlayer(float damage)
     {
-        if (G.GM.PlayerStats.EvadeAttack())
+        if (GameManager.Instance.PlayerStats.EvadeAttack())
         {
             OnPlayerHitEvaded?.Invoke();
             return;
         }
 
-        if (G.GM.PlayerStats.SpikeDamage > 0)
-            enemyInCombat?.DealDamage(new DamageType(ElementType.EMPTY, G.GM.PlayerStats.SpikeDamage));
+        if (GameManager.Instance.PlayerStats.SpikeDamage > 0)
+            enemyInCombat?.DealDamage(new DamageType(ElementType.EMPTY, GameManager.Instance.PlayerStats.SpikeDamage));
 
-        G.GM.PlayerStats.Damage(damage);
+        GameManager.Instance.PlayerStats.Damage(damage);
         Camera.main.GetComponent<CameraShake>().Shake(0.2f);
 
         OnPlayerHitRecived?.Invoke();
 
-        if (!G.GM.PlayerStats.IsAlive())
+        if (!GameManager.Instance.PlayerStats.IsAlive())
             OnPlayerDead();
     }
 
     public void HealPlayer(int amount)
     {
-        G.GM.PlayerStats.Heal(amount);
+        GameManager.Instance.PlayerStats.Heal(amount);
         OnPlayerHealed?.Invoke();
     }
 
@@ -114,11 +114,11 @@ public class CombatHandler : MonoBehaviour
 
     public void OnEnemyDead()
     {
-        int exp = G.GM.StageLevel * expMultiplyer;
-        int money = G.GM.StageLevel * moneyMultiplyer;
+        int exp = GameManager.Instance.StageLevel * expMultiplyer;
+        int money = GameManager.Instance.StageLevel * moneyMultiplyer;
 
-        G.GM.PlayerStats.AddExp(exp);
-        G.GM.PlayerStats.AddMoney(money);
+        GameManager.Instance.PlayerStats.AddExp(exp);
+        GameManager.Instance.PlayerStats.AddMoney(money);
 
         DeleteEnemyRef();
         //_boardClickHandler.HandleBoardRaycast(true);

@@ -9,12 +9,14 @@ public class Grid : MonoBehaviour
     [Header("Configuration")]
     [SerializeField] private List<Element> availableElements;
     [SerializeField] private Element emptyElement;
+    [SerializeField] private Element bombElement;    
     [SerializeField] private List<Spell> availableSpells;
 
     [Header("References")]
     [SerializeField] private VisualGrid visualGrid;
     [SerializeField] private SpellPathAnimator enemySpellAnimator;
-    
+    public ExplosionTrigger explosionTrigger;
+
     [Header("Animation Settings")]
     [SerializeField] private AnimationCurve enemyBlinkCurve;
     [SerializeField] private float enemyDeletionDuration = 1f;
@@ -33,6 +35,7 @@ public class Grid : MonoBehaviour
     public GridData GridData => gridData;
     public GridGravity GravityHandler => gravityHandler;
     public Element EmptyElement => emptyElement;
+    public Element BombElement => bombElement;         
     public List<Element> AvailableElements => availableElements;
     public VisualGrid VisualGrid => visualGrid;
 
@@ -57,7 +60,7 @@ public class Grid : MonoBehaviour
 
         if (GameManager.Instance != null)
         {
-            InsertSpell(G.GM.PlayerStats.GetSpellBook()[(int)Random.Range(0, G.GM.PlayerStats.GetSpellBook().Count)].Recipe);
+            InsertSpell(GameManager.Instance.PlayerStats.GetSpellBook()[(int)Random.Range(0, GameManager.Instance.PlayerStats.GetSpellBook().Count)].Recipe);
             Debug.Log("Inserting");
         }
         else
@@ -74,7 +77,7 @@ public class Grid : MonoBehaviour
         yield return new WaitForEndOfFrame(); 
         if (GameManager.Instance != null)
         {
-            InsertSpell(G.GM.PlayerStats.GetSpellBook()[(int)Random.Range(0, G.GM.PlayerStats.GetSpellBook().Count)].Recipe);
+            InsertSpell(GameManager.Instance.PlayerStats.GetSpellBook()[(int)Random.Range(0, GameManager.Instance.PlayerStats.GetSpellBook().Count)].Recipe);
             Debug.Log("Inserting");
         }
     }
@@ -194,10 +197,10 @@ public class Grid : MonoBehaviour
 
             List<Spell> spellsToUse = availableSpells;
 
-            if (GameManager.Instance != null && G.GM.PlayerStats.GetSpellBook() != null
-                && G.GM.PlayerStats.GetSpellBook().Count > 0)
+            if (GameManager.Instance != null && GameManager.Instance.PlayerStats.GetSpellBook() != null
+                && GameManager.Instance.PlayerStats.GetSpellBook().Count > 0)
             {
-                spellsToUse = G.GM.PlayerStats.GetSpellBook();
+                spellsToUse = GameManager.Instance.PlayerStats.GetSpellBook();
             }
 
             ChangeState(new RerollState(this, visualGrid, availableElements, spellsToUse, scrollTimes));

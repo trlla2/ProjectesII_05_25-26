@@ -42,7 +42,7 @@ public class OpenChestScreen : MonoBehaviour
 
     public void KeepItem()
     {
-        if (!G.GM.PlayerStats.AddItemToInventory(_selectedItem)) // If Cant Be Added
+        if (!GameManager.Instance.PlayerStats.AddItemToInventory(_selectedItem)) // If Cant Be Added
             _removeItemPanel.ShowPanel();
         else
             CloseChest();

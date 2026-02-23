@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: SwordEnemyTutorial
   m_EditorClassIdentifier: 
   name: Small Orc
-  health: 20
+  health: 50
   damage: 10
   elementCount: 3
   level: 1
+  difficulty: 0
   weaknesses: 
   weaknessMultiplier: 2
   resistances: 
@@ -27,4 +28,6 @@ MonoBehaviour:
   damagePerElement: 4
   moveCount: 3
   AtackTimer: 4
+  lvl2Delay: 5
+  lvl2Countdown: 15
   excludeBelowTargets: 0

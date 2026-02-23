@@ -36,6 +36,9 @@ public class EnemyType : ScriptableObject
     [SerializeField] private float lvl2Delay = 5f;
     [SerializeField] private float lvl2Countdown = 15f;
 
+    [Header("Hidden Enemy Settings")]
+    [SerializeField] private float visibilityDuration = 2.5f;
+
     public bool excludeBelowTargets = false;
 
     public float Health => health;
@@ -49,6 +52,7 @@ public class EnemyType : ScriptableObject
     public int Level => level;
     public EnemyDifficulty Difficulty => difficulty;
     public RuntimeAnimatorController AnimatorController => animatorController;
+    public float VisibilityDuration => visibilityDuration;
 
     public float CalculateDamageTaken(ElementType elementType, float baseDamage)
     {
@@ -102,6 +106,9 @@ public class EnemyType : ScriptableObject
             case EnemySpellType.BombAttack:
                 return new BombSpell(damagePerElement, moveCount, excludeBelowTargets);
 
+            case EnemySpellType.HiddenDestroy:
+                return new HiddenDestroySpell(elementCount, damagePerElement, moveCount, excludeBelowTargets, visibilityDuration);
+
             default:
                 return new ColumnDestroySpell(damagePerElement, moveCount, excludeBelowTargets);
         }
@@ -118,5 +125,6 @@ public enum EnemySpellType
     ColumnDestroyLvl2,
     DiagonalDestroyLvl2,
     RandomDestroyLvl2,
-    BombAttack
+    BombAttack,
+    HiddenDestroy
 }

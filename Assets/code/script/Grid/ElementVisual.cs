@@ -152,6 +152,11 @@ public class ElementVisual : MonoBehaviour
 
         canSelect = selectable;
     }
+    public void SetSpriteVisible(bool visible)
+    {
+        if (elementRenderer != null)
+            elementRenderer.enabled = visible;
+    }
 
     public void SetTargetedByEnemy(bool targeted)
     {

@@ -5486,7 +5486,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 398686499}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbe88f66bac7ba641b4a46856d76bc31, type: 3}
+  m_Script: {fileID: 11500000, guid: 876eedd988e52914294cc5adc911c28d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &432609626
@@ -7234,6 +7234,7 @@ GameObject:
   - component: {fileID: 1607195639}
   - component: {fileID: 1607195641}
   - component: {fileID: 1607195640}
+  - component: {fileID: 1607195642}
   m_Layer: 5
   m_Name: Stage lvl
   m_TagString: Untagged
@@ -7280,9 +7281,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Stage 1
-
-'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 82df2d7357f6e7b4399b30f46491977a, type: 2}
   m_sharedMaterial: {fileID: 329255076594384967, guid: 82df2d7357f6e7b4399b30f46491977a, type: 2}
@@ -7309,7 +7308,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 60
+  m_fontSize: 36
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -7361,6 +7360,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1607195638}
   m_CullTransparentMesh: 1
+--- !u!114 &1607195642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1607195638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef6c62d9b0083eb4cbb3b26e7100a4ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1631267453
 MonoBehaviour:
   m_ObjectHideFlags: 0

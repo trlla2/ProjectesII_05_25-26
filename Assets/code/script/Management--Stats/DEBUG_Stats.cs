@@ -6,6 +6,8 @@ public class DEBUG_Stats : MonoBehaviour
     [Header("DEBUG ONLY")]
     [SerializeField]
     private List<Item> items = new List<Item>();
+    [SerializeField]
+    private bool ForceSpells = false;
     [Header(" ONLY PUT 4 SPELLS")]
     [SerializeField]
     private List<Spell> spells = new List<Spell>();
@@ -13,9 +15,9 @@ public class DEBUG_Stats : MonoBehaviour
     [SerializeField]
     private List<Spell> knownSpells = new List<Spell>();
 
-    private void Awake()
+    private void Start()
     {
-        if (spells.Count > 0 && GameManager.Instance.PlayerStats.SpellBookSize == 0)
+        if (spells.Count > 0 && GameManager.Instance.PlayerStats.SpellBookSize == 0 && ForceSpells)
         {
             for (int i = 0; i < GameManager.Instance.PlayerStats.SpellBookSize; i++)
             {

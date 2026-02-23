@@ -42,7 +42,6 @@ public class Grid : MonoBehaviour
     private void Awake()
     {
         Initialize(availableElements, emptyElement);
-        visualGrid.Initialize(this);
     }
 
     private void Update()
@@ -56,6 +55,7 @@ public class Grid : MonoBehaviour
         emptyElement = empty;
 
         InitializeComponents();
+        visualGrid.Initialize(this);
         RandomizeBoard(availableElements);
 
         if (GameManager.Instance != null)

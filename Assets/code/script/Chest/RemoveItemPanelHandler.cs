@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEditor.Experimental.GraphView;
+using UnityEngine;
 
 [RequireComponent(typeof(TranslatorUI))]
 public class RemoveItemPanelHandler : MonoBehaviour
@@ -11,6 +13,10 @@ public class RemoveItemPanelHandler : MonoBehaviour
     private GameObject itemSelectablePrefab;
     [SerializeField]
     private OpenChestScreen chestScreenRef;
+    [SerializeField]
+    private TMP_Text selectedItemDescription;
+    [SerializeField]
+    private ItemSelectable newItemSelectable;
 
     private TranslatorUI translatorUI;
 
@@ -21,7 +27,7 @@ public class RemoveItemPanelHandler : MonoBehaviour
         translatorUI = GetComponent<TranslatorUI>();
     }
 
-    private void ShowRemoveItems()
+    private void ShowRemoveItems(Item newItem)
     {
         foreach (Transform child in itemsPanel)
         {
@@ -33,19 +39,31 @@ public class RemoveItemPanelHandler : MonoBehaviour
             GameObject itemUI = Instantiate(itemSelectablePrefab, itemsPanel);
             itemUI.GetComponent<ItemSelectable>().SetItem(this,item);
         }
+
+        newItemSelectable.SetItem(this,newItem);
+
+        newItemSelectable.Select();
     }
 
-    public void ShowPanel()
+    public void ShowPanel(Item newItem)
     {
-        ShowRemoveItems();
+        ShowRemoveItems(newItem);
         translatorUI.ToTarget();
     }
+
     public void RemoveItem()
     {
         if (currentSelectedItem != null)
         {
-            GameManager.Instance.PlayerStats.RemoveItemFromInventory(currentSelectedItem.Item);
-            translatorUI.ResetPosition();
+            if (currentSelectedItem == newItemSelectable)
+            {
+                chestScreenRef.CloseChest();
+            }
+            else
+            {
+                GameManager.Instance.PlayerStats.RemoveItemFromInventory(currentSelectedItem.Item);
+                chestScreenRef.KeepItem();
+            }
         }
     }
 
@@ -55,6 +73,7 @@ public class RemoveItemPanelHandler : MonoBehaviour
             currentSelectedItem.UnSelect(); 
 
         currentSelectedItem = selectedItem;
+        selectedItemDescription.text = currentSelectedItem.Item.Description;
     }
 
 

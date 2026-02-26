@@ -17,9 +17,9 @@ public class DEBUG_Stats : MonoBehaviour
 
     private void Start()
     {
-        if (spells.Count > 0 && GameManager.Instance.PlayerStats.SpellBookSize == 0 && ForceSpells)
+        if (spells.Count > 0 && ForceSpells)
         {
-            for (int i = 0; i < GameManager.Instance.PlayerStats.SpellBookSize; i++)
+            for (int i = 0; i < spells.Count && i < GameManager.Instance.PlayerStats.SpellBookSize; i++)
             {
                 if (spells[i] == null)
                     break;
@@ -28,14 +28,12 @@ public class DEBUG_Stats : MonoBehaviour
             }
         }
 
-
-        foreach(Spell s in knownSpells)
+        foreach (Spell s in knownSpells)
         {
             GameManager.Instance.PlayerStats.AddKnownSpell(s);
         }
 
         foreach (Item item in items)
             GameManager.Instance.PlayerStats.AddItemToInventory(item);
-
     }
 }

@@ -227,6 +227,8 @@ public class HiddenDestroySpell : EnemySpellBase
             if (visual != null)
             {
                 visual.SetSpriteVisible(true);
+                visual.SetTargetedByEnemy(false);
+                visual.ClearTargetVisual();
             }
         }
 

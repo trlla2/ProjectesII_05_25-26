@@ -2,119 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HiddenDestroySpell : EnemySpellBase
+public class HiddenDestroySpell : TimedDestroySpellBase
 {
     private int elementCount;
     private float visibilityDuration;
     private Grid cachedGrid;
     private bool elementsHidden;
     private Coroutine hideCoroutine;
+    private Coroutine revealCoroutine;
+    private int lastValidTargetCount;
+    private const float revealOnMatchDuration = 0.5f;
 
     public bool ElementsHidden => elementsHidden;
 
-    public HiddenDestroySpell(int count = 3, float damage = 4f, int moves = 2,
+    public HiddenDestroySpell(int count = 3, float damage = 4f, float attackTimer = 5f,
                                bool excludeBelow = true, float visibilityDuration = 2.5f)
+        : base(visibilityDuration, attackTimer, damage, excludeBelow)
     {
         elementCount = count;
-        damagePerElement = damage;
-        remainingMoves = moves;
-        initialMoves = moves;
-        spellName = "Hidden Destroy";
-        this.excludeBelowTargets = excludeBelow;
         this.visibilityDuration = visibilityDuration;
+        spellName = "Hidden Destroy";
         shouldRerollAfterAttack = true;
     }
 
-    public override void Execute(Grid grid)
-    {
-        targetedPositions.Clear();
-        cachedGrid = grid;
-        elementsHidden = false;
-
-        if (grid == null)
-            return;
-
-        SelectRandomTargets(grid, elementCount);
-
-        hideCoroutine = grid.StartCoroutine(VisibilityPhase(grid));
-    }
-
-    //HAndle grid auto reload for this specigfic spell
-    public void ReExecuteAfterReroll(Grid grid)
-    {
-        int currentActiveTargets = CountValidTargets(grid);
-
-        ShowAllTargets(grid);
-
-        targetedPositions.Clear();
-        cachedGrid = grid;
-        elementsHidden = false;
-
-        if (grid == null)
-            return;
-
-        // Retarget only as many positions as were still targeted before the reroll
-        SelectRandomTargets(grid, currentActiveTargets);
-
-        if (hideCoroutine != null)
-            grid.StopCoroutine(hideCoroutine);
-
-        hideCoroutine = grid.StartCoroutine(VisibilityPhase(grid));
-    }
-
-    public override void Tick(Grid grid, System.Action onComplete = null)
-    {
-        if (grid != null)
-        {
-            float animDuration = grid.EnemyTargetAnimDuration;
-            AnimationCurve curve = grid.EnemyTargetFillCurve;
-            foreach (var pos in targetedPositions)
-            {
-                ElementVisual visual = grid.GetElementVisualAt(pos);
-                if (visual != null && visual.IsTargetedByEnemy)
-                    visual.UpdateTargetVisual(remainingMoves, initialMoves, animDuration, curve);
-            }
-        }
-
-        remainingMoves--;
-        remainingMoves = Mathf.Max(0, remainingMoves);
-
-        if (grid != null)
-        {
-            float animDuration = grid.EnemyTargetAnimDuration;
-            AnimationCurve curve = grid.EnemyTargetFillCurve;
-
-            foreach (var pos in targetedPositions)
-            {
-                ElementVisual visual = grid.GetElementVisualAt(pos);
-                if (visual != null && visual.IsTargetedByEnemy)
-                {
-                    visual.UpdateTargetVisual(remainingMoves, initialMoves, animDuration, curve);
-                }
-            }
-        }
-
-        if (remainingMoves <= 0)
-        {
-            ShowAllTargets(grid);
-            ApplyEffect(grid, onComplete);
-        }
-    }
-
-    public override void Cleanup(Grid grid)
-    {
-        if (grid == null) return;
-
-        if (hideCoroutine != null)
-        {
-            grid.StopCoroutine(hideCoroutine);
-            hideCoroutine = null;
-        }
-
-        ShowAllTargets(grid);
-    }
-
-    private void SelectRandomTargets(Grid grid, int count)
+    protected override void SelectTargets(Grid grid)
     {
         List<Vector2Int> allPositions = new List<Vector2Int>();
 
@@ -131,7 +42,7 @@ public class HiddenDestroySpell : EnemySpellBase
             }
         }
 
-        int targetCount = Mathf.Min(count, allPositions.Count);
+        int targetCount = Mathf.Min(elementCount, allPositions.Count);
         for (int i = 0; i < targetCount; i++)
         {
             if (allPositions.Count == 0)
@@ -145,12 +56,137 @@ public class HiddenDestroySpell : EnemySpellBase
             if (visual != null)
             {
                 visual.SetTargetedByEnemy(true);
-                visual.UpdateTargetVisual(remainingMoves, initialMoves,
-                    grid.EnemyTargetAnimDuration, grid.EnemyTargetFillCurve);
             }
 
             allPositions.RemoveAt(randomIndex);
         }
+    }
+
+    public override void Execute(Grid grid)
+    {
+        // Clean up coroutines from a previous cycle
+        if (cachedGrid != null)
+        {
+            if (hideCoroutine != null)
+            {
+                cachedGrid.StopCoroutine(hideCoroutine);
+                hideCoroutine = null;
+            }
+            if (revealCoroutine != null)
+            {
+                cachedGrid.StopCoroutine(revealCoroutine);
+                revealCoroutine = null;
+            }
+        }
+
+        cachedGrid = grid;
+        elementsHidden = false;
+
+        base.Execute(grid); // SelectTargets, delay blink animation, start timer
+
+        lastValidTargetCount = targetedPositions.Count;
+
+        // Hide elements once the visibility (delay) phase ends
+        if (grid != null)
+        {
+            hideCoroutine = grid.StartCoroutine(HideAfterDelay(grid));
+        }
+    }
+
+    public override void Tick(Grid grid, System.Action onComplete = null)
+    {
+        // Reveal hidden targets before the base applies the effect
+        RevealAllTargets(grid);
+        base.Tick(grid, onComplete);
+    }
+
+    public override void Cleanup(Grid grid)
+    {
+        if (grid == null) return;
+
+        if (hideCoroutine != null)
+        {
+            grid.StopCoroutine(hideCoroutine);
+            hideCoroutine = null;
+        }
+
+        if (revealCoroutine != null)
+        {
+            grid.StopCoroutine(revealCoroutine);
+            revealCoroutine = null;
+        }
+
+        ShowAllTargets(grid);
+    }
+
+    public bool CheckForRemovedTargets(Grid grid)
+    {
+        if (grid == null) return false;
+
+        int currentCount = CountValidTargets(grid);
+
+        if (currentCount <= 0)
+            return true;
+
+        // Brief reveal only while elements are hidden
+        if (elementsHidden && currentCount < lastValidTargetCount)
+        {
+            lastValidTargetCount = currentCount;
+
+            if (revealCoroutine != null)
+                grid.StopCoroutine(revealCoroutine);
+
+            revealCoroutine = grid.StartCoroutine(BriefReveal(grid));
+        }
+
+        return false;
+    }
+
+    //Handle grid auto reload for this specific spell
+    public void ReExecuteAfterReroll(Grid grid)
+    {
+        Cleanup(grid);
+        Execute(grid);
+    }
+
+    private IEnumerator HideAfterDelay(Grid grid)
+    {
+        yield return new WaitForSeconds(visibilityDuration);
+
+        if (grid == null) yield break;
+
+        HideAllTargets(grid);
+        lastValidTargetCount = CountValidTargets(grid);
+        hideCoroutine = null;
+    }
+
+    private IEnumerator BriefReveal(Grid grid)
+    {
+        if (grid == null) yield break;
+
+        foreach (var pos in targetedPositions)
+        {
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual != null && visual.IsTargetedByEnemy)
+            {
+                visual.SetSpriteVisible(true);
+            }
+        }
+
+        yield return new WaitForSeconds(revealOnMatchDuration);
+
+        if (grid == null) yield break;
+
+        foreach (var pos in targetedPositions)
+        {
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual != null && visual.IsTargetedByEnemy)
+            {
+                visual.SetSpriteVisible(false);
+            }
+        }
+
+        revealCoroutine = null;
     }
 
     private int CountValidTargets(Grid grid)
@@ -173,34 +209,6 @@ public class HiddenDestroySpell : EnemySpellBase
         return count;
     }
 
-    private IEnumerator VisibilityPhase(Grid grid)
-    {
-        if (grid == null)
-            yield break;
-
-        float blinkStrength = 0.08f;
-        float blinkFrequency = 1.5f;
-
-        foreach (var pos in targetedPositions)
-        {
-            ElementVisual visual = grid.GetElementVisualAt(pos);
-            if (visual != null && visual.IsTargetedByEnemy)
-            {
-                ScaleAnimator scaleAnimator = visual.GetComponent<ScaleAnimator>();
-                if (scaleAnimator != null)
-                {
-                    scaleAnimator.PlayDelayBlink(blinkStrength, blinkFrequency, visibilityDuration);
-                }
-            }
-        }
-
-        yield return new WaitForSeconds(visibilityDuration);
-
-        HideAllTargets(grid);
-
-        hideCoroutine = null;
-    }
-
     private void HideAllTargets(Grid grid)
     {
         if (grid == null) return;
@@ -215,6 +223,22 @@ public class HiddenDestroySpell : EnemySpellBase
         }
 
         elementsHidden = true;
+    }
+
+    private void RevealAllTargets(Grid grid)
+    {
+        if (grid == null) return;
+
+        foreach (var pos in targetedPositions)
+        {
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual != null)
+            {
+                visual.SetSpriteVisible(true);
+            }
+        }
+
+        elementsHidden = false;
     }
 
     private void ShowAllTargets(Grid grid)

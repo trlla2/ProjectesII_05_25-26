@@ -148,6 +148,23 @@ public class EnemyBehaviour : MonoBehaviour
 
         if (activeSpell is TimedDestroySpellBase timedSpell)
         {
+            if (activeSpell is HiddenDestroySpell hiddenSpell)
+            {
+                bool allCleared = hiddenSpell.CheckForRemovedTargets(grid);
+                if (allCleared)
+                {
+                    // Stop the timer monitor 
+                    if (timedSpellMonitor != null)
+                    {
+                        StopCoroutine(timedSpellMonitor);
+                        timedSpellMonitor = null;
+                    }
+                    hiddenSpell.Cleanup(grid);
+                    StartCoroutine(RerollAndRetarget());
+                    return;
+                }
+            }
+
             if (timedSpell.UseMoveTicks)
             {
                 if (timedSpell.IsEffectApplied())
@@ -283,6 +300,14 @@ public class EnemyBehaviour : MonoBehaviour
         if (activeSpell is HiddenDestroySpell hiddenSpell)
         {
             hiddenSpell.ReExecuteAfterReroll(grid);
+
+
+            if (timedSpellMonitor != null)
+            {
+                StopCoroutine(timedSpellMonitor);
+                timedSpellMonitor = null;
+            }
+            timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
         }
         else
         {

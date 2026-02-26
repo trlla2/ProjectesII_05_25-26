@@ -107,7 +107,7 @@ public class EnemyType : ScriptableObject
                 return new BombSpell(damagePerElement, moveCount, excludeBelowTargets);
 
             case EnemySpellType.HiddenDestroy:
-                return new HiddenDestroySpell(elementCount, damagePerElement, moveCount, excludeBelowTargets, visibilityDuration);
+                return new HiddenDestroySpell(elementCount, damagePerElement, AtackTimer, excludeBelowTargets, visibilityDuration);
 
             default:
                 return new ColumnDestroySpell(damagePerElement, moveCount, excludeBelowTargets);

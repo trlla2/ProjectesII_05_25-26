@@ -12,15 +12,18 @@ public class HiddenDestroySpell : TimedDestroySpellBase
     private Coroutine revealCoroutine;
     private int lastValidTargetCount;
     private const float revealOnMatchDuration = 0.5f;
+    private Sprite hiddenSprite;
 
     public bool ElementsHidden => elementsHidden;
 
     public HiddenDestroySpell(int count = 3, float damage = 4f, float attackTimer = 5f,
-                               bool excludeBelow = true, float visibilityDuration = 2.5f)
+                               bool excludeBelow = true, float visibilityDuration = 2.5f,
+                               Sprite hiddenSprite = null)
         : base(visibilityDuration, attackTimer, damage, excludeBelow)
     {
         elementCount = count;
         this.visibilityDuration = visibilityDuration;
+        this.hiddenSprite = hiddenSprite;
         spellName = "Hidden Destroy";
         shouldRerollAfterAttack = true;
     }
@@ -86,7 +89,6 @@ public class HiddenDestroySpell : TimedDestroySpellBase
 
         lastValidTargetCount = targetedPositions.Count;
 
-        // Hide elements once the visibility (delay) phase ends
         if (grid != null)
         {
             hideCoroutine = grid.StartCoroutine(HideAfterDelay(grid));
@@ -95,7 +97,7 @@ public class HiddenDestroySpell : TimedDestroySpellBase
 
     public override void Tick(Grid grid, System.Action onComplete = null)
     {
-        // Reveal hidden targets before the base applies the effect
+        // Restore original sprites before the base applies the effect
         RevealAllTargets(grid);
         base.Tick(grid, onComplete);
     }
@@ -164,12 +166,13 @@ public class HiddenDestroySpell : TimedDestroySpellBase
     {
         if (grid == null) yield break;
 
+        // Restore original sprites
         foreach (var pos in targetedPositions)
         {
             ElementVisual visual = grid.GetElementVisualAt(pos);
             if (visual != null && visual.IsTargetedByEnemy)
             {
-                visual.SetSpriteVisible(true);
+                visual.ClearOverrideSprite();
             }
         }
 
@@ -177,12 +180,13 @@ public class HiddenDestroySpell : TimedDestroySpellBase
 
         if (grid == null) yield break;
 
+        // Swap back to hidden sprite
         foreach (var pos in targetedPositions)
         {
             ElementVisual visual = grid.GetElementVisualAt(pos);
             if (visual != null && visual.IsTargetedByEnemy)
             {
-                visual.SetSpriteVisible(false);
+                visual.SetOverrideSprite(hiddenSprite);
             }
         }
 
@@ -218,7 +222,7 @@ public class HiddenDestroySpell : TimedDestroySpellBase
             ElementVisual visual = grid.GetElementVisualAt(pos);
             if (visual != null && visual.IsTargetedByEnemy)
             {
-                visual.SetSpriteVisible(false);
+                visual.SetOverrideSprite(hiddenSprite);
             }
         }
 
@@ -234,7 +238,7 @@ public class HiddenDestroySpell : TimedDestroySpellBase
             ElementVisual visual = grid.GetElementVisualAt(pos);
             if (visual != null)
             {
-                visual.SetSpriteVisible(true);
+                visual.ClearOverrideSprite();
             }
         }
 
@@ -250,7 +254,7 @@ public class HiddenDestroySpell : TimedDestroySpellBase
             ElementVisual visual = grid.GetElementVisualAt(pos);
             if (visual != null)
             {
-                visual.SetSpriteVisible(true);
+                visual.ClearOverrideSprite();
                 visual.SetTargetedByEnemy(false);
                 visual.ClearTargetVisual();
             }

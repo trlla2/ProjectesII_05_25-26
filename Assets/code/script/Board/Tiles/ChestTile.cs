@@ -16,7 +16,8 @@ public class ChestTile : BoardTile
 
     public void Replace()
     {
-        _boardManager.ReplaceTileType(this, _postInteractionTile);
+        if (_postInteractionTile != null)
+            _boardManager.ReplaceTileType(this, _postInteractionTile);
     }
     
 

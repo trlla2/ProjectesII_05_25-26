@@ -1074,7 +1074,7 @@ MonoBehaviour:
   generatedTiles: []
   openChestPanel: {fileID: 2114031267}
   newSpellPanel: {fileID: 0}
-  chestOfEgressPanel: {fileID: 0}
+  chestOfEgressPanel: {fileID: 1446109541}
   encountersManager: {fileID: 0}
 --- !u!114 &1035823811
 MonoBehaviour:
@@ -1912,6 +1912,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5304593960021253905, guid: f2d2d3776071b2e44a8f37a79a299353, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5304593960021253905, guid: f2d2d3776071b2e44a8f37a79a299353, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5304593960021253905, guid: f2d2d3776071b2e44a8f37a79a299353, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5304593960021253905, guid: f2d2d3776071b2e44a8f37a79a299353, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9159541737478987840, guid: f2d2d3776071b2e44a8f37a79a299353, type: 3}
       propertyPath: m_Name
       value: ChestOfEgressPanel
@@ -1926,6 +1942,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 5029025146557349794, guid: f2d2d3776071b2e44a8f37a79a299353, type: 3}
   m_PrefabInstance: {fileID: 1446109539}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1446109541 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3678148084046482021, guid: f2d2d3776071b2e44a8f37a79a299353, type: 3}
+  m_PrefabInstance: {fileID: 1446109539}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e0f41f6335c97d41a4ce98418a3b9e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1518330838
 GameObject:
   m_ObjectHideFlags: 0

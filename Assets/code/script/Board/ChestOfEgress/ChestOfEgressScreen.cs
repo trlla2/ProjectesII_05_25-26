@@ -68,6 +68,7 @@ public class ChestOfEgressScreen : MonoBehaviour
     {
         _translator.ToOrigin();
         Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(true);
+        _openedTile.Replace();
         _openedTile = null;
     }
 

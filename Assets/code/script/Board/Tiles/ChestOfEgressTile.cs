@@ -6,6 +6,8 @@ public class ChestOfEgressTile : BoardTile
     [SerializeField] private Color _chestColor;
     [SerializeField] private List<GameObject> _chestObjs;
 
+    [SerializeField] private BoardTileData _postInteractionTile;
+
     private void Start()
     {
         foreach (GameObject chestObj in _chestObjs)
@@ -21,5 +23,11 @@ public class ChestOfEgressTile : BoardTile
     public override void Interact()
     {
         _boardManager.OpenChestOfEgress(this);
+    }
+
+    public void Replace()
+    {
+        if (_postInteractionTile != null)
+            _boardManager.ReplaceTileType(this, _postInteractionTile);
     }
 }

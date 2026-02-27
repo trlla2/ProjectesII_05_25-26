@@ -238,7 +238,7 @@ public class EnemyBehaviour : MonoBehaviour
         if (!inBattle || grid == null)
             yield break;
 
-        // This prevents colliding with a player-triggered refill in progress.
+        //This prevents colliding with a player-triggered refill in progress
         while (grid != null && grid.CurrentState != GridStateType.Idle)
             yield return null;
 

@@ -223,6 +223,8 @@ public class Orb1QTE : MonoBehaviour, IQTE
             ApplyDamageToBoss();
         }
 
+        visualController.ClearAll();
+
         OnQTEEnded?.Invoke();
 
         OnQTEComplete?.Invoke(success);

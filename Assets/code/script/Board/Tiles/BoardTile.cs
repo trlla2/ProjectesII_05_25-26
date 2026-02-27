@@ -18,8 +18,11 @@ public abstract class BoardTile : MonoBehaviour
     {
         _renderer = GetComponentInChildren<Renderer>();
         _renderer.material.color = _data.defaultColor;
-        if(isForcedPos)
+
+        if (isForcedPos)
             _gridPos = forcedPos;
+
+        _boardManager = FindObjectOfType<BoardManager>();
     }
 
     public void HighlightTile(bool on)
@@ -48,6 +51,4 @@ public abstract class BoardTile : MonoBehaviour
     public Renderer GetRenderer() { return _renderer; }
 
     public void SetBoardManager(BoardManager boardManager) { _boardManager = boardManager; }
-
-
 }

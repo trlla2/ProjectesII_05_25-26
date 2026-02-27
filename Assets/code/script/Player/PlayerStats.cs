@@ -87,6 +87,11 @@ public class PlayerStats
         inventory = new List<Item>();
         limitInventory = 3;
 
+        // DEBUG DELETE!!!!
+        foreach (Item debugItem in GameManager.Instance._debugItemsInInventory)
+        {
+            AddItemToInventory(debugItem);
+        }
     }
 
     public List<DamageType> AttackWithSpell(Spell spell)

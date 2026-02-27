@@ -18,6 +18,7 @@ public class BoardManager : MonoBehaviour
 
     [SerializeField] private OpenChestScreen openChestPanel;
     [SerializeField] private NewSpellPanelBehaviour newSpellPanel;
+    [SerializeField] private ChestOfEgressScreen chestOfEgressPanel;
 
     [Header("Encounters")]
     [SerializeField] private EncountersManager encountersManager;
@@ -25,8 +26,6 @@ public class BoardManager : MonoBehaviour
     private int _enemiesDefeated = 0;
 
     private Camera boardCamera;
-
-    //public PlayerMovement player;
 
     private void Awake()
     {
@@ -39,14 +38,13 @@ public class BoardManager : MonoBehaviour
 
         if (encountersManager == null)
         {
-            Debug.LogError("BoardManager: EncountersManager es null. Asegúrate de que el componente está en el mismo GameObject o asignado en el inspector.");
             enabled = false;
             return;
         }
 
         if (GameManager.Instance == null)
         {
-            Debug.LogError("BoardManager: GameManager (G.GM) es null. La escena de tablero se está cargando sin GameManager.");
+            Debug.LogError("BoardManager: GameManager (G.GM) es null.");
             enabled = false;
             return;
         }
@@ -54,7 +52,7 @@ public class BoardManager : MonoBehaviour
         currentStageLevelData = GameManager.Instance.GetCurrentStageData();
         if (currentStageLevelData == null)
         {
-            Debug.LogError("BoardManager: currentStageLevelData es null. Revisa _stageDatas y stageLevel en GameManager.");
+            Debug.LogError("BoardManager: currentStageLevelData es null.");
             enabled = false;
             return;
         }
@@ -134,10 +132,13 @@ public class BoardManager : MonoBehaviour
     {
         openChestPanel.openedChest = chestTile;
         openChestPanel.Pull();
-
-        boardCamera.gameObject.GetComponent<TileClickHandler>().HandleBoardRaycast(false);
-
         openChestPanel.gameObject.SetActive(true);
+    }
+
+    public void OpenChestOfEgress(ChestOfEgressTile tile)
+    {
+        if (chestOfEgressPanel != null)
+            chestOfEgressPanel.Open(tile);
     }
 
     public void GetNewSpell(NewSpellTile tile)
@@ -155,8 +156,6 @@ public class BoardManager : MonoBehaviour
     {
         _enemiesDefeated++;
     }
-
-    //public PlayerMovement GetPlayer() { return player; }
 
     public BoardGenerator GetBoardGenerator() { return boardGenerator; }
 }

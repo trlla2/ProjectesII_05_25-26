@@ -39,14 +39,14 @@ public class BoardManager : MonoBehaviour
 
         if (encountersManager == null)
         {
-            Debug.LogError("BoardManager: EncountersManager es null. Asegúrate de que el componente está en el mismo GameObject o asignado en el inspector.");
+            //Debug.LogError("BoardManager: EncountersManager es null");
             enabled = false;
             return;
         }
 
         if (GameManager.Instance == null)
         {
-            Debug.LogError("BoardManager: GameManager (G.GM) es null. La escena de tablero se está cargando sin GameManager.");
+            Debug.LogError("BoardManager: GameManager (G.GM) es null.");
             enabled = false;
             return;
         }
@@ -54,7 +54,7 @@ public class BoardManager : MonoBehaviour
         currentStageLevelData = GameManager.Instance.GetCurrentStageData();
         if (currentStageLevelData == null)
         {
-            Debug.LogError("BoardManager: currentStageLevelData es null. Revisa _stageDatas y stageLevel en GameManager.");
+            Debug.LogError("BoardManager: currentStageLevelData es null.");
             enabled = false;
             return;
         }

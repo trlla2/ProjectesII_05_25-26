@@ -245,8 +245,7 @@ public class Grid : MonoBehaviour
         gridData.SetVisualAt(position, visual);
     }
 
-    public void ProcessEnemySpell(List<Vector2Int> positions, System.Action onComplete = null,
-                                   bool excludeBelowTargets = true, bool rerollAfter = false)
+    public void ProcessEnemySpell(List<Vector2Int> positions, System.Action onComplete = null,  bool excludeBelowTargets = true, bool rerollAfter = false)
     {
         if (positions == null || positions.Count == 0)
         {
@@ -254,10 +253,23 @@ public class Grid : MonoBehaviour
             return;
         }
 
+        if (CurrentState == GridStateType.Idle && GetEmptyPositions().Count > 0)
+        {
+            ChangeState(new RefillState(this, visualGrid,
+                onRefillComplete: () =>
+                {
+                    ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete, excludeBelowTargets, rerollAfter));
+                }
+            ));
+            return;
+        }
+
         ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete, excludeBelowTargets, rerollAfter));
     }
 
-    public void FillEmptySlots(List<Element> elements, List<Vector2Int> positionsToFill = null)
+
+
+public void FillEmptySlots(List<Element> elements, List<Vector2Int> positionsToFill = null)
     {
         if (elements == null || elements.Count == 0)
             return;

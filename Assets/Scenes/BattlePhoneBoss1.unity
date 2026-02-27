@@ -14935,7 +14935,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 806185220}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5089faa8aa8f981468d790dfeaa1fece, type: 3}
   m_Name: 
@@ -21729,8 +21729,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hoverDistance: 20
   hoverDuration: 1.5
-  DelayHover: 1
+  DelayHover: 0
   defaultShakeDuration: 0.5
+  blinkColor: {r: 1, g: 0, b: 0.59416103, a: 1}
+  blinkHalfPeriod: 0.5
 --- !u!114 &1279878342
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22496,7 +22498,7 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 9168d9f4aa1ee834ea1164744d0e797d, type: 2}
     - target: {fileID: 6537319169006765825, guid: 343a187672d40db46b4b8aa0c0145041, type: 3}
       propertyPath: isEnemyTypeForced
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -34542,6 +34544,8 @@ MonoBehaviour:
   hoverDuration: 1.5
   DelayHover: 0
   defaultShakeDuration: 0.5
+  blinkColor: {r: 1, g: 0, b: 0.59416103, a: 1}
+  blinkHalfPeriod: 0.5
 --- !u!114 &1992799284
 MonoBehaviour:
   m_ObjectHideFlags: 0

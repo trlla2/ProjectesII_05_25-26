@@ -54,10 +54,13 @@ public class RefillState : IGridState
     private bool isRefilling;
     private float refillDuration = 0.15f;
 
-    public RefillState(Grid gridController, VisualGrid visual)
+    private System.Action onRefillComplete;
+
+    public RefillState(Grid gridController, VisualGrid visual, System.Action onRefillComplete = null)
     {
         grid = gridController;
         visualGrid = visual;
+        this.onRefillComplete = onRefillComplete;
     }
 
     public void Enter()
@@ -70,7 +73,15 @@ public class RefillState : IGridState
     {
         if (!isRefilling)
         {
-            grid.ChangeState(new IdleState(grid));
+            if (onRefillComplete != null)
+            {
+                onRefillComplete.Invoke();
+            }
+            else
+            {
+                //if not specifies, go to validatoipon
+                grid.ChangeState(new ValidateSpellState(grid, GameManager.Instance.PlayerStats.GetSpellBook()));
+            }
         }
     }
 
@@ -79,10 +90,7 @@ public class RefillState : IGridState
         isRefilling = false;
     }
 
-    public GridStateType GetStateType()
-    {
-        return GridStateType.Refill;
-    }
+    public GridStateType GetStateType() => GridStateType.Refill;
 
     private void PerformRefill()
     {
@@ -101,10 +109,8 @@ public class RefillState : IGridState
 
         if (emptyPositions.Count > 0)
         {
-            // Fill only the allowed empty slots with new elements
             grid.FillEmptySlots(grid.AvailableElements, emptyPositions);
 
-            // Ensure visuals exist for newly spawned elements
             foreach (var pos in emptyPositions)
             {
                 Element element = grid.GridData.GetElementAt(pos);
@@ -114,7 +120,6 @@ public class RefillState : IGridState
                 }
             }
 
-            // Disable selection during animation
             foreach (var pos in emptyPositions)
             {
                 ElementVisual visual = grid.GridData.GetVisualAt(pos);
@@ -122,11 +127,32 @@ public class RefillState : IGridState
                     visual.SetSelectable(false);
             }
 
-            // Play the fill animation only for the chosen positions
             visualGrid.FillEmpty(emptyPositions, refillDuration);
 
             yield return new WaitForSeconds(refillDuration);
-            yield return grid.StartCoroutine(CompleteRefillAfterDelay(0f));
+
+            //finalize visuals 
+            for (int x = 0; x < grid.GridData.GridSize; x++)
+            {
+                for (int y = 0; y < grid.GridData.GridSize; y++)
+                {
+                    Vector2Int pos = new Vector2Int(x, y);
+                    ElementVisual visual = grid.GridData.GetVisualAt(pos);
+
+                    if (visual != null)
+                    {
+                        visual.transform.position = visualGrid.GridToWorldPosition(pos);
+                        visual.ResetSpriteTransform();
+                        visual.SetWorldPosition(visualGrid.GridToWorldPosition(pos));
+
+                        Element element = grid.GridData.GetElementAt(pos);
+                        visual.Initialize(pos, element);
+                        visual.SetSelectable(true);
+                    }
+                }
+            }
+
+            isRefilling = false;
         }
         else
         {
@@ -154,35 +180,6 @@ public class RefillState : IGridState
         }
 
         return emptyPositions;
-    }
-
-    private IEnumerator CompleteRefillAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-
-        for (int x = 0; x < grid.GridData.GridSize; x++)
-        {
-            for (int y = 0; y < grid.GridData.GridSize; y++)
-            {
-                Vector2Int pos = new Vector2Int(x, y);
-                ElementVisual visual = grid.GridData.GetVisualAt(pos);
-
-                if (visual != null)
-                {
-                    visual.transform.position = visualGrid.GridToWorldPosition(pos);
-                    visual.ResetSpriteTransform();
-                    visual.SetWorldPosition(visualGrid.GridToWorldPosition(pos));
-
-                    Element element = grid.GridData.GetElementAt(pos);
-                    visual.Initialize(pos, element);
-                    visual.SetSelectable(true);
-                }
-            }
-        }
-        isRefilling = false;
-
-        ValidateSpellState validateState = new ValidateSpellState(grid, GameManager.Instance.PlayerStats.GetSpellBook());
-        grid.ChangeState(validateState);
     }
 }
 
@@ -420,7 +417,7 @@ public class EnemySpellState : IGridState
     {
         grid = gridController;
         visualGrid = visual;
-        positions = positionsToProcess ?? new List<Vector2Int>();
+        positions = positionsToProcess ?? new List<Vector2Int>(); //if null, create empty list
         onComplete = onCompleteCallback;
         this.excludeBelowTargets = excludeBelowTargets;
         this.rerollAfterProcess = rerollAfter;

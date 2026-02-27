@@ -11,6 +11,7 @@ public class BoardManager : MonoBehaviour
     public BoardTileData chestTileData;
     public BoardTileData bossTileData;
     public BoardTileData stairsTileData;
+    public BoardTileData chestOfEgressTileData;
 
     [SerializeField] private BoardGenerator boardGenerator;
 
@@ -44,7 +45,7 @@ public class BoardManager : MonoBehaviour
 
         if (GameManager.Instance == null)
         {
-            Debug.LogError("BoardManager: GameManager (G.GM) es null.");
+            Debug.LogError("BoardManager: GameManager es null.");
             enabled = false;
             return;
         }

@@ -15,6 +15,7 @@ public class BoardGenerator : MonoBehaviour
     [Header("Reserved Zones")]
     [SerializeField] int _endZoneReservedTiles;
     [SerializeField] int _bossTileDistanceFromEnd;
+    private int _chestOfEgressTileDistFromEnd;
     [SerializeField] int _startZoneReserveTiles;
 
     [Header("Branched Paths")]
@@ -37,7 +38,7 @@ public class BoardGenerator : MonoBehaviour
 
     private void Awake()
     {
-        
+        _chestOfEgressTileDistFromEnd = _bossTileDistanceFromEnd - 2;
     }
 
     void Start()
@@ -359,7 +360,6 @@ public class BoardGenerator : MonoBehaviour
             return; 
         }
 
-        //_boardManager.generatedTiles.Where(t => t.GetGridPosition() == stairsPos).ToList()[0].GetComponent<StairsTile>()?.SetStageLevel(G.GM.StageLevel);
         
         // instance bossTile
         int bossIndex = path.Count - _bossTileDistanceFromEnd;
@@ -374,6 +374,22 @@ public class BoardGenerator : MonoBehaviour
             {
                 ReplaceTileAndUpdatePaths(bossTile, _boardManager.bossTileData);
                 _boardManager.UpdateNeighbors(bossTile);
+            }
+        }
+
+        // INSTANCE CHEST OF EGRESS TILE
+        int egressIndex = path.Count - _chestOfEgressTileDistFromEnd;
+        if (egressIndex >= 0 && egressIndex < path.Count)
+        {
+            BoardTile egressTile = path[egressIndex];
+
+            if (!startZoneSet.Contains(egressTile) &&
+                egressTile.GetData() != _boardManager.stairsTileData &&
+                egressTile.GetData() != _boardManager.bossTileData &&
+                egressTile.GetData() != _boardManager.chestOfEgressTileData)
+            {
+                ReplaceTileAndUpdatePaths(egressTile, _boardManager.chestOfEgressTileData);
+                _boardManager.UpdateNeighbors(egressTile);
             }
         }
     }

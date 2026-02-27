@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 
 //https://nucleartide.com/linerenderer/ holly grail of linrenderer xdd
@@ -10,6 +11,8 @@ public class QTETrailRenderer : MonoBehaviour
     [SerializeField] private LineRenderer lineRenderer;
     [SerializeField] private float trailWidth = 0.15f;
     [SerializeField] public Color trailColor = new Color(0.6f, 0.3f, 1f, 1f);
+    private Color initialColor;
+
     [SerializeField] private Material trailMaterial;
     [SerializeField] private GameObject trailParticlesPrefab;
     [SerializeField] private float minPointDistance = 1f; // Minimum distance between points
@@ -18,6 +21,7 @@ public class QTETrailRenderer : MonoBehaviour
     private GameObject activeTrailParticles;
     private Vector3 currentPreviewPosition;
     private bool hasPreview = false;
+
 
     public void Initialize(LineRenderer renderer, float width, Color color, Material material, GameObject particlesPrefab)
     {
@@ -38,7 +42,10 @@ public class QTETrailRenderer : MonoBehaviour
                 lineRenderer.material = trailMaterial;
         }
     }
-
+    private void Start()
+    {
+        initialColor = trailColor;
+    }
     public void AddPoint(Vector3 worldPosition)
     {
         committedPoints.Add(worldPosition);
@@ -152,6 +159,8 @@ public class QTETrailRenderer : MonoBehaviour
         if (lineRenderer != null)
         {
             lineRenderer.positionCount = 0;
+            lineRenderer.startColor = initialColor;
+            lineRenderer.endColor = initialColor;
         }
 
         if (activeTrailParticles != null)
@@ -159,6 +168,10 @@ public class QTETrailRenderer : MonoBehaviour
             Destroy(activeTrailParticles);
             activeTrailParticles = null;
         }
+
+        transform.position = Vector3.zero;
+        transform.localScale = Vector3.one;
+        transform.rotation = Quaternion.identity;
     }
 
     public int GetPointCount()

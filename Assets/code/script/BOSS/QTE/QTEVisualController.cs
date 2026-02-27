@@ -47,7 +47,6 @@ public class QTEVisualController : MonoBehaviour
     public void StartQTE()
     {
         isActive = true;
-         
         ClearAll();
     }
 

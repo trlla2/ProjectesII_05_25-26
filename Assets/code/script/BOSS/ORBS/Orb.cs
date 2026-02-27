@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class Orb : MonoBehaviour
 {
-    public const int MaxCharge = 6;
+    public const int MaxCharge = 1;
 
     public int CurrentCharge;
     public OrbState State;

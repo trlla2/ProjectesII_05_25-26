@@ -14912,6 +14912,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stageDatas: []
   tutorialManager: {fileID: 0}
+  _debugItemsInInventory: []
 --- !u!4 &806185222
 Transform:
   m_ObjectHideFlags: 0
@@ -22495,7 +22496,7 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 9168d9f4aa1ee834ea1164744d0e797d, type: 2}
     - target: {fileID: 6537319169006765825, guid: 343a187672d40db46b4b8aa0c0145041, type: 3}
       propertyPath: isEnemyTypeForced
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -23310,7 +23311,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 58.15
+  m_fontSize: 47.75
   m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 1

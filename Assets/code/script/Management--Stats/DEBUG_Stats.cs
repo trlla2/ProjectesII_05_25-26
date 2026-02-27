@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class DEBUG_Stats : MonoBehaviour
@@ -15,24 +16,30 @@ public class DEBUG_Stats : MonoBehaviour
     [SerializeField]
     private List<Spell> knownSpells = new List<Spell>();
 
-    private void Start()
+    private void Awake()
     {
-        if (spells.Count > 0 && GameManager.Instance.PlayerStats.SpellBookSize == 0 && ForceSpells)
+        foreach (Spell s in knownSpells)
         {
+            GameManager.Instance.PlayerStats.AddKnownSpell(s);
+        }
+
+
+
+        if (spells.Count > 0 && ForceSpells)
+        {
+            GameManager.Instance.PlayerStats.ClearSpellBook();
+
             for (int i = 0; i < GameManager.Instance.PlayerStats.SpellBookSize; i++)
             {
+
                 if (spells[i] == null)
                     break;
 
                 GameManager.Instance.PlayerStats.AddSpellToSpellBook(spells[i], i);
+
             }
         }
 
-
-        foreach(Spell s in knownSpells)
-        {
-            GameManager.Instance.PlayerStats.AddKnownSpell(s);
-        }
 
         foreach (Item item in items)
             GameManager.Instance.PlayerStats.AddItemToInventory(item);

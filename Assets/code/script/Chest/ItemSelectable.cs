@@ -2,27 +2,23 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(EventTrigger),typeof(TranslatorUI))]
+[RequireComponent(typeof(EventTrigger), typeof(TranslatorUI))]
 public class ItemSelectable : MonoBehaviour
 {
     [Header("Setup")]
-    [SerializeField]
-    private Image itemSprite;
-    [SerializeField]
-    private GameObject selectImage;
+    [SerializeField] private Image itemSprite;
+    [SerializeField] private GameObject selectImage;
+
     private Item currentItem;
     public Item Item => currentItem;
-    
-    
 
     private RemoveItemPanelHandler panelRef;
     private TranslatorUI translator;
 
-    private void Awake() 
-    { 
+    private void Awake()
+    {
         translator = GetComponent<TranslatorUI>();
         selectImage.SetActive(false);
-
     }
 
     public void SetItem(RemoveItemPanelHandler reference, Item item)
@@ -36,7 +32,10 @@ public class ItemSelectable : MonoBehaviour
     {
         selectImage.SetActive(true);
         translator.ToTarget();
-        panelRef.SelectItem(this);
+
+        if (panelRef != null)
+            panelRef.SelectItem(this);
+
         HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.RigidImpact);
     }
 
@@ -44,6 +43,4 @@ public class ItemSelectable : MonoBehaviour
     {
         selectImage.SetActive(false);
     }
-
-
 }

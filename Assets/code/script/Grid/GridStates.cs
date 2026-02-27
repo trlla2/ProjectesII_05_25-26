@@ -234,6 +234,8 @@ public class RerollState : IGridState
 
     private IEnumerator PerformReroll()
     {
+        grid.NotifyRerollStarted();
+
         int gridSize = grid.GridData.GridSize;
 
         Element[,] finalGrid = GenerateFinalGrid();
@@ -244,11 +246,14 @@ public class RerollState : IGridState
             TryInsertSpellIntoGrid(finalGrid, randomSpell.Recipe);
         }
 
-        yield return grid.StartCoroutine(visualGrid.PlayRerollAnimation(scrollTimes, scrollDuration, columnDelay, availableElements, finalGrid));
+        yield return grid.StartCoroutine(
+            visualGrid.PlayRerollAnimation(scrollTimes, scrollDuration, columnDelay, availableElements, finalGrid)
+        );
 
         ApplyFinalGrid(finalGrid);
-
         FinalizeVisuals();
+
+        grid.NotifyRerollCompleted();
 
         isAnimating = false;
     }

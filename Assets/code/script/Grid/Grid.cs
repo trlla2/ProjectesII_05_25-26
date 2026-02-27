@@ -22,6 +22,12 @@ public class Grid : MonoBehaviour
     [SerializeField] private float enemyDeletionDuration = 1f;
     [SerializeField] private float blockDuration = 1f;
 
+    public event System.Action OnRerollStarted;
+    public event System.Action OnRerollCompleted;
+
+    public void NotifyRerollStarted() => OnRerollStarted?.Invoke();
+    public void NotifyRerollCompleted() => OnRerollCompleted?.Invoke();
+
     public AnimationCurve EnemyTargetFillCurve => enemyBlinkCurve;
     public float EnemyTargetAnimDuration => enemyDeletionDuration;
 
@@ -116,6 +122,7 @@ public class Grid : MonoBehaviour
             if (visual != null && visual.IsTargetedByEnemy)
             {
                 visual.SetTargetedByEnemy(false);
+                visual.ClearOverrideSprite();
             }
             gridData.SetElementAt(pos, emptyElement);
             if (visualGrid.GetVisualAt(pos) != null)

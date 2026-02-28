@@ -33,9 +33,9 @@ public class ChestAnimationHandler : MonoBehaviour
     private GameObject itemSprite;
 
     [SerializeField]
-    private UnityEvent OnOpen;
+    public UnityEvent OnOpen;
     [SerializeField]
-    private UnityEvent OnRarityChange;
+    public UnityEvent OnRarityChange;
 
     private Item item;
     private Animator animator;
@@ -102,15 +102,34 @@ public class ChestAnimationHandler : MonoBehaviour
         openParticlesRenderer.material = rarityStageMaterial[(int)item.Rarity];
         openParticles.Play(true);
 
+        OnOpen.Invoke();
+        HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.HeavyImpact);
     }
 
     public void CallRarityChange()
     {
         OnRarityChange.Invoke();
         stageIndex++;
-        Debug.Log($"{rarityStageMaterial[(int)stageIndex].name} on: {stageIndex}");
         closeParticlesRenderer.material = rarityStageMaterial[(int)stageIndex];
         closeParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         closeParticles.Play(true);
+        HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.LightImpact);
+    }
+
+    public void ResetAnimation()
+    {
+        stageIndex = 0;
+
+        animator.SetBool("Rare", false);
+        animator.SetBool("Epic", false);
+        animator.SetBool("Legend", false);
+        animator.SetBool("Open", false);
+
+        commonBeam.SetActive(false);
+        rareBeam.SetActive(false);
+        epicBeam.SetActive(false);
+        legendBeam.SetActive(false);
+        
+        itemSprite.SetActive(false);
     }
 }

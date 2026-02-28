@@ -10,12 +10,13 @@ public class OpenChestScreen : MonoBehaviour
     [Header("Items Setup")]
     [SerializeField] TMP_Text _itemNameText;
     [SerializeField] TMP_Text _itemDescriptionText;
-    [SerializeField] Image _itemSprite;
     
     [SerializeField] private List<Item> _itemsPool;
 
     [Header("RemovePanel")]
     [SerializeField] RemoveItemPanelHandler _removeItemPanel;
+
+    [SerializeField] ChestAnimationHandler _animationHandler;
     
     Item _selectedItem;
 
@@ -33,11 +34,20 @@ public class OpenChestScreen : MonoBehaviour
     {
         _selectedItem = _itemsPool[Random.Range(0, _itemsPool.Count)];
 
-        _itemNameText.text = _selectedItem.NameItem;
-        _itemDescriptionText.text = _selectedItem.Description;
-        _itemSprite.sprite = _selectedItem.Sprite;
+        
 
         Debug.Log("New item pulled");
+    }
+
+    public void OpenChest()
+    {
+        _animationHandler.LoadItem(_selectedItem);
+
+        _animationHandler.OnOpen.AddListener(() =>
+        {
+            _itemNameText.text = _selectedItem.NameItem;
+            _itemDescriptionText.text = _selectedItem.Description;
+        });
     }
 
     public void KeepItem()
@@ -52,6 +62,7 @@ public class OpenChestScreen : MonoBehaviour
         HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.RigidImpact);
         openedChest.Replace();
         Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(true);
+        _animationHandler.ResetAnimation();
         _translator.ToOrigin();
     }
 }

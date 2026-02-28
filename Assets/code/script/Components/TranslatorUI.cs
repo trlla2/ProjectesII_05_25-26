@@ -47,7 +47,7 @@ public class TranslatorUI : MonoBehaviour
         ChangeAnimation(ToTargetAnimation());
     }
 
-    public void ResetPosition()
+    public void ResetTranslator()
     {
         if (currentAnimation != null)
         {

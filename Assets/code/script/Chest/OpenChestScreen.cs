@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine.Rendering;
 
 public class OpenChestScreen : MonoBehaviour
 {
@@ -26,13 +27,21 @@ public class OpenChestScreen : MonoBehaviour
 
     private void Start()
     {
-        Pull();
+        //Pull();
         _translator.ToTarget();
     }
     private void OnEnable() { _translator.ToTarget(); }
-    public void Pull()
+    public void Pull(ItemRarity rarity)
     {
-        _selectedItem = _itemsPool[Random.Range(0, _itemsPool.Count)];
+        List<Item> candidates = new List<Item>();
+
+        foreach (Item item in _itemsPool)
+        {
+            if(item.Rarity == rarity)
+                candidates.Add(item);
+        }
+
+        _selectedItem = candidates[Random.Range(0, candidates.Count)];
 
         
 

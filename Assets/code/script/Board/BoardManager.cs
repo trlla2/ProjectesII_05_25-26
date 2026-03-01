@@ -132,7 +132,7 @@ public class BoardManager : MonoBehaviour
     public void OpenChest(ChestTile chestTile)
     {
         openChestPanel.openedChest = chestTile;
-        openChestPanel.Pull();
+        openChestPanel.Pull(currentStageLevelData.GetPullItemRarity());
         openChestPanel.gameObject.SetActive(true);
     }
 

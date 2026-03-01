@@ -28,6 +28,33 @@ public class StageLevelData : ScriptableObject
     [SerializeField]
     private List<BoardTile> interactableTiles;
 
+    [Header("Items")]
+    [SerializeField, Range(0, 100)]
+    private float commonRarityPercentage;
+    [SerializeField, Range(0, 100)]
+    private float rareRarityPercentage;
+    [SerializeField, Range(0, 100)]
+    private float epicRarityPercentage;
+    [SerializeField, Range(0, 100)]
+    private float legendaryRarityPercentage;
+
+    public ItemRarity GetPullItemRarity() 
+    {
+        float toatalRarity = commonRarityPercentage + rareRarityPercentage + epicRarityPercentage + legendaryRarityPercentage;
+
+        float pullSeed = Random.Range(0, toatalRarity);
+
+        if (pullSeed < commonRarityPercentage)
+            return ItemRarity.COMMON;
+        else if (pullSeed < commonRarityPercentage + rareRarityPercentage)
+            return ItemRarity.RARE;
+        else if (pullSeed < commonRarityPercentage + rareRarityPercentage)
+            return ItemRarity.RARE;
+        else 
+            return ItemRarity.LEGENDARY;
+    }
+
+
 
     public int GetNumOfEmptyTiles() { return _numOfEmptyTiles; }
     public int GetNumOfEnemyTiles() { return _numOfEnemyTiles; }
@@ -47,4 +74,5 @@ public class StageLevelData : ScriptableObject
     public List<BoardTile> GetinteractableTiles() { return interactableTiles; }
     public List<EnemyType> GetEnemyEncounters() { return _enemyList; }
     public List<EnemyType> GetBossEncounters() { return _bossList; }
+
 }

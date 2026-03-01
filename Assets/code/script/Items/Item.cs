@@ -20,8 +20,10 @@ public class Item : ScriptableObject
 
     [Header("Behaviour")]
     [SerializeReference]
-    [SerializeField]
     private IItemEffect effect;
+
+    [SerializeField] private bool AffectGrid;
+    [SerializeField] private bool Consumable;
 
     public string NameItem =>nameItem;
     public string Description =>description;

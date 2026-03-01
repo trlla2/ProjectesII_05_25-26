@@ -12,5 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f429702b582c65949ae43bcdb3c40145, type: 3}
   m_Name: Stage3Data
   m_EditorClassIdentifier: 
-  posibleEncounters: []
-  encounters: 
+  _numOfEmptyTiles: 41
+  _numOfEnemyTiles: 6
+  _numOfMiniBossTiles: 0
+  _numOfChestTiles: 6
+  _minBranches: 2
+  _maxBranches: 4
+  _minBranchLengthBeforeRejoin: 19
+  _maxBranchLength: 25
+  _branchProbabilityPerCandidate: 0.3
+  _enemyList:
+  - {fileID: 11400000, guid: 7825248ffb3a9fe4bad66a1ac0583bc4, type: 2}
+  - {fileID: 11400000, guid: 5a68dbd4268eb7749b497b05fa080c5c, type: 2}
+  - {fileID: 11400000, guid: 3ddc38c9790bdd44bacbeb43cb61cada, type: 2}
+  - {fileID: 11400000, guid: 8da2630b56083c44abb033c12f629f0e, type: 2}
+  - {fileID: 11400000, guid: 5d98f1c5df92ad7479bd352825842b75, type: 2}
+  - {fileID: 11400000, guid: 79d07f17a589c324d9832fa0d07aa8f0, type: 2}
+  - {fileID: 11400000, guid: 0f615755cce1d3b409215e446884a96d, type: 2}
+  _bossList:
+  - {fileID: 11400000, guid: 9168d9f4aa1ee834ea1164744d0e797d, type: 2}
+  encountersOrder: 030000000400000005000000060000000400000003000000
+  interactableTiles: []

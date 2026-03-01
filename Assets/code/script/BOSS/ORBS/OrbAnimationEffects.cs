@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using DG.Tweening;
 
@@ -12,14 +13,27 @@ public class OrbAnimationEffects : MonoBehaviour
     [Header("Shake Settings")]
     [SerializeField] private float defaultShakeDuration = 0.5f;
 
+    [Header("Blink Settings")]
+    [SerializeField] private Color blinkColor = Color.white;
+    [SerializeField] private float blinkHalfPeriod = 0.15f;
+
     private Vector3 _startPosition;
 
-    WaitForSeconds startdelay = new WaitForSeconds(0.25f);
+    private Image image;
+    private Color _baseColor;
 
+    private Tween _blinkTween;
+    private Tween _postBlinkColorTween;
+    private Tween _postBlinkScaleTween;
+
+    private readonly WaitForSeconds startdelay = new WaitForSeconds(0.25f);
 
     void Start()
     {
-        if(!DelayHover)
+        image = GetComponent<Image>();
+        if (image != null) _baseColor = image.color;
+
+        if (!DelayHover)
         {
             _startPosition = transform.localPosition;
             HoverAnim();
@@ -30,6 +44,7 @@ public class OrbAnimationEffects : MonoBehaviour
             StartCoroutine(DelayedHover());
         }
     }
+
     private IEnumerator DelayedHover()
     {
         yield return startdelay;
@@ -38,13 +53,58 @@ public class OrbAnimationEffects : MonoBehaviour
 
     private void HoverAnim()
     {
-        transform.DOLocalMoveY(_startPosition.y + hoverDistance, hoverDuration).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
+        transform.DOLocalMoveY(_startPosition.y + hoverDistance, hoverDuration)
+            .SetEase(Ease.InOutSine)
+            .SetLoops(-1, LoopType.Yoyo);
     }
 
     public void Shake(float amount)
     {
         Shake(amount, defaultShakeDuration);
     }
+
+    public void ColorBlink()
+    {
+        if (image == null) return;
+
+        DisableBlink();
+
+        _blinkTween = image.DOColor(blinkColor, blinkHalfPeriod).SetEase(Ease.InOutSine).SetLoops(5, LoopType.Yoyo)
+            .OnComplete(() =>
+            {
+                _postBlinkColorTween = image.DOColor(blinkColor * Color.red, blinkHalfPeriod / 2f)
+                    .SetEase(Ease.InOutSine)
+                    .SetLoops(-1, LoopType.Yoyo);
+
+                _postBlinkScaleTween = transform.DOScale(Vector3.one * 1.5f, blinkHalfPeriod / 2f)
+                    .SetEase(Ease.InOutSine)
+                    .SetLoops(-1, LoopType.Yoyo);
+            });
+    }
+
+    public void DisableBlink()
+    {
+        _blinkTween?.Kill();
+        _blinkTween = null;
+
+        _postBlinkColorTween?.Kill();
+        _postBlinkColorTween = null;
+
+        _postBlinkScaleTween?.Kill();
+        _postBlinkScaleTween = null;
+    }
+
+
+    public void ResetVisual()
+    {
+        if (image == null) return;
+
+        _blinkTween?.Kill();
+        _blinkTween = null;
+
+        image.color = _baseColor;
+    }
+
 
     public void Shake(float amount, float duration)
     {

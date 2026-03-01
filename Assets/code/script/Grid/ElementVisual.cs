@@ -23,6 +23,9 @@ public class ElementVisual : MonoBehaviour
 
     private Element currentElement;
 
+    private Sprite overrideSprite;
+    private bool hasOverrideSprite;
+
     public Vector2Int GridPosition => gridPosition;
     public bool CanSelect => canSelect;
     public bool IsTargetedByEnemy => isTargetedByEnemy;
@@ -57,13 +60,21 @@ public class ElementVisual : MonoBehaviour
         if (element == null || elementRenderer == null)
             return;
 
-        elementRenderer.sprite = element.Sprite;
-        elementRenderer.color = element.Color;
-
         currentElement = element;
 
         if (isBombTarget)
             bombOriginalColor = element.Color;
+
+        // Preserve active sprite override (e.g. hidden enemy "?" image)
+        if (hasOverrideSprite && overrideSprite != null)
+        {
+            elementRenderer.sprite = overrideSprite;
+            elementRenderer.color = Color.white;
+            return;
+        }
+
+        elementRenderer.sprite = element.Sprite;
+        elementRenderer.color = element.Color;
     }
 
     public void SetWorldPosition(Vector3 position)
@@ -151,6 +162,11 @@ public class ElementVisual : MonoBehaviour
             return;
 
         canSelect = selectable;
+    }
+    public void SetSpriteVisible(bool visible)
+    {
+        if (elementRenderer != null)
+            elementRenderer.enabled = visible;
     }
 
     public void SetTargetedByEnemy(bool targeted)
@@ -318,6 +334,27 @@ public class ElementVisual : MonoBehaviour
                 bombAnimationStarted = false;
             }
         }
+    }
+
+    public void SetOverrideSprite(Sprite sprite)
+    {
+        overrideSprite = sprite;
+        hasOverrideSprite = sprite != null;
+
+        if (elementRenderer != null && sprite != null)
+        {
+            elementRenderer.sprite = sprite;
+            elementRenderer.color = Color.white;
+        }
+    }
+
+    public void ClearOverrideSprite()
+    {
+        overrideSprite = null;
+        hasOverrideSprite = false;
+
+        if (currentElement != null)
+            UpdateVisual(currentElement);
     }
 
     private IEnumerator FillRoutine(float targetFill, float duration, AnimationCurve curve)

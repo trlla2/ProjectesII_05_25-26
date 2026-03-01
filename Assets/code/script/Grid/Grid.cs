@@ -22,6 +22,12 @@ public class Grid : MonoBehaviour
     [SerializeField] private float enemyDeletionDuration = 1f;
     [SerializeField] private float blockDuration = 1f;
 
+    public event System.Action OnRerollStarted;
+    public event System.Action OnRerollCompleted;
+
+    public void NotifyRerollStarted() => OnRerollStarted?.Invoke();
+    public void NotifyRerollCompleted() => OnRerollCompleted?.Invoke();
+
     public AnimationCurve EnemyTargetFillCurve => enemyBlinkCurve;
     public float EnemyTargetAnimDuration => enemyDeletionDuration;
 
@@ -42,7 +48,6 @@ public class Grid : MonoBehaviour
     private void Awake()
     {
         Initialize(availableElements, emptyElement);
-        visualGrid.Initialize(this);
     }
 
     private void Update()
@@ -56,12 +61,14 @@ public class Grid : MonoBehaviour
         emptyElement = empty;
 
         InitializeComponents();
+        visualGrid.Initialize(this);
         RandomizeBoard(availableElements);
 
         if (GameManager.Instance != null)
         {
             InsertSpell(GameManager.Instance.PlayerStats.GetSpellBook()[(int)Random.Range(0, GameManager.Instance.PlayerStats.GetSpellBook().Count)].Recipe);
             Debug.Log("Inserting");
+            
         }
         else
         {
@@ -116,6 +123,7 @@ public class Grid : MonoBehaviour
             if (visual != null && visual.IsTargetedByEnemy)
             {
                 visual.SetTargetedByEnemy(false);
+                visual.ClearOverrideSprite();
             }
             gridData.SetElementAt(pos, emptyElement);
             if (visualGrid.GetVisualAt(pos) != null)
@@ -237,8 +245,7 @@ public class Grid : MonoBehaviour
         gridData.SetVisualAt(position, visual);
     }
 
-    public void ProcessEnemySpell(List<Vector2Int> positions, System.Action onComplete = null,
-                                   bool excludeBelowTargets = true, bool rerollAfter = false)
+    public void ProcessEnemySpell(List<Vector2Int> positions, System.Action onComplete = null,  bool excludeBelowTargets = true, bool rerollAfter = false)
     {
         if (positions == null || positions.Count == 0)
         {
@@ -246,10 +253,23 @@ public class Grid : MonoBehaviour
             return;
         }
 
+        if (CurrentState == GridStateType.Idle && GetEmptyPositions().Count > 0)
+        {
+            ChangeState(new RefillState(this, visualGrid,
+                onRefillComplete: () =>
+                {
+                    ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete, excludeBelowTargets, rerollAfter));
+                }
+            ));
+            return;
+        }
+
         ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete, excludeBelowTargets, rerollAfter));
     }
 
-    public void FillEmptySlots(List<Element> elements, List<Vector2Int> positionsToFill = null)
+
+
+public void FillEmptySlots(List<Element> elements, List<Vector2Int> positionsToFill = null)
     {
         if (elements == null || elements.Count == 0)
             return;

@@ -5636,7 +5636,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 02288df98d810c14a8b97ec86fb6b86f, type: 2}
   - {fileID: 11400000, guid: 1ab200a2191b3a645a4c64114d4fc11a, type: 2}
   emptyElement: {fileID: 11400000, guid: 47f6aa33896c7cb63acb02ad374358fa, type: 2}
-  bombElement: {fileID: 0}
+  bombElement: {fileID: 11400000, guid: 25e80a6e916b988418bbd6d6dec6b725, type: 2}
   availableSpells:
   - {fileID: 11400000, guid: d65283c45b7504446948b1b821bc9cb0, type: 2}
   - {fileID: 11400000, guid: e9afe958fcdfa78458bbde73be344e18, type: 2}
@@ -14912,6 +14912,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stageDatas: []
   tutorialManager: {fileID: 0}
+  _debugItemsInInventory: []
 --- !u!4 &806185222
 Transform:
   m_ObjectHideFlags: 0
@@ -14940,12 +14941,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   items: []
+  ForceSpells: 1
   spells:
   - {fileID: 11400000, guid: d65283c45b7504446948b1b821bc9cb0, type: 2}
-  - {fileID: 11400000, guid: e02a4c0454b986845a065ad209d800cd, type: 2}
   - {fileID: 11400000, guid: e9afe958fcdfa78458bbde73be344e18, type: 2}
   - {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
-  knownSpells: []
+  - {fileID: 11400000, guid: e02a4c0454b986845a065ad209d800cd, type: 2}
+  knownSpells:
+  - {fileID: 11400000, guid: d65283c45b7504446948b1b821bc9cb0, type: 2}
+  - {fileID: 11400000, guid: e8ecfab035326b84386fbbcadbfc34ff, type: 2}
+  - {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
+  - {fileID: 11400000, guid: e9afe958fcdfa78458bbde73be344e18, type: 2}
 --- !u!1 &809243521
 GameObject:
   m_ObjectHideFlags: 0
@@ -21723,8 +21729,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hoverDistance: 20
   hoverDuration: 1.5
-  DelayHover: 1
+  DelayHover: 0
   defaultShakeDuration: 0.5
+  blinkColor: {r: 1, g: 0, b: 0.59416103, a: 1}
+  blinkHalfPeriod: 0.5
 --- !u!114 &1279878342
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22490,7 +22498,7 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 9168d9f4aa1ee834ea1164744d0e797d, type: 2}
     - target: {fileID: 6537319169006765825, guid: 343a187672d40db46b4b8aa0c0145041, type: 3}
       propertyPath: isEnemyTypeForced
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -22553,7 +22561,7 @@ MonoBehaviour:
   winTranslator: {fileID: 1594906320}
   loseTranslator: {fileID: 810593951}
   loseScene: HallOfEgress
-  sceneToUnload: BattlePhone
+  sceneToUnload: BattlePhoneBoss1
   goToHallOfEgress: 0
 --- !u!114 &1507392189
 MonoBehaviour:
@@ -23305,7 +23313,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20.15
+  m_fontSize: 58.15
   m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -34536,6 +34544,8 @@ MonoBehaviour:
   hoverDuration: 1.5
   DelayHover: 0
   defaultShakeDuration: 0.5
+  blinkColor: {r: 1, g: 0, b: 0.59416103, a: 1}
+  blinkHalfPeriod: 0.5
 --- !u!114 &1992799284
 MonoBehaviour:
   m_ObjectHideFlags: 0

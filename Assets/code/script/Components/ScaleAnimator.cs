@@ -1,5 +1,6 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 public class ScaleAnimator : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class ScaleAnimator : MonoBehaviour
 
     private Vector3 baseScale;
     private Coroutine currentRoutine;
+
+    bool Blinking = false;
 
     private void OnEnable()
     {
@@ -50,6 +53,11 @@ public class ScaleAnimator : MonoBehaviour
             return;
         }
 
+        if(Blinking)
+        {
+            return;
+        }   
+
         // Restart if an animation is already playing
         if (currentRoutine != null)
             StopCoroutine(currentRoutine);
@@ -70,6 +78,7 @@ public class ScaleAnimator : MonoBehaviour
         if (currentRoutine != null)
             StopCoroutine(currentRoutine);
 
+        Blinking = true;
         currentRoutine = StartCoroutine(AnimateDelayBlink(strength, frequency, delayDuration, onComplete));
     }
 
@@ -140,7 +149,7 @@ public class ScaleAnimator : MonoBehaviour
 
         targetRenderer.transform.localScale = baseScale;
         currentRoutine = null;
-
+        Blinking = false;
         onComplete?.Invoke();
     }
 

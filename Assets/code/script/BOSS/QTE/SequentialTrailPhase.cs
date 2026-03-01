@@ -24,8 +24,8 @@ public class SequentialTracePhase : IQTEPhase
     private bool wasPressingLastFrame;
     private Vector2Int? lastTouchedPosition;
 
-    // 1 unit radius for a correct touch
-    private const float HitRadius = 1f;
+    //radius for a correct touch
+    private const float HitRadius = 0.8f;
 
     public SequentialTracePhase(Grid grid, QTEVisualController visual, int points = 6, float revealTime = 3f, float inputTime = 4f)
     {

@@ -75,9 +75,13 @@ public class PlayerPathing : MonoBehaviour
             GameManager.Instance.CombatHandler.OnEndBattle += HandleBattleEnd;
         }
 
-        // Subscribe to QTE events
         Orb1QTE.OnQTEStarted += HandleQTEStarted;
         Orb1QTE.OnQTEEnded += HandleQTEEnded;
+
+        if (grid != null)
+        {
+            grid.OnRerollStarted += HandleRerollStarted;
+        }
     }
 
     private void UnsubscribeFromEvents()
@@ -87,9 +91,18 @@ public class PlayerPathing : MonoBehaviour
             GameManager.Instance.CombatHandler.OnEndBattle -= HandleBattleEnd;
         }
 
-        // Unsubscribe from QTE events
         Orb1QTE.OnQTEStarted -= HandleQTEStarted;
         Orb1QTE.OnQTEEnded -= HandleQTEEnded;
+
+        if (grid != null)
+        {
+            grid.OnRerollStarted -= HandleRerollStarted;
+        }
+    }
+
+    private void HandleRerollStarted()
+    {
+        ForceEndPathing();
     }
 
     private void HandleQTEStarted()

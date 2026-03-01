@@ -100,13 +100,17 @@ public class OrbVisual : MonoBehaviour
             fullChargeParticles.Play();
 
         if (animationEffects != null)
+        {
             animationEffects.SetScale(chargedScale, scaleDuration);
+            animationEffects.ColorBlink();
+        }
     }
 
     public void PlayDepletedEffect()
     {
         if (animationEffects != null)
         {
+            animationEffects.DisableBlink();
             animationEffects.SetScale(depletedScale, scaleDuration);
             animationEffects.Shake(maxShakeAmount * 1.5f, maxShakeDuration);
         }

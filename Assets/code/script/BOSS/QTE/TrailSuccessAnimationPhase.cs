@@ -69,7 +69,7 @@ public class TrailSuccessAnimationPhase : IQTEPhase
         yield return coroutineRunner.StartCoroutine(RotateAndPulse());
         yield return coroutineRunner.StartCoroutine(ScaleDownAtMaxSpeed());
         yield return coroutineRunner.StartCoroutine(MoveToOrb());
-        yield return coroutineRunner.StartCoroutine(trailRenderer.FadeOut(fadeOutDuration));
+        //yield return coroutineRunner.StartCoroutine(trailRenderer.FadeOut(fadeOutDuration));
 
         isAnimating = false;
         OnPhaseComplete?.Invoke(true);

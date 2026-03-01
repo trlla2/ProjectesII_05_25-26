@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+//using Unity.Android.Gradle;
 using UnityEngine;
 
 public class VisualGrid : MonoBehaviour
@@ -30,7 +31,6 @@ public class VisualGrid : MonoBehaviour
     {
         grid = gridController;
         isInitialized = true;
-
         CreateAllVisuals();
     }
 
@@ -70,6 +70,7 @@ public class VisualGrid : MonoBehaviour
 
     private void CreateAllVisuals()
     {
+        Debug.Log(grid.GridData.GridSize);
         for (int x = 0; x < grid.GridData.GridSize; x++)
         {
             for (int y = 0; y < grid.GridData.GridSize; y++)

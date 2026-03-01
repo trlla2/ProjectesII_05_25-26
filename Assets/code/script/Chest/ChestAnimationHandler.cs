@@ -131,5 +131,7 @@ public class ChestAnimationHandler : MonoBehaviour
         legendBeam.SetActive(false);
         
         itemSprite.SetActive(false);
+
+        openParticles.Stop(true);
     }
 }

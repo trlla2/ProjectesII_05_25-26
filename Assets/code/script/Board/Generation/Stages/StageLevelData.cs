@@ -48,8 +48,8 @@ public class StageLevelData : ScriptableObject
             return ItemRarity.COMMON;
         else if (pullSeed < commonRarityPercentage + rareRarityPercentage)
             return ItemRarity.RARE;
-        else if (pullSeed < commonRarityPercentage + rareRarityPercentage)
-            return ItemRarity.RARE;
+        else if (pullSeed < commonRarityPercentage + rareRarityPercentage + epicRarityPercentage)
+            return ItemRarity.EPIC;
         else 
             return ItemRarity.LEGENDARY;
     }

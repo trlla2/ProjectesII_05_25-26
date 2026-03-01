@@ -6742,6 +6742,18 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -73.57953
       objectReference: {fileID: 0}
+    - target: {fileID: 5583812689237297437, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
+      propertyPath: _itemsPool.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5583812689237297437, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
+      propertyPath: '_itemsPool.Array.data[4]'
+      value: 
+      objectReference: {fileID: 11400000, guid: bb57a1f526a6f9f4396e3a98e5bab451, type: 2}
+    - target: {fileID: 5583812689237297437, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
+      propertyPath: '_itemsPool.Array.data[5]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 7a2e9d56b64e7864ca1fdaeb5115c5f0, type: 2}
     - target: {fileID: 7637261948427559833, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -6753,10 +6765,105 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2559998848902052241, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 933427304635682916}
   m_SourcePrefab: {fileID: 100100000, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
+--- !u!114 &147734523693840661 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8731610838124086389, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
+  m_PrefabInstance: {fileID: 8872146308853628256}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9045006f78d19d84296ebbe511703e51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &336293997200293730 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9190425808693051906, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
+  m_PrefabInstance: {fileID: 8872146308853628256}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9045006f78d19d84296ebbe511703e51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &6388007990375761137 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2559998848902052241, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
+  m_PrefabInstance: {fileID: 8872146308853628256}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &933427304635682916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6388007990375761137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd9fde938b4f986468baeaec9122467f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onEnableCall:
+    m_PersistentCalls:
+      m_Calls: []
+  onDisableCall:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7132227482648966887}
+        m_TargetAssemblyTypeName: TranslatorUI, Assembly-CSharp
+        m_MethodName: ResetTranslator
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 147734523693840661}
+        m_TargetAssemblyTypeName: TranslatorUI, Assembly-CSharp
+        m_MethodName: ResetTranslator
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 336293997200293730}
+        m_TargetAssemblyTypeName: TranslatorUI, Assembly-CSharp
+        m_MethodName: ResetTranslator
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!224 &6964066042427798929 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1983104618292807921, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
   m_PrefabInstance: {fileID: 8872146308853628256}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7132227482648966887 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1863066467664300935, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
+  m_PrefabInstance: {fileID: 8872146308853628256}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9045006f78d19d84296ebbe511703e51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

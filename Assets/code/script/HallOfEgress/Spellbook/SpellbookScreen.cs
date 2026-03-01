@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class SpellbookScreen : MonoBehaviour
@@ -21,6 +22,8 @@ public class SpellbookScreen : MonoBehaviour
     private GameObject _spellSlotPrefab;
 
     private SpellSlotBehaviour _spellSlotSelected;
+
+    public UnityEvent OnCloseButtonPressed;
 
 
     private TranslatorUI translator;
@@ -44,14 +47,13 @@ public class SpellbookScreen : MonoBehaviour
 
             newButton.onClick.AddListener(() =>
             {
-                _spellSlotSelected?.SetNewSpell(spell);
-                if(_spellSlotSelected.CurrentSpell == null)
+                if(GameManager.Instance.PlayerStats.ExistSpellOnSpellBook(spell))
                 {
-                    errorText.text = "You cant have repeated spells on your spellbook.";
-                    errorTextTranslator.ToTarget();
+                    SendErrorMessage("You cant have repeated spells on your spellbook.");
                     return;
                 }
 
+                _spellSlotSelected?.SetNewSpell(spell);
                 _spellSlotSelected?.UnSelect();
 
                 if (_spellSlotSelected?.NextSlot != null)
@@ -103,5 +105,57 @@ public class SpellbookScreen : MonoBehaviour
         SpellSlotBehaviour[] spellSlots = _slotsParent.GetComponentsInChildren<SpellSlotBehaviour>();
         foreach (SpellSlotBehaviour slot in spellSlots)
             Destroy(slot.gameObject);
+    }
+
+    private void SendErrorMessage(string m)
+    {
+        if(errorText.text == string.Empty)
+            errorTextTranslator.ToTarget();
+
+        errorText.text = m;
+    }
+
+    public void CloseButton()
+    {
+
+        bool thereIsBlue = false;
+        bool thereIsGreen = false;
+        bool thereIsRed = false;
+        bool thereIsYellow = false;
+
+        foreach (Spell s in GameManager.Instance.PlayerStats.SpellBook)
+        {
+            if (s == null)
+            {
+                SendErrorMessage("You must have 4 spells.");
+                return;
+            }
+
+            foreach(Element e in s.Recipe)
+            {
+                switch (e.Type)
+                {
+                    case ElementType.Red:
+                        thereIsRed = true;
+                        break;
+                    case ElementType.Blue:
+                        thereIsBlue = true;
+                        break;
+                    case ElementType.Green:
+                        thereIsGreen = true;
+                        break;
+                    case ElementType.Yellow:
+                        thereIsYellow = true;
+                        break;
+                }
+            }
+        }
+
+
+
+        if(thereIsRed && thereIsBlue && thereIsGreen && thereIsYellow)
+            OnCloseButtonPressed.Invoke();
+        else
+            SendErrorMessage("You must have all the elements selected through the 4 selected spells.");
     }
 }

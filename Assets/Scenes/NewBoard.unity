@@ -254,11 +254,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &114224989 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6388007990375761137, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
-  m_PrefabInstance: {fileID: 4580768473457997493}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &195526925
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1502,22 +1497,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: ---------------------BOARDUICANVAS
       objectReference: {fileID: 0}
-    - target: {fileID: 2995733447792495013, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2995733447792495013, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2995733447792495013, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2995733447792495013, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3163940914151491990, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -1530,30 +1509,6 @@ PrefabInstance:
       propertyPath: _animationHandler
       value: 
       objectReference: {fileID: 266226548}
-    - target: {fileID: 5847194705083351951, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5847194705083351951, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5847194705083351951, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5847194705083351951, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5847194705083351951, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5847194705083351951, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6538393095467250468, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -1577,17 +1532,14 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6388007990375761137, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 4580768473457997497}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
 --- !u!114 &4580768473457997494 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3917430195259028605, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
   m_PrefabInstance: {fileID: 4580768473457997493}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 114224989}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d50e8374673dbdf4cbe6611a64dfc9ea, type: 3}
@@ -1604,60 +1556,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e0f41f6335c97d41a4ce98418a3b9e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &4580768473457997497
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 114224989}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd9fde938b4f986468baeaec9122467f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  onEnableCall:
-    m_PersistentCalls:
-      m_Calls: []
-  onDisableCall:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 483360203}
-        m_TargetAssemblyTypeName: TranslatorUI, Assembly-CSharp
-        m_MethodName: ResetTranslator
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 265355690}
-        m_TargetAssemblyTypeName: TranslatorUI, Assembly-CSharp
-        m_MethodName: ResetTranslator
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1723928337}
-        m_TargetAssemblyTypeName: TranslatorUI, Assembly-CSharp
-        m_MethodName: ResetTranslator
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

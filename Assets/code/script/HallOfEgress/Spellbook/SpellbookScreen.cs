@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +8,11 @@ public class SpellbookScreen : MonoBehaviour
     [SerializeField] private Button _spellButtonPrefab;
 
     [SerializeField] private GameObject _scrollviewContent;
+
+    [SerializeField]
+    private TMP_Text errorText;
+    [SerializeField]
+    private TranslatorUI errorTextTranslator;
 
     [Header("Slots")]
     [SerializeField]
@@ -19,7 +24,11 @@ public class SpellbookScreen : MonoBehaviour
 
 
     private TranslatorUI translator;
-    private void Awake() { translator = GetComponent<TranslatorUI>(); }
+    private void Awake() 
+    { 
+        translator = GetComponent<TranslatorUI>();
+        errorText.text = string.Empty;
+    }
     public void OpenSpellBook()
     { 
         translator.ToTarget(); 
@@ -36,11 +45,17 @@ public class SpellbookScreen : MonoBehaviour
             newButton.onClick.AddListener(() =>
             {
                 _spellSlotSelected?.SetNewSpell(spell);
+                if(_spellSlotSelected.CurrentSpell == null)
+                {
+                    errorText.text = "You cant have repeated spells on your spellbook.";
+                    errorTextTranslator.ToTarget();
+                    return;
+                }
+
                 _spellSlotSelected?.UnSelect();
 
                 if (_spellSlotSelected?.NextSlot != null)
                 {
-                    Debug.Log($"Next Slot Selected {_spellSlotSelected.NextSlot.name}");
                     _spellSlotSelected = _spellSlotSelected.NextSlot;
                 }
 

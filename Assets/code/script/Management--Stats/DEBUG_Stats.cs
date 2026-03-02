@@ -25,7 +25,7 @@ public class DEBUG_Stats : MonoBehaviour
 
 
 
-        if (spells.Count > 0 && ForceSpells)
+        if (spells.Count > 0 && ForceSpells && this.isActiveAndEnabled)
         {
             GameManager.Instance.PlayerStats.ClearSpellBook();
 

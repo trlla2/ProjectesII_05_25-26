@@ -72,6 +72,14 @@ public class EncountersManager : MonoBehaviour
         return selectedEnemy;
     }
 
+    public EnemyDifficulty GetNextEnemyDifficulty() 
+    {
+        if (_lastEncounterIndex < _encountersOrder.Count)
+            return _encountersOrder[_lastEncounterIndex];
+        else
+            return EnemyDifficulty.BOSS;
+    }
+
     public EnemyType GetBossEncounter()
     {
         if (_bossList == null || _bossList.Count == 0)

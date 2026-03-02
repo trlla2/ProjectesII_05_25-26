@@ -16,6 +16,15 @@ public class ChestOfEgressScreen : MonoBehaviour
     [SerializeField]
     private TMP_Text itemInfo;
 
+    [SerializeField]
+    private Color commonTextColor;
+    [SerializeField]
+    private Color rareTextColor;
+    [SerializeField]
+    private Color epicTextColor;
+    [SerializeField]
+    private Color legendaryTextColor;
+
     private ChestOfEgressTile _openedTile;
     private TranslatorUI _translator;
     private CanvasGroup _canvasGroup;
@@ -116,9 +125,29 @@ public class ChestOfEgressScreen : MonoBehaviour
     }
 
 
-    public void SetItemInfo(Item i)
+    public void SetItemInfo(Item i) 
     {
-        itemName.text = $"{i.NameItem}:";
+        Color targetColor = commonTextColor;
+
+        switch (i.Rarity)
+        {
+            case ItemRarity.COMMON:
+                targetColor = commonTextColor;
+                break;
+            case ItemRarity.RARE:
+                targetColor = rareTextColor;
+                break;
+            case ItemRarity.EPIC:
+                targetColor = epicTextColor;
+                break;
+            case ItemRarity.LEGENDARY:
+                targetColor = legendaryTextColor;
+                break;
+        }
+
+        string hexColor = ColorUtility.ToHtmlStringRGBA(targetColor);
+
+        itemName.text = $"<color=#{hexColor}>{i.NameItem}</color>:";
         itemInfo.text = i.Description;
     }
 }

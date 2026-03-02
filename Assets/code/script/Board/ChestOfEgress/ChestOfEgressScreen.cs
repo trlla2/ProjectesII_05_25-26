@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using TMPro;
 
 [RequireComponent(typeof(CanvasGroup))]
 public class ChestOfEgressScreen : MonoBehaviour
@@ -9,6 +10,11 @@ public class ChestOfEgressScreen : MonoBehaviour
     [SerializeField] private Transform _playerItemsPanel;
     [SerializeField] private Transform _chestItemsPanel;
     [SerializeField] private GameObject _itemSelectablePrefab;
+
+    [SerializeField]
+    private TMP_Text itemName;
+    [SerializeField]
+    private TMP_Text itemInfo;
 
     private ChestOfEgressTile _openedTile;
     private TranslatorUI _translator;
@@ -107,5 +113,12 @@ public class ChestOfEgressScreen : MonoBehaviour
 
         _chestInventory.RemoveItem(item);
         Refresh();
+    }
+
+
+    public void SetItemInfo(Item i)
+    {
+        itemName.text = $"{i.NameItem}:";
+        itemInfo.text = i.Description;
     }
 }

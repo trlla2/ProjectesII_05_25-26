@@ -80,7 +80,7 @@ public class EnemyUIHandler : MonoBehaviour
             if (currentDamageTimer >= timeToChangeDmg)
             {
                 damageText.text = ""; 
-                damageTextTranslator.ResetPosition(); 
+                damageTextTranslator.ResetTranslator(); 
                 isShowingDamage = false;
                 critImage.SetActive(false);
                 currentDamageTimer = 0;  
@@ -97,7 +97,7 @@ public class EnemyUIHandler : MonoBehaviour
         isShowingDamage = true;
         currentDamageTimer = 0;
 
-        damageTextTranslator.ResetPosition();
+        damageTextTranslator.ResetTranslator();
         damageText.text = damageInfo.damage.ToString();
         if (damageInfo.IsCrit)
             critImage.SetActive(true);
@@ -138,7 +138,7 @@ public class EnemyUIHandler : MonoBehaviour
     {
         isShowingWeakness = true;
         currentWeaknessTimer = 0;
-        weaknessTextTranslator.ResetPosition();
+        weaknessTextTranslator.ResetTranslator();
 
         switch (elementType)
         {

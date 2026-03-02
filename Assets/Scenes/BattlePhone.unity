@@ -12924,10 +12924,10 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 874665316}
+  m_Father: {fileID: 836912389}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.25, y: 0.078}
-  m_AnchorMax: {x: 1, y: 0.13}
+  m_AnchorMin: {x: 0.23625001, y: 0.078}
+  m_AnchorMax: {x: 0.99000007, y: 0.13}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -13978,7 +13978,7 @@ MonoBehaviour:
   bossManager: {fileID: 0}
   isBossBattle: 0
   BossWeakElement: 0
-  isEnemyTypeForced: 1
+  isEnemyTypeForced: 0
   forcedEnemyType: {fileID: 11400000, guid: a0254dff86a5a8f4a8554eb97930585b, type: 2}
 --- !u!4 &733892386
 Transform:
@@ -14328,7 +14328,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 806185220}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5089faa8aa8f981468d790dfeaa1fece, type: 3}
   m_Name: 
@@ -14601,6 +14601,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 478951800}
   - {fileID: 399035008}
   - {fileID: 2080880437}
   m_Father: {fileID: 874665316}
@@ -14795,7 +14796,6 @@ RectTransform:
   m_Children:
   - {fileID: 2041891011}
   - {fileID: 836912389}
-  - {fileID: 478951800}
   - {fileID: 1562077890}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

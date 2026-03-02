@@ -26,6 +26,7 @@ public class SpellSlotBehaviour : MonoBehaviour
     private Image selectedBG;
 
     private Spell currentSpell;
+    public Spell CurrentSpell => currentSpell;
 
     private int slotIndex;
 
@@ -43,6 +44,7 @@ public class SpellSlotBehaviour : MonoBehaviour
         slotIndex = slot;
         SetSpell(GameManager.Instance.PlayerStats.SpellBook[slot]);
         this.nextSlot = nextSlot;
+        currentSpell = null;
     }
 
     private void Update()

@@ -23,11 +23,13 @@ MonoBehaviour:
   resistances: 
   resistanceMultiplier: 0.5
   enemySprite: {fileID: 7137568892044698534, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
-  animatorController: {fileID: 0}
+  animatorController: {fileID: 9100000, guid: 240a7fce57c4ce0408e087ab50dedf56, type: 2}
   spellType: 1
   damagePerElement: 4
   moveCount: 3
   AtackTimer: 4
   lvl2Delay: 5
   lvl2Countdown: 15
+  visibilityDuration: 2.5
+  hiddenSprite: {fileID: 0}
   excludeBelowTargets: 0

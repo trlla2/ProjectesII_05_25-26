@@ -22,12 +22,14 @@ MonoBehaviour:
   weaknessMultiplier: 2
   resistances: 
   resistanceMultiplier: 0.5
-  enemySprite: {fileID: 8718443979697428641, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
-  animatorController: {fileID: 0}
+  enemySprite: {fileID: -5359700142553616902, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
+  animatorController: {fileID: 9100000, guid: 3c970a7c6ad49bc4ab0e29ff9028bb4d, type: 2}
   spellType: 5
   damagePerElement: 4
   moveCount: 2
   AtackTimer: 4
   lvl2Delay: 15
   lvl2Countdown: 4
+  visibilityDuration: 2.5
+  hiddenSprite: {fileID: 0}
   excludeBelowTargets: 0

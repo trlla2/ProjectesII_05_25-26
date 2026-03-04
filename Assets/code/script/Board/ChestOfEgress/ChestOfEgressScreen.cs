@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using TMPro;
 
 [RequireComponent(typeof(CanvasGroup))]
 public class ChestOfEgressScreen : MonoBehaviour
@@ -9,6 +10,20 @@ public class ChestOfEgressScreen : MonoBehaviour
     [SerializeField] private Transform _playerItemsPanel;
     [SerializeField] private Transform _chestItemsPanel;
     [SerializeField] private GameObject _itemSelectablePrefab;
+
+    [SerializeField]
+    private TMP_Text itemName;
+    [SerializeField]
+    private TMP_Text itemInfo;
+
+    [SerializeField]
+    private Color commonTextColor;
+    [SerializeField]
+    private Color rareTextColor;
+    [SerializeField]
+    private Color epicTextColor;
+    [SerializeField]
+    private Color legendaryTextColor;
 
     private ChestOfEgressTile _openedTile;
     private TranslatorUI _translator;
@@ -107,5 +122,32 @@ public class ChestOfEgressScreen : MonoBehaviour
 
         _chestInventory.RemoveItem(item);
         Refresh();
+    }
+
+
+    public void SetItemInfo(Item i) 
+    {
+        Color targetColor = commonTextColor;
+
+        switch (i.Rarity)
+        {
+            case ItemRarity.COMMON:
+                targetColor = commonTextColor;
+                break;
+            case ItemRarity.RARE:
+                targetColor = rareTextColor;
+                break;
+            case ItemRarity.EPIC:
+                targetColor = epicTextColor;
+                break;
+            case ItemRarity.LEGENDARY:
+                targetColor = legendaryTextColor;
+                break;
+        }
+
+        string hexColor = ColorUtility.ToHtmlStringRGBA(targetColor);
+
+        itemName.text = $"<color=#{hexColor}>{i.NameItem}</color>:";
+        itemInfo.text = i.Description;
     }
 }

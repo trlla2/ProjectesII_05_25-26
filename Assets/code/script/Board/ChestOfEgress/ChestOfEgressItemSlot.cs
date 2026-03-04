@@ -35,5 +35,7 @@ public class ChestOfEgressItemSlot : MonoBehaviour
             _screen.MoveItemToPlayer(_item);
         else
             _screen.MoveItemToChest(_item);
+
+        _screen.SetItemInfo(_item);
     }
 }

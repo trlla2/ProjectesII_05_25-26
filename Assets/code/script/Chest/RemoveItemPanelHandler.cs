@@ -1,5 +1,5 @@
 ﻿using TMPro;
-using UnityEditor.Experimental.GraphView;
+//using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 [RequireComponent(typeof(TranslatorUI))]

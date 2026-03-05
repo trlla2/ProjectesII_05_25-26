@@ -13,8 +13,6 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private List<StageLevelData> _stageDatas;
 
-    [SerializeField] private TutorialManager tutorialManager;
-
     private CombatHandler cH;
     public CombatHandler CombatHandler => cH;
 

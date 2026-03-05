@@ -647,8 +647,17 @@ public class ValidateSpellState : IGridState
         bool hasValidSpell = spellValidator.HasValidSpell(grid.GridData, availableSpells);
 
         if (!hasValidSpell)
-        {
-            grid.Reroll();
+        { 
+            if (grid.IsTutorialActive())
+            {
+                bool inserted = grid.TryInsertRandomSpell(availableSpells);
+                if (!inserted)
+                    grid.Reroll();
+            }
+            else
+            {
+                grid.Reroll();
+            }
         }
 
         isValidating = false;

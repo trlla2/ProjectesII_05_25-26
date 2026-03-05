@@ -14,6 +14,9 @@ public class EnemyBehaviour : MonoBehaviour
     [Header("Reroll Settings")]
     [SerializeField] private int rerollScrollTimes = 3;
 
+    [Header("Tutorial")]
+    [SerializeField] private TutorialManager tutorialManager;
+
     private SpriteRenderer spriteRenderer;
     private Animator animator;
 
@@ -22,6 +25,8 @@ public class EnemyBehaviour : MonoBehaviour
 
     private IEnemySpell activeSpell;
     private Coroutine timedSpellMonitor;
+
+    private bool timersPaused;
 
     //Legacy System
     public delegate void GetOnHitRecived(float health);
@@ -350,11 +355,29 @@ public class EnemyBehaviour : MonoBehaviour
 
     }
 
+    public void PauseTimers()
+    {
+        timersPaused = true;
+        if (timedSpellMonitor != null)
+            StopCoroutine(timedSpellMonitor);
+    }
+
+    public void ResumeTimers()
+    {
+        timersPaused = false;
+        //IMPORTANT!
+        if (activeSpell is TimedDestroySpellBase)
+            timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
+    }
+
     private void Die()
     {
         StopBattle();
 
         deathParticles.Play();
+
+        if (tutorialManager != null)
+            tutorialManager.NotifyEnemyDeath();
 
         if (GameManager.Instance != null)
         {

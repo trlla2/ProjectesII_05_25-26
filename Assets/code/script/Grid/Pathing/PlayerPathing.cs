@@ -17,6 +17,9 @@ public class PlayerPathing : MonoBehaviour
 
     [SerializeField] private SpellPathAnimator spellPathAnimator;
 
+    [Header("Tutorial")]
+    [SerializeField] private TutorialManager tutorialManager;
+
     private IInputHandler inputHandler;
     private IPathValidator pathValidator;
     private ISpellMatcher spellMatcher;
@@ -188,6 +191,10 @@ public class PlayerPathing : MonoBehaviour
 
         Vector2Int gridPosition = visual.GridPosition;
 
+        // Tutorial; reject positions not in the allowed set
+        if (!CanSelectPosition(gridPosition))
+            return;
+
         if (!pathData.Contains(gridPosition))
         {
             if (TryAddToPath(gridPosition))
@@ -253,6 +260,10 @@ public class PlayerPathing : MonoBehaviour
         if (pathData.Count == 0)
             return;
 
+        // Tutorial; reject the entire path if it doesn't match the allowed set
+        if (!CanCastPath(new List<Vector2Int>(pathData.Positions)))
+            return;
+
         List<Element> pathElements = pathData.GetElements(grid);
 
         List<Spell> availableSpells = GetAvailableSpells();
@@ -295,7 +306,6 @@ public class PlayerPathing : MonoBehaviour
         grid.DeleteElementsByPlayer(positionsList);
 
         HandleSpellEffects(spell);
-        TryCompleteTutorialStep();
     }
 
     //Can be converted into a SpellEffectHandler class in the future if more complex effects are needed
@@ -304,6 +314,10 @@ public class PlayerPathing : MonoBehaviour
         GameManager.Instance.NotifyPlayerMove();
 
         if (spell.Name == "HEAL") GameManager.Instance.CombatHandler.HealPlayer(5);
+
+        // Notify tutorial system that a spell was cast
+        if (tutorialManager != null)
+            tutorialManager.NotifySpellCast();
     }
 
     private void UpdateVisuals()
@@ -381,13 +395,17 @@ public class PlayerPathing : MonoBehaviour
         return GameManager.Instance.PlayerStats.GetSpellBook();
     }
 
-    private void TryCompleteTutorialStep()
+    private bool CanSelectPosition(Vector2Int pos)
     {
-        TutorialManager tutorialManager = Object.FindFirstObjectByType<TutorialManager>();
         if (tutorialManager != null && tutorialManager.IsTutorialActive())
-        {
-            tutorialManager.CompleteCurrentStep();
-        }
+            return tutorialManager.IsPositionAllowed(pos);
+        return true;
     }
 
+    private bool CanCastPath(List<Vector2Int> path)
+    {
+        if (tutorialManager != null && tutorialManager.IsTutorialActive())
+            return tutorialManager.IsPathAllowed(path);
+        return true;
+    }
 }

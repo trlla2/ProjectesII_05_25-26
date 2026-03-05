@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ab529a0c12673a408eb38b86a880060, type: 3}
+  m_Name: TUTORIAL
+  m_EditorClassIdentifier: 
+  name: 
+  health: 60
+  damage: 5
+  elementCount: 4
+  level: 0
+  difficulty: 1
+  weaknesses: 
+  weaknessMultiplier: 2
+  resistances: 
+  resistanceMultiplier: 0.5
+  enemySprite: {fileID: 0}
+  animatorController: {fileID: 0}
+  spellType: 10
+  damagePerElement: 4
+  moveCount: 4
+  AtackTimer: 4
+  lvl2Delay: 5
+  lvl2Countdown: 15
+  visibilityDuration: 2.5
+  hiddenSprite: {fileID: 0}
+  excludeBelowTargets: 0

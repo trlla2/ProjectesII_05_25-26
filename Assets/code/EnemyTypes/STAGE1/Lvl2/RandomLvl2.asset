@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ab529a0c12673a408eb38b86a880060, type: 3}
   m_Name: RandomLvl2
   m_EditorClassIdentifier: 
-  name: RandomLvl2
+  name: Small Spirit
   health: 120
   damage: 10
   elementCount: 3
@@ -23,13 +23,13 @@ MonoBehaviour:
   resistances: 
   resistanceMultiplier: 0.5
   enemySprite: {fileID: -4324019793427034617, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
-  animatorController: {fileID: 9100000, guid: 0e3cf38b928156949bd1f612dc13e84e, type: 2}
+  animatorController: {fileID: 9100000, guid: 762dffe4e2be2c54d8021d908eb1f3af, type: 2}
   spellType: 7
   damagePerElement: 4
   moveCount: 2
   AtackTimer: 4
-  lvl2Delay: 5
-  lvl2Countdown: 15
+  lvl2Delay: 15
+  lvl2Countdown: 4
   visibilityDuration: 2.5
   hiddenSprite: {fileID: 0}
   excludeBelowTargets: 0

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.iOS;
 
 public class Grid : MonoBehaviour
 {
@@ -197,9 +198,10 @@ public class Grid : MonoBehaviour
 
     public void Reroll(int scrollTimes = 5)
     {
-        if (CurrentState == GridStateType.Idle || CurrentState == GridStateType.ValidateSpell)
+        Debug.Log(CurrentState);
+        if (CurrentState == GridStateType.Idle || CurrentState == GridStateType.ValidateSpell || CurrentState == GridStateType.Processing)
         {
-
+            Debug.Log("Attempting to reroll board with " + scrollTimes + " scroll times.");
             if (IsTutorialBlocking())
                 return;
 

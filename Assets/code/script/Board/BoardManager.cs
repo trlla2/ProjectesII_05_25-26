@@ -4,6 +4,7 @@ using System.Net;
 
 public class BoardManager : MonoBehaviour
 {
+    [SerializeField] private bool _forcedBoard;
     public StageLevelData currentStageLevelData;
 
     public BoardTile startingTile;
@@ -35,41 +36,45 @@ public class BoardManager : MonoBehaviour
 
     private void Awake()
     {
-        if (encountersManager == null)
-            encountersManager = GetComponent<EncountersManager>();
-
-        if (encountersManager == null)
+        if (!_forcedBoard)
         {
-            enabled = false;
-            return;
+            if (encountersManager == null)
+                encountersManager = GetComponent<EncountersManager>();
+
+            if (encountersManager == null)
+            {
+                enabled = false;
+                return;
+            }
+
+            if (GameManager.Instance == null)
+            {
+                enabled = false;
+                return;
+            }
+
+            currentStageLevelData = GameManager.Instance.GetCurrentStageData();
+            if (currentStageLevelData == null)
+            {
+                Debug.LogError("BoardManager: currentStageLevelData es null.");
+                enabled = false;
+                return;
+            }
+
+            var enemies = currentStageLevelData.GetEnemyEncounters() ?? new List<EnemyType>();
+            var order = currentStageLevelData.GetEncountersOrder() ?? new List<EnemyDifficulty>();
+            var bosses = currentStageLevelData.GetBossEncounters() ?? new List<EnemyType>();
+
+            Debug.Log($"BoardManager: cargando StageLevelData con {enemies.Count} enemigos, {order.Count} encuentros, {bosses.Count} bosses.");
+
+            encountersManager.LoadEnemyEncounters(enemies);
+            encountersManager.LoadEnemyEncountersOrder(order);
+            encountersManager.LoadBossesEncounters(bosses);
+
+            startingTile.SetGridPosition(new Vector2Int(0, 0));
+            generatedTiles.Add(startingTile);
         }
-
-        if (GameManager.Instance == null)
-        {
-            enabled = false;
-            return;
-        }
-
-        currentStageLevelData = GameManager.Instance.GetCurrentStageData();
-        if (currentStageLevelData == null)
-        {
-            Debug.LogError("BoardManager: currentStageLevelData es null.");
-            enabled = false;
-            return;
-        }
-
-        var enemies = currentStageLevelData.GetEnemyEncounters() ?? new List<EnemyType>();
-        var order = currentStageLevelData.GetEncountersOrder() ?? new List<EnemyDifficulty>();
-        var bosses = currentStageLevelData.GetBossEncounters() ?? new List<EnemyType>();
-
-        Debug.Log($"BoardManager: cargando StageLevelData con {enemies.Count} enemigos, {order.Count} encuentros, {bosses.Count} bosses.");
-
-        encountersManager.LoadEnemyEncounters(enemies);
-        encountersManager.LoadEnemyEncountersOrder(order);
-        encountersManager.LoadBossesEncounters(bosses);
-
-        startingTile.SetGridPosition(new Vector2Int(0, 0));
-        generatedTiles.Add(startingTile);
+        
 
         boardCamera = Camera.main;
     }

@@ -12,10 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f429702b582c65949ae43bcdb3c40145, type: 3}
   m_Name: TutorialStageData
   m_EditorClassIdentifier: 
-  _numOfEmptyTiles: 0
+  _numOfEmptyTiles: 15
   _numOfEnemyTiles: 0
   _numOfMiniBossTiles: 0
   _numOfChestTiles: 0
-  posibleEncounters: []
-  encounters: 
+  _minBranches: 0
+  _maxBranches: 0
+  _minBranchLengthBeforeRejoin: 0
+  _maxBranchLength: 0
+  _branchProbabilityPerCandidate: 0
+  _enemyList: []
+  _bossList: []
+  encountersOrder: 
   interactableTiles: []
+  commonRarityPercentage: 0
+  rareRarityPercentage: 0
+  epicRarityPercentage: 0
+  legendaryRarityPercentage: 0

@@ -7,7 +7,7 @@ public class PlayerStats
 {
 
     // combat stats
-    private const float baseMaxHP = 1f;
+    private const float baseMaxHP = 40f;
     private float maxHp;
     public float MaxHp => maxHp;
     private float hp;

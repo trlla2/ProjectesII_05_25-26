@@ -116,7 +116,7 @@ public class BombSpell : EnemySpellBase
             RemoveBombElement(grid);
 
             SelectExplosionTargets(grid);
-            ApplyEffect(grid, onComplete);
+            ApplyEffect(grid, onComplete,true);
         }
     }
 

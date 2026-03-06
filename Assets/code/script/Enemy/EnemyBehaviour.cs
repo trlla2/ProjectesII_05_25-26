@@ -289,9 +289,11 @@ public class EnemyBehaviour : MonoBehaviour
         {
             hiddenSpellPre.Cleanup(grid);
         }
-
+        while (grid.CurrentState == GridStateType.Refill)
+        {
+            yield return null;
+        }
         grid.Reroll(rerollScrollTimes);
-
         while (grid.CurrentState == GridStateType.Reroll || grid.CurrentState == GridStateType.ValidateSpell)
         {
             yield return null;

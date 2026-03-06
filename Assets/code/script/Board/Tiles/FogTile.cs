@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class FogTile : BoardTile
 {
-    private BoardTileData _foggedTileData;
+    [SerializeField] private BoardTileData _foggedTileData;
     public BoardTileData FoggedTileData => _foggedTileData;
 
     public override void Interact() 

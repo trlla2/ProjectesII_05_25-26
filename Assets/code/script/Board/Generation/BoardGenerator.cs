@@ -34,7 +34,7 @@ public class BoardGenerator : MonoBehaviour
 
     int _numOfTotalTilesInBoard;
 
-    private readonly List<List<BoardTile>> _paths = new List<List<BoardTile>>();
+    [SerializeField] public List<List<BoardTile>> _paths = new List<List<BoardTile>>();
 
     private void Awake()
     {
@@ -66,26 +66,26 @@ public class BoardGenerator : MonoBehaviour
     public void InstanceBoard(Transform parent)
     {
         if (parent.childCount > 1)
+        {
             foreach (Transform child in parent)
             {
                 if (child == _boardManager.startingTile.transform) continue;
                 Destroy(child.gameObject);
             }
-
-        //if (_boardManager.GetPlayer().transform.position != _boardManager.startingTile.gameObject.transform.position)
-        //    _boardManager.GetPlayer().InitPlayer();
-
+        }
 
         List<BoardTile> mainPath = GenerateMainPath(parent);
         _paths.Add(mainPath);
 
         GenerateBranches(parent, mainPath);
 
-        
+        AssignEndZonesPerPath(parent);
 
         AssignEnemiesAndChests();
 
-        AssignEndZonesPerPath(parent);
+        foreach (List<BoardTile> path in _paths)
+            if (path != mainPath)
+                _boardManager.PutFogOnBranch(path);
     }
 
     List<BoardTile> GenerateMainPath(Transform parent)
@@ -147,7 +147,7 @@ public class BoardGenerator : MonoBehaviour
 
         List<BoardTile> candidates = mainPath
             .Take(candidatesCount)
-            .Where(t => !startZoneSet.Contains(t))
+            .Where(t => !startZoneSet.Contains(t) && t is EmptyTile)
             .ToList();
 
         Shuffle(candidates);
@@ -160,10 +160,20 @@ public class BoardGenerator : MonoBehaviour
             if (branchesCreated >= _minBranches) break;
 
             List<BoardTile> branch = BuildBranch(origin, parent, _maxBranchLength);
-            if (branch.Count > 1)
+            if (branch.Count > _minBranchLengthBeforeRejoin)
             {
-                _paths.Add(branch);
+                if (!_paths.Contains(branch))
+                    _paths.Add(branch);
                 branchesCreated++;
+            }
+            else
+            {
+                foreach (BoardTile tile in branch)
+                {
+                    if (tile == origin) continue;
+                    _boardManager.generatedTiles.Remove(tile);
+                    Destroy(tile.gameObject);
+                }
             }
         }
 
@@ -177,10 +187,20 @@ public class BoardGenerator : MonoBehaviour
             if (Random.value > _branchProbabilityPerCandidate) continue;
 
             List<BoardTile> branch = BuildBranch(origin, parent, _maxBranchLength);
-            if (branch.Count > 1)
+            if (branch.Count > _minBranchLengthBeforeRejoin)
             {
-                _paths.Add(branch);
+                if (!_paths.Contains(branch))
+                    _paths.Add(branch);
                 branchesCreated++;
+            }
+            else
+            {
+                foreach (BoardTile tile in branch)
+                {
+                    if (tile == origin && (origin.neighbors.Count > 2 || origin.neighbors.Count == 1)) continue;
+                    _boardManager.generatedTiles.Remove(tile);
+                    Destroy(tile.gameObject);
+                }
             }
         }
     }
@@ -189,9 +209,9 @@ public class BoardGenerator : MonoBehaviour
     {
         var dirs = new List<Vector2Int>();
         if (AllowBranchRight) dirs.Add(new Vector2Int(basePos.x + 1, basePos.y));
-        if (AllowBranchLeft)  dirs.Add(new Vector2Int(basePos.x - 1, basePos.y));
-        if (AllowBranchUp)    dirs.Add(new Vector2Int(basePos.x, basePos.y + 1));
-        if (AllowBranchDown)  dirs.Add(new Vector2Int(basePos.x, basePos.y - 1));
+        if (AllowBranchLeft) dirs.Add(new Vector2Int(basePos.x - 1, basePos.y));
+        if (AllowBranchUp) dirs.Add(new Vector2Int(basePos.x, basePos.y + 1));
+        if (AllowBranchDown) dirs.Add(new Vector2Int(basePos.x, basePos.y - 1));
         return dirs;
     }
 
@@ -237,31 +257,12 @@ public class BoardGenerator : MonoBehaviour
                     if (current.neighbors.Count == 1)
                     {
                         _boardManager.ReplaceTileType(current, _boardManager.stairsTileData);
-                        current.SetGridPosition(branch.ElementAt<BoardTile>(branch.IndexOf(current)-1).GetGridPosition() + new Vector2Int(0, 1));
+                        current.SetGridPosition(branch.ElementAt<BoardTile>(branch.IndexOf(current) - 1).GetGridPosition() + new Vector2Int(0, 1));
                         _boardManager.UpdateNeighbors(current);
-                    }
-                }
-                else
-                {
-                    _boardManager.generatedTiles.Remove(current); 
-                    Destroy(current.gameObject);
-                }
-            }
 
-            if (branch.Count - 1 >= _minBranchLengthBeforeRejoin)
-            {
-                List<Vector2Int> rejoinTargets = neighbors.Where(p => occupiedAll.Contains(p)).ToList();
-                if (rejoinTargets.Count > 0)
-                {
-                    Vector2Int targetPos = rejoinTargets[Random.Range(0, rejoinTargets.Count)];
-                    BoardTile rejoinTile = _boardManager.generatedTiles.FirstOrDefault(t => t.GetGridPosition() == targetPos);
-                    if (rejoinTile != null && HasMinSeparationFromOtherPaths(targetPos, branch, allowEqualPosition: true))
-                    {
-                        _boardManager.UpdateNeighbors(current);
-                        _boardManager.UpdateNeighbors(rejoinTile);
-                        branch.Add(rejoinTile);
+                        branch[0].generatedBranch = branch;
+                        _paths.Add(branch);
                     }
-                    break;
                 }
             }
 
@@ -318,7 +319,7 @@ public class BoardGenerator : MonoBehaviour
 
     void AssignEndZonesPerPath(Transform parent)
     {
-        HashSet<BoardTile> startZoneSet = (_paths.Count > 0) ? GetStartZoneTiles(_paths[0]).ToHashSet() : 
+        HashSet<BoardTile> startZoneSet = (_paths.Count > 0) ? GetStartZoneTiles(_paths[0]).ToHashSet() :
             new HashSet<BoardTile>();
 
         foreach (List<BoardTile> path in _paths)
@@ -335,7 +336,6 @@ public class BoardGenerator : MonoBehaviour
         BoardTile endTile = path[path.Count - 1];
         if (startZoneSet.Contains(endTile)) return;
 
-        // solo crear end zone para paths que no vuelvan a conectar con otro
         if (!PathIsTerminal(path)) return;
 
         // escalera en neighbor(0,1) de endTile
@@ -357,18 +357,18 @@ public class BoardGenerator : MonoBehaviour
         {
             _boardManager.ReplaceTileType(stairsTarget, _boardManager.emptyTileData);
             _boardManager.UpdateNeighbors(stairsTarget);
-            return; 
+            return;
         }
 
-        
+
         // instance bossTile
         int bossIndex = path.Count - _bossTileDistanceFromEnd;
         if (bossIndex >= 0 && bossIndex < path.Count)
         {
             BoardTile bossTile = path[bossIndex];
-            
+
             // verificar que no esté en la start zone y sea válido
-            if (!startZoneSet.Contains(bossTile) && 
+            if (!startZoneSet.Contains(bossTile) &&
                 bossTile.GetData() != _boardManager.stairsTileData &&
                 bossTile.GetData() != _boardManager.bossTileData)
             {
@@ -401,15 +401,13 @@ public class BoardGenerator : MonoBehaviour
         List<BoardTile> mainPath = _paths[0];
         HashSet<BoardTile> startZoneSet = GetStartZoneTiles(mainPath).ToHashSet();
 
+        // Main path: colocar _numOfEnemyTiles enemigos
         List<BoardTile> mainCandidates = GetValidEnemyPositionsForPath(mainPath, startZoneSet, null);
-        
         Debug.Log($"Candidatos válidos en main: {mainCandidates.Count}");
-        
         PlaceEnemiesOnPath(mainCandidates, _numOfEnemyTiles);
+        Debug.Log($"Total enemigos colocados en main: {mainPath.Count(t => IsEnemyTile(t))}");
 
-        int totalEnemiesOnMain = mainPath.Count(t => IsEnemyTile(t));
-        Debug.Log($"Total enemigos colocados en main: {totalEnemiesOnMain}");
-
+        // Branches: completar hasta _numOfEnemyTiles contando el tramo compartido con el main
         for (int b = 1; b < _paths.Count; b++)
         {
             List<BoardTile> branch = _paths[b];
@@ -419,16 +417,15 @@ public class BoardGenerator : MonoBehaviour
             int originIdx = mainPath.IndexOf(originOnMain);
             if (originIdx < 0) originIdx = 0;
 
-            int enemiesInMainBeforeBranch = 0;
+            int enemiesInSharedSegment = 0;
             for (int i = 0; i <= originIdx && i < mainPath.Count; i++)
             {
                 if (IsEnemyTile(mainPath[i]))
-                    enemiesInMainBeforeBranch++;
+                    enemiesInSharedSegment++;
             }
 
-            int enemiesNeeded = _numOfEnemyTiles - enemiesInMainBeforeBranch;
-
-            Debug.Log($"Branch {b}: origen idx {originIdx}, enemigos main hasta origen: {enemiesInMainBeforeBranch}, necesita: {enemiesNeeded}");
+            int enemiesNeeded = _numOfEnemyTiles - enemiesInSharedSegment;
+            Debug.Log($"Branch {b}: tramo compartido tiene {enemiesInSharedSegment} enemigos. Necesita {enemiesNeeded} más.");
 
             if (enemiesNeeded <= 0) continue;
 
@@ -466,7 +463,7 @@ public class BoardGenerator : MonoBehaviour
         while (currentIndex < candidates.Count && placed < count)
         {
             BoardTile tile = candidates[currentIndex];
-            
+
             if (!IsEnemyTile(tile) && !HasSpecialNeighbor(tile))
             {
                 BoardTile newTile = ReplaceTileAndUpdatePaths(tile, _boardManager.enemyTileData);
@@ -474,12 +471,11 @@ public class BoardGenerator : MonoBehaviour
                 placed++;
             }
 
-            // siguiente posición con variación aleatoria
             int step = Random.Range(minStep, maxStep + 1);
             currentIndex += step;
         }
 
-        // rellenar si faltan (en posiciones aleatorias entre los huecos)
+        // rellenar si faltan
         if (placed < count)
         {
             List<int> availableIndices = new List<int>();
@@ -509,11 +505,11 @@ public class BoardGenerator : MonoBehaviour
     BoardTile ReplaceTileAndUpdatePaths(BoardTile oldTile, BoardTileData newData)
     {
         Vector2Int gridPos = oldTile.GetGridPosition();
-        
+
         _boardManager.ReplaceTileType(oldTile, newData);
-        
+
         BoardTile newTile = _boardManager.generatedTiles.FirstOrDefault(t => t.GetGridPosition() == gridPos);
-        
+
         foreach (var path in _paths)
         {
             for (int i = 0; i < path.Count; i++)
@@ -524,7 +520,7 @@ public class BoardGenerator : MonoBehaviour
                 }
             }
         }
-        
+
         return newTile;
     }
 
@@ -600,7 +596,7 @@ public class BoardGenerator : MonoBehaviour
         }
     }
 
-    private bool HasSpecialNeighbor(BoardTile tile)
+    bool HasSpecialNeighbor(BoardTile tile)
     {
         _boardManager.UpdateNeighbors(tile);
 

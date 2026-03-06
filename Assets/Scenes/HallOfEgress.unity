@@ -730,6 +730,7 @@ MonoBehaviour:
   - {fileID: 1856034665}
   - {fileID: 1108751533}
   - {fileID: 702071340}
+  generatedBranch: []
 --- !u!65 &75721441
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1821,6 +1822,7 @@ MonoBehaviour:
   neighbors:
   - {fileID: 702071340}
   - {fileID: 1815122640}
+  generatedBranch: []
 --- !u!65 &178646699
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1934,6 +1936,7 @@ MonoBehaviour:
   - {fileID: 1248598934}
   - {fileID: 1108751533}
   - {fileID: 1856034665}
+  generatedBranch: []
 --- !u!65 &186982400
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6763,6 +6766,7 @@ MonoBehaviour:
   - {fileID: 75721440}
   - {fileID: 1321387669}
   - {fileID: 178646698}
+  generatedBranch: []
 --- !u!65 &702071341
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -8411,6 +8415,7 @@ MonoBehaviour:
   - {fileID: 1368102784}
   - {fileID: 974525000}
   - {fileID: 1321387669}
+  generatedBranch: []
 --- !u!65 &889392828
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -9053,6 +9058,7 @@ MonoBehaviour:
   - {fileID: 1321387669}
   - {fileID: 974525000}
   - {fileID: 178646698}
+  generatedBranch: []
 --- !u!65 &943609519
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10052,6 +10058,7 @@ MonoBehaviour:
   openChestPanel: {fileID: 137198783}
   newSpellPanel: {fileID: 0}
   chestOfEgressPanel: {fileID: 542902945}
+  fogTileData: {fileID: 0}
   encountersManager: {fileID: 0}
 --- !u!82 &1035823811
 AudioSource:
@@ -10860,6 +10867,7 @@ MonoBehaviour:
   - {fileID: 1863937247}
   - {fileID: 1321387669}
   - {fileID: 75721440}
+  generatedBranch: []
 --- !u!65 &1108751534
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11477,7 +11485,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   items: []
   ForceSpells: 0
-  spells: []
+  spells:
+  - {fileID: 11400000, guid: d65283c45b7504446948b1b821bc9cb0, type: 2}
+  - {fileID: 11400000, guid: e9afe958fcdfa78458bbde73be344e18, type: 2}
+  - {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
+  - {fileID: 11400000, guid: e8ecfab035326b84386fbbcadbfc34ff, type: 2}
   knownSpells:
   - {fileID: 11400000, guid: d65283c45b7504446948b1b821bc9cb0, type: 2}
   - {fileID: 11400000, guid: e9afe958fcdfa78458bbde73be344e18, type: 2}
@@ -12427,6 +12439,7 @@ MonoBehaviour:
   - {fileID: 195526932}
   - {fileID: 1863937247}
   - {fileID: 186982399}
+  generatedBranch: []
 --- !u!65 &1248598935
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -12885,6 +12898,7 @@ MonoBehaviour:
   - {fileID: 889392827}
   - {fileID: 943609518}
   - {fileID: 702071340}
+  generatedBranch: []
 --- !u!65 &1321387670
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -13361,6 +13375,7 @@ MonoBehaviour:
   - {fileID: 1928510513}
   - {fileID: 1332587836}
   - {fileID: 889392827}
+  generatedBranch: []
 --- !u!65 &1368102785
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -15979,7 +15994,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.0011134523, y: -1015.8197}
+  m_AnchoredPosition: {x: 0.0011134523, y: -1313.3801}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1618195481
@@ -19627,6 +19642,7 @@ MonoBehaviour:
   - {fileID: 1928510513}
   - {fileID: 889392827}
   - {fileID: 1108751533}
+  generatedBranch: []
 --- !u!65 &1863937248
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -20331,6 +20347,7 @@ MonoBehaviour:
   - {fileID: 195526932}
   - {fileID: 1368102784}
   - {fileID: 1863937247}
+  generatedBranch: []
 --- !u!65 &1928510514
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -21662,6 +21679,7 @@ MonoBehaviour:
   neighbors:
   - {fileID: 1368102784}
   - {fileID: 974525000}
+  generatedBranch: []
 --- !u!65 &2064752234
 BoxCollider:
   m_ObjectHideFlags: 0

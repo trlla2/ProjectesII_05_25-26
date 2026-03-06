@@ -91,13 +91,15 @@ MonoBehaviour:
     text: 0
     autoDismissTime: 0
     highlightPositions:
-    - {x: 1, y: 3}
-    - {x: 2, y: 3}
+    - {x: 1, y: 0}
+    - {x: 2, y: 0}
     allowedPath: []
     showHand: 1
     handPath:
-    - {x: 1, y: 3}
-    - {x: 2, y: 3}
+    - {x: 1, y: 0}
+    - {x: 2, y: 0}
+    - {x: 1, y: 0}
+    - {x: 2, y: 0}
     handDuration: 3
     showArrow: 1
     arrowFrom: 1
@@ -106,3 +108,58 @@ MonoBehaviour:
     advanceCondition: 1
     pauseEnemyTimers: 1
     lockInput: 1
+  - type: 4
+    text: 0
+    autoDismissTime: 0
+    highlightPositions:
+    - {x: 1, y: 0}
+    - {x: 2, y: 0}
+    allowedPath:
+    - {x: 1, y: 0}
+    - {x: 2, y: 0}
+    showHand: 0
+    handPath:
+    - {x: 1, y: 3}
+    - {x: 2, y: 3}
+    handDuration: 3
+    showArrow: 0
+    arrowFrom: 1
+    arrowTo: 4
+    arrowLabel: 
+    advanceCondition: 2
+    pauseEnemyTimers: 1
+    lockInput: 0
+  - type: 0
+    text: FInish HIm!
+    autoDismissTime: 5
+    highlightPositions: []
+    allowedPath: []
+    showHand: 0
+    handPath:
+    - {x: 1, y: 3}
+    - {x: 2, y: 3}
+    handDuration: 3
+    showArrow: 0
+    arrowFrom: 1
+    arrowTo: 4
+    arrowLabel: 
+    advanceCondition: 0
+    pauseEnemyTimers: 1
+    lockInput: 0
+  - type: 5
+    text: 
+    autoDismissTime: 0
+    highlightPositions: []
+    allowedPath: []
+    showHand: 0
+    handPath:
+    - {x: 1, y: 3}
+    - {x: 2, y: 3}
+    handDuration: 3
+    showArrow: 1
+    arrowFrom: 1
+    arrowTo: 4
+    arrowLabel: 'Find Spell Combinations '
+    advanceCondition: 3
+    pauseEnemyTimers: 1
+    lockInput: 0

@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class PlayerStats
 {
 
     // combat stats
+    private const float baseMaxHP = 1f;
     private float maxHp;
     public float MaxHp => maxHp;
     private float hp;
@@ -55,28 +57,11 @@ public class PlayerStats
 
     public PlayerStats()
     {
-        // combat stats
-        maxHp = 40.0f;
-        hp = maxHp;
 
-        evasionPoints = 0;
-        extraHealth = 0;
-        extraDamage = 0;
-        defense = 0;
-        critPercentage = 0;
-        spikeDamage = 0;
+        ResetCombatStats();
 
-        // level stats
-        experiencePoints = 0;
-        level = 1;
-        elementalLevels = new Dictionary<ElementType, int>()
-        {
-            { ElementType.Green, 1},
-            { ElementType.Red, 1},
-            { ElementType.Yellow, 1},
-            { ElementType.Blue, 1}
-        };
-        elementalLevelMultiplyer = 4;
+        ResetLevelStats();
+
 
         // currency 
         money = 10;
@@ -87,11 +72,46 @@ public class PlayerStats
         inventory = new List<Item>();
         limitInventory = 3;
 
-        // DEBUG DELETE!!!!
         foreach (Item debugItem in GameManager.Instance._debugItemsInInventory)
         {
             AddItemToInventory(debugItem);
         }
+    }
+    private void ResetLevelStats()
+    {
+        experiencePoints = 0;
+        level = 1;
+        elementalLevels = new Dictionary<ElementType, int>()
+        {
+            { ElementType.Green, 1},
+            { ElementType.Red, 1},
+            { ElementType.Yellow, 1},
+            { ElementType.Blue, 1}
+        };
+        elementalLevelMultiplyer = 4;
+    }
+    private void ResetCombatStats()
+    {
+        maxHp = baseMaxHP;
+        hp = maxHp;
+
+        evasionPoints = 0;
+        extraHealth = 0;
+        extraDamage = 0;
+        defense = 0;
+        critPercentage = 0;
+        spikeDamage = 0;
+    }
+    public void ResetStatsOnDeath()
+    {
+        Debug.Log("hola??");
+
+        RemoveAllItems();
+
+        ResetCombatStats();
+
+        ResetLevelStats();
+
     }
 
     public List<DamageType> AttackWithSpell(Spell spell)
@@ -196,6 +216,19 @@ public class PlayerStats
         OnInventoryChange?.Invoke();
 
     }
+
+    public void RemoveAllItems()
+    {
+        foreach (Item item in inventory)
+        {
+            item.RemoveEffects(this);
+        }
+
+        inventory.Clear();
+
+        OnInventoryChange?.Invoke();
+    }
+
 
     public void AddSpellToSpellBook(Spell spell, int slot)
     {

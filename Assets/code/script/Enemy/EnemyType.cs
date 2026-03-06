@@ -114,6 +114,9 @@ public class EnemyType : ScriptableObject
             case EnemySpellType.TutorialStage2FixedTargets:
                 return new TutorialStage2FixedTargetsSpell(damagePerElement, moveCount, excludeBelowTargets);
 
+            case EnemySpellType.TutorialStage2TimedSpell:
+                return new TutorialStage2TimedSpell(AtackTimer, damagePerElement, excludeBelowTargets);
+
             default:
                 return new ColumnDestroySpell(damagePerElement, moveCount, excludeBelowTargets);
         }
@@ -132,5 +135,6 @@ public enum EnemySpellType
     RandomDestroyLvl2,
     BombAttack,
     HiddenDestroy,
-    TutorialStage2FixedTargets
+    TutorialStage2FixedTargets,
+    TutorialStage2TimedSpell
 }

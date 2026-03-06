@@ -9,7 +9,8 @@ public enum GridStateType
     Refill,
     Reroll,
     Processing,
-    ValidateSpell
+    ValidateSpell,
+    EnemySpell
 }
 
 public interface IGridState

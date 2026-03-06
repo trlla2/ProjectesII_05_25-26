@@ -130,6 +130,7 @@ public class EnemyBehaviour : MonoBehaviour
 
     private void CreateAndExecuteSpell()
     {
+        Debug.Log("Creating and executing spell for enemy: " + enemyType.name);
         if (enemyType == null || grid == null)
             return;
 
@@ -358,16 +359,28 @@ public class EnemyBehaviour : MonoBehaviour
     public void PauseTimers()
     {
         timersPaused = true;
+        Debug.Log(activeSpell);
+        if (activeSpell is TimedDestroySpellBase timedSpell)
+            timedSpell.PauseTimer();
+
         if (timedSpellMonitor != null)
+        {
             StopCoroutine(timedSpellMonitor);
+            timedSpellMonitor = null;
+        }
     }
 
     public void ResumeTimers()
     {
         timersPaused = false;
-        //IMPORTANT!
-        if (activeSpell is TimedDestroySpellBase)
-            timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
+
+        if (activeSpell is TimedDestroySpellBase timedSpell)
+        {
+            timedSpell.ResumeTimer();
+            // Restart monitor only if the spell hasn't already resolved
+            if (!timedSpell.IsEffectApplied() && timedSpellMonitor == null)
+                timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
+        }
     }
 
     private void Die()

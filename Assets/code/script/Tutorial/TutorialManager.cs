@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class TutorialManager : MonoBehaviour
@@ -20,10 +21,16 @@ public class TutorialManager : MonoBehaviour
 
     private void Start()
     {
+        StartCoroutine(WaitFrameForStart());
+    }
+
+    IEnumerator WaitFrameForStart()
+    {
+        yield return new WaitForEndOfFrame();
         StartTutorial(activeSequence, activeLayout);
     }
 
-    public bool IsTutorialActive() => tutorialActive;
+    public bool IsTutorialActive() {  Debug.Log("IsTutorialActive: " + tutorialActive); return tutorialActive; }
 
     public bool IsPathAllowed(List<Vector2Int> path)
     {
@@ -41,6 +48,7 @@ public class TutorialManager : MonoBehaviour
             if (!allowedPathSet.Contains(pos))
                 return false;
         }
+        Debug.Log("Path is allowed: " + string.Join(", ", path));
         return true;
     }
 
@@ -51,7 +59,7 @@ public class TutorialManager : MonoBehaviour
 
         if (allowedPathSet.Count == 0)
             return false;
-
+        Debug.Log($"Checking if position {pos} is allowed: {allowedPathSet.Contains(pos)}");
         return allowedPathSet.Contains(pos);
     }
 
@@ -132,14 +140,13 @@ public class TutorialManager : MonoBehaviour
 
     private void ExecuteStep(TutorialStep step)
     {
-        allowedPathSet = null;
+        allowedPathSet = step.allowedPath.ToHashSet();
 
         // If input is locked in this step, block all player pathing.
         if (step.lockInput)
         {
             allowedPathSet = new HashSet<Vector2Int>();
-        }
-
+        };
         if (step.pauseEnemyTimers && enemyBehaviour != null)
             enemyBehaviour.PauseTimers();
 

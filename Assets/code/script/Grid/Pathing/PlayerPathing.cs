@@ -278,7 +278,6 @@ public class PlayerPathing : MonoBehaviour
 
     private void ExecuteSpell(Spell spell, List<Element> pathElements)
     {
-        Debug.Log($"PlayerPathing: Casting spell - {spell.Name}");
 
         Vector2Int[] positions = pathData.Positions;
         List<Vector2Int> posList = new List<Vector2Int>(positions);
@@ -398,7 +397,9 @@ public class PlayerPathing : MonoBehaviour
     private bool CanSelectPosition(Vector2Int pos)
     {
         if (tutorialManager != null && tutorialManager.IsTutorialActive())
+        {
             return tutorialManager.IsPositionAllowed(pos);
+        }
         return true;
     }
 

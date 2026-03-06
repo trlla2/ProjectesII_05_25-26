@@ -3,8 +3,7 @@ using UnityEngine;
 
 public class SingleElementTimedSpell : TimedDestroySpellBase
 {
-    public SingleElementTimedSpell(float timer = 4f, float damage = 4f, bool excludeBelowTargets = true)
-        : base(0f, timer, damage, excludeBelowTargets)
+    public SingleElementTimedSpell(float timer = 4f, float damage = 4f, bool excludeBelowTargets = true) : base(0f, timer, damage, excludeBelowTargets)
     {
         spellName = "Single Timed Target";
         shouldRerollAfterAttack = false;

@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class TutorialStage2FixedTargetsSpell : EnemySpellBase
 {
-    private static readonly Vector2Int[] FixedTargetPattern = new Vector2Int[]
+    private static Vector2Int[] FixedTargetPattern = new Vector2Int[]
     {
-        new Vector2Int(0, 0),
-        new Vector2Int(1, 1),
-        new Vector2Int(2, 2),
-        new Vector2Int(3, 3)
+        new Vector2Int(0, 3),
+        new Vector2Int(1, 2),
+        new Vector2Int(2, 1),
+        new Vector2Int(3, 0)
     };
 
     public TutorialStage2FixedTargetsSpell(float damage = 4f, int moves = 4, bool excludeBelowTargets = true)

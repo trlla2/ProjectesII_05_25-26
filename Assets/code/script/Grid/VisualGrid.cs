@@ -70,7 +70,6 @@ public class VisualGrid : MonoBehaviour
 
     private void CreateAllVisuals()
     {
-        Debug.Log(grid.GridData.GridSize);
         for (int x = 0; x < grid.GridData.GridSize; x++)
         {
             for (int y = 0; y < grid.GridData.GridSize; y++)

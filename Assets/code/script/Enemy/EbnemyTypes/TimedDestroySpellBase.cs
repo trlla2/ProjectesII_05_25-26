@@ -37,10 +37,8 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
         delayCompleted = false;
 
         if (grid == null) return;
-            
-        SelectTargets(grid);
 
-        // Start blink animation for targeted elements
+        SelectTargets(grid);
         StartDelayBlinkAnimation(grid);
 
         spellTimer.Start(grid,
@@ -49,8 +47,19 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
         );
     }
 
-    // we need this abstract class to implement their specific spells
     protected abstract void SelectTargets(Grid grid);
+
+    public void PauseTimer()
+    {
+        if (cachedGrid == null) return;
+        spellTimer.Pause(cachedGrid);
+    }
+
+    public void ResumeTimer()
+    {
+        if (cachedGrid == null) return;
+        spellTimer.Resume(cachedGrid);
+    }
 
     public void TickPlayerMove(Grid grid, System.Action onComplete = null)
     {
@@ -71,13 +80,12 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
         remainingMoves--;
         remainingMoves = Mathf.Max(0, remainingMoves);
 
-        // Update move visual to show remaining moves
         UpdateMoveVisuals(grid);
 
         if (remainingMoves <= 0)
         {
             effectApplied = true;
-            ClearAllVisuals(grid); // Clear both visuals when spell triggers
+            ClearAllVisuals(grid);
             ApplyEffect(grid, onComplete);
             return;
         }
@@ -85,7 +93,6 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
         onComplete?.Invoke();
     }
 
-    //Called when timer expires
     public override void Tick(Grid grid, System.Action onComplete = null)
     {
         if (effectApplied)
@@ -118,7 +125,7 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
         if (grid == null) return;
 
         float blinkStrength = 0.05f;
-        float blinkFrequency = 1f; 
+        float blinkFrequency = 1f;
         float delayDuration = spellTimer.delaySeconds;
 
         foreach (var pos in targetedPositions)
@@ -128,9 +135,7 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
             {
                 ScaleAnimator scaleAnimator = visual.GetComponent<ScaleAnimator>();
                 if (scaleAnimator != null)
-                {
                     scaleAnimator.PlayDelayBlink(blinkStrength, blinkFrequency, delayDuration);
-                }
             }
         }
     }
@@ -146,9 +151,7 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
         {
             ElementVisual visual = grid.GetElementVisualAt(pos);
             if (visual != null && visual.IsTargetedByEnemy)
-            {
                 visual.UpdateTargetVisual(remainingMoves, initialMoves, animDuration, curve);
-            }
         }
     }
 

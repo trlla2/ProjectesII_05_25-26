@@ -5,9 +5,19 @@ public class SpellTimer
 {
     public float delaySeconds;
     public float countdownSeconds;
+
     private Coroutine activeCoroutine;
+    private Grid grid;
+    private System.Action cachedOnDelayComplete;
+    private System.Action cachedOnCountdownExpired;
+
+    private float delayElapsed;
+    private float countdownElapsed;
+    private bool delayDone;
+    private bool isPaused;
 
     public float CountdownSeconds => countdownSeconds;
+    public bool IsPaused => isPaused;
 
     public SpellTimer(float delay, float countdown)
     {
@@ -18,8 +28,18 @@ public class SpellTimer
     public void Start(Grid grid, System.Action onDelayComplete, System.Action onCountdownExpired)
     {
         if (grid == null) return;
+
         Stop(grid);
-        activeCoroutine = grid.StartCoroutine(TimerRoutine(grid, onDelayComplete, onCountdownExpired));
+
+        this.grid = grid;
+        cachedOnDelayComplete = onDelayComplete;
+        cachedOnCountdownExpired = onCountdownExpired;
+        delayElapsed = 0f;
+        countdownElapsed = 0f;
+        delayDone = false;
+        isPaused = false;
+
+        activeCoroutine = grid.StartCoroutine(TimerRoutine());
     }
 
     public void Stop(Grid grid)
@@ -31,34 +51,54 @@ public class SpellTimer
         }
     }
 
-    private IEnumerator TimerRoutine(Grid grid, System.Action onDelayComplete, System.Action onCountdownExpired)
+    public void Pause(Grid grid)
     {
-        //Initial delay
-        float elapsed = 0f;
-        while (elapsed < delaySeconds)
+        if (isPaused) return;
+        isPaused = true;
+
+        if (activeCoroutine != null && grid != null)
+        {
+            grid.StopCoroutine(activeCoroutine);
+            activeCoroutine = null;
+        }
+    }
+
+    public void Resume(Grid grid)
+    {
+        if (!isPaused) return;
+        isPaused = false;
+
+        if (grid == null) return;
+        activeCoroutine = grid.StartCoroutine(TimerRoutine());
+    }
+
+    private IEnumerator TimerRoutine()
+    {
+        // Delay phase — continue from delayElapsed
+        while (delayElapsed < delaySeconds)
         {
             if (grid == null) yield break;
-            elapsed += Time.deltaTime;
+            delayElapsed += Time.deltaTime;
             yield return null;
         }
 
         if (grid == null) yield break;
 
-        //DONE
-        onDelayComplete?.Invoke();
+        if (!delayDone)
+        {
+            delayDone = true;
+            cachedOnDelayComplete?.Invoke();
+        }
 
-        //Countdown phase
-        elapsed = 0f;
-        while (elapsed < countdownSeconds)
+        // Countdown phase — continue from countdownElapsed
+        while (countdownElapsed < countdownSeconds)
         {
             if (grid == null) yield break;
-            elapsed += Time.deltaTime;
+            countdownElapsed += Time.deltaTime;
             yield return null;
         }
 
         activeCoroutine = null;
-
-        // Timer fully expired
-        onCountdownExpired?.Invoke();
+        cachedOnCountdownExpired?.Invoke();
     }
 }

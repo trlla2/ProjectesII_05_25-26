@@ -22,8 +22,8 @@ MonoBehaviour:
     handPath: []
     handDuration: 0
     showArrow: 0
-    arrowFrom: 1
-    arrowTo: 1
+    arrowFrom: 0
+    arrowTo: 0
     arrowLabel: 
     advanceCondition: 0
     pauseEnemyTimers: 1
@@ -42,13 +42,38 @@ MonoBehaviour:
     - {x: 1, y: 3}
     - {x: 2, y: 3}
     - {x: 0, y: 3}
-    - {x: 1, y: 3}
     - {x: 2, y: 3}
     handDuration: 3
     showArrow: 1
     arrowFrom: 1
     arrowTo: 4
-    arrowLabel: MATCH THE PATH!
+    arrowLabel: 
     advanceCondition: 1
+    pauseEnemyTimers: 0
+    lockInput: 0
+  - type: 4
+    text: 
+    autoDismissTime: 0
+    highlightPositions:
+    - {x: 0, y: 3}
+    - {x: 1, y: 3}
+    - {x: 2, y: 3}
+    allowedPath:
+    - {x: 0, y: 3}
+    - {x: 1, y: 3}
+    - {x: 2, y: 3}
+    showHand: 0
+    handPath:
+    - {x: 0, y: 3}
+    - {x: 1, y: 3}
+    - {x: 2, y: 3}
+    - {x: 0, y: 3}
+    - {x: 3, y: 3}
+    handDuration: 3
+    showArrow: 0
+    arrowFrom: 1
+    arrowTo: 4
+    arrowLabel: 
+    advanceCondition: 2
     pauseEnemyTimers: 1
-    lockInput: 1
+    lockInput: 0

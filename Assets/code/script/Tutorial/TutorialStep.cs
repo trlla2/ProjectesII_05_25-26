@@ -33,12 +33,6 @@ public struct TutorialStep
     public bool lockInput;
 }
 
-[CreateAssetMenu(menuName = "Game/Tutorial/Tutorial Sequence")]
-public class TutorialSequence : ScriptableObject
-{
-    public List<TutorialStep> steps;
-}
-
 public enum TutorialStepType
 {
     Popup,

@@ -60,8 +60,15 @@ public class TileClickHandler : MonoBehaviour
             player.TryMoveTo(clickedTile, () =>
             {
                 clickedTile.HighlightTile(false);
+
+                Vector2Int playerGridPos = new Vector2Int(Mathf.RoundToInt(player.transform.position.x), Mathf.RoundToInt(player.transform.position.z));
+                if (playerGridPos == clickedTile.GetGridPosition())
+                    clickedTile.OnPlayerArrive(); // oculta branch revelada si clickedTile no es su origin
                 clickedTile.Interact();
             });
+
+            if (!player.isMoving && clickedTile.IsHighlighted())
+                clickedTile.HighlightTile(false);
         }
     }
 

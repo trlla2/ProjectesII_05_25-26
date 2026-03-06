@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Net;
 
 public class BoardManager : MonoBehaviour
 {
@@ -20,22 +21,22 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private OpenChestScreen openChestPanel;
     [SerializeField] private NewSpellPanelBehaviour newSpellPanel;
     [SerializeField] private ChestOfEgressScreen chestOfEgressPanel;
+    [SerializeField] private BoardTileData fogTileData;
 
     [Header("Encounters")]
     [SerializeField] private EncountersManager encountersManager;
     public EncountersManager EncountersManager => encountersManager;
     private int _enemiesDefeated = 0;
 
+    private bool _branchPathChoosed = false;
+    public List<BoardTile> _revealedBranch;
+
     private Camera boardCamera;
 
     private void Awake()
     {
-        Debug.Log($"[BoardManager] Awake en '{name}'. encountersManager (serializado) = {encountersManager}");
-
         if (encountersManager == null)
             encountersManager = GetComponent<EncountersManager>();
-
-        Debug.Log($"[BoardManager] Tras GetComponent, encountersManager = {encountersManager}");
 
         if (encountersManager == null)
         {
@@ -45,7 +46,6 @@ public class BoardManager : MonoBehaviour
 
         if (GameManager.Instance == null)
         {
-            Debug.LogError("BoardManager: GameManager es null.");
             enabled = false;
             return;
         }
@@ -124,10 +124,90 @@ public class BoardManager : MonoBehaviour
 
         UpdateNeighbors(newTile);
 
-        generatedTiles.Remove(tile);
+        if (newData == fogTileData) newTile.GetComponent<FogTile>().SetFoggedTileData(tile.GetData());
 
+        newTile.generatedBranch = tile.generatedBranch;
+
+        generatedTiles.Remove(tile);
         Destroy(tile.gameObject);
     }
+
+    public void PutFogOnRevealedBranch()
+    {
+        if (_revealedBranch == null) return;
+
+        PutFogOnBranch(_revealedBranch);
+
+        if (_revealedBranch != null) _revealedBranch = null;
+    }
+
+
+    public void PutFogOnTile(BoardTile tile)
+    {
+        if (tile.GetData() == stairsTileData) return;
+        ReplaceTileType(tile, fogTileData);
+    }
+
+    public void PutFogOnBranch(List<BoardTile> branch)
+    {
+        // Guardar las posiciones antes de destruir los tiles
+        List<Vector2Int> branchPositions = new List<Vector2Int>();
+        foreach (BoardTile tile in branch)
+            branchPositions.Add(tile.GetGridPosition());
+
+        BoardTile originTile = branch[0]; // la EmptyTile origen no se reemplaza
+
+        foreach (BoardTile tile in branch)
+        {
+            if (tile == branch[0]) continue;
+            ReplaceTileType(tile, fogTileData);
+        }
+
+        // Reconstruir la lista de la branch con las FogTiles recién creadas
+        List<BoardTile> updatedBranch = new List<BoardTile>();
+        foreach (Vector2Int pos in branchPositions)
+        {
+            BoardTile found = generatedTiles.Find(t => t.GetGridPosition() == pos);
+            if (found != null)
+                updatedBranch.Add(found);
+        }
+
+        originTile.generatedBranch = updatedBranch;
+    }
+
+    public void RevealBranch(List<BoardTile> branch)
+    {
+        List<BoardTile> snapshot = new List<BoardTile>(branch);
+
+        List<Vector2Int> branchPositions = new List<Vector2Int>();
+        foreach (BoardTile tile in snapshot)
+            branchPositions.Add(tile.GetGridPosition());
+
+        foreach (BoardTile tile in snapshot)
+        {
+            if (tile != null && tile.GetData() == fogTileData)
+            {
+                FogTile fogTile = tile.GetComponent<FogTile>();
+                ReplaceTileType(tile, fogTile.FoggedTileData);
+            }
+        }
+
+        List<BoardTile> updatedBranch = new List<BoardTile>();
+        foreach (Vector2Int pos in branchPositions)
+        {
+            BoardTile found = generatedTiles.Find(t => t.GetGridPosition() == pos);
+            if (found != null)
+                updatedBranch.Add(found);
+        }
+
+        // Actualizar generatedBranch del origin con las referencias actuales
+        BoardTile originTile = updatedBranch.Count > 0 ? updatedBranch[0] : null;
+        if (originTile != null)
+            originTile.generatedBranch = updatedBranch;
+
+        _revealedBranch = updatedBranch;
+    }
+
 
     public void OpenChest(ChestTile chestTile)
     {
@@ -159,4 +239,9 @@ public class BoardManager : MonoBehaviour
     }
 
     public BoardGenerator GetBoardGenerator() { return boardGenerator; }
+
+    public BoardTileData GetFogTileData() { return fogTileData; }
+
+    public bool HasChoosedBranchPath() { return _branchPathChoosed; }
+    public void BranchPathChoosed() { _branchPathChoosed = true; }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public abstract class BoardTile : MonoBehaviour
@@ -14,6 +15,8 @@ public abstract class BoardTile : MonoBehaviour
     public List<BoardTile> neighbors = new List<BoardTile>();
     protected BoardManager _boardManager;
 
+    public List<BoardTile> generatedBranch;
+
     private void Awake()
     {
         _renderer = GetComponentInChildren<Renderer>();
@@ -25,18 +28,49 @@ public abstract class BoardTile : MonoBehaviour
         _boardManager = FindObjectOfType<BoardManager>();
     }
 
-    public void HighlightTile(bool on)
+    public void OnPlayerArrive()
     {
-        if (_renderer != null)
+        if (_boardManager == null || _boardManager._revealedBranch == null || _boardManager._revealedBranch.Count == 0) return;
+
+        bool isOriginOfRevealedBranch = _boardManager._revealedBranch[0] == this;
+        if (isOriginOfRevealedBranch) return;
+
+        bool isInsideBranch = _boardManager._revealedBranch.Contains(this);
+
+        if (isInsideBranch && !_boardManager.HasChoosedBranchPath())
         {
-            _renderer.material.color = on ? _data.highlightColor : _data.defaultColor;
+            // El jugador entra en la branch: ocultar todo lo que no pertenezca a ella
+            _boardManager.BranchPathChoosed();
+
+            List<BoardTile> snapshot = new List<BoardTile>(_boardManager.generatedTiles);
+            foreach (BoardTile tile in snapshot)
+            {
+                if (_boardManager._revealedBranch.Contains(tile)) continue;
+                _boardManager.PutFogOnTile(tile);
+            }
+            _boardManager.startingTile = _boardManager.generatedTiles.Where(tile => tile.GetGridPosition() == new Vector2Int(0, 0)).First();
+        }
+        else if (!isInsideBranch)
+        {
+            // El jugador sigue por el path principal: ocultar la branch revelada
+            _boardManager.PutFogOnRevealedBranch();
         }
     }
 
-    public bool IsWalkable()
+    public void HighlightTile(bool on)
     {
-        return _data.walkable;
+        if (_renderer != null)
+            _renderer.material.color = on ? _data.highlightColor : _data.defaultColor;
     }
+
+    public bool IsHighlighted()
+    {
+        if (_renderer != null)
+            return _renderer.material.color == _data.highlightColor;
+        return false;
+    }
+
+    public bool IsWalkable() { return _data.walkable; }
 
     public abstract void Interact();
 
@@ -47,8 +81,6 @@ public abstract class BoardTile : MonoBehaviour
     public void SetYPosition(float y) { transform.position = new Vector3(_gridPos.x, y, _gridPos.y); }
 
     public BoardTileData GetData() { return this._data; }
-
     public Renderer GetRenderer() { return _renderer; }
-
     public void SetBoardManager(BoardManager boardManager) { _boardManager = boardManager; }
 }

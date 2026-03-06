@@ -5,11 +5,13 @@ public class EmptyTile : BoardTile
     public override void Interact()
     {
         Debug.Log($"arrived to {this.GetGridPosition()}...");
-    }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
 
+        if (generatedBranch == null) return;
+
+        bool branchIsHidden = generatedBranch.Count > 1
+            && generatedBranch[1].GetData() == _boardManager.GetFogTileData();
+
+        if (branchIsHidden)
+            _boardManager.RevealBranch(generatedBranch);
+    }
 }

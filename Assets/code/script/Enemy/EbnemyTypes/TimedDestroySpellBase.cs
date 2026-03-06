@@ -61,6 +61,28 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
         spellTimer.Resume(cachedGrid);
     }
 
+
+    public void PauseVisuals(Grid grid)
+    {
+        if (grid == null) return;
+        foreach (var pos in targetedPositions)
+        {
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual != null && visual.IsTargetedByEnemy)
+                visual.PauseTimedCountdown();
+        }
+    }
+
+    public void ResumeVisuals(Grid grid)
+    {
+        if (grid == null) return;
+        foreach (var pos in targetedPositions)
+        {
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual != null && visual.IsTargetedByEnemy)
+                visual.ResumeTimedCountdown();
+        }
+    }
     public void TickPlayerMove(Grid grid, System.Action onComplete = null)
     {
         if (effectApplied)

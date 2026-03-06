@@ -254,6 +254,10 @@ public class ElementVisual : MonoBehaviour
             timedFillCoroutine = null;
         }
 
+        isTimedCountdownPaused = false;
+        timedCountdownTotal = totalSeconds;
+        timedCountdownRemaining = totalSeconds;
+
         targetFillTimedImage.enabled = true;
         timedFillCoroutine = StartCoroutine(TimedCountdownRoutine(totalSeconds));
     }

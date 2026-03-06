@@ -359,9 +359,12 @@ public class EnemyBehaviour : MonoBehaviour
     public void PauseTimers()
     {
         timersPaused = true;
-        Debug.Log(activeSpell);
+
         if (activeSpell is TimedDestroySpellBase timedSpell)
+        {
             timedSpell.PauseTimer();
+            timedSpell.PauseVisuals(grid);
+        }
 
         if (timedSpellMonitor != null)
         {
@@ -377,7 +380,8 @@ public class EnemyBehaviour : MonoBehaviour
         if (activeSpell is TimedDestroySpellBase timedSpell)
         {
             timedSpell.ResumeTimer();
-            // Restart monitor only if the spell hasn't already resolved
+            timedSpell.ResumeVisuals(grid);
+
             if (!timedSpell.IsEffectApplied() && timedSpellMonitor == null)
                 timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
         }

@@ -59,6 +59,7 @@ public class TutorialUIController : MonoBehaviour
     {
         toastText.text = text;
         toastPanel.SetActive(true);
+        toastText.gameObject.SetActive(true);
         if (toastCoroutine != null) StopCoroutine(toastCoroutine);
         toastCoroutine = StartCoroutine(HideAfter(toastPanel, duration));
     }
@@ -203,7 +204,8 @@ public class TutorialUIController : MonoBehaviour
     {
         dimOverlay.SetActive(false);
         popupPanel.SetActive(false);
-        toastPanel.SetActive(false);
+        toastPanel.SetActive(false); 
+        toastText.gameObject.SetActive(true);
         handIcon.SetActive(false);
         arrowPrefab.SetActive(false);
         arrowLabelText.gameObject.SetActive(false);

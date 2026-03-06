@@ -27,8 +27,11 @@ public class TutorialManager : MonoBehaviour
 
     public bool IsPathAllowed(List<Vector2Int> path)
     {
-        if (!tutorialActive || allowedPathSet == null || allowedPathSet.Count == 0)
+        if (!tutorialActive || allowedPathSet == null)
             return true;
+
+        if (allowedPathSet.Count == 0)
+            return false;
 
         if (path.Count != allowedPathSet.Count)
             return false;
@@ -43,8 +46,12 @@ public class TutorialManager : MonoBehaviour
 
     public bool IsPositionAllowed(Vector2Int pos)
     {
-        if (!tutorialActive || allowedPathSet == null || allowedPathSet.Count == 0)
+        if (!tutorialActive || allowedPathSet == null)
             return true;
+
+        if (allowedPathSet.Count == 0)
+            return false;
+
         return allowedPathSet.Contains(pos);
     }
 
@@ -127,13 +134,10 @@ public class TutorialManager : MonoBehaviour
     {
         allowedPathSet = null;
 
-        if (step.lockInput && step.allowedPath != null && step.allowedPath.Count > 0)
+        // If input is locked in this step, block all player pathing.
+        if (step.lockInput)
         {
-            allowedPathSet = new HashSet<Vector2Int>(step.allowedPath);
-        }
-        else if (step.lockInput && (step.allowedPath == null || step.allowedPath.Count == 0))
-        {
-            allowedPathSet = new HashSet<Vector2Int>(); // blocks all input
+            allowedPathSet = new HashSet<Vector2Int>();
         }
 
         if (step.pauseEnemyTimers && enemyBehaviour != null)
@@ -162,7 +166,6 @@ public class TutorialManager : MonoBehaviour
                 break;
 
             case TutorialStepType.WaitForEnemyDeath:
-                allowedPathSet = null; // unlock all input
                 break;
 
             case TutorialStepType.FreePlay:

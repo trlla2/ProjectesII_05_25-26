@@ -130,9 +130,15 @@ public class EnemyBehaviour : MonoBehaviour
 
     private void CreateAndExecuteSpell()
     {
-        Debug.Log("Creating and executing spell for enemy: " + enemyType.name);
         if (enemyType == null || grid == null)
             return;
+
+        if (activeSpell is TutorialStage2TimedSpell)
+        {
+            activeSpell.Execute(grid);
+            timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
+            return;
+        }
 
         activeSpell = enemyType.CreateSpell();
         if (activeSpell != null)

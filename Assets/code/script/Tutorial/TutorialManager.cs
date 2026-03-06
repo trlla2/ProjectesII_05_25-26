@@ -21,6 +21,7 @@ public class TutorialManager : MonoBehaviour
 
     private void Start()
     {
+        //Script executuion order nigthmare
         StartCoroutine(WaitFrameForStart());
     }
 

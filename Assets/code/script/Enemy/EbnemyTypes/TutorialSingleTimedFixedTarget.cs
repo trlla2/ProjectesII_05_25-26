@@ -15,8 +15,10 @@ public class TutorialStage2TimedSpell : TimedDestroySpellBase
 
     protected override void SelectTargets(Grid grid)
     {
+        Debug.Log(executeCount);
         Vector2Int target = executeCount < 2 ? FixedTarget[executeCount] : PickRandom(grid);
         executeCount++;
+        Debug.Log(executeCount);
 
         if (target.x == -1)
             return;

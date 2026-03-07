@@ -174,6 +174,16 @@ public class ElementVisual : MonoBehaviour
             elementRenderer.enabled = visible;
     }
 
+    public void ShowInactive(bool inactive)
+    {
+        if (elementRenderer == null)
+            return;
+
+        Color currentColor = elementRenderer.color;
+        currentColor.a = inactive ? 0.5f : 1f;
+        elementRenderer.color = currentColor;
+    }
+
     public void SetTargetedByEnemy(bool targeted)
     {
         isTargetedByEnemy = targeted;

@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.XR;
+
 //using Unity.Android.Gradle;
 using UnityEngine;
 
@@ -77,6 +79,25 @@ public class VisualGrid : MonoBehaviour
                 Vector2Int gridPos = new Vector2Int(x, y);
                 Element element = grid.GridData.GetElementAt(gridPos);
                 CreateElementVisual(gridPos, element);
+            }
+        }
+    }
+
+    public void ShowInactiveGrid(bool active)
+    {
+        if (!isInitialized || grid == null || grid.GridData == null)
+            return;
+
+        for (int x = 0; x < grid.GridData.GridSize; x++)
+        {
+            for (int y = 0; y < grid.GridData.GridSize; y++)
+            {
+                Vector2Int gridPos = new Vector2Int(x, y);
+                ElementVisual visual = grid.GridData.GetVisualAt(gridPos);
+                if (visual != null)
+                {
+                    visual.ShowInactive(active);
+                }
             }
         }
     }

@@ -788,6 +788,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0597bd5aea80b64f933872fe18968e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _forcedBoard: 0
   currentStageLevelData: {fileID: 0}
   startingTile: {fileID: 195526932}
   emptyTileData: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
@@ -1506,10 +1507,6 @@ PrefabInstance:
 
         <color=red>Boss</color>'
       objectReference: {fileID: 0}
-    - target: {fileID: 2415619179775970052, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
-      propertyPath: m_fontSize
-      value: 40.35
-      objectReference: {fileID: 0}
     - target: {fileID: 2721827913549539606, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
       propertyPath: m_SizeDelta.x
       value: -82
@@ -1608,6 +1605,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6638230223043397430, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6995159424504716013, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6995159424504716013, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6995159424504716013, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6995159424504716013, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7999081766031961316, guid: 1f7005cc95364584bb89f824a18402db, type: 3}

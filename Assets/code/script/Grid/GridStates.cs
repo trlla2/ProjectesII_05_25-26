@@ -66,6 +66,7 @@ public class RefillState : IGridState
 
     public void Enter()
     {
+        visualGrid.RemoveAllHighlights();
         isRefilling = true;
         PerformRefill();
     }
@@ -208,6 +209,7 @@ public class RerollState : IGridState
 
     public void Enter()
     {
+        visualGrid.RemoveAllHighlights();
         isAnimating = true;
         grid.StartCoroutine(PerformReroll());
     }

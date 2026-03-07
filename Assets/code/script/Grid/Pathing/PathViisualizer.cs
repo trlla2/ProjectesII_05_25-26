@@ -89,7 +89,7 @@ public class PathVisualizer : MonoBehaviour
         if (visual != null)
         {
             HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.RigidImpact);
-            visual.GetComponent<Highlighter>().SetHighlight(highlight);
+            visual.highlighter.SetHighlight(highlight);
             visual.GetComponent<ScaleAnimator>().PlayScale(0.5f, 0.15f);
         }
     }

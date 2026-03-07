@@ -11,6 +11,9 @@ public class ElementVisual : MonoBehaviour
     [SerializeField] private Image targetFillBombImage;
     [SerializeField] private GameObject breakEnemyHoverParticles;
 
+    [HideInInspector]
+    public Highlighter highlighter;
+
     private Vector2Int gridPosition;
     private bool canSelect = true;
     private bool isTargetedByEnemy;
@@ -37,6 +40,7 @@ public class ElementVisual : MonoBehaviour
 
     public void Initialize(Vector2Int position, Element element)
     {
+        highlighter = GetComponent<Highlighter>();
         gridPosition = position;
         UpdateVisual(element);
         

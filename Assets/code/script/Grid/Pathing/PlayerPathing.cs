@@ -14,9 +14,13 @@ public class PlayerPathing : MonoBehaviour
     [SerializeField] private float selectScaleAmount = 0.2f;
     [SerializeField] private float selectScaleTime = 0.2f;
     [SerializeField] private float xDistanceBetween = 1.25f;
+    [SerializeField] private float castCooldown = 0.45f;
 
     [SerializeField] private SpellPathAnimator spellPathAnimator;
 
+    [Header("Tutorial")]
+    [SerializeField] private TutorialManager tutorialManager;
+    //taking decoupuling seriously, mb a bit overboard? But it does make for a robust system so i ketp it this way :)
     private IInputHandler inputHandler;
     private IPathValidator pathValidator;
     private ISpellMatcher spellMatcher;
@@ -27,6 +31,7 @@ public class PlayerPathing : MonoBehaviour
     private bool isPathing = false;
     private bool canPath = true;
     private bool isQTEActive = false;
+    private float lastCastTime = -100000000.0f;
 
     private void Awake()
     {
@@ -46,7 +51,7 @@ public class PlayerPathing : MonoBehaviour
 
     private void InitializeComponents()
     {
-        float adjacencyDistance = xDistanceBetween * 1.1f; //only horizontal
+        float adjacencyDistance = xDistanceBetween * 1.1f;
 
         inputHandler = new MouseInputHandler();
         pathValidator = new WorldSpacePathValidator(grid, adjacencyDistance);
@@ -135,6 +140,13 @@ public class PlayerPathing : MonoBehaviour
         if (!canPath)
             return;
 
+        // Disable pathing during cooldown
+        if (Time.time < lastCastTime + castCooldown)
+        {
+            grid.VisualGrid.ShowInactiveGrid(true);
+            return;
+        }   
+
         HandleInput();
         UpdateVisuals();
     }
@@ -188,6 +200,9 @@ public class PlayerPathing : MonoBehaviour
 
         Vector2Int gridPosition = visual.GridPosition;
 
+        if (!CanSelectPosition(gridPosition))
+            return;
+
         if (!pathData.Contains(gridPosition))
         {
             if (TryAddToPath(gridPosition))
@@ -216,7 +231,7 @@ public class PlayerPathing : MonoBehaviour
 
     private bool TryAddToPath(Vector2Int position)
     {
-        if (pathData.IsFull)
+        if (pathData.Count == pathData.MaxLength)
             return false;
 
         if (pathData.Count > 0)
@@ -253,6 +268,10 @@ public class PlayerPathing : MonoBehaviour
         if (pathData.Count == 0)
             return;
 
+        // Tutorial; reject the entire path if it doesn't match the allowed set
+        if (!CanCastPath(new List<Vector2Int>(pathData.Positions)))
+            return;
+
         List<Element> pathElements = pathData.GetElements(grid);
 
         List<Spell> availableSpells = GetAvailableSpells();
@@ -261,13 +280,13 @@ public class PlayerPathing : MonoBehaviour
 
         if (matchedSpell != null)
         {
+            lastCastTime = Time.time;
             ExecuteSpell(matchedSpell, pathElements);
         }
     }
 
     private void ExecuteSpell(Spell spell, List<Element> pathElements)
     {
-        Debug.Log($"PlayerPathing: Casting spell - {spell.Name}");
 
         Vector2Int[] positions = pathData.Positions;
         List<Vector2Int> posList = new List<Vector2Int>(positions);
@@ -295,7 +314,6 @@ public class PlayerPathing : MonoBehaviour
         grid.DeleteElementsByPlayer(positionsList);
 
         HandleSpellEffects(spell);
-        TryCompleteTutorialStep();
     }
 
     //Can be converted into a SpellEffectHandler class in the future if more complex effects are needed
@@ -304,6 +322,10 @@ public class PlayerPathing : MonoBehaviour
         GameManager.Instance.NotifyPlayerMove();
 
         if (spell.Name == "HEAL") GameManager.Instance.CombatHandler.HealPlayer(5);
+
+        // Notify tutorial system that a spell was cast
+        if (tutorialManager != null)
+            tutorialManager.NotifySpellCast();
     }
 
     private void UpdateVisuals()
@@ -380,14 +402,21 @@ public class PlayerPathing : MonoBehaviour
     {
         return GameManager.Instance.PlayerStats.GetSpellBook();
     }
-
-    private void TryCompleteTutorialStep()
+    //just for the tutorial
+    private bool CanSelectPosition(Vector2Int pos)
     {
-        TutorialManager tutorialManager = Object.FindFirstObjectByType<TutorialManager>();
         if (tutorialManager != null && tutorialManager.IsTutorialActive())
         {
-            tutorialManager.CompleteCurrentStep();
+            return tutorialManager.IsPositionAllowed(pos);
         }
+        return true;
     }
 
+    //just for the tutorial
+    private bool CanCastPath(List<Vector2Int> path)
+    {
+        if (tutorialManager != null && tutorialManager.IsTutorialActive())
+            return tutorialManager.IsPathAllowed(path);
+        return true;
+    }
 }

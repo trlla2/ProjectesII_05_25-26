@@ -106,18 +106,31 @@ public class ScaleAnimator : MonoBehaviour
     private IEnumerator AnimateAlways()
     {
         if (targetRenderer == null)
-            yield break;
-
-        float time = 0f;
-
-        while (true)
         {
-            float sinValue = Mathf.Sin(time * Mathf.PI * 2f * loopSinFrequency);
+            float time = 0f;
+            while (true)
+            {
+                float sinValue = Mathf.Sin(time * Mathf.PI * 2f * loopSinFrequency);
 
-            targetRenderer.transform.localScale = baseScale * (1f + sinValue * loopStrength);
+                transform.localScale = baseScale * (1f + sinValue * loopStrength);
 
-            time += Time.deltaTime;
-            yield return null;
+                time += Time.deltaTime;
+                yield return null;
+            }
+        }
+        else
+        {
+            float time = 0f;
+
+            while (true)
+            {
+                float sinValue = Mathf.Sin(time * Mathf.PI * 2f * loopSinFrequency);
+
+                targetRenderer.transform.localScale = baseScale * (1f + sinValue * loopStrength);
+
+                time += Time.deltaTime;
+                yield return null;
+            }
         }
     }
 

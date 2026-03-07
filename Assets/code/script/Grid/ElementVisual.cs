@@ -17,6 +17,11 @@ public class ElementVisual : MonoBehaviour
     private Coroutine fillCoroutine;
     private Coroutine timedFillCoroutine;
 
+    private bool isTimedCountdownPaused;
+    private float timedCountdownRemaining;
+    private float timedCountdownTotal;
+
+
     private bool isBombTarget;
     private Color bombOriginalColor = Color.white;
     private bool bombAnimationStarted;
@@ -169,6 +174,16 @@ public class ElementVisual : MonoBehaviour
             elementRenderer.enabled = visible;
     }
 
+    public void ShowInactive(bool inactive)
+    {
+        if (elementRenderer == null)
+            return;
+
+        Color currentColor = elementRenderer.color;
+        currentColor.a = inactive ? 0.5f : 1f;
+        elementRenderer.color = currentColor;
+    }
+
     public void SetTargetedByEnemy(bool targeted)
     {
         isTargetedByEnemy = targeted;
@@ -249,8 +264,29 @@ public class ElementVisual : MonoBehaviour
             timedFillCoroutine = null;
         }
 
+        isTimedCountdownPaused = false;
+        timedCountdownTotal = totalSeconds;
+        timedCountdownRemaining = totalSeconds;
+
         targetFillTimedImage.enabled = true;
         timedFillCoroutine = StartCoroutine(TimedCountdownRoutine(totalSeconds));
+    }
+
+    public void PauseTimedCountdown()
+    {
+        if (timedFillCoroutine == null) return;
+        isTimedCountdownPaused = true;
+        StopCoroutine(timedFillCoroutine);
+        timedFillCoroutine = null;
+    }
+
+    public void ResumeTimedCountdown()
+    {
+        if (!isTimedCountdownPaused) return;
+        isTimedCountdownPaused = false;
+
+        if (targetFillTimedImage == null || timedCountdownRemaining <= 0f) return;
+        timedFillCoroutine = StartCoroutine(TimedCountdownRoutine(timedCountdownRemaining));
     }
 
     public void StopTimedCountdown()
@@ -418,15 +454,19 @@ public class ElementVisual : MonoBehaviour
         if (targetFillTimedImage == null)
             yield break;
 
-        float elapsed = 0f;
-
-        targetFillTimedImage.fillAmount = 1f;
-
-        while (elapsed < totalSeconds)
+        if (!isTimedCountdownPaused && timedCountdownRemaining <= 0f)
         {
-            elapsed += Time.deltaTime;
-            float remainingFraction = Mathf.Clamp01(Mathf.Max(0f, 1f - (elapsed / totalSeconds)));
-            targetFillTimedImage.fillAmount = remainingFraction;
+            timedCountdownTotal = totalSeconds;
+            timedCountdownRemaining = totalSeconds;
+        }
+
+        targetFillTimedImage.fillAmount = Mathf.Clamp01(timedCountdownRemaining / timedCountdownTotal);
+
+        while (timedCountdownRemaining > 0f)
+        {
+            timedCountdownRemaining -= Time.deltaTime;
+            timedCountdownRemaining = Mathf.Max(0f, timedCountdownRemaining);
+            targetFillTimedImage.fillAmount = Mathf.Clamp01(timedCountdownRemaining / timedCountdownTotal);
             yield return null;
         }
 

@@ -1,0 +1,165 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: FIRST Encounteer
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialSequence
+  steps:
+  - type: 0
+    text: Welcome! Drag across adjacent tiles to cast a spell.
+    autoDismissTime: 0
+    highlightPositions: []
+    allowedPath: []
+    showHand: 0
+    handPath: []
+    handDuration: 0
+    showArrow: 0
+    arrowFrom: 0
+    arrowTo: 0
+    arrowLabel: 
+    advanceCondition: 0
+    pauseEnemyTimers: 1
+    lockInput: 0
+  - type: 2
+    text: 
+    autoDismissTime: 0
+    highlightPositions:
+    - {x: 0, y: 3}
+    - {x: 1, y: 3}
+    - {x: 2, y: 3}
+    allowedPath: []
+    showHand: 1
+    handPath:
+    - {x: 0, y: 3}
+    - {x: 1, y: 3}
+    - {x: 2, y: 3}
+    - {x: 0, y: 3}
+    - {x: 2, y: 3}
+    handDuration: 3
+    showArrow: 1
+    arrowFrom: 1
+    arrowTo: 4
+    arrowLabel: 
+    advanceCondition: 1
+    pauseEnemyTimers: 1
+    lockInput: 1
+  - type: 4
+    text: 
+    autoDismissTime: 0
+    highlightPositions:
+    - {x: 0, y: 3}
+    - {x: 1, y: 3}
+    - {x: 2, y: 3}
+    allowedPath:
+    - {x: 0, y: 3}
+    - {x: 1, y: 3}
+    - {x: 2, y: 3}
+    showHand: 0
+    handPath: []
+    handDuration: 3
+    showArrow: 0
+    arrowFrom: 1
+    arrowTo: 4
+    arrowLabel: 
+    advanceCondition: 2
+    pauseEnemyTimers: 1
+    lockInput: 0
+  - type: 1
+    text: Great! You casted your first spell.
+    autoDismissTime: 3
+    highlightPositions: []
+    allowedPath: []
+    showHand: 0
+    handPath: []
+    handDuration: 3
+    showArrow: 0
+    arrowFrom: 1
+    arrowTo: 4
+    arrowLabel: 
+    advanceCondition: 1
+    pauseEnemyTimers: 1
+    lockInput: 1
+  - type: 2
+    text: 0
+    autoDismissTime: 0
+    highlightPositions:
+    - {x: 1, y: 0}
+    - {x: 2, y: 0}
+    allowedPath: []
+    showHand: 1
+    handPath:
+    - {x: 1, y: 0}
+    - {x: 2, y: 0}
+    - {x: 1, y: 0}
+    - {x: 2, y: 0}
+    handDuration: 3
+    showArrow: 1
+    arrowFrom: 1
+    arrowTo: 4
+    arrowLabel: 
+    advanceCondition: 1
+    pauseEnemyTimers: 1
+    lockInput: 1
+  - type: 4
+    text: 0
+    autoDismissTime: 0
+    highlightPositions:
+    - {x: 1, y: 0}
+    - {x: 2, y: 0}
+    allowedPath:
+    - {x: 1, y: 0}
+    - {x: 2, y: 0}
+    showHand: 0
+    handPath:
+    - {x: 1, y: 3}
+    - {x: 2, y: 3}
+    handDuration: 3
+    showArrow: 0
+    arrowFrom: 1
+    arrowTo: 4
+    arrowLabel: 
+    advanceCondition: 2
+    pauseEnemyTimers: 1
+    lockInput: 0
+  - type: 0
+    text: FInish HIm!
+    autoDismissTime: 5
+    highlightPositions: []
+    allowedPath: []
+    showHand: 0
+    handPath:
+    - {x: 1, y: 3}
+    - {x: 2, y: 3}
+    handDuration: 3
+    showArrow: 0
+    arrowFrom: 1
+    arrowTo: 4
+    arrowLabel: 
+    advanceCondition: 0
+    pauseEnemyTimers: 1
+    lockInput: 0
+  - type: 5
+    text: 
+    autoDismissTime: 0
+    highlightPositions: []
+    allowedPath: []
+    showHand: 0
+    handPath:
+    - {x: 1, y: 3}
+    - {x: 2, y: 3}
+    handDuration: 3
+    showArrow: 1
+    arrowFrom: 1
+    arrowTo: 4
+    arrowLabel: 'Find Spell Combinations '
+    advanceCondition: 3
+    pauseEnemyTimers: 1
+    lockInput: 0

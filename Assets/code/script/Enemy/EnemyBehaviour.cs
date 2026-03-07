@@ -14,6 +14,9 @@ public class EnemyBehaviour : MonoBehaviour
     [Header("Reroll Settings")]
     [SerializeField] private int rerollScrollTimes = 3;
 
+    [Header("Tutorial")]
+    [SerializeField] private TutorialManager tutorialManager;
+
     private SpriteRenderer spriteRenderer;
     private Animator animator;
 
@@ -22,6 +25,8 @@ public class EnemyBehaviour : MonoBehaviour
 
     private IEnemySpell activeSpell;
     private Coroutine timedSpellMonitor;
+
+    private bool timersPaused;
 
     //Legacy System
     public delegate void GetOnHitRecived(float health);
@@ -127,6 +132,13 @@ public class EnemyBehaviour : MonoBehaviour
     {
         if (enemyType == null || grid == null)
             return;
+
+        if (activeSpell is TutorialStage2TimedSpell)
+        {
+            activeSpell.Execute(grid);
+            timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
+            return;
+        }
 
         activeSpell = enemyType.CreateSpell();
         if (activeSpell != null)
@@ -352,11 +364,45 @@ public class EnemyBehaviour : MonoBehaviour
 
     }
 
+    public void PauseTimers()
+    {
+        timersPaused = true;
+
+        if (activeSpell is TimedDestroySpellBase timedSpell)
+        {
+            timedSpell.PauseTimer();
+            timedSpell.PauseVisuals(grid);
+        }
+
+        if (timedSpellMonitor != null)
+        {
+            StopCoroutine(timedSpellMonitor);
+            timedSpellMonitor = null;
+        }
+    }
+
+    public void ResumeTimers()
+    {
+        timersPaused = false;
+
+        if (activeSpell is TimedDestroySpellBase timedSpell)
+        {
+            timedSpell.ResumeTimer();
+            timedSpell.ResumeVisuals(grid);
+
+            if (!timedSpell.IsEffectApplied() && timedSpellMonitor == null)
+                timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
+        }
+    }
+
     private void Die()
     {
         StopBattle();
 
         deathParticles.Play();
+
+        if (tutorialManager != null)
+            tutorialManager.NotifyEnemyDeath();
 
         if (GameManager.Instance != null)
         {

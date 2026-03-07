@@ -23,6 +23,9 @@ public class Grid : MonoBehaviour
     [SerializeField] private float enemyDeletionDuration = 1f;
     [SerializeField] private float blockDuration = 1f;
 
+    [Header("Tutorial")]
+    [SerializeField] private TutorialManager tutorialManager;
+
     public event System.Action OnRerollStarted;
     public event System.Action OnRerollCompleted;
 
@@ -36,7 +39,6 @@ public class Grid : MonoBehaviour
     private GridGravity gravityHandler;
     private ISpellInserter spellInserter;
     private IGridState currentState;
-    [SerializeField] private TutorialManager tutorialManager;
 
     public GridStateType CurrentState => currentState?.GetStateType() ?? GridStateType.Idle;
     public GridData GridData => gridData;
@@ -103,8 +105,6 @@ public class Grid : MonoBehaviour
         if (CurrentState != GridStateType.Idle)
             return;
 
-        if (IsTutorialBlocking())
-            return;
 
         gridData.SwapElements(posA, posB);
         visualGrid.Swap(posA, posB, 0.3f);
@@ -139,12 +139,6 @@ public class Grid : MonoBehaviour
         if (positions == null || positions.Count == 0)
             return;
 
-        //Tutorial blocks the player deleting, but NOT the refill mechanic.
-        if (IsTutorialBlocking())
-        {
-            TryStartRefill();
-            return;
-        }
 
         foreach (var pos in positions)
         {
@@ -201,10 +195,6 @@ public class Grid : MonoBehaviour
         Debug.Log(CurrentState);
         if (CurrentState == GridStateType.Idle || CurrentState == GridStateType.ValidateSpell || CurrentState == GridStateType.Processing)
         {
-            Debug.Log("Attempting to reroll board with " + scrollTimes + " scroll times.");
-            if (IsTutorialBlocking())
-                return;
-
             List<Spell> spellsToUse = availableSpells;
 
             if (GameManager.Instance != null && GameManager.Instance.PlayerStats.GetSpellBook() != null
@@ -271,38 +261,98 @@ public class Grid : MonoBehaviour
 
 
 
-public void FillEmptySlots(List<Element> elements, List<Vector2Int> positionsToFill = null)
+    public void FillEmptySlots(List<Element> elements, List<Vector2Int> positionsToFill = null)
     {
         if (elements == null || elements.Count == 0)
             return;
 
-        List<Vector2Int> positions;
-        if (positionsToFill != null)
-        {
-            positions = positionsToFill;
-        }
-        else
-        {
-            positions = GetEmptyPositions();
-        }
+        List<Vector2Int> positions = positionsToFill ?? GetEmptyPositions();
+
+        bool useTutorialRefill = tutorialManager != null && tutorialManager.IsTutorialActive() && tutorialManager.HasRefillOverride();
 
         foreach (Vector2Int pos in positions)
         {
             if (!gridData.IsPositionValid(pos))
                 continue;
 
-            Element randomElement = elements[Random.Range(0, elements.Count)];
-            gridData.SetElementAt(pos, randomElement);
+            Element element;
+            if (useTutorialRefill)
+                element = tutorialManager.GetRefillElement(pos.x, pos.y);
+            else
+                element = elements[Random.Range(0, elements.Count)];
+
+            if (element == null)
+                element = elements[Random.Range(0, elements.Count)];
+
+            gridData.SetElementAt(pos, element);
 
             ElementVisual visual = gridData.GetVisualAt(pos);
             if (visual != null)
-            {
-                visual.UpdateVisual(randomElement);
-            }
+                visual.UpdateVisual(element);
             else if (visualGrid != null && visualGrid.isInitialized)
+                visualGrid.EnsureVisualAt(pos, element);
+        }
+
+        if (useTutorialRefill)
+            tutorialManager.ConsumeRefillOverride();
+    }
+
+    private IEnumerator BlockElementsRoutine(float duration, List<Vector2Int> positions)
+    {
+        foreach (var pos in positions)
+        {
+            ElementVisual visual = gridData.GetVisualAt(pos);
+            if (visual != null)
             {
-                visualGrid.EnsureVisualAt(pos, randomElement);
+                visual.SetSelectable(false);
+                //future: add block visual effect
             }
+        }
+
+        yield return new WaitForSeconds(duration);
+
+        foreach (var pos in positions)
+        {
+            ElementVisual visual = gridData.GetVisualAt(pos);
+            if (visual != null)
+            {
+                visual.SetSelectable(true);
+            }
+        }
+
+    }
+
+    private void CollectAndChargeWeakElements(List<Vector2Int> positions)
+    {
+        BossManager bossManager = GameManager.Instance.CombatHandler.bossManager;
+        if (bossManager == null)
+            return;
+
+        ElementType weakElement = bossManager.WeakElement;
+
+        List<Vector3> matchingStartPositions = new List<Vector3>();
+        List<Element> matchingElements = new List<Element>();
+
+        foreach (Vector2Int pos in positions)
+        {
+            if (!gridData.IsPositionValid(pos))
+                continue;
+
+            Element element = gridData.GetElementAt(pos);
+
+            if (element != null && element != emptyElement && element.Type == weakElement)
+            {
+                ElementVisual visual = gridData.GetVisualAt(pos);
+                if (visual != null)
+                {
+                    matchingStartPositions.Add(visual.GetWorldPosition());
+                    matchingElements.Add(element);
+                }
+            }
+        }
+        if (matchingElements.Count > 0)
+        {
+            bossManager.TryChargeOrb(matchingStartPositions, matchingElements);
         }
     }
 
@@ -378,76 +428,21 @@ public void FillEmptySlots(List<Element> elements, List<Vector2Int> positionsToF
         ChangeState(new RefillState(this, visualGrid));
     }
 
-    private IEnumerator BlockElementsRoutine(float duration, List<Vector2Int> positions)
-    {
-        foreach (var pos in positions)
-        {
-            ElementVisual visual = gridData.GetVisualAt(pos);
-            if (visual != null)
-            {
-                visual.SetSelectable(false);
-                //future: add block visual effect
-            }
-        }
-
-        yield return new WaitForSeconds(duration);
-
-        foreach (var pos in positions)
-        {
-            ElementVisual visual = gridData.GetVisualAt(pos);
-            if (visual != null)
-            {
-                visual.SetSelectable(true);
-            }
-        }
-    }
-
-    private void CollectAndChargeWeakElements(List<Vector2Int> positions)
-    {
-        BossManager bossManager = GameManager.Instance.CombatHandler.bossManager;
-        if (bossManager == null)
-            return;
-
-        ElementType weakElement = bossManager.WeakElement;
-
-        List<Vector3> matchingStartPositions = new List<Vector3>();
-        List<Element> matchingElements = new List<Element>();
-
-        foreach (Vector2Int pos in positions)
-        {
-            if (!gridData.IsPositionValid(pos))
-                continue;
-
-            Element element = gridData.GetElementAt(pos);
-            
-            if (element != null && element != emptyElement && element.Type == weakElement)
-            {
-                ElementVisual visual = gridData.GetVisualAt(pos);
-                if (visual != null)
-                {
-                    matchingStartPositions.Add(visual.GetWorldPosition());
-                    matchingElements.Add(element);
-                }
-            }
-        }
-        if (matchingElements.Count > 0)
-        {
-            bossManager.TryChargeOrb(matchingStartPositions, matchingElements);
-        }
-    }
-
-    private bool IsTutorialBlocking()
-    {
-        return tutorialManager != null && tutorialManager.IsTutorialActive();
-    }
-
     public SpellPathAnimator GetEnemySpellAnimator()
     {
         return enemySpellAnimator;
     }
 
-    public void ValidateSpellsOnGrid()
+    public bool IsTutorialActive()
     {
-        ChangeState(new ValidateSpellState(this, availableSpells));
+        return tutorialManager != null && tutorialManager.IsTutorialActive();
+    }
+
+    // This method can be used by the tutorial to insert specific spells
+    public bool TryInsertRandomSpell(List<Spell> spells)
+    {
+        if (spells == null || spells.Count == 0) return false;
+        Spell spell = spells[Random.Range(0, spells.Count)];
+        return spellInserter.TryInsertSpell(gridData, spell.Recipe);
     }
 }

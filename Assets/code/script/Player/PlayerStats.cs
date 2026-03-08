@@ -146,7 +146,7 @@ public class PlayerStats
         float totalDamage = damage - defense;
         if (totalDamage <= 0f)
             return;
-
+        HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.HeavyImpact);
         hp -= damage;
     }
 
@@ -269,8 +269,8 @@ public class PlayerStats
 
     public void AddKnownSpell(Spell spell)
     {
-            if (knownSpells.Contains(spell))
-                return;
+        if (knownSpells.Contains(spell))
+            return;
 
         knownSpells.Add(spell);
     }

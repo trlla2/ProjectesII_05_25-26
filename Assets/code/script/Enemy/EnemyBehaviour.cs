@@ -346,9 +346,10 @@ public class EnemyBehaviour : MonoBehaviour
 
     public void DealDamage(DamageType damageType)
     {
-        deathParticles.Play(); // NO FUNCIONA
-        float damage = enemyType.CalculateDamageTaken(damageType.element, damageType.damage);
+        deathParticles.Play();
+        HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.MediumImpact);
 
+        float damage = enemyType.CalculateDamageTaken(damageType.element, damageType.damage);
         currentHealth -= damage;
         currentHealth = Mathf.Max(0, currentHealth);
 

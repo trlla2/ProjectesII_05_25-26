@@ -97,7 +97,7 @@ public class BoardGenerator : MonoBehaviour
         for (int i = 0; i < _numOfTotalTilesInBoard - 1; i++)
         {
             Vector2Int nextGridPosition;
-            if (i == _numOfTotalTilesInBoard - 2)
+            if (i == _numOfTotalTilesInBoard - 2) // stairs tile
             {
                 nextGridPosition = currentTile.GetGridPosition() + new Vector2Int(0, 1);
             }
@@ -177,32 +177,32 @@ public class BoardGenerator : MonoBehaviour
             }
         }
 
-        // segunda pasada -> seguir creando por probabilidad hasta el máximo
-        foreach (BoardTile origin in candidates)
-        {
-            if (branchesCreated >= _maxBranches) break;
+        //// segunda pasada -> seguir creando por probabilidad hasta el máximo
+        //foreach (BoardTile origin in candidates)
+        //{
+        //    if (branchesCreated >= _maxBranches) break;
 
-            if (_paths.Any(p => p.Count > 0 && p[0] == origin)) continue;
+        //    if (_paths.Any(p => p.Count > 0 && p[0] == origin)) continue;
 
-            if (Random.value > _branchProbabilityPerCandidate) continue;
+        //    if (Random.value > _branchProbabilityPerCandidate) continue;
 
-            List<BoardTile> branch = BuildBranch(origin, parent, _maxBranchLength);
-            if (branch.Count > _minBranchLengthBeforeRejoin)
-            {
-                if (!_paths.Contains(branch))
-                    _paths.Add(branch);
-                branchesCreated++;
-            }
-            else
-            {
-                foreach (BoardTile tile in branch)
-                {
-                    if (tile == origin && (origin.neighbors.Count > 2 || origin.neighbors.Count == 1)) continue;
-                    _boardManager.generatedTiles.Remove(tile);
-                    Destroy(tile.gameObject);
-                }
-            }
-        }
+        //    List<BoardTile> branch = BuildBranch(origin, parent, _maxBranchLength);
+        //    if (branch.Count > _minBranchLengthBeforeRejoin)
+        //    {
+        //        if (!_paths.Contains(branch))
+        //            _paths.Add(branch);
+        //        branchesCreated++;
+        //    }
+        //    else
+        //    {
+        //        foreach (BoardTile tile in branch)
+        //        {
+        //            if (tile == origin && (origin.neighbors.Count > 2 || origin.neighbors.Count == 1)) continue;
+        //            _boardManager.generatedTiles.Remove(tile);
+        //            Destroy(tile.gameObject);
+        //        }
+        //    }
+        //}
     }
 
     List<Vector2Int> GetAllowedBranchNeighbors(Vector2Int basePos)
@@ -220,6 +220,10 @@ public class BoardGenerator : MonoBehaviour
         List<BoardTile> branch = new List<BoardTile> { origin };
         BoardTile current = origin;
 
+        // Lista independiente de todas las tiles instanciadas en esta branch (sin el origin)
+        // Garantiza que el cleanup funcione aunque se muten las referencias en branch
+        List<BoardTile> instanced = new List<BoardTile>();
+
         HashSet<Vector2Int> occupiedAll = new HashSet<Vector2Int>(_boardManager.generatedTiles.Select(t => t.GetGridPosition()));
 
         for (int i = 0; i < maxLength; i++)
@@ -227,12 +231,9 @@ public class BoardGenerator : MonoBehaviour
             Vector2Int basePos = current.GetGridPosition();
 
             List<Vector2Int> neighbors = GetAllowedBranchNeighbors(basePos);
-
-            // evitar volver sobre la propia rama (excepto el origen)
             neighbors.RemoveAll(p => branch.Skip(1).Any(b => b.GetGridPosition() == p));
 
-            List<Vector2Int> freeNeighbors;
-            freeNeighbors = neighbors.Where(pos =>
+            List<Vector2Int> freeNeighbors = neighbors.Where(pos =>
                 !occupiedAll.Contains(pos) &&
                 HasMinSeparationFromOtherPaths(pos, branch)
             ).ToList();
@@ -246,27 +247,31 @@ public class BoardGenerator : MonoBehaviour
 
                 current = nextTile;
                 branch.Add(current);
+                instanced.Add(current); // registrar siempre la tile instanciada
                 occupiedAll.Add(nextPos);
                 continue;
             }
             else
             {
-                branch.Remove(current);
+                // La branch no puede continuar: evaluar si es válida o descartarla
                 if (branch.Count - 1 >= _minBranchLengthBeforeRejoin)
                 {
-                    if (current.neighbors.Count == 1)
+                    // Branch suficientemente larga: formalizar
+                    branch[0].generatedBranch = branch;
+                    _paths.Add(branch);
+                }
+                else
+                {
+                    // Branch demasiado corta: destruir TODAS las tiles instanciadas
+                    foreach (BoardTile tile in instanced)
                     {
-                        _boardManager.ReplaceTileType(current, _boardManager.stairsTileData);
-                        current.SetGridPosition(branch.ElementAt<BoardTile>(branch.IndexOf(current) - 1).GetGridPosition() + new Vector2Int(0, 1));
-                        _boardManager.UpdateNeighbors(current);
-
-                        branch[0].generatedBranch = branch;
-                        _paths.Add(branch);
+                        _boardManager.generatedTiles.Remove(tile);
+                        Destroy(tile.gameObject);
                     }
                 }
-            }
 
-            break;
+                break;
+            }
         }
 
         return branch;

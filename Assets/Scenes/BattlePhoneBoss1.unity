@@ -31795,7 +31795,7 @@ MonoBehaviour:
   hoverDuration: 1.5
   DelayHover: 0
   defaultShakeDuration: 0.5
-  HandIndicator: {fileID: 2960917263368523130, guid: bcefb02b4b0b3244f9ec4c5e569b8426, type: 3}
+  HandIndicator: {fileID: 1658737429}
   blinkColor: {r: 1, g: 0, b: 0.59416103, a: 1}
   blinkHalfPeriod: 0.5
 --- !u!114 &1279878342
@@ -33675,6 +33675,11 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1658737429 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2960917263368523130, guid: bcefb02b4b0b3244f9ec4c5e569b8426, type: 3}
+  m_PrefabInstance: {fileID: 2133946366}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1704455149
 GameObject:
   m_ObjectHideFlags: 0
@@ -54487,7 +54492,7 @@ MonoBehaviour:
   hoverDuration: 1.5
   DelayHover: 0
   defaultShakeDuration: 0.5
-  HandIndicator: {fileID: 2960917263368523130, guid: bcefb02b4b0b3244f9ec4c5e569b8426, type: 3}
+  HandIndicator: {fileID: 1658737429}
   blinkColor: {r: 1, g: 0, b: 0.59416103, a: 1}
   blinkHalfPeriod: 0.5
 --- !u!114 &1992799284
@@ -55253,6 +55258,10 @@ PrefabInstance:
     - target: {fileID: 2960917263368523130, guid: bcefb02b4b0b3244f9ec4c5e569b8426, type: 3}
       propertyPath: m_Name
       value: HAND
+      objectReference: {fileID: 0}
+    - target: {fileID: 2960917263368523130, guid: bcefb02b4b0b3244f9ec4c5e569b8426, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5496422855660656871, guid: bcefb02b4b0b3244f9ec4c5e569b8426, type: 3}
       propertyPath: m_Pivot.x

@@ -43,7 +43,6 @@ public abstract class BoardTile : MonoBehaviour
 
         if (isInsideBranch && !_boardManager.HasChoosedBranchPath())
         {
-            // El jugador entra en la branch: ocultar todo lo que no pertenezca a ella
             _boardManager.BranchPathChoosed();
 
             List<BoardTile> snapshot = new List<BoardTile>(_boardManager.generatedTiles);
@@ -56,7 +55,6 @@ public abstract class BoardTile : MonoBehaviour
         }
         else if (!isInsideBranch)
         {
-            // El jugador sigue por el path principal: ocultar la branch revelada
             _boardManager.PutFogOnRevealedBranch();
         }
     }

@@ -22,7 +22,6 @@ public class EnemyTile : BoardTile
             EnemyType enemyToFight = ResolveEnemy();
             if (enemyToFight == null)
             {
-                Debug.LogError("EnemyTile: ResolveEnemy() null, no se inicia combate.");
                 return;
             }
 
@@ -52,9 +51,6 @@ public class EnemyTile : BoardTile
     public void Replace()
     {
         _boardRaycast.HandleBoardRaycast(true);
-
-        //if (GameManager.Instance. != null &&GameManager.Instance.CombatHandler != null)
-        //    GameManager.Instance.CombatHandler.OnEndBattle -= Replace;
 
         _boardManager.ReplaceTileType(this, _postInteractionTile);
         _boardManager.IncrementEnemyDefeatedCount();

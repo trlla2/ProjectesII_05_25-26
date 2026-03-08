@@ -83,7 +83,6 @@ public class BoardGenerator : MonoBehaviour
 
         AssignEnemiesAndChests();
 
-        // Garantizar que branch[1] siempre sea EmptyTile antes de aplicar el fog
         EnsureBranchEntriesAreEmpty();
 
         foreach (List<BoardTile> path in _paths)
@@ -101,7 +100,6 @@ public class BoardGenerator : MonoBehaviour
             BoardTile entry = branch[1];
             if (entry is EmptyTile) continue;
 
-            // Buscar la primera EmptyTile disponible en la branch (a partir del índice 2)
             int swapIdx = -1;
             for (int i = 2; i < branch.Count; i++)
             {
@@ -112,11 +110,7 @@ public class BoardGenerator : MonoBehaviour
                 }
             }
 
-            if (swapIdx == -1)
-            {
-                Debug.LogWarning($"EnsureBranchEntriesAreEmpty: branch {b} no tiene EmptyTile disponible para intercambiar con branch[1].");
-                continue;
-            }
+            if (swapIdx == -1) continue;
 
             SwapTilePositionsInBranch(branch, 1, swapIdx);
         }
@@ -403,7 +397,6 @@ public class BoardGenerator : MonoBehaviour
         _boardManager.UpdateNeighbors(endTile);
         _boardManager.UpdateNeighbors(stairsTarget);
 
-        // verificar vecinos externos - si conecta con otro path -> anular escalera
         List<BoardTile> validNeighbors = stairsTarget.neighbors.Where(n => n != null).ToList();
         int externalNeighbors = validNeighbors.Count(n => !path.Contains(n));
         if (externalNeighbors > 0)
@@ -419,7 +412,6 @@ public class BoardGenerator : MonoBehaviour
         {
             BoardTile bossTile = path[bossIndex];
 
-            // verificar que no esté en la start zone y sea válido
             if (!startZoneSet.Contains(bossTile) &&
                 bossTile.GetData() != _boardManager.stairsTileData &&
                 bossTile.GetData() != _boardManager.bossTileData)
@@ -458,7 +450,6 @@ public class BoardGenerator : MonoBehaviour
         PlaceEnemiesOnPath(mainCandidates, _numOfEnemyTiles);
         Debug.Log($"Total enemigos colocados en main: {mainPath.Count(t => IsEnemyTile(t))}");
 
-        // Branches: completar hasta _numOfEnemyTiles contando el tramo compartido con el main
         for (int b = 1; b < _paths.Count; b++)
         {
             List<BoardTile> branch = _paths[b];
@@ -503,10 +494,9 @@ public class BoardGenerator : MonoBehaviour
     {
         if (candidates.Count == 0 || count <= 0) return;
 
-        // Calcular espaciado base con variación aleatoria
         float avgStep = (float)candidates.Count / count;
-        int minStep = Mathf.Max(1, Mathf.FloorToInt(avgStep * 0.5f)); // 50% del paso medio
-        int maxStep = Mathf.Max(2, Mathf.CeilToInt(avgStep * 1.5f));  // 150% del paso medio
+        int minStep = Mathf.Max(1, Mathf.FloorToInt(avgStep * 0.5f)); 
+        int maxStep = Mathf.Max(2, Mathf.CeilToInt(avgStep * 1.5f));  
 
         int placed = 0;
         int currentIndex = Random.Range(0, Mathf.Min(3, candidates.Count));

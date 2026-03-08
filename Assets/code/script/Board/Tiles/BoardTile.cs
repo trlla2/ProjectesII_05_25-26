@@ -22,10 +22,14 @@ public abstract class BoardTile : MonoBehaviour
         _renderer = GetComponentInChildren<Renderer>();
         _renderer.material.color = _data.defaultColor;
 
+        _boardManager = FindObjectOfType<BoardManager>();
+
         if (isForcedPos)
             _gridPos = forcedPos;
+        if (_boardManager.ForcedBoard)
+            _gridPos = new Vector2Int((int)transform.position.x, (int)transform.position.z);
 
-        _boardManager = FindObjectOfType<BoardManager>();
+        
     }
 
     public void OnPlayerArrive()
@@ -72,10 +76,8 @@ public abstract class BoardTile : MonoBehaviour
 
     public bool IsWalkable() { return _data.walkable; }
 
-    public virtual void Interact()
-    {
-        TryToRevealGeneratedBranchIfHasOne();
-    }
+    public abstract void Interact();
+
     protected void TryToRevealGeneratedBranchIfHasOne()
     {
         if (generatedBranch == null) return;

@@ -117,12 +117,15 @@ public class PlayerMovement : MonoBehaviour
         currentTile = _boardManager.generatedTiles[_boardManager.generatedTiles.Count - 1];
     }
 
+    // FORCED!!!
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        transform.position = _boardManager.startingTile.transform.position;
         GameObject newParticles = Instantiate(jumpParticles.gameObject, _boardManager.startingTile.transform.position, currentTile.transform.rotation, currentTile.transform);
         Destroy(newParticles, _jumpParticlesDuration);
         this.gameObject.GetComponent<Rigidbody2D>().simulated = false;
         this.gameObject.GetComponent<BoxCollider2D>().enabled = false;
+        collision.gameObject.GetComponent<BoxCollider2D>().enabled = false;
         OnStartingTileTouchedWhileFalling?.Invoke();
     }
 

@@ -5,6 +5,8 @@ using System.Net;
 public class BoardManager : MonoBehaviour
 {
     [SerializeField] private bool _forcedBoard;
+    public bool ForcedBoard => _forcedBoard;
+    //[SerializeField] private bool _isTutorial;
     public StageLevelData currentStageLevelData;
 
     public BoardTile startingTile;
@@ -249,4 +251,6 @@ public class BoardManager : MonoBehaviour
 
     public bool HasChoosedBranchPath() { return _branchPathChoosed; }
     public void BranchPathChoosed() { _branchPathChoosed = true; }
+
+    //public bool IsTutorial() { return _isTutorial; }
 }

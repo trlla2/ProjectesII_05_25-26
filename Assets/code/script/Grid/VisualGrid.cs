@@ -1,8 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.XR;
-
-//using Unity.Android.Gradle;
 using UnityEngine;
 
 public class VisualGrid : MonoBehaviour
@@ -536,6 +533,24 @@ public class VisualGrid : MonoBehaviour
                 GameObject bg = visual.transform.Find("Background")?.gameObject;
                 if (bg != null)
                     bg.SetActive(true);
+            }
+        }
+    }
+
+    public void RemoveAllHighlights()
+    {
+        if (!isInitialized || grid == null || grid.GridData == null)
+            return;
+        for (int x = 0; x < grid.GridData.GridSize; x++)
+        {
+            for (int y = 0; y < grid.GridData.GridSize; y++)
+            {
+                Vector2Int gridPos = new Vector2Int(x, y);
+                ElementVisual visual = grid.GridData.GetVisualAt(gridPos);
+                if (visual != null)
+                {
+                    visual.highlighter.SetHighlight(false);
+                }
             }
         }
     }

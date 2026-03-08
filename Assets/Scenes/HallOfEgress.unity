@@ -12148,7 +12148,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 20f7342cad719c249985527955b8c733, type: 2}
   - {fileID: 11400000, guid: d73137ddb966da6469706f8daa160521, type: 2}
   - {fileID: 11400000, guid: 28f19c24be260ed49a04de8225287f3a, type: 2}
-  tutorialManager: {fileID: 0}
   _debugItemsInInventory: []
 --- !u!4 &1135501900
 Transform:
@@ -12548,7 +12547,7 @@ RectTransform:
   m_GameObject: {fileID: 1186080330}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2025263120}
@@ -17576,7 +17575,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.0011134523, y: -9500.254}
+  m_AnchoredPosition: {x: 0.0011134523, y: -0.000087078675}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1618195481
@@ -19291,10 +19290,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
+    m_Left: 10
+    m_Right: 10
+    m_Top: 10
+    m_Bottom: 10
   m_ChildAlignment: 4
   m_StartCorner: 0
   m_StartAxis: 0

@@ -42,7 +42,7 @@ public class EnemyUIHandler : MonoBehaviour
 
     private EnemyBehaviour enemyBehaviour;
 
-    private void Awake()
+    private void Start()
     {
         GameManager.Instance.CombatHandler.OnSetEnemyReference += SetEnemyRef;
 

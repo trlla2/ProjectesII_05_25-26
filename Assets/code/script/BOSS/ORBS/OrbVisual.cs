@@ -143,6 +143,7 @@ public class OrbVisual : MonoBehaviour
         {
             animationEffects.SetScale(chargedScale, scaleDuration);
             animationEffects.ColorBlink();
+            animationEffects.AnimateHand();
         }
     }
 

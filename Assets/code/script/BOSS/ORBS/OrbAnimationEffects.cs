@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using DG.Tweening;
+using NUnit.Framework.Constraints;
 
 public class OrbAnimationEffects : MonoBehaviour
 {
@@ -12,6 +13,9 @@ public class OrbAnimationEffects : MonoBehaviour
 
     [Header("Shake Settings")]
     [SerializeField] private float defaultShakeDuration = 0.5f;
+
+    [Header("Animation")]
+    [SerializeField] private GameObject HandIndicator;
 
     [Header("Blink Settings")]
     [SerializeField] private Color blinkColor = Color.white;
@@ -82,6 +86,20 @@ public class OrbAnimationEffects : MonoBehaviour
             });
     }
 
+    public void AnimateHand()
+    {
+        if (HandIndicator != null)
+        {
+            HandIndicator.SetActive(true);
+
+            Vector3 startPos = transform.position + new Vector3(-0.2f,-0.3f,0);
+            Vector2 endPos = startPos + new Vector3(-0.5f, 0, 0);
+            HandIndicator.transform.position = startPos;
+
+            HandIndicator.transform.DOMove(endPos, 1.5f).SetEase(Ease.InBounce).SetLoops(-1, LoopType.Yoyo);
+        }
+    }
+
     public void DisableBlink()
     {
         _blinkTween?.Kill();
@@ -92,17 +110,6 @@ public class OrbAnimationEffects : MonoBehaviour
 
         _postBlinkScaleTween?.Kill();
         _postBlinkScaleTween = null;
-    }
-
-
-    public void ResetVisual()
-    {
-        if (image == null) return;
-
-        _blinkTween?.Kill();
-        _blinkTween = null;
-
-        image.color = _baseColor;
     }
 
 
@@ -118,7 +125,12 @@ public class OrbAnimationEffects : MonoBehaviour
 
     public void KillAllTweens()
     {
+        if (HandIndicator != null) { HandIndicator.transform.DOKill(); HandIndicator.SetActive(false); };
         transform.DOKill();
         if (image != null) image.DOKill();
+        _blinkTween?.Kill();
+        _blinkTween = null;
+
+        image.color = _baseColor;
     }
 }

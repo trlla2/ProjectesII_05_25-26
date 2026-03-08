@@ -17,22 +17,28 @@ public class EnemyTile : BoardTile
     {
         Debug.Log("starting combat...");
 
-        EnemyType enemyToFight = ResolveEnemy();
-        if (enemyToFight == null)
+        if (!_boardManager.EncountersManager.IsForced())
         {
-            Debug.LogError("EnemyTile: ResolveEnemy() devolvió null, no se inicia combate.");
-            return;
-        }
+            EnemyType enemyToFight = ResolveEnemy();
+            if (enemyToFight == null)
+            {
+                Debug.LogError("EnemyTile: ResolveEnemy() null, no se inicia combate.");
+                return;
+            }
 
-        GameManager.Instance.SetPendingEnemy(enemyToFight);
+            GameManager.Instance.SetPendingEnemy(enemyToFight);
+        }
 
         _boardRaycast.HandleBoardRaycast(false);
         SceneTransition.Instance.LoadScene(_combatSceneName, true);
         GameManager.Instance.EnterBattle();
 
         GameManager.Instance.OnEnterBoard += Replace;
+        GameManager.Instance.OnEnterBoard += TryToRevealGeneratedBranchIfHasOne;
         //if (GameManager.Instance.CombatHandler != null)
         //    GameManager.Instance.CombatHandler.OnEndBattle += Replace;
+        //TryToRevealGeneratedBranchIfHasOne();
+
     }
 
     protected virtual EnemyType ResolveEnemy()

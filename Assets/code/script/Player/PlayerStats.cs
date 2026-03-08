@@ -269,8 +269,8 @@ public class PlayerStats
 
     public void AddKnownSpell(Spell spell)
     {
-            if (knownSpells.Contains(spell))
-                return;
+        if (knownSpells.Contains(spell))
+            return;
 
         knownSpells.Add(spell);
     }

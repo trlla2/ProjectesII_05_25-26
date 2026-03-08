@@ -3,17 +3,21 @@ using UnityEngine;
 
 public class BombCableVisual : MonoBehaviour
 {
-    [SerializeField] private LineRenderer cableLine1;
-    [SerializeField] private LineRenderer cableLine2;
-    [SerializeField] private LineRenderer cableLine3;
+    [SerializeField] private Material cableMaterial1;
+    [SerializeField] private Material cableMaterial2;
+    [SerializeField] private Material cableMaterial3;
 
-    private List<LineRenderer> cableLines = new List<LineRenderer>();
+    private Dictionary<Vector2Int, List<LineRenderer>> cablesByCardinal = new Dictionary<Vector2Int, List<LineRenderer>>();
+    private Dictionary<int, List<LineRenderer>> cablesByColorIndex = new Dictionary<int, List<LineRenderer>>();
     private List<Vector2Int> cardinalPositions = new List<Vector2Int>();
     private Vector2Int bombPosition;
     private Grid grid;
 
+    int destroyIndex = 0;
 
-    private const float LineOffset = 0.18f;
+    [SerializeField] private float LineOffset = 0.08f;
+    [SerializeField] private int LinesPerCardinal = 3;
+    [SerializeField] private float LineWidth = 0.05f;
 
     public void Initialize(Grid grid, Vector2Int bombPos, List<Vector2Int> cardinals)
     {
@@ -21,105 +25,160 @@ public class BombCableVisual : MonoBehaviour
         this.bombPosition = bombPos;
         this.cardinalPositions = new List<Vector2Int>(cardinals);
 
-        cableLines.Clear();
-        if (cableLine1 != null) cableLines.Add(cableLine1);
-        if (cableLine2 != null) cableLines.Add(cableLine2);
-        if (cableLine3 != null) cableLines.Add(cableLine3);
-
-        cableLine1.gameObject.SetActive(true);
-        cableLine2.gameObject.SetActive(true);
-        cableLine3.gameObject.SetActive(true);
-
+        ClearAllLines();
         CreateCableLines();
     }
 
     private void CreateCableLines()
     {
-        if (cardinalPositions.Count < 4 || cableLines.Count < 3) return;
+        if (cardinalPositions.Count < 4) return;
 
-        //ensure consistent order: Top, Right, Bottom, Left
-        List<Vector2Int> sorted = SortCardinalPositions(cardinalPositions);
+        // Initialize color tracking
+        cablesByColorIndex[0] = new List<LineRenderer>();
+        cablesByColorIndex[1] = new List<LineRenderer>();
+        cablesByColorIndex[2] = new List<LineRenderer>();
 
-        for (int i = 0; i < cableLines.Count; i++)
+        foreach (Vector2Int cardinalPos in cardinalPositions)
         {
-            SetupLineRendererLoop(cableLines[i], sorted, i);
-        }
+            List<LineRenderer> lines = new List<LineRenderer>();
 
-        foreach (LineRenderer line in cableLines)
-        {
-            if (line != null)
-                line.enabled = true;
+            for (int i = 0; i < LinesPerCardinal; i++)
+            {
+                Material material = GetMaterialForIndex(i);
+                LineRenderer line = CreateLineRenderer(material);
+                SetupLineRenderer(line, cardinalPos, i);
+                lines.Add(line);
+
+                // Track by color
+                cablesByColorIndex[i].Add(line);
+            }
+
+            cablesByCardinal[cardinalPos] = lines;
         }
     }
 
-    private List<Vector2Int> SortCardinalPositions(List<Vector2Int> positions)
+    private LineRenderer CreateLineRenderer(Material material)
     {
-        Vector2Int top = bombPosition, right = bombPosition, bottom = bombPosition, left = bombPosition;
+        GameObject lineObj = new GameObject("CableLine");
+        lineObj.transform.SetParent(transform);
 
-        foreach (Vector2Int pos in positions)
-        {
-            Vector2Int diff = pos - bombPosition;
-            if (diff.y > 0) top = pos;
-            else if (diff.y < 0) bottom = pos;
-            else if (diff.x > 0) right = pos;
-            else if (diff.x < 0) left = pos;
-        }
+        LineRenderer line = lineObj.AddComponent<LineRenderer>();
+        line.material = material;
+        line.startWidth = LineWidth;
+        line.endWidth = LineWidth;
+        line.useWorldSpace = true;
+        line.sortingOrder = -3;
 
-        return new List<Vector2Int> { top, right, bottom, left };
+        return line;
     }
 
-    private void SetupLineRendererLoop(LineRenderer line, List<Vector2Int> sorted, int lineIndex)
+    private Material GetMaterialForIndex(int index)
+    {
+        switch (index)
+        {
+            case 0: return cableMaterial1;
+            case 1: return cableMaterial2;
+            case 2: return cableMaterial3;
+            default: return cableMaterial1;
+        }
+    }
+
+    private void SetupLineRenderer(LineRenderer line, Vector2Int cardinalPos, int lineIndex)
     {
         if (line == null) return;
 
-
-        line.positionCount = 5;
+        line.positionCount = 2;
         line.loop = false;
 
-        //Calculate offset perpendicular to the center
-        float offset = (lineIndex - 1) * LineOffset;
+        Vector3 bombWorldPos = grid.VisualGrid.GridToWorldPosition(bombPosition);
+        Vector3 cardinalWorldPos = grid.VisualGrid.GridToWorldPosition(cardinalPos);
 
-        for (int i = 0; i < 5; i++)
-        {
-            int posIndex = i % 4; //Wrap around to close the loop
-            Vector3 worldPos = grid.VisualGrid.GridToWorldPosition(sorted[posIndex]);
-            
-            Vector3 toBomb = grid.VisualGrid.GridToWorldPosition(bombPosition);
-            Vector3 direction = (worldPos - toBomb).normalized;
-            worldPos += direction * offset;
+        Vector3 direction = (cardinalWorldPos - bombWorldPos).normalized;
+        Vector3 perpendicular = new Vector3(-direction.y, direction.x, 0f);
+        float offset = (lineIndex - 1) * LineOffset; // -1, 0, 1 for 3 lines
 
-            line.SetPosition(i, worldPos);
-        }
+        Vector3 offsetVector = perpendicular * offset;
+
+        line.SetPosition(0, bombWorldPos + offsetVector);
+        line.SetPosition(1, cardinalWorldPos + offsetVector);
+        line.enabled = true;
     }
 
     public void RemoveCable(Vector2Int clearedPosition)
     {
-        if (!cardinalPositions.Contains(clearedPosition)) return;
+        if (!cablesByCardinal.ContainsKey(clearedPosition)) return;
 
-        for (int i = 0; i < cableLines.Count; i++)
+        List<LineRenderer> linesToRemove = cablesByCardinal[clearedPosition];
+
+        foreach (LineRenderer line in linesToRemove)
         {
-            if (cableLines[i] != null && cableLines[i].enabled)
+            if (line != null)
             {
-                cableLines[i].enabled = false;
-                cableLines.RemoveAt(i);
-                return;
+                
+                for (int i = 0; i < LinesPerCardinal; i++)
+                {
+                    if (cablesByColorIndex.ContainsKey(i))
+                    {
+                        cablesByColorIndex[i].Remove(line);
+                    }
+                }
+                
+                Destroy(line.gameObject);
             }
         }
+
+        cablesByCardinal.Remove(clearedPosition);
+        cardinalPositions.Remove(clearedPosition);
+
+        DestroyAllLinesOfColor(destroyIndex);
+        destroyIndex++;
+    }
+
+    private void DestroyAllLinesOfColor(int colorIndex)
+    {
+        if (!cablesByColorIndex.ContainsKey(colorIndex)) return;
+
+        List<LineRenderer> linesToDestroy = new List<LineRenderer>(cablesByColorIndex[colorIndex]);
+
+        foreach (LineRenderer line in linesToDestroy)
+        {
+            if (line != null)
+            {
+                line.enabled = false;
+                Destroy(line.gameObject);
+
+                // Remove from cardinal tracking
+                foreach (var kvp in cablesByCardinal)
+                {
+                    kvp.Value.Remove(line);
+                }
+            }
+        }
+
+        cablesByColorIndex[colorIndex].Clear();
     }
 
     public void ClearAllLines()
     {
-        foreach (LineRenderer line in cableLines)
+        destroyIndex = 0;
+        foreach (var kvp in cablesByCardinal)
         {
-            if (line != null)
-                line.enabled = false;
+            foreach (LineRenderer line in kvp.Value)
+            {
+                if (line != null)
+                {
+                    line.enabled = false;
+                    Destroy(line.gameObject);
+                }
+            }
         }
-        cableLines.Clear();
+        cablesByCardinal.Clear();
+        cablesByColorIndex.Clear();
     }
 
     public int GetActiveCableCount()
     {
-        return cableLines.Count;
+        return cablesByCardinal.Count;
     }
 
     private void OnDestroy()

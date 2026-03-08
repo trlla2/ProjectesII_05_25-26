@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private BoardManager _boardManager;
     private BoardTile currentTile;
 
+    public UnityEvent OnStartingTileTouchedWhileFalling;
+
     public bool isMoving { get; private set; } = false;
 
     void Start()
@@ -28,7 +31,7 @@ public class PlayerMovement : MonoBehaviour
     public void InitPlayer()
     {
         currentTile = _boardManager.startingTile;
-        transform.position = _boardManager.startingTile.transform.position;
+        //transform.position = _boardManager.startingTile.transform.position;
         _jumpParticlesDuration = jumpParticles.main.duration;
     }
 
@@ -112,6 +115,15 @@ public class PlayerMovement : MonoBehaviour
         //    if (Vector3.Distance(transform.position, tile.transform.position) < 0.5)
         //        currentTile = tile;
         currentTile = _boardManager.generatedTiles[_boardManager.generatedTiles.Count - 1];
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        GameObject newParticles = Instantiate(jumpParticles.gameObject, _boardManager.startingTile.transform.position, currentTile.transform.rotation, currentTile.transform);
+        Destroy(newParticles, _jumpParticlesDuration);
+        this.gameObject.GetComponent<Rigidbody2D>().simulated = false;
+        this.gameObject.GetComponent<BoxCollider2D>().enabled = false;
+        OnStartingTileTouchedWhileFalling?.Invoke();
     }
 
 }

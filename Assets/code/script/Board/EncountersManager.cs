@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class EncountersManager : MonoBehaviour
 {
+    [SerializeField] private bool _forcedEncounters;
+
     [SerializeField] List<EnemyType> _enemyList;
     private List<EnemyType> _avaliableEnemies;
     [SerializeField] List<EnemyType> _bossList;
@@ -111,5 +113,7 @@ public class EncountersManager : MonoBehaviour
         //if (_bossList.Count > 0) return;
         _bossList = new List<EnemyType>(encounterList);
     }
+
+    public bool IsForced() { return _forcedEncounters; }
 
 }

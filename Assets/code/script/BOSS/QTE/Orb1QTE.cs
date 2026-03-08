@@ -204,6 +204,16 @@ public class Orb1QTE : MonoBehaviour, IQTE
 
         Time.timeScale = 1f;
 
+        OrbVisual currentOrbVisual = GameManager.Instance.CombatHandler.bossManager.GetCurrentOrbVisual();
+        if (currentOrbVisual != null)
+        {
+            OrbAnimationEffects effects = currentOrbVisual.GetComponent<OrbAnimationEffects>();
+            if (effects != null)
+            {
+                effects.KillAllTweens();
+            }
+        }
+
         if (visualEffects != null)
         {
             if (success)

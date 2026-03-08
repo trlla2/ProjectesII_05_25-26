@@ -1,0 +1,668 @@
+using System.Collections.Generic;
+using System.Collections;
+using UnityEngine;
+
+public enum GridStateType
+{
+    Initialize,
+    Idle,
+    Refill,
+    Reroll,
+    Processing,
+    ValidateSpell,
+    EnemySpell
+}
+
+public interface IGridState
+{
+    void Enter();
+    void Update();
+    void Exit();
+    GridStateType GetStateType();
+}
+
+public class IdleState : IGridState
+{
+    private Grid grid;
+
+    public IdleState(Grid gridController)
+    {
+        grid = gridController;
+    }
+
+    public void Enter()
+    {
+    }
+
+    public void Update()
+    {
+    }
+
+    public void Exit()
+    {
+    }
+
+    public GridStateType GetStateType()
+    {
+        return GridStateType.Idle;
+    }
+}
+
+public class RefillState : IGridState
+{
+    private Grid grid;
+    private VisualGrid visualGrid;
+    private bool isRefilling;
+    private float refillDuration = 0.15f;
+
+    private System.Action onRefillComplete;
+
+    public RefillState(Grid gridController, VisualGrid visual, System.Action onRefillComplete = null)
+    {
+        grid = gridController;
+        visualGrid = visual;
+        this.onRefillComplete = onRefillComplete;
+    }
+
+    public void Enter()
+    {
+        visualGrid.RemoveAllHighlights();
+        isRefilling = true;
+        PerformRefill();
+    }
+
+    public void Update()
+    {
+        if (!isRefilling)
+        {
+            if (onRefillComplete != null)
+            {
+                onRefillComplete.Invoke();
+            }
+            else
+            {
+                //if not specifies, go to validatoipon
+                grid.ChangeState(new ValidateSpellState(grid, GameManager.Instance.PlayerStats.GetSpellBook()));
+            }
+        }
+    }
+
+    public void Exit()
+    {
+        isRefilling = false;
+    }
+
+    public GridStateType GetStateType() => GridStateType.Refill;
+
+    private void PerformRefill()
+    {
+        List<Vector2Int> movedPositions = grid.GravityHandler.ApplyGravity();
+        grid.StartCoroutine(RefillSequence(movedPositions, refillDuration));
+    }
+
+    private IEnumerator RefillSequence(List<Vector2Int> movedPositions, float gravityDuration)
+    {
+        if (visualGrid != null && movedPositions != null && movedPositions.Count > 0)
+        {
+            yield return grid.StartCoroutine(visualGrid.AnimateGravity(movedPositions, gravityDuration));
+        }
+
+        List<Vector2Int> emptyPositions = GetEmptyPositions();
+
+        if (emptyPositions.Count > 0)
+        {
+            grid.FillEmptySlots(grid.AvailableElements, emptyPositions);
+
+            foreach (var pos in emptyPositions)
+            {
+                Element element = grid.GridData.GetElementAt(pos);
+                if (element != null && element != grid.EmptyElement)
+                {
+                    visualGrid.EnsureVisualAt(pos, element);
+                }
+            }
+
+            foreach (var pos in emptyPositions)
+            {
+                ElementVisual visual = grid.GridData.GetVisualAt(pos);
+                if (visual != null)
+                    visual.SetSelectable(false);
+            }
+
+            visualGrid.FillEmpty(emptyPositions, refillDuration);
+
+            yield return new WaitForSeconds(refillDuration);
+
+            //finalize visuals 
+            for (int x = 0; x < grid.GridData.GridSize; x++)
+            {
+                for (int y = 0; y < grid.GridData.GridSize; y++)
+                {
+                    Vector2Int pos = new Vector2Int(x, y);
+                    ElementVisual visual = grid.GridData.GetVisualAt(pos);
+
+                    if (visual != null)
+                    {
+                        visual.transform.position = visualGrid.GridToWorldPosition(pos);
+                        visual.ResetSpriteTransform();
+                        visual.SetWorldPosition(visualGrid.GridToWorldPosition(pos));
+
+                        Element element = grid.GridData.GetElementAt(pos);
+                        visual.Initialize(pos, element);
+                        visual.SetSelectable(true);
+                    }
+                }
+            }
+
+            isRefilling = false;
+        }
+        else
+        {
+            isRefilling = false;
+        }
+    }
+
+    private List<Vector2Int> GetEmptyPositions()
+    {
+        List<Vector2Int> emptyPositions = new List<Vector2Int>();
+        int size = grid.GridData.GridSize;
+
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                Vector2Int pos = new Vector2Int(x, y);
+                Element element = grid.GridData.GetElementAt(pos);
+
+                if (element == grid.EmptyElement || element == null)
+                {
+                    emptyPositions.Add(pos);
+                }
+            }
+        }
+
+        return emptyPositions;
+    }
+}
+
+public class RerollState : IGridState
+{
+    private Grid grid;
+    private VisualGrid visualGrid;
+    private List<Element> availableElements;
+    private List<Spell> availableSpells;
+    private bool isAnimating;
+
+    private float scrollDuration = 1.5f;
+    private float columnDelay = 0.25f;
+    private int scrollTimes = 5;
+
+    public RerollState(Grid gridController, VisualGrid visual,
+                       List<Element> elements, List<Spell> spells, int times = 3)
+    {
+        grid = gridController;
+        visualGrid = visual;
+        availableElements = elements;
+        availableSpells = spells;
+        scrollTimes = Mathf.Max(1, times);
+    }
+
+    public void Enter()
+    {
+        visualGrid.RemoveAllHighlights();
+        isAnimating = true;
+        grid.StartCoroutine(PerformReroll());
+    }
+
+    public void Update()
+    {
+        if (!isAnimating)
+        {
+            grid.ChangeState(new ValidateSpellState(grid, GameManager.Instance.PlayerStats.GetSpellBook()));
+        }
+    }
+
+    public void Exit()
+    {
+        isAnimating = false;
+    }
+
+    public GridStateType GetStateType()
+    {
+        return GridStateType.Reroll;
+    }
+
+    private IEnumerator PerformReroll()
+    {
+        grid.NotifyRerollStarted();
+
+        int gridSize = grid.GridData.GridSize;
+
+        Element[,] finalGrid = GenerateFinalGrid();
+
+        if (availableSpells != null && availableSpells.Count > 0)
+        {
+            Spell randomSpell = availableSpells[Random.Range(0, availableSpells.Count)];
+            TryInsertSpellIntoGrid(finalGrid, randomSpell.Recipe);
+        }
+
+        yield return grid.StartCoroutine(
+            visualGrid.PlayRerollAnimation(scrollTimes, scrollDuration, columnDelay, availableElements, finalGrid)
+        );
+
+        ApplyFinalGrid(finalGrid);
+        FinalizeVisuals();
+
+        grid.NotifyRerollCompleted();
+
+        isAnimating = false;
+    }
+
+    private Element[,] GenerateFinalGrid()
+    {
+        int size = grid.GridData.GridSize;
+        Element[,] result = new Element[size, size];
+        Element bombEl = grid.BombElement;
+
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                Vector2Int pos = new Vector2Int(x, y);
+                Element current = grid.GridData.GetElementAt(pos);
+
+                // Preserve the bomb element so the active BombSpell stays valid
+                if (bombEl != null && current == bombEl)
+                    result[x, y] = bombEl;
+                else
+                    result[x, y] = availableElements[Random.Range(0, availableElements.Count)];
+            }
+        }
+
+        return result;
+    }
+
+    //Cant use the spellinsert interface since we need to reroll the whole grid and working with a temp grid
+    //rather than the actual griddata, so we need to reimplement it here
+    private void TryInsertSpellIntoGrid(Element[,] targetGrid, List<Element> recipe)
+    {
+        if (recipe == null || recipe.Count == 0)
+            return;
+
+        int size = targetGrid.GetLength(0);
+
+        //Collect bomb positions so spell paths never overwrite them, mb overrkillusing a hashset but we can use 2 bombs in the future mb?
+        HashSet<Vector2Int> bombPositions = new HashSet<Vector2Int>();
+        Element bombEl = grid.BombElement;
+        if (bombEl != null)
+        {
+            for (int x = 0; x < size; x++)
+                for (int y = 0; y < size; y++)
+                    if (targetGrid[x, y] == bombEl)
+                        bombPositions.Add(new Vector2Int(x, y));
+        }
+
+        int maxAttempts = 50;
+        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            Vector2Int startPos = new Vector2Int(
+                Random.Range(0, size),
+                Random.Range(0, size)
+            );
+
+            if (bombPositions.Contains(startPos))
+                continue;
+
+            List<Vector2Int> path = GenerateRandomPathFromStart(size, recipe.Count, startPos, bombPositions);
+
+            if (path != null && path.Count == recipe.Count)
+            {
+                for (int i = 0; i < recipe.Count; i++)
+                {
+                    Vector2Int pos = path[i];
+                    targetGrid[pos.x, pos.y] = recipe[i];
+                }
+                return;
+            }
+        }
+    }
+
+    private List<Vector2Int> GenerateRandomPathFromStart(int gridSize, int length, Vector2Int start, HashSet<Vector2Int> excluded = null)
+    {
+        if (length > gridSize * gridSize)
+            return null;
+
+        List<Vector2Int> path = new List<Vector2Int> { start };
+        HashSet<Vector2Int> visited = new HashSet<Vector2Int> { start };
+
+        Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+
+        while (path.Count < length)
+        {
+            Vector2Int current = path[path.Count - 1];
+            List<Vector2Int> neighbors = new List<Vector2Int>();
+
+            foreach (var dir in directions)
+            {
+                Vector2Int next = current + dir;
+                if (next.x >= 0 && next.x < gridSize &&
+                    next.y >= 0 && next.y < gridSize &&
+                    !visited.Contains(next) &&
+                    (excluded == null || !excluded.Contains(next)))
+                {
+                    neighbors.Add(next);
+                }
+            }
+
+            if (neighbors.Count == 0)
+                return null;
+
+            Vector2Int chosen = neighbors[Random.Range(0, neighbors.Count)];
+            path.Add(chosen);
+            visited.Add(chosen);
+        }
+
+        return path;
+    }
+
+    private void ApplyFinalGrid(Element[,] finalGrid)
+    {
+        int size = grid.GridData.GridSize;
+
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                grid.GridData.SetElementAt(new Vector2Int(x, y), finalGrid[x, y]);
+            }
+        }
+    }
+
+    private void FinalizeVisuals()
+    {
+        int size = grid.GridData.GridSize;
+
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                Vector2Int pos = new Vector2Int(x, y);
+                ElementVisual visual = grid.GridData.GetVisualAt(pos);
+                Element element = grid.GridData.GetElementAt(pos);
+
+                if (visual != null)
+                {
+                    visual.transform.position = visualGrid.GridToWorldPosition(pos);
+                    visual.Initialize(pos, element);
+                    visual.ResetSpriteTransform();
+                    visual.SetWorldPosition(visualGrid.GridToWorldPosition(pos));
+                    visual.SetSelectable(true);
+                }
+            }
+        }
+    }
+}
+
+public class EnemySpellState : IGridState
+{
+    private Grid grid;
+    private VisualGrid visualGrid;
+    private List<Vector2Int> positions;
+    private System.Action onComplete;
+    private bool isProcessing;
+    private float refillDuration = 0.15f;
+
+    private bool excludeBelowTargets = true;
+    private bool rerollAfterProcess = false;
+
+    public EnemySpellState(Grid gridController, VisualGrid visual, List<Vector2Int> positionsToProcess, 
+                           System.Action onCompleteCallback, bool excludeBelowTargets = true, bool rerollAfter = false)
+    {
+        grid = gridController;
+        visualGrid = visual;
+        positions = positionsToProcess ?? new List<Vector2Int>(); //if null, create empty list
+        onComplete = onCompleteCallback;
+        this.excludeBelowTargets = excludeBelowTargets;
+        this.rerollAfterProcess = rerollAfter;
+    }
+
+    public void Enter()
+    {
+        isProcessing = true;
+        grid.StartCoroutine(ProcessSequence());
+    }
+
+    public void Update()
+    {
+        if (!isProcessing)
+        {
+            if (rerollAfterProcess)
+            {
+                grid.ChangeState(new RerollState(grid, visualGrid, grid.AvailableElements,
+                    GameManager.Instance.PlayerStats.GetSpellBook(), 3));
+            }
+            else
+            {
+                grid.ChangeState(new IdleState(grid));
+            }
+        }
+    }
+
+    public void Exit()
+    {
+        isProcessing = false;
+    }
+
+    public GridStateType GetStateType()
+    {
+        return GridStateType.Processing;
+    }
+
+    private IEnumerator ProcessSequence()
+    {
+        if (positions == null || positions.Count == 0)
+        {
+            isProcessing = false;
+            onComplete?.Invoke();
+            yield break;
+        }
+
+        grid.InstantVisualEmpty(positions);
+
+        List<Vector2Int> movedPositions = grid.GravityHandler.ApplyGravity();
+
+        if (visualGrid != null && movedPositions != null && movedPositions.Count > 0)
+        {
+            yield return grid.StartCoroutine(visualGrid.AnimateGravity(movedPositions, refillDuration));
+        }
+
+        List<Vector2Int> emptyPositions;
+
+        if (excludeBelowTargets)
+            emptyPositions = GetEmptyPositionsExcludingBelowTargets();
+        else
+            emptyPositions = GetEmptyPositions();
+
+        if (emptyPositions.Count > 0)
+        {
+            grid.FillEmptySlots(grid.AvailableElements, emptyPositions);
+
+            foreach (var pos in emptyPositions)
+            {
+                Element element = grid.GridData.GetElementAt(pos);
+                if (element != null && element != grid.EmptyElement)
+                {
+                    visualGrid.EnsureVisualAt(pos, element);
+                }
+            }
+
+            foreach (var pos in emptyPositions)
+            {
+                ElementVisual visual = grid.GridData.GetVisualAt(pos);
+                if (visual != null)
+                    visual.SetSelectable(false);
+            }
+
+            visualGrid.FillEmpty(emptyPositions, refillDuration);
+
+            // Wait for fill animation to complete then finalize
+            yield return new WaitForSeconds(refillDuration);
+            yield return grid.StartCoroutine(CompleteRefillAfterDelay(0f));
+        }
+        else
+        {
+            // no refill needed, finish processing now
+            isProcessing = false;
+            onComplete?.Invoke();
+        }
+    }
+
+    private List<Vector2Int> GetEmptyPositions()
+    {
+        List<Vector2Int> emptyPositions = new List<Vector2Int>();
+        int size = grid.GridData.GridSize;
+
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                Vector2Int pos = new Vector2Int(x, y);
+                Element element = grid.GridData.GetElementAt(pos);
+
+                if (element == grid.EmptyElement || element == null)
+                {
+                    emptyPositions.Add(pos);
+                }
+            }
+        }
+
+        return emptyPositions;
+    }
+
+    private List<Vector2Int> GetEmptyPositionsExcludingBelowTargets()
+    {
+        List<Vector2Int> emptyPositions = new List<Vector2Int>();
+        int size = grid.GridData.GridSize;
+
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                Vector2Int pos = new Vector2Int(x, y);
+                Element element = grid.GridData.GetElementAt(pos);
+
+                if (element == grid.EmptyElement || element == null)
+                {
+                    bool isBelowTargeted = false;
+                    for (int yAbove = y + 1; yAbove < size; yAbove++)
+                    {
+                        Vector2Int abovePos = new Vector2Int(x, yAbove);
+                        ElementVisual aboveVisual = grid.GridData.GetVisualAt(abovePos);
+                        Element aboveElement = grid.GridData.GetElementAt(abovePos);
+
+                        if (aboveVisual != null && aboveVisual.IsTargetedByEnemy
+                            && aboveElement != null && aboveElement != grid.EmptyElement)
+                        {
+                            isBelowTargeted = true;
+                            break;
+                        }
+                    }
+
+                    if (!isBelowTargeted)
+                        emptyPositions.Add(pos);
+                }
+            }
+        }
+
+        return emptyPositions;
+    }
+
+    private IEnumerator CompleteRefillAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        for (int x = 0; x < grid.GridData.GridSize; x++)
+        {
+            for (int y = 0; y < grid.GridData.GridSize; y++)
+            {
+                Vector2Int pos = new Vector2Int(x, y);
+                ElementVisual visual = grid.GridData.GetVisualAt(pos);
+
+                if (visual != null)
+                {
+                    visual.transform.position = visualGrid.GridToWorldPosition(pos);
+                    visual.ResetSpriteTransform();
+                    visual.SetWorldPosition(visualGrid.GridToWorldPosition(pos));
+
+                    Element element = grid.GridData.GetElementAt(pos);
+                    visual.Initialize(pos, element);
+                    visual.SetSelectable(true);
+                }
+            }
+        }
+
+        isProcessing = false;
+        onComplete?.Invoke();
+    }
+}
+
+//check if there are available spells to the player
+public class ValidateSpellState : IGridState
+{
+    private Grid grid;
+    private ISpellValidator spellValidator;
+    private List<Spell> availableSpells;
+    private bool isValidating;
+
+    public ValidateSpellState(Grid gridController, List<Spell> spells)
+    {
+        grid = gridController;
+        spellValidator = new SpellValidator();
+        availableSpells = spells;
+    }
+
+    public void Enter()
+    {
+        isValidating = true;
+        ValidateGrid();
+    }
+
+    public void Update()
+    {
+        if (!isValidating)
+        {
+            grid.ChangeState(new IdleState(grid));
+        }
+    }
+
+    public void Exit()
+    {
+        isValidating = false;
+    }
+
+    public GridStateType GetStateType()
+    {
+        return GridStateType.ValidateSpell;
+    }
+
+    private void ValidateGrid()
+    {
+        bool hasValidSpell = spellValidator.HasValidSpell(grid.GridData, availableSpells);
+
+        if (!hasValidSpell)
+        { 
+            if (grid.IsTutorialActive())
+            {
+                bool inserted = grid.TryInsertRandomSpell(availableSpells);
+                if (!inserted)
+                    grid.Reroll();
+            }
+            else
+            {
+                grid.Reroll();
+            }
+        }
+
+        isValidating = false;
+    }
+}

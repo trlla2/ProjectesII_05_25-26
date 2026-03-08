@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ab529a0c12673a408eb38b86a880060, type: 3}
+  m_Name: BossStage1
+  m_EditorClassIdentifier: 
+  name: Demon
+  health: 1000
+  damage: 10
+  elementCount: 0
+  level: 1
+  difficulty: 7
+  weaknesses: 00000000
+  weaknessMultiplier: 2
+  resistances: 02000000
+  resistanceMultiplier: 0.5
+  enemySprite: {fileID: 6335680934792989802, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
+  animatorController: {fileID: 9100000, guid: 9a618035c7b44fc40ad4c4774f6a312f, type: 2}
+  spellType: 4
+  damagePerElement: 4
+  moveCount: 5
+  AtackTimer: 4
+  lvl2Delay: 5
+  lvl2Countdown: 15
+  visibilityDuration: 2.5
+  hiddenSprite: {fileID: 0}
+  excludeBelowTargets: 0
+  haveDrops: 1
+  spellDrops:
+  - {fileID: 11400000, guid: e02a4c0454b986845a065ad209d800cd, type: 2}
+  - {fileID: 11400000, guid: e8ecfab035326b84386fbbcadbfc34ff, type: 2}

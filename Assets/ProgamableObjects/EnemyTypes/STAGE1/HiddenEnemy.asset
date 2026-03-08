@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ab529a0c12673a408eb38b86a880060, type: 3}
+  m_Name: HiddenEnemy
+  m_EditorClassIdentifier: 
+  name: Mystery Orc
+  health: 150
+  damage: 10
+  elementCount: 2
+  level: 1
+  difficulty: 5
+  weaknesses: 
+  weaknessMultiplier: 2
+  resistances: 
+  resistanceMultiplier: 0.5
+  enemySprite: {fileID: -2827179253996214189, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
+  animatorController: {fileID: 9100000, guid: fc6f3b2b48f66fb41a61df9098d04ce6, type: 2}
+  spellType: 9
+  damagePerElement: 4
+  moveCount: 2
+  AtackTimer: 12
+  lvl2Delay: 5
+  lvl2Countdown: 15
+  visibilityDuration: 5
+  hiddenSprite: {fileID: 6712546136909991794, guid: d1c5380f5a856cc46b31e69ab4116190, type: 3}
+  excludeBelowTargets: 0

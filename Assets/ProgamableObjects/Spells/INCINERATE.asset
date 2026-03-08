@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e50f7e6ff41671447bf6a365161bb2e9, type: 3}
+  m_Name: INCINERATE
+  m_EditorClassIdentifier: 
+  Name: Incinerate
+  Description: Burns the enemy delaing damage
+  Recipe:
+  - {fileID: 11400000, guid: 8fd29fd89e0e2fc418ab8a117cefbbd4, type: 2}
+  - {fileID: 11400000, guid: 1ab200a2191b3a645a4c64114d4fc11a, type: 2}
+  OnCast:
+    m_PersistentCalls:
+      m_Calls: []

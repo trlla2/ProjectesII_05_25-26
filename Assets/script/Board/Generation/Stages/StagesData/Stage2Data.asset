@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f429702b582c65949ae43bcdb3c40145, type: 3}
+  m_Name: Stage2Data
+  m_EditorClassIdentifier: 
+  _numOfEmptyTiles: 31
+  _numOfEnemyTiles: 5
+  _numOfMiniBossTiles: 0
+  _numOfChestTiles: 5
+  _minBranches: 1
+  _maxBranches: 3
+  _minBranchLengthBeforeRejoin: 14
+  _maxBranchLength: 20
+  _branchProbabilityPerCandidate: 0.2
+  _enemyList:
+  - {fileID: 11400000, guid: 7825248ffb3a9fe4bad66a1ac0583bc4, type: 2}
+  - {fileID: 11400000, guid: 5a68dbd4268eb7749b497b05fa080c5c, type: 2}
+  - {fileID: 11400000, guid: 3ddc38c9790bdd44bacbeb43cb61cada, type: 2}
+  - {fileID: 11400000, guid: 8da2630b56083c44abb033c12f629f0e, type: 2}
+  - {fileID: 11400000, guid: 5d98f1c5df92ad7479bd352825842b75, type: 2}
+  - {fileID: 11400000, guid: 79d07f17a589c324d9832fa0d07aa8f0, type: 2}
+  - {fileID: 11400000, guid: 0f615755cce1d3b409215e446884a96d, type: 2}
+  _bossList:
+  - {fileID: 11400000, guid: 9168d9f4aa1ee834ea1164744d0e797d, type: 2}
+  encountersOrder: 0300000003000000040000000500000003000000
+  interactableTiles: []
+  commonRarityPercentage: 40
+  rareRarityPercentage: 30
+  epicRarityPercentage: 20
+  legendaryRarityPercentage: 10

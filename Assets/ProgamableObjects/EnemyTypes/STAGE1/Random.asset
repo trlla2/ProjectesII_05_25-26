@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ab529a0c12673a408eb38b86a880060, type: 3}
+  m_Name: Random
+  m_EditorClassIdentifier: 
+  name: Small Spirit
+  health: 50
+  damage: 10
+  elementCount: 4
+  level: 1
+  difficulty: 3
+  weaknesses: 
+  weaknessMultiplier: 2
+  resistances: 
+  resistanceMultiplier: 0.5
+  enemySprite: {fileID: -1402350852106452376, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
+  animatorController: {fileID: 9100000, guid: 762dffe4e2be2c54d8021d908eb1f3af, type: 2}
+  spellType: 2
+  damagePerElement: 4
+  moveCount: 3
+  AtackTimer: 6
+  lvl2Delay: 5
+  lvl2Countdown: 15
+  excludeBelowTargets: 0

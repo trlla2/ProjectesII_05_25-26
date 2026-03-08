@@ -988,7 +988,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.23625001, y: 0.078}
   m_AnchorMax: {x: 0.99000007, y: 0.13}
-  m_AnchoredPosition: {x: -0.00018310547, y: 0}
+  m_AnchoredPosition: {x: -0.00012207031, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &211263656
@@ -1962,6 +1962,10 @@ PrefabInstance:
       propertyPath: spell
       value: 
       objectReference: {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
+    - target: {fileID: -3643486185334491319, guid: a72e4531b5b80b94d8485520414c0dca, type: 3}
+      propertyPath: postInteractionTile
+      value: 
+      objectReference: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
     - target: {fileID: -3643486185334491319, guid: a72e4531b5b80b94d8485520414c0dca, type: 3}
       propertyPath: neighbors.Array.size
       value: 2
@@ -7495,9 +7499,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   items: []
   ForceSpells: 0
-  spells:
+  spells: []
+  knownSpells:
   - {fileID: 11400000, guid: d65283c45b7504446948b1b821bc9cb0, type: 2}
-  knownSpells: []
+  - {fileID: 11400000, guid: e9afe958fcdfa78458bbde73be344e18, type: 2}
+  - {fileID: 11400000, guid: 7bcb7841072f0e846992f0ad4f6bfd2e, type: 2}
+  - {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
 --- !u!1001 &824984281
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13879,7 +13886,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.915}
   m_AnchorMax: {x: 1, y: 0.96}
-  m_AnchoredPosition: {x: 0, y: -0.00024414062}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2013667466

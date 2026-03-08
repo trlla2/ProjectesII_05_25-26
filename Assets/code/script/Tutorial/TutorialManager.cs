@@ -27,6 +27,7 @@ public class TutorialManager : MonoBehaviour
 
     IEnumerator WaitFrameForStart()
     {
+        Debug.Log("Waiting for end of frame to start tutorial...");
         yield return new WaitForEndOfFrame();
         StartTutorial(activeSequence, activeLayout);
     }
@@ -189,9 +190,6 @@ public class TutorialManager : MonoBehaviour
     {
         if (step.highlightPositions != null && step.highlightPositions.Count > 0)
             uiController.ShowHighlights(step.highlightPositions, grid);
-
-        if (step.showArrow)
-            uiController.ShowArrow(step.arrowFrom, step.arrowTo, step.arrowLabel, grid);
 
         if (step.showHand)
             uiController.ShowHandAnimation(step.handPath, grid, step.handDuration);

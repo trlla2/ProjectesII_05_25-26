@@ -21,12 +21,6 @@ public struct TutorialStep
     public List<Vector2Int> handPath;
     public float handDuration;
 
-    [Header("Arrow")]
-    public bool showArrow;
-    public TutorialArrowTarget arrowFrom;
-    public TutorialArrowTarget arrowTo;
-    public string arrowLabel;
-
     [Header("Flow Control")]
     public TutorialAdvanceCondition advanceCondition;
     public bool pauseEnemyTimers;

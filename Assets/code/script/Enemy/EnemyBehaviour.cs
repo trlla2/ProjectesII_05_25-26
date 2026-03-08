@@ -404,10 +404,9 @@ public class EnemyBehaviour : MonoBehaviour
         if (tutorialManager != null)
             tutorialManager.NotifyEnemyDeath();
 
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.CombatHandler.OnEnemyDead();
-        }
+        
+        GameManager.Instance.CombatHandler.OnEnemyDead();
+        
         spriteRenderer.enabled = false;
 
         Debug.Log($"Enemy {enemyType.name} has been defeated!");

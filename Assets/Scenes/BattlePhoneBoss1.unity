@@ -5454,7 +5454,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.25}
   m_AnchorMax: {x: 1, y: 0.75}
-  m_AnchoredPosition: {x: 352, y: 22.784996}
+  m_AnchoredPosition: {x: 351.99997, y: 22.784996}
   m_SizeDelta: {x: -571.5, y: 45.57}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &59606316
@@ -14935,7 +14935,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _stageDatas: []
-  tutorialManager: {fileID: 0}
   _debugItemsInInventory: []
 --- !u!4 &806185222
 Transform:
@@ -14959,23 +14958,19 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 806185220}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5089faa8aa8f981468d790dfeaa1fece, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   items: []
-  ForceSpells: 1
+  ForceSpells: 0
   spells:
   - {fileID: 11400000, guid: d65283c45b7504446948b1b821bc9cb0, type: 2}
   - {fileID: 11400000, guid: e9afe958fcdfa78458bbde73be344e18, type: 2}
   - {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
   - {fileID: 11400000, guid: e02a4c0454b986845a065ad209d800cd, type: 2}
-  knownSpells:
-  - {fileID: 11400000, guid: d65283c45b7504446948b1b821bc9cb0, type: 2}
-  - {fileID: 11400000, guid: e8ecfab035326b84386fbbcadbfc34ff, type: 2}
-  - {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
-  - {fileID: 11400000, guid: e9afe958fcdfa78458bbde73be344e18, type: 2}
+  knownSpells: []
 --- !u!1 &809243521
 GameObject:
   m_ObjectHideFlags: 0
@@ -22840,7 +22835,7 @@ MonoBehaviour:
   winPanel: {fileID: 1594906318}
   losePanel: {fileID: 810593950}
   winText: {fileID: 483719664}
-  coinTextColor: {r: 0.8679245, g: 0.75432163, b: 0, a: 1}
+  spellDropTextColor: {r: 0, g: 1, b: 0, a: 1}
   expTextColor: {r: 0, g: 0.5827391, b: 1, a: 1}
   winTranslator: {fileID: 1594906320}
   loseTranslator: {fileID: 810593951}

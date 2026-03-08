@@ -1,6 +1,5 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class EndPanelBehaviour : MonoBehaviour
 {
@@ -14,7 +13,7 @@ public class EndPanelBehaviour : MonoBehaviour
     [SerializeField]
     private TMP_Text winText;
     [SerializeField]
-    private Color coinTextColor = Color.yellow;
+    private Color spellDropTextColor = Color.green;
     [SerializeField]
     private Color expTextColor = Color.blue;
 
@@ -41,16 +40,20 @@ public class EndPanelBehaviour : MonoBehaviour
         losePanel.SetActive(false);
     }
 
-    private void SetWinLosePanel(bool isWin, int exp, int money)
+    private void SetWinLosePanel(bool isWin, int exp, Spell drop)
     {
 
 
         if(isWin)
         {
-            string coinColorHex = ColorUtility.ToHtmlStringRGB(coinTextColor);
+            string spellDropColorHex = ColorUtility.ToHtmlStringRGB(spellDropTextColor);
             string expColorHex = ColorUtility.ToHtmlStringRGB(expTextColor);
 
-            winText.text = $"You gain: \n <color=#{expColorHex}>{exp} Exp</color> \n <color=#{coinColorHex}>{money} coins</color> \n \n Click to continue";
+            winText.text = $"You gain: \n <color=#{expColorHex}>{exp} Exp</color> ";
+            if (drop != null)
+                winText.text += $" \n <color=#{spellDropColorHex}>NEW SPELL: {drop.name}</color> \n";
+            winText.text += "\n Click to continue";
+
             winPanel.SetActive(true);
             losePanel.SetActive(false);
 

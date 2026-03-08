@@ -42,6 +42,11 @@ public class EnemyType : ScriptableObject
 
     public bool excludeBelowTargets = false;
 
+    [Header("Drops")]
+    [SerializeField] private bool haveDrops = false;
+    [SerializeField] private List<Spell> spellDrops = new List<Spell>();   
+
+
     public float Health => health;
     public float Damage => damage;
     public Sprite EnemySprite => enemySprite;
@@ -121,7 +126,32 @@ public class EnemyType : ScriptableObject
                 return new ColumnDestroySpell(damagePerElement, moveCount, excludeBelowTargets);
         }
     }
+
+    public Spell GetSpellDrop()
+    {
+        if (!haveDrops || spellDrops == null || spellDrops.Count == 0)
+            return null;
+
+        List<Spell> availableDrops = new List<Spell>();
+        foreach (Spell s in spellDrops)
+        {
+            if (s != null && !GameManager.Instance.PlayerStats.KnownSpells.Contains(s))
+            {
+                availableDrops.Add(s);
+            }
+        }
+
+        if (availableDrops.Count == 0)
+            return null;
+
+        int randomIndex = Random.Range(0, availableDrops.Count);
+        Spell droppedSpell = availableDrops[randomIndex];
+
+        return droppedSpell;
+    }
 }
+
+
 
 public enum EnemySpellType
 {

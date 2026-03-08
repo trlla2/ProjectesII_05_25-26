@@ -19,7 +19,7 @@ public class CombatHandler : MonoBehaviour
     [SerializeField] private EnemyType forcedEnemyType;
 
     // Events
-    public delegate void GetOnEndBattle(bool isWin, int exp, int money);
+    public delegate void GetOnEndBattle(bool isWin, int exp, Spell drop);
     public event GetOnEndBattle OnEndBattle;
 
     public event System.Action OnPlayerHitRecived;
@@ -109,20 +109,23 @@ public class CombatHandler : MonoBehaviour
     public void OnPlayerDead()
     {
         enemyInCombat?.StopBattle();
-        OnEndBattle?.Invoke(false, 0, 0);
+        OnEndBattle?.Invoke(false, 0, null);
     }
 
     public void OnEnemyDead()
     {
         int exp = GameManager.Instance.StageLevel * expMultiplyer;
-        int money = GameManager.Instance.StageLevel * moneyMultiplyer;
+        Debug.Log($"aaaaaaaaaaaaaaa {enemyInCombat.GetEnemyType().GetSpellDrop()}"); // GetSpellDrop return nothing 
+
+        Spell drop = enemyInCombat.GetEnemyType().GetSpellDrop();
 
         GameManager.Instance.PlayerStats.AddExp(exp);
-        GameManager.Instance.PlayerStats.AddMoney(money);
+        if(drop != null)
+            GameManager.Instance.PlayerStats.AddKnownSpell(drop);
 
         DeleteEnemyRef();
         //_boardClickHandler.HandleBoardRaycast(true);
-        OnEndBattle?.Invoke(true, exp, money);
+        OnEndBattle?.Invoke(true, exp, drop);
     }
 
     public void SetHoverHandlerRef(SpellHoverHandler spellHover) { spellHoverHandler = spellHover; }

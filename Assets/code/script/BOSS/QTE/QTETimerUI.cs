@@ -68,13 +68,13 @@ public class QTETimerUI : MonoBehaviour
 
             if (currentTime <= warningThreshold)
             {
-                timerText.color = warningColor;
+                timerText.color = normalColor;
                 float pulse = 1f + Mathf.Sin(Time.unscaledTime * pulseSpeed) * pulseAmount;
                 timerText.transform.localScale = Vector3.one * pulse;
             }
             else
             {
-                timerText.color = normalColor;
+                timerText.color =  warningColor;
                 timerText.transform.localScale = Vector3.one;
             }
         }

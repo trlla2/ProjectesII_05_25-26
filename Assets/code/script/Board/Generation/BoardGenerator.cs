@@ -83,9 +83,88 @@ public class BoardGenerator : MonoBehaviour
 
         AssignEnemiesAndChests();
 
+        // Garantizar que branch[1] siempre sea EmptyTile antes de aplicar el fog
+        EnsureBranchEntriesAreEmpty();
+
         foreach (List<BoardTile> path in _paths)
             if (path != mainPath)
                 _boardManager.PutFogOnBranch(path);
+    }
+
+    void EnsureBranchEntriesAreEmpty()
+    {
+        for (int b = 1; b < _paths.Count; b++)
+        {
+            List<BoardTile> branch = _paths[b];
+            if (branch == null || branch.Count < 2) continue;
+
+            BoardTile entry = branch[1];
+            if (entry is EmptyTile) continue;
+
+            // Buscar la primera EmptyTile disponible en la branch (a partir del índice 2)
+            int swapIdx = -1;
+            for (int i = 2; i < branch.Count; i++)
+            {
+                if (branch[i] is EmptyTile)
+                {
+                    swapIdx = i;
+                    break;
+                }
+            }
+
+            if (swapIdx == -1)
+            {
+                Debug.LogWarning($"EnsureBranchEntriesAreEmpty: branch {b} no tiene EmptyTile disponible para intercambiar con branch[1].");
+                continue;
+            }
+
+            SwapTilePositionsInBranch(branch, 1, swapIdx);
+        }
+    }
+
+    void SwapTilePositionsInBranch(List<BoardTile> branch, int indexA, int indexB)
+    {
+        BoardTile tileA = branch[indexA]; 
+        BoardTile tileB = branch[indexB];
+
+        Vector2Int posA = tileA.GetGridPosition();
+        Vector2Int posB = tileB.GetGridPosition();
+
+        // Intercambiar posiciones de grid
+        tileA.SetGridPosition(posB);
+        tileB.SetGridPosition(posA);
+
+        tileA.transform.position = new Vector3(posB.x, tileA.transform.position.y, posB.y);
+        tileB.transform.position = new Vector3(posA.x, tileB.transform.position.y, posA.y);
+
+        branch[indexA] = tileB;
+        branch[indexB] = tileA;
+
+        // Actualizar referencias en todos los paths
+        foreach (List<BoardTile> path in _paths)
+        {
+            for (int i = 0; i < path.Count; i++)
+            {
+                if (path[i] == tileA) path[i] = tileA;
+                if (path[i] == tileB) path[i] = tileB;
+            }
+        }
+
+        tileA.neighbors.Clear();
+        tileB.neighbors.Clear();
+        _boardManager.UpdateNeighbors(tileA);
+        _boardManager.UpdateNeighbors(tileB);
+
+        foreach (BoardTile neighbor in tileA.neighbors)
+        {
+            if (neighbor != null) _boardManager.UpdateNeighbors(neighbor);
+        }
+        foreach (BoardTile neighbor in tileB.neighbors)
+        {
+            if (neighbor != null) _boardManager.UpdateNeighbors(neighbor);
+        }
+
+        Debug.Log($"EnsureBranchEntriesAreEmpty: intercambiadas posiciones {posA} y {posB} en branch.");
     }
 
     List<BoardTile> GenerateMainPath(Transform parent)
@@ -154,7 +233,6 @@ public class BoardGenerator : MonoBehaviour
 
         int branchesCreated = 0;
 
-        // primera pasada -> forzar creación hasta alcanzar el mínimo requerido
         foreach (BoardTile origin in candidates)
         {
             if (branchesCreated >= _minBranches) break;
@@ -177,32 +255,6 @@ public class BoardGenerator : MonoBehaviour
             }
         }
 
-        //// segunda pasada -> seguir creando por probabilidad hasta el máximo
-        //foreach (BoardTile origin in candidates)
-        //{
-        //    if (branchesCreated >= _maxBranches) break;
-
-        //    if (_paths.Any(p => p.Count > 0 && p[0] == origin)) continue;
-
-        //    if (Random.value > _branchProbabilityPerCandidate) continue;
-
-        //    List<BoardTile> branch = BuildBranch(origin, parent, _maxBranchLength);
-        //    if (branch.Count > _minBranchLengthBeforeRejoin)
-        //    {
-        //        if (!_paths.Contains(branch))
-        //            _paths.Add(branch);
-        //        branchesCreated++;
-        //    }
-        //    else
-        //    {
-        //        foreach (BoardTile tile in branch)
-        //        {
-        //            if (tile == origin && (origin.neighbors.Count > 2 || origin.neighbors.Count == 1)) continue;
-        //            _boardManager.generatedTiles.Remove(tile);
-        //            Destroy(tile.gameObject);
-        //        }
-        //    }
-        //}
     }
 
     List<Vector2Int> GetAllowedBranchNeighbors(Vector2Int basePos)
@@ -220,8 +272,6 @@ public class BoardGenerator : MonoBehaviour
         List<BoardTile> branch = new List<BoardTile> { origin };
         BoardTile current = origin;
 
-        // Lista independiente de todas las tiles instanciadas en esta branch (sin el origin)
-        // Garantiza que el cleanup funcione aunque se muten las referencias en branch
         List<BoardTile> instanced = new List<BoardTile>();
 
         HashSet<Vector2Int> occupiedAll = new HashSet<Vector2Int>(_boardManager.generatedTiles.Select(t => t.GetGridPosition()));
@@ -247,22 +297,20 @@ public class BoardGenerator : MonoBehaviour
 
                 current = nextTile;
                 branch.Add(current);
-                instanced.Add(current); // registrar siempre la tile instanciada
+                instanced.Add(current);
                 occupiedAll.Add(nextPos);
                 continue;
             }
             else
             {
-                // La branch no puede continuar: evaluar si es válida o descartarla
+                // La branch no puede continuar: delete si es demasiado corta
                 if (branch.Count - 1 >= _minBranchLengthBeforeRejoin)
                 {
-                    // Branch suficientemente larga: formalizar
                     branch[0].generatedBranch = branch;
                     _paths.Add(branch);
                 }
                 else
                 {
-                    // Branch demasiado corta: destruir TODAS las tiles instanciadas
                     foreach (BoardTile tile in instanced)
                     {
                         _boardManager.generatedTiles.Remove(tile);
@@ -365,7 +413,6 @@ public class BoardGenerator : MonoBehaviour
             return;
         }
 
-
         // instance bossTile
         int bossIndex = path.Count - _bossTileDistanceFromEnd;
         if (bossIndex >= 0 && bossIndex < path.Count)
@@ -406,7 +453,6 @@ public class BoardGenerator : MonoBehaviour
         List<BoardTile> mainPath = _paths[0];
         HashSet<BoardTile> startZoneSet = GetStartZoneTiles(mainPath).ToHashSet();
 
-        // Main path: colocar _numOfEnemyTiles enemigos
         List<BoardTile> mainCandidates = GetValidEnemyPositionsForPath(mainPath, startZoneSet, null);
         Debug.Log($"Candidatos válidos en main: {mainCandidates.Count}");
         PlaceEnemiesOnPath(mainCandidates, _numOfEnemyTiles);
@@ -480,7 +526,6 @@ public class BoardGenerator : MonoBehaviour
             currentIndex += step;
         }
 
-        // rellenar si faltan
         if (placed < count)
         {
             List<int> availableIndices = new List<int>();
@@ -536,7 +581,6 @@ public class BoardGenerator : MonoBehaviour
             .Skip(Mathf.Max(0, path.Count - endReserveCount))
             .ToHashSet();
 
-        // combinar con las reservadas externas si existen
         if (reservedEndSet != null)
             pathEndZone.UnionWith(reservedEndSet);
 
@@ -616,42 +660,5 @@ public class BoardGenerator : MonoBehaviour
             }
         }
         return false;
-    }
-
-
-    // wadiyatalkinabeet
-
-    List<Vector2Int> GenerateSquareGrid(Vector2Int origin, int size)
-    {
-        List<Vector2Int> positions = new List<Vector2Int>();
-
-        for (int x = 0; x < size; x++)
-        {
-            for (int y = 0; y < size; y++)
-            {
-                positions.Add(new Vector2Int(origin.x + x, origin.y + y));
-            }
-        }
-
-        return positions;
-    }
-
-    void InstanceHallOfEgress(Transform parent)
-    {
-        BoardTile currentTile = _boardManager.startingTile;
-
-        List<Vector2Int> gridPositions = GenerateSquareGrid(currentTile.GetGridPosition(), 4);
-
-        foreach (var pos in gridPositions)
-        {
-            if (pos == currentTile.GetGridPosition())
-                continue;
-
-            BoardTile nextTile = _boardManager.CreateNewTile(_boardManager.emptyTileData, pos, parent);
-            _boardManager.UpdateNeighbors(currentTile);
-            _boardManager.UpdateNeighbors(nextTile);
-
-            currentTile = nextTile;
-        }
     }
 }

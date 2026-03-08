@@ -34,7 +34,7 @@ public abstract class BoardTile : MonoBehaviour
 
     public void OnPlayerArrive()
     {
-        if (_boardManager == null || _boardManager._revealedBranch == null || _boardManager._revealedBranch.Count == 0) return;
+        if (_boardManager == null || _boardManager._revealedBranch == null || _boardManager._revealedBranch.Count == 0 || _boardManager.ForcedBoard) return;
 
         bool isOriginOfRevealedBranch = _boardManager._revealedBranch[0] == this;
         if (isOriginOfRevealedBranch) return;

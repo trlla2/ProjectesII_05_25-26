@@ -7229,7 +7229,7 @@ PrefabInstance:
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: _foggedTileData
       value: 
-      objectReference: {fileID: 11400000, guid: 05adc05358c3bfb4d9e3580b22113770, type: 2}
+      objectReference: {fileID: 11400000, guid: f6c70ee3484ef354381f873c5e6a5b31, type: 2}
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: neighbors.Array.size
       value: 2
@@ -9922,6 +9922,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9045006f78d19d84296ebbe511703e51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1197129884 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5583812689237297437, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
+  m_PrefabInstance: {fileID: 1197129877}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1197129881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d50e8374673dbdf4cbe6611a64dfc9ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1216946532
 GameObject:
   m_ObjectHideFlags: 0
@@ -10137,7 +10148,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _forcedBoard: 1
-  currentStageLevelData: {fileID: 0}
+  currentStageLevelData: {fileID: 11400000, guid: ffbf1d07f71dd274da37d2c7d1440376, type: 2}
   startingTile: {fileID: 874324315}
   emptyTileData: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   enemyTileData: {fileID: 11400000, guid: 27551c8f56ed7724a8d92062277b60c2, type: 2}
@@ -10163,7 +10174,7 @@ MonoBehaviour:
   - {fileID: 1722606843}
   - {fileID: 200147869}
   - {fileID: 1748064276}
-  openChestPanel: {fileID: 0}
+  openChestPanel: {fileID: 1197129884}
   newSpellPanel: {fileID: 1479726534}
   chestOfEgressPanel: {fileID: 0}
   fogTileData: {fileID: 11400000, guid: bc970021f558bff4fbd00e2d787a944d, type: 2}
@@ -13012,7 +13023,7 @@ PrefabInstance:
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: _foggedTileData
       value: 
-      objectReference: {fileID: 11400000, guid: f6c70ee3484ef354381f873c5e6a5b31, type: 2}
+      objectReference: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: neighbors.Array.size
       value: 2

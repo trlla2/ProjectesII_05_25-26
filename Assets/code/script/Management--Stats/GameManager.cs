@@ -27,6 +27,8 @@ public class GameManager : MonoBehaviour
     public event System.Action OnEnterBattle;
     public event System.Action OnPlayerMove;
 
+
+    
     private void Awake()
     {
         if (Instance != null)

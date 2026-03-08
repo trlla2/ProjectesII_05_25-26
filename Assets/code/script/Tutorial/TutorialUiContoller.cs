@@ -13,7 +13,6 @@ public class TutorialUIController : MonoBehaviour
     [SerializeField] private GameObject popupPanel;
     [SerializeField] private GameObject toastPanel;
     [SerializeField] private GameObject handIcon;
-    [SerializeField] private GameObject arrowPrefab;
     [SerializeField] private GameObject highlightRingPrefab;
 
     [Header("References")]
@@ -40,7 +39,6 @@ public class TutorialUIController : MonoBehaviour
     {
         popupDismissButton.onClick.AddListener(OnPopupTap);
         handRect = handIcon != null ? handIcon.GetComponent<RectTransform>() : null;
-        arrowRect = arrowPrefab != null ? arrowPrefab.GetComponent<RectTransform>() : null;
         HideAll();
     }
 
@@ -150,55 +148,7 @@ public class TutorialUIController : MonoBehaviour
         return localPoint;
     }
 
-    public void ShowArrow(TutorialArrowTarget from, TutorialArrowTarget to, string label, Grid grid)
-    {
-        if (arrowPrefab == null || handCanvasRoot == null)
-        {
-            Debug.LogWarning("TutorialUIController: arrowPrefab/handCanvasRoot is missing.");
-            return;
-        }
-
-        if (!TryGetArrowTargetPoint(from, grid, out Vector2 fromPoint) ||
-            !TryGetArrowTargetPoint(to, grid, out Vector2 toPoint))
-        {
-            arrowPrefab.SetActive(false);
-            arrowLabelText.gameObject.SetActive(false);
-            return;
-        }
-
-        arrowPrefab.SetActive(true);
-
-        if (arrowRect == null)
-            arrowRect = arrowPrefab.GetComponent<RectTransform>();
-
-        if (arrowRect != null)
-        {
-            Vector2 dir = toPoint - fromPoint;
-            float len = dir.magnitude;
-            if (len < 0.001f) len = 0.001f;
-
-            Vector2 mid = (fromPoint + toPoint) * 0.5f;
-            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-
-            arrowRect.anchoredPosition = mid;
-            arrowRect.localRotation = Quaternion.Euler(0f, 0f, angle);
-
-            Vector2 size = arrowRect.sizeDelta;
-            size.x = len;
-            arrowRect.sizeDelta = size;
-        }
-
-        if (!string.IsNullOrEmpty(label))
-        {
-            arrowLabelText.text = label;
-            arrowLabelText.gameObject.SetActive(true);
-            arrowLabelText.rectTransform.anchoredPosition = (fromPoint + toPoint) * 0.5f + new Vector2(0f, 32f);
-        }
-        else
-        {
-            arrowLabelText.gameObject.SetActive(false);
-        }
-    }
+   
 
     public void HideAll()
     {
@@ -207,7 +157,6 @@ public class TutorialUIController : MonoBehaviour
         toastPanel.SetActive(false); 
         toastText.gameObject.SetActive(true);
         handIcon.SetActive(false);
-        arrowPrefab.SetActive(false);
         arrowLabelText.gameObject.SetActive(false);
         KillHandTween();
         ClearHighlights();

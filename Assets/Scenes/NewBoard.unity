@@ -789,6 +789,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _forcedBoard: 0
+  _isTutorial: 0
   currentStageLevelData: {fileID: 0}
   startingTile: {fileID: 195526932}
   emptyTileData: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
@@ -801,7 +802,7 @@ MonoBehaviour:
   generatedTiles: []
   openChestPanel: {fileID: 4580768473457997494}
   newSpellPanel: {fileID: 0}
-  chestOfEgressPanel: {fileID: 0}
+  chestOfEgressPanel: {fileID: 4580768473457997495}
   fogTileData: {fileID: 11400000, guid: bc970021f558bff4fbd00e2d787a944d, type: 2}
   encountersManager: {fileID: 0}
   _revealedBranch: []
@@ -1570,6 +1571,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d50e8374673dbdf4cbe6611a64dfc9ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4580768473457997495 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6887090245244398174, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
+  m_PrefabInstance: {fileID: 4580768473457997493}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e0f41f6335c97d41a4ce98418a3b9e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807

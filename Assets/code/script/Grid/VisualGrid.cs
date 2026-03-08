@@ -91,7 +91,7 @@ public class VisualGrid : MonoBehaviour
             {
                 Vector2Int gridPos = new Vector2Int(x, y);
                 ElementVisual visual = grid.GridData.GetVisualAt(gridPos);
-                if (visual != null)
+                if (visual != null && grid.GridData.GetElementAt(gridPos).Type != ElementType.Bomb)
                 {
                     visual.ShowInactive(active);
                 }

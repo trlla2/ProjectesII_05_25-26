@@ -5255,11 +5255,6 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
---- !u!120 &35070954 stripped
-LineRenderer:
-  m_CorrespondingSourceObject: {fileID: 5037626638039595679, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
-  m_PrefabInstance: {fileID: 1982195253204217190}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &46438659
 GameObject:
   m_ObjectHideFlags: 0
@@ -13823,9 +13818,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76e0608546d7b7449976b9a263f27938, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cableLine1: {fileID: 35070954}
-  cableLine2: {fileID: 1555909852}
-  cableLine3: {fileID: 1021981362}
+  cableMaterial1: {fileID: 2100000, guid: f74db01be5445754b925c854cc5af603, type: 2}
+  cableMaterial2: {fileID: 2100000, guid: ef11314462b34904b9fc1cb4ca67fdbe, type: 2}
+  cableMaterial3: {fileID: 2100000, guid: 96530949e7e74da40998afe0075b67cf, type: 2}
+  LineOffset: 0.15
+  LinesPerCardinal: 3
+  LineWidth: 0.14
 --- !u!1 &636901606
 GameObject:
   m_ObjectHideFlags: 0
@@ -14110,7 +14108,7 @@ MonoBehaviour:
   bossManager: {fileID: 0}
   isBossBattle: 0
   BossWeakElement: 0
-  isEnemyTypeForced: 0
+  isEnemyTypeForced: 1
   forcedEnemyType: {fileID: 11400000, guid: 0f615755cce1d3b409215e446884a96d, type: 2}
 --- !u!4 &733892386
 Transform:
@@ -14459,7 +14457,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 806185220}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5089faa8aa8f981468d790dfeaa1fece, type: 3}
   m_Name: 
@@ -15315,11 +15313,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 975234179}
   m_CullTransparentMesh: 1
---- !u!120 &1021981362 stripped
-LineRenderer:
-  m_CorrespondingSourceObject: {fileID: 1286269884650413763, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
-  m_PrefabInstance: {fileID: 1982195253204217190}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1048452941
 GameObject:
   m_ObjectHideFlags: 0
@@ -21645,11 +21638,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!120 &1555909852 stripped
-LineRenderer:
-  m_CorrespondingSourceObject: {fileID: 8729937458911342206, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
-  m_PrefabInstance: {fileID: 1982195253204217190}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1562077889
 GameObject:
   m_ObjectHideFlags: 0
@@ -24585,6 +24573,10 @@ PrefabInstance:
     - target: {fileID: 1803296099137659483, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: weaknessTextTranslator
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 4093081549351310330, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4225573576341607595, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: m_AnchorMax.x

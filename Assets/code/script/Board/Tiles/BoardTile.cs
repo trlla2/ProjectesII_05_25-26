@@ -72,7 +72,20 @@ public abstract class BoardTile : MonoBehaviour
 
     public bool IsWalkable() { return _data.walkable; }
 
-    public abstract void Interact();
+    public virtual void Interact()
+    {
+        TryToRevealGeneratedBranchIfHasOne();
+    }
+    protected void TryToRevealGeneratedBranchIfHasOne()
+    {
+        if (generatedBranch == null) return;
+
+        bool branchIsHidden = generatedBranch.Count > 1
+            && generatedBranch[1].GetData() == _boardManager.GetFogTileData();
+
+        if (branchIsHidden)
+            _boardManager.RevealBranch(generatedBranch);
+    }
 
     public Vector2Int GetGridPosition() { return _gridPos; }
     public void SetGridPosition(Vector2Int gridPos) { _gridPos = gridPos; }

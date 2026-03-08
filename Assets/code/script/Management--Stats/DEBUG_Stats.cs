@@ -12,6 +12,7 @@ public class DEBUG_Stats : MonoBehaviour
     [Header(" ONLY PUT 4 SPELLS")]
     [SerializeField]
     private List<Spell> spells = new List<Spell>();
+    public List<Spell> Spells => spells;
 
     [SerializeField]
     private List<Spell> knownSpells = new List<Spell>();
@@ -45,4 +46,12 @@ public class DEBUG_Stats : MonoBehaviour
             GameManager.Instance.PlayerStats.AddItemToInventory(item);
 
     }
+
+    public bool HasDebugSpells() => spells.Count > 0 && ForceSpells;
+
+    public void SetDebugSpellList(List<Spell> spellList)
+    {
+        spells = spellList;
+    }
+
 }

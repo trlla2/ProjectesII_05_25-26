@@ -43,9 +43,6 @@ public abstract class BoardTile : MonoBehaviour
 
         if (isInsideBranch && !_boardManager.HasChoosedBranchPath())
         {
-            //if (!_boardManager.HasChoosedBranchPath())
-            //    _boardManager.BranchPathChoosed();
-
             // El jugador entra en la branch: ocultar todo lo que no pertenezca a ella
             _boardManager.BranchPathChoosed();
 

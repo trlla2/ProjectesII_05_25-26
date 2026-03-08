@@ -20,6 +20,8 @@ public class StairsTile : BoardTile
 
     public override void Interact()
     {
+        if (_boardManager.IsTutorial) SceneTransition.Instance.LoadScene("HallOfEgress", false);
+
         if (GameManager.Instance.PlayerStats.GetSpellBook().Count == GameManager.Instance.PlayerStats.SpellBookSize)
         {
             if (SceneManager.GetActiveScene().name == _sceneToLoadWhenInteract) GameManager.Instance.AdvanceStageLevel();

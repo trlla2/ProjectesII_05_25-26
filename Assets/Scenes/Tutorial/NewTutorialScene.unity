@@ -8110,7 +8110,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1000
   m_TargetDisplay: 0
 --- !u!224 &877783424
 RectTransform:
@@ -10148,6 +10148,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _forcedBoard: 1
+  _isTutorial: 1
   currentStageLevelData: {fileID: 11400000, guid: ffbf1d07f71dd274da37d2c7d1440376, type: 2}
   startingTile: {fileID: 874324315}
   emptyTileData: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
@@ -13234,9 +13235,9 @@ MonoBehaviour:
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
   neighbors:
-  - {fileID: 0}
+  - {fileID: 200147869}
   generatedBranch: []
-  _sceneToLoadWhenInteract: NewBoard
+  _sceneToLoadWhenInteract: HallOfEgress
   _emptySpellbookAlert: {fileID: 0}
 --- !u!65 &1748064277
 BoxCollider:

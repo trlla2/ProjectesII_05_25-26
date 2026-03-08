@@ -6,7 +6,10 @@ public class BoardManager : MonoBehaviour
 {
     [SerializeField] private bool _forcedBoard;
     public bool ForcedBoard => _forcedBoard;
-    //[SerializeField] private bool _isTutorial;
+
+    [SerializeField] private bool _isTutorial;
+    public bool IsTutorial => _isTutorial;
+
     public StageLevelData currentStageLevelData;
 
     public BoardTile startingTile;

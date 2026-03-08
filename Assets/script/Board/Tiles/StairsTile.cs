@@ -20,7 +20,11 @@ public class StairsTile : BoardTile
 
     public override void Interact()
     {
-        if (_boardManager.IsTutorial) SceneTransition.Instance.LoadScene("HallOfEgress", false);
+        if (_boardManager.IsTutorial)
+        {
+            SceneTransition.Instance.LoadScene("HallOfEgress", false);
+            return;
+        }       
 
         if (GameManager.Instance.PlayerStats.GetSpellBook().Count == GameManager.Instance.PlayerStats.SpellBookSize)
         {

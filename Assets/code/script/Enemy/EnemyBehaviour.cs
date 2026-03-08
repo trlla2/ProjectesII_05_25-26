@@ -44,12 +44,12 @@ public class EnemyBehaviour : MonoBehaviour
 
     private void Start()
     {
-        if (GameManager.Instance != null && enemyType == null)
+        if (GameManager.Instance != null)
         {
             GameManager.Instance.CombatHandler.SetEnemyRef(this);
         }
         else
-            Debug.LogError("NO GAME MANAGER");
+            Debug.LogError("NO GAME MANAGER");  
     }
 
 

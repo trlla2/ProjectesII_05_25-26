@@ -35,9 +35,6 @@ public class EnemyTile : BoardTile
 
         GameManager.Instance.OnEnterBoard += Replace;
         GameManager.Instance.OnEnterBoard += TryToRevealGeneratedBranchIfHasOne;
-        //if (GameManager.Instance.CombatHandler != null)
-        //    GameManager.Instance.CombatHandler.OnEndBattle += Replace;
-        //TryToRevealGeneratedBranchIfHasOne();
 
     }
 

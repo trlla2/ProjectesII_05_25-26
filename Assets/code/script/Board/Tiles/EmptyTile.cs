@@ -6,6 +6,6 @@ public class EmptyTile : BoardTile
     {
         Debug.Log($"arrived to {this.GetGridPosition()}...");
 
-        
+        TryToRevealGeneratedBranchIfHasOne();
     }
 }

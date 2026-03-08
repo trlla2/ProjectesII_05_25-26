@@ -115,4 +115,10 @@ public class OrbAnimationEffects : MonoBehaviour
     {
         transform.DOScale(amount, duration).SetEase(Ease.OutQuad);
     }
+
+    public void KillAllTweens()
+    {
+        transform.DOKill();
+        if (image != null) image.DOKill();
+    }
 }

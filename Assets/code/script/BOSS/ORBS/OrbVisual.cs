@@ -6,6 +6,7 @@ using DG.Tweening;
 public class OrbVisual : MonoBehaviour
 {
     [Header("References")]
+    [SerializeField] private Orb orb;              
     [SerializeField] private Slider chargeBar;
     public Transform ChargeElementTargetPos;
     [SerializeField] private Image orbImage;
@@ -33,9 +34,47 @@ public class OrbVisual : MonoBehaviour
 
     private OrbAnimationEffects animationEffects;
 
+    private void Awake()
+    {
+        if (orb == null)
+        {
+            orb = GetComponentInParent<Orb>();
+        }
+    }
+
+    private void OnEnable()
+    {
+        if (orb != null)
+        {
+            orb.OnChargeChanged += HandleChargeChanged;
+            orb.OnStateChanged += SetState;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (orb != null)
+        {
+            orb.OnChargeChanged -= HandleChargeChanged;
+            orb.OnStateChanged -= SetState;
+        }
+    }
+
     private void Start()
     {
         animationEffects = GetComponent<OrbAnimationEffects>();
+    }
+
+    private void HandleChargeChanged(int previous, int current)
+    {
+        UpdateCharge(current, Orb.MaxCharge);
+
+        //number of particles = amount gained this event
+        int delta = Mathf.Max(0, current - previous);
+        if (delta > 0)
+        {
+            PlayChargeEffect(delta);
+        }
     }
 
     public void UpdateCharge(int current, int max)
@@ -82,14 +121,15 @@ public class OrbVisual : MonoBehaviour
             fullChargeParticles.Play();
     }
 
-    //future setup required
     public void PlayChargeEffect(int chargeAmount)
     {
         if (chargeParticles != null)
         {
-            var burst = chargeParticles.emission.GetBurst(0);
-            burst.count = chargeAmount;
-            chargeParticles.emission.SetBurst(0, burst);
+            var emmission = chargeParticles.emission;
+            var rate = emmission.rateOverTime;
+
+            rate.constant = chargeAmount * 5;
+
             chargeParticles.Play();
         }
     }

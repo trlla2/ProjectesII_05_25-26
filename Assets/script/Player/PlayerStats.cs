@@ -29,6 +29,7 @@ public class PlayerStats
     private int level;
     public int Level => level;
     private Dictionary<ElementType, int> elementalLevels;
+    private Dictionary<ElementType, int> elementalUpgrades;
     private int elementalLevelMultiplyer;
 
     // currency 
@@ -57,9 +58,7 @@ public class PlayerStats
 
     public PlayerStats()
     {
-
         ResetCombatStats();
-
         ResetLevelStats();
 
 
@@ -88,6 +87,15 @@ public class PlayerStats
             { ElementType.Yellow, 1},
             { ElementType.Blue, 1}
         };
+
+        elementalUpgrades = new Dictionary<ElementType, int>()
+        {
+            { ElementType.Green, 0},
+            { ElementType.Red, 0},
+            { ElementType.Yellow, 0},
+            { ElementType.Blue, 0}
+        };
+
         elementalLevelMultiplyer = 4;
     }
     private void ResetCombatStats()
@@ -104,14 +112,9 @@ public class PlayerStats
     }
     public void ResetStatsOnDeath()
     {
-        Debug.Log("hola??");
-
         RemoveAllItems();
-
         ResetCombatStats();
-
         ResetLevelStats();
-
     }
 
     public List<DamageType> AttackWithSpell(Spell spell)
@@ -191,8 +194,17 @@ public class PlayerStats
 
     public void UpgradeElementalLevel(ElementType elementType)
     {
-        elementalLevels[elementType] += 1;
-        LevelUp();
+        elementalUpgrades[elementType]++;
+
+        int currentLevel = elementalLevels[elementType];
+        int upgradesRequired = (int)Math.Pow(2, currentLevel - 1);
+
+        if (elementalUpgrades[elementType] >= upgradesRequired)
+        {
+            elementalLevels[elementType]++;
+            elementalUpgrades[elementType] = 0;
+            LevelUp();
+        }
     }
 
     public bool AddItemToInventory(Item item)
@@ -292,5 +304,6 @@ public class PlayerStats
     public void ModifyDefense(float amount) { defense += amount; }
     public void ModifyCritPercentage(int amount) { critPercentage += amount; }
     public void ModifySipkeDamage(int amount) { spikeDamage += amount; }
-
+    public int GetCurrentElementUpgrades(ElementType elementType) { return elementalUpgrades[elementType]; }
+    public int GetCurrentElementLevels(ElementType elementType) { return elementalLevels[elementType]; }
 }

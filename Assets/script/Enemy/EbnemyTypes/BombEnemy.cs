@@ -28,13 +28,12 @@ public class BombSpell : EnemySpellBase
         new Vector2Int(-1, -1)
     };
 
-    public BombSpell(float damagePerElement, int moveCount = 4, bool excludeBelow = false)
+    public BombSpell(float damagePerElement, int moveCount = 4)
     {
         this.damagePerElement = damagePerElement;
         this.remainingMoves = moveCount;
         this.initialMoves = moveCount;
         this.spellName = "Bomb";
-        this.excludeBelowTargets = excludeBelow;
         this.shouldRerollAfterAttack = true;
     }
 
@@ -75,6 +74,65 @@ public class BombSpell : EnemySpellBase
         }
         UpdateBombVisual(grid);
         InitializeCableVisual(grid);
+    }
+
+    public override void RetargetAfterGravity(Grid grid)
+    {
+        if (grid == null) return;
+
+        Vector2Int newBombPos = FindBombPosition(grid);
+        if (newBombPos.x == -1)
+        {
+            return;
+        }
+
+        // If bomb didn't move, just do the default retarget for cardinals
+        if (newBombPos == bombPosition)
+        {
+            RebuildCardinalTracking(grid);
+            return;
+        }
+
+        ClearAllCurrentTargeting(grid);
+
+        bombPosition = newBombPos;
+        cardinalPositions.Clear();
+        clearedPositions.Clear();
+        targetedPositions.Clear();
+
+        // Re-target bomb visual
+        ElementVisual bombVisual = grid.GetElementVisualAt(bombPosition);
+        if (bombVisual != null)
+        {
+            bombVisual.SetTargetedByEnemy(true);
+            bombVisual.SetSelectable(false);
+        }
+
+        foreach (var offset in CardinalOffsets)
+        {
+            Vector2Int pos = bombPosition + offset;
+            if (!grid.IsPositionValid(pos)) continue;
+
+            Element element = grid.GetElementAt(pos);
+            if (element != null && element != grid.EmptyElement)
+            {
+                cardinalPositions.Add(pos);
+                ElementVisual visual = grid.GetElementVisualAt(pos);
+                if (visual != null)
+                {
+                    visual.SetTargetedByEnemy(true);
+                    visual.UpdateTargetVisual(remainingMoves, initialMoves,
+                        grid.EnemyTargetAnimDuration, grid.EnemyTargetFillCurve);
+                }
+            }
+        }
+
+        targetedPositions.Add(bombPosition);
+        targetedPositions.AddRange(cardinalPositions);
+
+        // Refresh visuals
+        UpdateBombVisual(grid);
+        ReinitializeCableVisual(grid);
     }
 
     public override void Tick(Grid grid, System.Action onComplete = null)
@@ -124,6 +182,99 @@ public class BombSpell : EnemySpellBase
 
             SelectExplosionTargets(grid);
             ApplyEffect(grid, onComplete,true);
+        }
+    }
+
+    private Vector2Int FindBombPosition(Grid grid)
+    {
+        Element bombEl = grid.BombElement;
+        if (bombEl == null) return new Vector2Int(-1, -1);
+
+        for (int x = 0; x < Grid.GridSize; x++)
+        {
+            for (int y = 0; y < Grid.GridSize; y++)
+            {
+                Vector2Int pos = new Vector2Int(x, y);
+                if (grid.GetElementAt(pos) == bombEl)
+                    return pos;
+            }
+        }
+        return new Vector2Int(-1, -1);
+    }
+
+    private void ClearAllCurrentTargeting(Grid grid)
+    {
+        for (int x = 0; x < Grid.GridSize; x++)
+        {
+            for (int y = 0; y < Grid.GridSize; y++)
+            {
+                Vector2Int pos = new Vector2Int(x, y);
+                ElementVisual visual = grid.GetElementVisualAt(pos);
+                if (visual != null && visual.IsTargetedByEnemy)
+                {
+                    visual.ClearTargetVisual();
+                    visual.SetTargetedByEnemy(false);
+                }
+            }
+        }
+    }
+
+    private void RebuildCardinalTracking(Grid grid)
+    {
+        //The Bomb didn't move, but cardinal elements may have shifted due to gravity.
+        foreach (var pos in cardinalPositions)
+        {
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual != null && visual.IsTargetedByEnemy)
+            {
+                visual.ClearTargetVisual();
+                visual.SetTargetedByEnemy(false);
+            }
+        }
+
+        cardinalPositions.Clear();
+        clearedPositions.Clear();
+        targetedPositions.Clear();
+        targetedPositions.Add(bombPosition);
+
+        // Ensure bomb is still targeted
+        ElementVisual bombVisual = grid.GetElementVisualAt(bombPosition);
+        if (bombVisual != null && !bombVisual.IsTargetedByEnemy)
+        {
+            bombVisual.SetTargetedByEnemy(true);
+            bombVisual.SetSelectable(false);
+        }
+
+        foreach (var offset in CardinalOffsets)
+        {
+            Vector2Int pos = bombPosition + offset;
+            if (!grid.IsPositionValid(pos)) continue;
+
+            Element element = grid.GetElementAt(pos);
+            if (element != null && element != grid.EmptyElement)
+            {
+                cardinalPositions.Add(pos);
+                targetedPositions.Add(pos);
+                ElementVisual visual = grid.GetElementVisualAt(pos);
+                if (visual != null)
+                {
+                    visual.SetTargetedByEnemy(true);
+                    visual.UpdateTargetVisual(remainingMoves, initialMoves,
+                        grid.EnemyTargetAnimDuration, grid.EnemyTargetFillCurve);
+                }
+            }
+        }
+
+        ReinitializeCableVisual(grid);
+    }
+
+    private void ReinitializeCableVisual(Grid grid)
+    {
+        if (cableVisual != null)
+        {
+            cableVisual.ClearAllLines();
+            if (cardinalPositions.Count >= 4)
+                cableVisual.Initialize(grid, bombPosition, cardinalPositions);
         }
     }
 

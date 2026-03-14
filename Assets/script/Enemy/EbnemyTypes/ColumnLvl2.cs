@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class ColumnDestroyLvl2Spell : TimedDestroySpellBase
 {
-    public ColumnDestroyLvl2Spell(float countdown = 8f, float damage = 4f, bool excludeBelow = true, float bonusTimeOnClear = 2f)
-        : base(countdown, damage, excludeBelow)
+    public ColumnDestroyLvl2Spell(float countdown = 8f, float damage = 4f, float bonusTimeOnClear = 2f)
+        : base(countdown, damage)
     {
         spellName = "Column Destroy Lvl2";
         bonusTimePerClearedTarget = bonusTimeOnClear;

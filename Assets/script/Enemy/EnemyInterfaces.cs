@@ -11,6 +11,7 @@ public interface IEnemySpell
     string GetSpellName();
     bool ShouldRerollAfterAttack { get; }
     void Cleanup(Grid grid); // For spells taht use spelcial elements
+    void RetargetAfterGravity(Grid grid);
 }
 
 public abstract class EnemySpellBase : IEnemySpell  
@@ -21,7 +22,6 @@ public abstract class EnemySpellBase : IEnemySpell
     protected float damagePerElement;
     protected List<Vector2Int> targetedPositions = new List<Vector2Int>();
 
-    protected bool excludeBelowTargets = true;
     protected bool shouldRerollAfterAttack = true;
 
     public int RemainingMoves => remainingMoves;
@@ -30,8 +30,29 @@ public abstract class EnemySpellBase : IEnemySpell
 
     public abstract void Execute(Grid grid);
 
-    // Default no-op — only spells that place persistent grid state need to override this
+    // Default no-op – only spells that place persistent grid state need to override this
     public virtual void Cleanup(Grid grid) { }
+
+    public virtual void RetargetAfterGravity(Grid grid)
+    {
+        if (grid == null) return;
+
+        targetedPositions.Clear();
+        int size = Grid.GridSize;
+
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                Vector2Int pos = new Vector2Int(x, y);
+                ElementVisual visual = grid.GetElementVisualAt(pos);
+                if (visual != null && visual.IsTargetedByEnemy)
+                {
+                    targetedPositions.Add(pos);
+                }
+            }
+        }
+    }
 
     public virtual void Tick(Grid grid, System.Action onComplete = null)
     {
@@ -121,11 +142,10 @@ public abstract class EnemySpellBase : IEnemySpell
 
         if (finalPositions.Count > 0)
         {
-            // Pass excludeBelowTargets through to grid so the refill logic can choose behavior
             grid.ProcessEnemySpell(finalPositions, () =>
             {
                 DamagePlayerWithAnimation(grid, finalPositions.ToArray(), elements, damagePerElement, onComplete);
-            }, excludeBelowTargets, rerollAfter);
+            }, rerollAfter);
         }
         else
         {

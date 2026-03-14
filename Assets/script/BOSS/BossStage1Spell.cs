@@ -3,13 +3,12 @@ using UnityEngine;
 
 public class BossStage1Spell : EnemySpellBase
 {
-    public BossStage1Spell(float damage = 4f, int moves = 2, bool excludeBelowTargets = true)
+    public BossStage1Spell(float damage = 4f, int moves = 2)
     {
         damagePerElement = damage;
         remainingMoves = moves;
         initialMoves = moves;
         spellName = "BossStage1 Attack";
-        this.excludeBelowTargets = excludeBelowTargets;
     }
 
     public override void Execute(Grid grid)

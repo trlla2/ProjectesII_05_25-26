@@ -7,7 +7,7 @@ public class TutorialStage2TimedSpell : TimedDestroySpellBase
 
     private int executeCount;
 
-    public TutorialStage2TimedSpell(float timer = 5f, float damage = 4f, bool excludeBelowTargets = true) : base(timer, damage, excludeBelowTargets)
+    public TutorialStage2TimedSpell(float timer = 5f, float damage = 4f) : base(timer, damage)
     {
         spellName = "Tutorial Stage 2 Timed Target";
         shouldRerollAfterAttack = false;

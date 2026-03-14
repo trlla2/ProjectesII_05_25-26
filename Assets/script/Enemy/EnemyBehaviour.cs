@@ -25,6 +25,7 @@ public class EnemyBehaviour : MonoBehaviour
     private bool inBattle = false;
 
     private IEnemySpell activeSpell;
+    public IEnemySpell ActiveSpell => activeSpell;
     private Coroutine timedSpellMonitor;
 
     private bool timersPaused;
@@ -156,10 +157,22 @@ public class EnemyBehaviour : MonoBehaviour
         if (!inBattle || activeSpell == null)
             return;
 
+        StartCoroutine(HandlePlayerMoveWhenGridReady());
+    }
+
+    private IEnumerator HandlePlayerMoveWhenGridReady()
+    {
+        // Wait for gravity, refill, and validation to fully complete
+        while (grid != null && grid.CurrentState != GridStateType.Idle)
+            yield return null;
+
+        if (!inBattle || grid == null || activeSpell == null)
+            yield break;
+
         if (activeSpell is TimedDestroySpellBase timedSpell)
         {
             CheckForClearedTargets(timedSpell);
-            return;
+            yield break;
         }
 
         activeSpell.Tick(grid, () =>
@@ -264,14 +277,20 @@ public class EnemyBehaviour : MonoBehaviour
             hiddenSpell.Cleanup(grid);
         }
 
-        while (grid.CurrentState == GridStateType.Refill)
+        while (grid != null && grid.CurrentState != GridStateType.Idle)
             yield return null;
+
+        if (!inBattle || grid == null)
+            yield break;
 
         grid.Reroll(rerollScrollTimes);
 
-        while (grid.CurrentState == GridStateType.Reroll || grid.CurrentState == GridStateType.ValidateSpell)
+        // Wait until reroll and subsequent validation finish
+        while (grid != null && grid.CurrentState != GridStateType.Idle)
             yield return null;
 
+        if (!inBattle || grid == null)
+            yield break;
 
         CreateAndExecuteSpell();
     }

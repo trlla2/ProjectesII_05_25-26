@@ -339,22 +339,7 @@ public class VisualGrid : MonoBehaviour
 
                 if (element == grid.EmptyElement || element == null)
                 {
-                    bool isBelowTargeted = false;
-                    for (int yAbove = y + 1; yAbove < grid.GridData.GridSize; yAbove++)
-                    {
-                        Vector2Int abovePos = new Vector2Int(x, yAbove);
-                        ElementVisual aboveVisual = grid.GridData.GetVisualAt(abovePos);
-                        if (aboveVisual != null && aboveVisual.IsTargetedByEnemy)
-                        {
-                            isBelowTargeted = true;
-                            break;
-                        }
-                    }
-
-                    if (!isBelowTargeted)
-                    {
-                        emptyPositions.Add(pos);
-                    }
+                    emptyPositions.Add(pos);
                 }
             }
         }

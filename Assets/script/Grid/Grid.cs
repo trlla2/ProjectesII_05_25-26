@@ -178,6 +178,21 @@ public class Grid : MonoBehaviour
             }
         }
 
+        if (CurrentState == GridStateType.Idle)
+        {
+            TryStartRefill();
+        }
+        else
+        {
+            StartCoroutine(DeferredRefill());
+        }
+    }
+
+    private IEnumerator DeferredRefill()
+    {
+        while (CurrentState != GridStateType.Idle)
+            yield return null;
+
         TryStartRefill();
     }
 
@@ -191,7 +206,6 @@ public class Grid : MonoBehaviour
 
     public void Reroll(int scrollTimes = 5)
     {
-        Debug.Log(CurrentState);
         if (CurrentState == GridStateType.Idle || CurrentState == GridStateType.ValidateSpell || CurrentState == GridStateType.Processing)
         {
             List<Spell> spellsToUse = availableSpells;
@@ -236,7 +250,7 @@ public class Grid : MonoBehaviour
         gridData.SetVisualAt(position, visual);
     }
 
-    public void ProcessEnemySpell(List<Vector2Int> positions, System.Action onComplete = null,  bool excludeBelowTargets = true, bool rerollAfter = false)
+    public void ProcessEnemySpell(List<Vector2Int> positions, System.Action onComplete = null, bool rerollAfter = false)
     {
         if (positions == null || positions.Count == 0)
         {
@@ -244,18 +258,45 @@ public class Grid : MonoBehaviour
             return;
         }
 
-        if (CurrentState == GridStateType.Idle && GetEmptyPositions().Count > 0)
+        // If the grid is busy (refill, reroll, etc.), wait for it to finish first
+        if (CurrentState != GridStateType.Idle)
+        {
+            StartCoroutine(ProcessEnemySpellWhenReady(positions, onComplete, rerollAfter));
+            return;
+        }
+
+        if (GetEmptyPositions().Count > 0)
         {
             ChangeState(new RefillState(this, visualGrid,
                 onRefillComplete: () =>
                 {
-                    ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete, excludeBelowTargets, rerollAfter));
+                    ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete, rerollAfter));
                 }
             ));
             return;
         }
 
-        ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete, excludeBelowTargets, rerollAfter));
+        ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete, rerollAfter));
+    }
+
+    private IEnumerator ProcessEnemySpellWhenReady(List<Vector2Int> positions, System.Action onComplete, bool rerollAfter)
+    {
+        while (CurrentState != GridStateType.Idle)
+            yield return null;
+
+        if (GetEmptyPositions().Count > 0)
+        {
+            ChangeState(new RefillState(this, visualGrid,
+                onRefillComplete: () =>
+                {
+                    ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete, rerollAfter));
+                }
+            ));
+        }
+        else
+        {
+            ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete, rerollAfter));
+        }
     }
 
 
@@ -416,12 +457,22 @@ public class Grid : MonoBehaviour
         return emptyPositions;
     }
 
+    public void RetargetActiveSpell()
+    {
+        if (GameManager.Instance == null || GameManager.Instance.CombatHandler == null)
+            return;
+        EnemyBehaviour enemy = GameManager.Instance.CombatHandler.GetEnemyRef();
+        if (enemy == null || enemy.ActiveSpell == null)
+            return;
+        enemy.ActiveSpell.RetargetAfterGravity(this);
+    }
+
     public void TryStartRefill()
     {
         if (CurrentState != GridStateType.Idle)
             return;
 
-        if (GetEmptyPositions().Count <= 0)
+        if (GetEmptyPositions().Count == 0)
             return;
 
         ChangeState(new RefillState(this, visualGrid));

@@ -26,9 +26,9 @@ public class HiddenDestroySpell : TimedDestroySpellBase
     public bool TimerStarted => timerStarted;
 
     public HiddenDestroySpell(int count = 3, float damage = 4f, float attackTimer = 6f,
-                               bool excludeBelow = true, float visibilityDuration = 2.5f,
+                               float visibilityDuration = 2.5f,
                                Sprite hiddenSprite = null, float bonusTimeOnClear = 1.5f)
-        : base(attackTimer, damage, excludeBelow)
+        : base(attackTimer, damage)
     {
         elementCount = count;
         this.visibilityDuration = visibilityDuration;

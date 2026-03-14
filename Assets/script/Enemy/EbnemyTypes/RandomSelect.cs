@@ -6,14 +6,13 @@ public class RandomDestroySpell : EnemySpellBase
 {
     private int elementCount;
 
-    public RandomDestroySpell(int count = 3, float damage = 4f, int moves = 2, bool excludeBelowTargets = true)
+    public RandomDestroySpell(int count = 3, float damage = 4f, int moves = 2)
     {
         elementCount = count;
         damagePerElement = damage;
         remainingMoves = moves;
         initialMoves = moves;
         spellName = "Random Destroy";
-        this.excludeBelowTargets = excludeBelowTargets;
     }
 
     public override void Execute(Grid grid)

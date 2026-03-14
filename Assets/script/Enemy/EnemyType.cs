@@ -88,43 +88,43 @@ public class EnemyType : ScriptableObject
         switch (spellType)
         {
             case EnemySpellType.ColumnDestroy:
-                return new ColumnDestroySpell(damagePerElement, moveCount, excludeBelowTargets);
+                return new ColumnDestroySpell(damagePerElement, moveCount);
 
             case EnemySpellType.RandomDestroy:
-                return new RandomDestroySpell(elementCount, damagePerElement, moveCount, excludeBelowTargets);
+                return new RandomDestroySpell(elementCount, damagePerElement, moveCount);
 
             case EnemySpellType.SingleTimedTarget:
-                return new SingleElementTimedSpell(attackTimer, damagePerElement, excludeBelowTargets);
+                return new SingleElementTimedSpell(attackTimer, damagePerElement);
 
             case EnemySpellType.DiagonalDestroy:
-                return new DiagonalDestroySpell(damagePerElement, moveCount, excludeBelowTargets);
+                return new DiagonalDestroySpell(damagePerElement, moveCount);
 
             case EnemySpellType.BossStage1Attack:
-                return new BossStage1Spell(damagePerElement, moveCount, excludeBelowTargets);
+                return new BossStage1Spell(damagePerElement, moveCount);
 
             case EnemySpellType.ColumnDestroyLvl2:
-                return new ColumnDestroyLvl2Spell(lvl2Countdown, damagePerElement, excludeBelowTargets, lvl2BonusTimeOnClear);
+                return new ColumnDestroyLvl2Spell(lvl2Countdown, damagePerElement, lvl2BonusTimeOnClear);
 
             case EnemySpellType.DiagonalDestroyLvl2:
-                return new DiagonalDestroyLvl2Spell(lvl2Countdown, damagePerElement, excludeBelowTargets, lvl2BonusTimeOnClear);
+                return new DiagonalDestroyLvl2Spell(lvl2Countdown, damagePerElement, lvl2BonusTimeOnClear);
 
             case EnemySpellType.RandomDestroyLvl2:
-                return new RandomDestroyLvl2Spell(elementCount, lvl2Countdown, damagePerElement, excludeBelowTargets, lvl2BonusTimeOnClear);
+                return new RandomDestroyLvl2Spell(elementCount, lvl2Countdown, damagePerElement, lvl2BonusTimeOnClear);
 
             case EnemySpellType.BombAttack:
-                return new BombSpell(damagePerElement, moveCount, excludeBelowTargets);
+                return new BombSpell(damagePerElement, moveCount);
 
             case EnemySpellType.HiddenDestroy:
-                return new HiddenDestroySpell(elementCount, damagePerElement, attackTimer, excludeBelowTargets, visibilityDuration, hiddenSprite, lvl2BonusTimeOnClear);
+                return new HiddenDestroySpell(elementCount, damagePerElement, attackTimer, visibilityDuration, hiddenSprite, lvl2BonusTimeOnClear);
 
             case EnemySpellType.TutorialStage2FixedTargets:
-                return new TutorialStage2FixedTargetsSpell(damagePerElement, moveCount, excludeBelowTargets);
+                return new TutorialStage2FixedTargetsSpell(damagePerElement, moveCount);
 
             case EnemySpellType.TutorialStage2TimedSpell:
-                return new TutorialStage2TimedSpell(attackTimer, damagePerElement, excludeBelowTargets);
+                return new TutorialStage2TimedSpell(attackTimer, damagePerElement);
 
             default:
-                return new ColumnDestroySpell(damagePerElement, moveCount, excludeBelowTargets);
+                return new ColumnDestroySpell(damagePerElement, moveCount);
         }
     }
 

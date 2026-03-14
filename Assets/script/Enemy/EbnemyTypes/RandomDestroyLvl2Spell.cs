@@ -5,8 +5,8 @@ public class RandomDestroyLvl2Spell : TimedDestroySpellBase
 {
     private readonly int elementCount;
 
-    public RandomDestroyLvl2Spell(int count = 3, float countdown = 8f, float damage = 4f, bool excludeBelow = true, float bonusTimeOnClear = 2f)
-        : base(countdown, damage, excludeBelow)
+    public RandomDestroyLvl2Spell(int count = 3, float countdown = 8f, float damage = 4f, float bonusTimeOnClear = 2f)
+        : base(countdown, damage)
     {
         elementCount = count;
         spellName = "Random Destroy Lvl2";

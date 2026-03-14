@@ -16,11 +16,10 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
     public float BonusTimePerClearedTarget => bonusTimePerClearedTarget;
     public List<Vector2Int> TargetedPositions => targetedPositions;
 
-    protected TimedDestroySpellBase(float countdown, float damage, bool excludeBelow)
+    protected TimedDestroySpellBase(float countdown, float damage)
     {
         spellTimer = new SpellTimer(countdown);
         damagePerElement = damage;
-        excludeBelowTargets = excludeBelow;
         remainingMoves = 0;
         initialMoves = 0;
     }

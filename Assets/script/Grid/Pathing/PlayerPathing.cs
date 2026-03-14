@@ -113,7 +113,6 @@ public class PlayerPathing : MonoBehaviour
     private void HandleQTEStarted()
     {
         isQTEActive = true;
-        Debug.Log("[PlayerPathing] QTE started - disabling pathing");
         
         // Force end any active pathing
         if (isPathing)
@@ -125,7 +124,6 @@ public class PlayerPathing : MonoBehaviour
     private void HandleQTEEnded()
     {
         isQTEActive = false;
-        Debug.Log("[PlayerPathing] QTE ended - enabling pathing");
     }
 
     private void Update()
@@ -291,20 +289,28 @@ public class PlayerPathing : MonoBehaviour
         Vector2Int[] positions = pathData.Positions;
         List<Vector2Int> posList = new List<Vector2Int>(positions);
 
+        grid.InstantVisualEmpty(posList, chargeOrb: true);
+
         if (spellPathAnimator != null)
         {
             spellPathAnimator.OnSpellCast(positions, spell.Recipe, () =>
             {
-                CompleteSpellExecution(spell, positions);
-            });
 
-            grid.InstantVisualEmpty(posList, chargeOrb: true);
+                StartCoroutine(CompleteSpellWhenGridReady(spell, positions));
+            });
         }
         else
         {
             CompleteSpellExecution(spell, positions);
-            grid.InstantVisualEmpty(posList, chargeOrb: true); 
         }
+    }
+
+    private IEnumerator CompleteSpellWhenGridReady(Spell spell, Vector2Int[] positions)
+    {
+        while (grid.CurrentState != GridStateType.Idle)
+            yield return null;
+
+        CompleteSpellExecution(spell, positions);
     }
 
 

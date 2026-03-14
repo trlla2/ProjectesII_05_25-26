@@ -1,9 +1,9 @@
-using UnityEngine;
+    using UnityEngine;
 
 public class DiagonalDestroyLvl2Spell : TimedDestroySpellBase
 {
-    public DiagonalDestroyLvl2Spell(float countdown = 8f, float damage = 4f, bool excludeBelow = true, float bonusTimeOnClear = 2f)
-        : base(countdown, damage, excludeBelow)
+    public DiagonalDestroyLvl2Spell(float countdown = 8f, float damage = 4f, float bonusTimeOnClear = 2f)
+        : base(countdown, damage)
     {
         spellName = "Diagonal Destroy Lvl2";
         bonusTimePerClearedTarget = bonusTimeOnClear;

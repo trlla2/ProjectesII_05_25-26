@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 using System.Collections;
 
 [RequireComponent(typeof(SpriteRenderer))]
@@ -35,7 +36,6 @@ public class EnemyBehaviour : MonoBehaviour
     public delegate void GetOnDamageList(DamageType damageType);
     public event GetOnDamageList OnGetDamage;
 
-
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -49,9 +49,8 @@ public class EnemyBehaviour : MonoBehaviour
             GameManager.Instance.CombatHandler.SetEnemyRef(this);
         }
         else
-            Debug.LogError("NO GAME MANAGER");  
+            Debug.LogError("NO GAME MANAGER");
     }
-
 
     private void OnDestroy()
     {
@@ -145,7 +144,6 @@ public class EnemyBehaviour : MonoBehaviour
         {
             activeSpell.Execute(grid);
 
-            // For timed spells, monitor when the timer expires and auto-trigger Tick
             if (activeSpell is TimedDestroySpellBase)
             {
                 timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
@@ -160,70 +158,50 @@ public class EnemyBehaviour : MonoBehaviour
 
         if (activeSpell is TimedDestroySpellBase timedSpell)
         {
-            if (activeSpell is HiddenDestroySpell hiddenSpell)
-            {
-                bool allCleared = hiddenSpell.CheckForRemovedTargets(grid);
-                if (allCleared)
-                {
-                    // Stop the timer monitor 
-                    if (timedSpellMonitor != null)
-                    {
-                        StopCoroutine(timedSpellMonitor);
-                        timedSpellMonitor = null;
-                    }
-                    hiddenSpell.Cleanup(grid);
-                    StartCoroutine(RerollAndRetarget());
-                    return;
-                }
-            }
-
-            if (timedSpell.UseMoveTicks)
-            {
-                if (timedSpell.IsEffectApplied())
-                    return;
-
-                timedSpell.TickPlayerMove(grid, () =>
-                {
-                    if (timedSpell.IsEffectApplied())
-                    {
-                        // Stop the timer monitor since we're done
-                        if (timedSpellMonitor != null)
-                        {
-                            StopCoroutine(timedSpellMonitor);
-                            timedSpellMonitor = null;
-                        }
-                        StartCoroutine(WaitAndRetarget());
-                    }
-                });
-            }
-            // Pure timed spells don't tick on player moves
+            CheckForClearedTargets(timedSpell);
             return;
         }
 
-        // Regular move-based spells
         activeSpell.Tick(grid, () =>
         {
             StartCoroutine(RerollAndRetarget());
         });
     }
 
-    private IEnumerator WaitAndRetarget()
+    private void CheckForClearedTargets(TimedDestroySpellBase timedSpell)
     {
-        // Wait for grid to settle
-        while (grid != null && grid.CurrentState != GridStateType.Idle)
-            yield return null;
+        if (timedSpell.IsEffectApplied) return;
 
-        if (!inBattle || grid == null)
-            yield break;
+        bool anyCleared = false;
 
-        TimedDestroySpellBase timedSpell = activeSpell as TimedDestroySpellBase;
-        if (timedSpell != null && timedSpell.ShouldRerollAfterAttack)
+        //Keep positions since OnTargetCleared mutates the list
+        var positions = new List<Vector2Int>(timedSpell.TargetedPositions);
+
+        foreach (var pos in positions)
         {
-            StartCoroutine(RerollAndRetarget());
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual != null && visual.IsTargetedByEnemy) continue;
+
+            // Calls base OnTargetCleared: removes position + adds bonus time
+            bool allCleared = timedSpell.OnTargetCleared(grid, pos);
+            anyCleared = true;
+
+            if (allCleared)
+            {
+                if (timedSpellMonitor != null)
+                {
+                    StopCoroutine(timedSpellMonitor);
+                    timedSpellMonitor = null;
+                }
+                timedSpell.Cleanup(grid);
+                StartCoroutine(RerollAndRetarget());
+                return;
+            }
         }
-        else
+
+        if (anyCleared && timedSpell is HiddenDestroySpell hiddenSpell && hiddenSpell.ElementsHidden)
         {
-            CreateAndExecuteSpell();
+            hiddenSpell.TriggerBriefReveal(grid);
         }
     }
 
@@ -232,35 +210,25 @@ public class EnemyBehaviour : MonoBehaviour
         TimedDestroySpellBase timedSpell = activeSpell as TimedDestroySpellBase;
         if (timedSpell == null) yield break;
 
-        // Wait until the timer has expired or effect was already applied (by moves)
-        while (!timedSpell.IsTimerExpired() && !timedSpell.IsEffectApplied())
+        // Wait for timer to expire
+        while (!timedSpell.IsTimerExpired)
         {
             if (!inBattle || grid == null)
                 yield break;
             yield return null;
         }
 
-        // If effect was already applied by moves, exit
-        if (timedSpell.IsEffectApplied())
-        {
-            timedSpellMonitor = null;
-            yield break;
-        }
-
-        if (!inBattle || grid == null)
-            yield break;
-
-        //This prevents colliding with a player-triggered refill in progress
+        // Wait for grid to be idle before applying effect
         while (grid != null && grid.CurrentState != GridStateType.Idle)
             yield return null;
 
         if (!inBattle || grid == null)
             yield break;
 
+        // Apply the effect
         bool effectDone = false;
         timedSpell.Tick(grid, () => effectDone = true);
 
-        //Wait for the effect to finish processing
         while (!effectDone)
         {
             if (!inBattle || grid == null)
@@ -277,15 +245,10 @@ public class EnemyBehaviour : MonoBehaviour
 
         timedSpellMonitor = null;
 
-        // Only reroll and retarget if the spell wants to
         if (timedSpell.ShouldRerollAfterAttack)
-        {
             StartCoroutine(RerollAndRetarget());
-        }
         else
-        {
             CreateAndExecuteSpell();
-        }
     }
 
     private IEnumerator RerollAndRetarget()
@@ -296,37 +259,21 @@ public class EnemyBehaviour : MonoBehaviour
             yield break;
         }
 
-        //For hidden spells, show targets before reroll so visuals are clean
-        if (activeSpell is HiddenDestroySpell hiddenSpellPre)
-        {
-            hiddenSpellPre.Cleanup(grid);
-        }
-        while (grid.CurrentState == GridStateType.Refill)
-        {
-            yield return null;
-        }
-        grid.Reroll(rerollScrollTimes);
-        while (grid.CurrentState == GridStateType.Reroll || grid.CurrentState == GridStateType.ValidateSpell)
-        {
-            yield return null;
-        }
-
         if (activeSpell is HiddenDestroySpell hiddenSpell)
         {
-            hiddenSpell.ReExecuteAfterReroll(grid);
+            hiddenSpell.Cleanup(grid);
+        }
+
+        while (grid.CurrentState == GridStateType.Refill)
+            yield return null;
+
+        grid.Reroll(rerollScrollTimes);
+
+        while (grid.CurrentState == GridStateType.Reroll || grid.CurrentState == GridStateType.ValidateSpell)
+            yield return null;
 
 
-            if (timedSpellMonitor != null)
-            {
-                StopCoroutine(timedSpellMonitor);
-                timedSpellMonitor = null;
-            }
-            timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
-        }
-        else
-        {
-            CreateAndExecuteSpell();
-        }
+        CreateAndExecuteSpell();
     }
 
     public void dealBossDamage(float percent)
@@ -356,43 +303,35 @@ public class EnemyBehaviour : MonoBehaviour
         OnHitRecived?.Invoke(currentHealth);
         OnGetDamage?.Invoke(new DamageType(damageType.element, damage, damageType.IsCrit));
 
-
-
         if (currentHealth <= 0)
         {
             Die();
         }
-
     }
 
-    public void PauseTimers()
+    public void PauseActiveTimedSpell()
     {
-        timersPaused = true;
-
         if (activeSpell is TimedDestroySpellBase timedSpell)
         {
             timedSpell.PauseTimer();
-            timedSpell.PauseVisuals(grid);
-        }
-
-        if (timedSpellMonitor != null)
-        {
-            StopCoroutine(timedSpellMonitor);
-            timedSpellMonitor = null;
+            timersPaused = true;
         }
     }
 
-    public void ResumeTimers()
+    public void ResumeActiveTimedSpell()
     {
-        timersPaused = false;
-
         if (activeSpell is TimedDestroySpellBase timedSpell)
         {
             timedSpell.ResumeTimer();
-            timedSpell.ResumeVisuals(grid);
+            timersPaused = false;
+        }
+    }
 
-            if (!timedSpell.IsEffectApplied() && timedSpellMonitor == null)
-                timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
+    public void AddTimeToActiveSpell(float seconds)
+    {
+        if (activeSpell is TimedDestroySpellBase timedSpell)
+        {
+            timedSpell.AddTime(seconds);
         }
     }
 
@@ -405,9 +344,8 @@ public class EnemyBehaviour : MonoBehaviour
         if (tutorialManager != null)
             tutorialManager.NotifyEnemyDeath();
 
-        
         GameManager.Instance.CombatHandler.OnEnemyDead();
-        
+
         spriteRenderer.enabled = false;
 
         Debug.Log($"Enemy {enemyType.name} has been defeated!");

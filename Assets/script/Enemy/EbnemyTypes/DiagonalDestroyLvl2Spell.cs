@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class DiagonalDestroyLvl2Spell : TimedDestroySpellBase
 {
-    public DiagonalDestroyLvl2Spell(float damage = 4f, float delay = 5f, float countdown = 15f, bool excludeBelow = true, int moveCount = 3)
-        : base(delay, countdown, damage, excludeBelow)
+    public DiagonalDestroyLvl2Spell(float countdown = 8f, float damage = 4f, bool excludeBelow = true, float bonusTimeOnClear = 2f)
+        : base(countdown, damage, excludeBelow)
     {
         spellName = "Diagonal Destroy Lvl2";
-        useMoveTicks = true;
-        SetMoveCount(moveCount);
+        bonusTimePerClearedTarget = bonusTimeOnClear;
+        shouldRerollAfterAttack = true;
     }
 
     protected override void SelectTargets(Grid grid)
@@ -29,7 +29,6 @@ public class DiagonalDestroyLvl2Spell : TimedDestroySpellBase
                 if (visual != null)
                 {
                     visual.SetTargetedByEnemy(true);
-                    visual.UpdateTargetVisual(remainingMoves, initialMoves, grid.EnemyTargetAnimDuration, grid.EnemyTargetFillCurve);
                 }
             }
         }

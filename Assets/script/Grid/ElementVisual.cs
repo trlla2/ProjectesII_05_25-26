@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class ElementVisual : MonoBehaviour
 {
@@ -18,12 +19,11 @@ public class ElementVisual : MonoBehaviour
     private bool canSelect = true;
     private bool isTargetedByEnemy;
     private Coroutine fillCoroutine;
-    private Coroutine timedFillCoroutine;
 
     private bool isTimedCountdownPaused;
     private float timedCountdownRemaining;
     private float timedCountdownTotal;
-
+    private Tween timedFillTween;
 
     private bool isBombTarget;
     private Color bombOriginalColor = Color.white;
@@ -95,19 +95,13 @@ public class ElementVisual : MonoBehaviour
             deletionEffectPrefab.transform.position = position;
 
         if (targetFillImage != null)
-        {
             targetFillImage.rectTransform.position = position;
-        }
 
         if (targetFillTimedImage != null)
-        {
             targetFillTimedImage.rectTransform.position = position;
-        }
 
         if (targetFillBombImage != null)
-        {
             targetFillBombImage.rectTransform.position = position;
-        }
     }
 
     public Vector3 GetWorldPosition()
@@ -255,59 +249,6 @@ public class ElementVisual : MonoBehaviour
         }
     }
 
-    public void StartTimedCountdown(float totalSeconds)
-    {
-        if (targetFillTimedImage == null)
-            return;
-
-        totalSeconds = Mathf.Max(0.0001f, totalSeconds);
-
-        if (timedFillCoroutine != null)
-        {
-            StopCoroutine(timedFillCoroutine);
-            timedFillCoroutine = null;
-        }
-
-        isTimedCountdownPaused = false;
-        timedCountdownTotal = totalSeconds;
-        timedCountdownRemaining = totalSeconds;
-
-        targetFillTimedImage.enabled = true;
-        timedFillCoroutine = StartCoroutine(TimedCountdownRoutine(totalSeconds));
-    }
-
-    public void PauseTimedCountdown()
-    {
-        if (timedFillCoroutine == null) return;
-        isTimedCountdownPaused = true;
-        StopCoroutine(timedFillCoroutine);
-        timedFillCoroutine = null;
-    }
-
-    public void ResumeTimedCountdown()
-    {
-        if (!isTimedCountdownPaused) return;
-        isTimedCountdownPaused = false;
-
-        if (targetFillTimedImage == null || timedCountdownRemaining <= 0f) return;
-        timedFillCoroutine = StartCoroutine(TimedCountdownRoutine(timedCountdownRemaining));
-    }
-
-    public void StopTimedCountdown()
-    {
-        if (timedFillCoroutine != null)
-        {
-            StopCoroutine(timedFillCoroutine);
-            timedFillCoroutine = null;
-        }
-
-        if (targetFillTimedImage != null)
-        {
-            targetFillTimedImage.fillAmount = 0f;
-            targetFillTimedImage.enabled = false;
-        }
-    }
-
     public void ClearTargetVisual()
     {
         if (fillCoroutine != null)
@@ -322,12 +263,6 @@ public class ElementVisual : MonoBehaviour
             targetFillImage.enabled = false;
         }
     }
-
-    public void ClearTimedTargetVisual()
-    {
-        StopTimedCountdown();
-    }
-
     public void SetBombVisual(bool active, float progress)
     {
         if (targetFillBombImage != null)
@@ -397,6 +332,110 @@ public class ElementVisual : MonoBehaviour
             UpdateVisual(currentElement);
     }
 
+    public void StartTimedCountdown(float totalSeconds)
+    {
+        if (targetFillTimedImage == null) return;
+
+        totalSeconds = Mathf.Max(0.0001f, totalSeconds);
+
+        timedFillTween?.Kill();
+        timedCountdownTotal = totalSeconds;
+        timedCountdownRemaining = totalSeconds;
+        isTimedCountdownPaused = false;
+
+        targetFillTimedImage.enabled = true;
+        targetFillTimedImage.fillAmount = 1f;
+
+        timedFillTween = DOTween.To(() => timedCountdownRemaining,
+            x =>
+            {
+                timedCountdownRemaining = x;
+                targetFillTimedImage.fillAmount = Mathf.Clamp(x / timedCountdownTotal,0f,1f);
+            }
+            ,0f,totalSeconds).SetEase(Ease.Linear)
+        .OnComplete(() =>
+        {
+            targetFillTimedImage.fillAmount = 0f;
+            timedFillTween = null;
+        });
+    }
+
+    public void PauseTimedCountdownDOTween()
+    {
+        if (timedFillTween == null) return;
+        timedFillTween.Pause();
+        isTimedCountdownPaused = true;
+    }
+
+    public void ResumeTimedCountdownDOTween()
+    {
+        if (timedFillTween == null || !isTimedCountdownPaused) return;
+        timedFillTween.Play();
+        isTimedCountdownPaused = false;
+    }
+
+    public void StopTimedCountdown()
+    {
+        timedFillTween?.Kill();
+        timedFillTween = null;
+        isTimedCountdownPaused = false;
+
+        if (targetFillTimedImage != null)
+        {
+            targetFillTimedImage.fillAmount = 0f;
+            targetFillTimedImage.enabled = false;
+        }
+    }
+
+    public void ExtendTimedCountdown(float newRemainingTime, float newTotalTime)
+    {
+        if (targetFillTimedImage == null) return;
+
+        bool wasPaused = isTimedCountdownPaused;
+
+        timedFillTween?.Kill();
+
+        timedCountdownRemaining = newRemainingTime;
+        timedCountdownTotal = newTotalTime;
+
+        float currentFill = targetFillTimedImage.fillAmount;
+        float targetFill = Mathf.Clamp01(newRemainingTime / newTotalTime);
+
+        // Create a sequence to first animate the fill change, then start the countdown from the new time
+        Sequence seq = DOTween.Sequence();
+
+        seq.Append(DOTween.To(() => targetFillTimedImage.fillAmount,x => targetFillTimedImage.fillAmount = x, targetFill, 0.25f).SetEase(Ease.OutQuad));
+
+        // Continue countdown from new position
+        seq.AppendCallback(() =>
+        {
+            timedFillTween = DOTween.To(
+                () => timedCountdownRemaining,
+                x =>
+                {
+                    timedCountdownRemaining = x;
+                    targetFillTimedImage.fillAmount = Mathf.Clamp01(x / timedCountdownTotal);
+                },
+                0f,
+                newRemainingTime
+            )
+            .SetEase(Ease.Linear)
+            .OnComplete(() =>
+            {
+                targetFillTimedImage.fillAmount = 0f;
+                timedFillTween = null;
+            });
+
+            if (wasPaused)
+            {
+                timedFillTween.Pause();
+                isTimedCountdownPaused = true;
+            }
+        });
+
+        timedFillTween = seq;
+    }
+
     private IEnumerator FillRoutine(float targetFill, float duration, AnimationCurve curve)
     {
         if (targetFillImage == null)
@@ -438,43 +477,17 @@ public class ElementVisual : MonoBehaviour
             yield break;
 
         float elapsed = 0f;
-
         targetFillImage.fillAmount = 1f;
 
         while (elapsed < totalSeconds)
         {
             elapsed += Time.deltaTime;
-            float remainingFraction = Mathf.Clamp01(Mathf.Max(0f, 1f - (elapsed / totalSeconds)));
+            float remainingFraction = Mathf.Clamp01(1f - (elapsed / totalSeconds));
             targetFillImage.fillAmount = remainingFraction;
             yield return null;
         }
 
         targetFillImage.fillAmount = 0f;
         fillCoroutine = null;
-    }
-
-    private IEnumerator TimedCountdownRoutine(float totalSeconds)
-    {
-        if (targetFillTimedImage == null)
-            yield break;
-
-        if (!isTimedCountdownPaused && timedCountdownRemaining <= 0f)
-        {
-            timedCountdownTotal = totalSeconds;
-            timedCountdownRemaining = totalSeconds;
-        }
-
-        targetFillTimedImage.fillAmount = Mathf.Clamp01(timedCountdownRemaining / timedCountdownTotal);
-
-        while (timedCountdownRemaining > 0f)
-        {
-            timedCountdownRemaining -= Time.deltaTime;
-            timedCountdownRemaining = Mathf.Max(0f, timedCountdownRemaining);
-            targetFillTimedImage.fillAmount = Mathf.Clamp01(timedCountdownRemaining / timedCountdownTotal);
-            yield return null;
-        }
-
-        targetFillTimedImage.fillAmount = 0f;
-        timedFillCoroutine = null;
     }
 }

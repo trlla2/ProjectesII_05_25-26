@@ -150,7 +150,7 @@ public class TutorialManager : MonoBehaviour
             allowedPathSet = new HashSet<Vector2Int>();
         };
         if (step.pauseEnemyTimers && enemyBehaviour != null)
-            enemyBehaviour.PauseTimers();
+            enemyBehaviour.PauseActiveTimedSpell();
 
         switch (step.type)
         {
@@ -215,7 +215,7 @@ public class TutorialManager : MonoBehaviour
 
         var currentStep = activeSequence.steps[currentStepIndex];
         if (currentStep.pauseEnemyTimers && enemyBehaviour != null)
-            enemyBehaviour.ResumeTimers();
+            enemyBehaviour.ResumeActiveTimedSpell();
 
         currentStepIndex++;
 

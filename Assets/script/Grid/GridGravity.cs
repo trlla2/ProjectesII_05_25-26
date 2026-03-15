@@ -29,6 +29,17 @@ public class GridGravity
     {
         int gridSize = gridData.GridSize;
 
+        // If the column contains a bomb in row 2 or lower (indices 0 or 1), 
+        // do not apply gravity to this column at all.
+        for (int r = 0; r <= 1 && r < gridSize; r++)
+        {
+            Element el = gridData.GetElementAt(new Vector2Int(columnIndex, r));
+            if (el != null && el.Type == ElementType.Bomb)
+            {
+                return; 
+            }
+        }
+
         for (int row = 0; row < gridSize; row++)
         {
             Vector2Int currentPos = new Vector2Int(columnIndex, row);
@@ -43,6 +54,12 @@ public class GridGravity
 
                     if (aboveElement != null && aboveElement != emptyElement)
                     {
+                        // A bomb cannot fall into the bottom row
+                        if (aboveElement.Type == ElementType.Bomb && row < 1)
+                        {
+                            break; 
+                        }
+
                         gridData.SetElementAt(currentPos, aboveElement);
                         gridData.SetElementAt(abovePos, emptyElement);
 
@@ -62,5 +79,4 @@ public class GridGravity
             }
         }
     }
-
 }

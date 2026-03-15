@@ -67,6 +67,8 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
 
     public bool OnTargetCleared(Grid grid, Vector2Int clearedPosition)
     {
+        Debug.Log($"OnTargetCleared called for position {clearedPosition}. Contains check: {targetedPositions.Contains(clearedPosition)}. TargetedPositions count: {targetedPositions.Count}");
+        
         if (!targetedPositions.Contains(clearedPosition)) return false;
 
         targetedPositions.Remove(clearedPosition);
@@ -192,5 +194,21 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
         spellTimer?.Stop();
         UnsubscribeEvents();
         ClearAllVisuals(grid);
+    }
+
+    public void ReapplyTargetingVisuals(Grid grid)
+    {
+        if (grid == null || effectApplied) return;
+
+        foreach (var pos in targetedPositions)
+        {
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual != null && !visual.IsTargetedByEnemy)
+            {
+                // A new element has fallen into this position, re-target it
+                visual.SetTargetedByEnemy(true);
+                visual.StartTimedCountdown(spellTimer.TotalSeconds * spellTimer.GetNormalizedRemaining());
+            }
+        }
     }
 }

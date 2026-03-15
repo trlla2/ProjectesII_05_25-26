@@ -189,28 +189,34 @@ public class EnemyBehaviour : MonoBehaviour
 
         //Keep positions since OnTargetCleared mutates the list
         var positions = new List<Vector2Int>(timedSpell.TargetedPositions);
-
+        Debug.Log($"Checking {positions.Count} targeted positions for clearing...");
+        
         foreach (var pos in positions)
         {
             ElementVisual visual = grid.GetElementVisualAt(pos);
-            if (visual != null && visual.IsTargetedByEnemy) continue;
-
-            // Calls base OnTargetCleared: removes position + adds bonus time
-            bool allCleared = timedSpell.OnTargetCleared(grid, pos);
-            anyCleared = true;
-
-            if (allCleared)
+             
+            if (visual == null || !visual.IsTargetedByEnemy)
             {
-                if (timedSpellMonitor != null)
+                // Calls base OnTargetCleared: removes position + adds bonus time
+                bool allCleared = timedSpell.OnTargetCleared(grid, pos);
+                anyCleared = true;
+
+                if (allCleared)
                 {
-                    StopCoroutine(timedSpellMonitor);
-                    timedSpellMonitor = null;
+                    if (timedSpellMonitor != null)
+                    {
+                        StopCoroutine(timedSpellMonitor);
+                        timedSpellMonitor = null;
+                    }
+                    timedSpell.Cleanup(grid);
+                    StartCoroutine(RerollAndRetarget());
+                    return;
                 }
-                timedSpell.Cleanup(grid);
-                StartCoroutine(RerollAndRetarget());
-                return;
             }
         }
+
+        // Re-apply targeting visuals to any new elements that fell into targeted positions
+        timedSpell.ReapplyTargetingVisuals(grid);
 
         if (anyCleared && timedSpell is HiddenDestroySpell hiddenSpell && hiddenSpell.ElementsHidden)
         {

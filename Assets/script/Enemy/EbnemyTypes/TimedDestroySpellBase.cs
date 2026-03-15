@@ -9,6 +9,7 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
     private bool effectApplied;
 
     protected float bonusTimePerClearedTarget = 0f;
+    private int pendingClearedCount;
 
     public SpellTimer Timer => spellTimer;
     public bool IsEffectApplied => effectApplied;
@@ -24,11 +25,20 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
         initialMoves = 0;
     }
 
+    // Returns how many targets were detected as cleared during the last RetargetAfterGravity
+    public int ConsumeClearedCount()
+    {
+        int c = pendingClearedCount;
+        pendingClearedCount = 0;
+        return c;
+    }
+
     public override void Execute(Grid grid)
     {
         targetedPositions.Clear();
         cachedGrid = grid;
         effectApplied = false;
+        pendingClearedCount = 0;
 
         if (grid == null) return;
 
@@ -80,6 +90,49 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
         }
 
         return !HasAnyValidTarget(grid);
+    }
+
+    //Update targetedPositions to follow visuals that moved with gravity.
+    public override void RetargetAfterGravity(Grid grid)
+    {
+        if (grid == null || effectApplied) return;
+
+        int previousCount = targetedPositions.Count;
+        targetedPositions.Clear();
+        int size = Grid.GridSize;
+
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                Vector2Int pos = new Vector2Int(x, y);
+                ElementVisual visual = grid.GetElementVisualAt(pos);
+                if (visual == null || !visual.IsTargetedByEnemy) continue;
+
+                Element el = grid.GetElementAt(pos);
+                if (el != null && el != grid.EmptyElement)
+                {
+                    // Element survived gravity keep targeting it.
+                    targetedPositions.Add(pos);
+                }
+                else
+                {
+                    //visual drifted to an empty slot
+                    visual.ClearOverrideSprite();
+                    visual.SetTargetedByEnemy(false);
+                }
+            }
+        }
+
+        // Visuals destroyed by DeleteElementsByPlayer are gone before gravity runs,
+        // so the only way to detect cleared targets is the count difference.
+        int clearedDuringGravity = previousCount - targetedPositions.Count;
+        if (clearedDuringGravity > 0)
+        {
+            pendingClearedCount += clearedDuringGravity;
+            if (bonusTimePerClearedTarget > 0f)
+                AddTime(bonusTimePerClearedTarget * clearedDuringGravity);
+        }
     }
 
     public override void Tick(Grid grid, System.Action onComplete = null)

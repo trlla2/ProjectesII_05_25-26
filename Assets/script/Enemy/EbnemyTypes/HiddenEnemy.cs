@@ -111,6 +111,7 @@ public class HiddenDestroySpell : TimedDestroySpellBase
 
     public void TriggerBriefReveal(Grid grid)
     {
+        Debug.Log("TriggerBriefReveal called");
         if (grid == null || !elementsHidden) return;
 
         if (revealCoroutine != null)
@@ -228,6 +229,7 @@ public class HiddenDestroySpell : TimedDestroySpellBase
 
     private IEnumerator BriefRevealRoutine(Grid grid)
     {
+        Debug.Log("Triggering brief reveal");
         if (grid == null) yield break;
 
         // Restore original sprites

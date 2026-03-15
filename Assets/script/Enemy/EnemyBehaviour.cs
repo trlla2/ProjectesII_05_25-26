@@ -185,19 +185,30 @@ public class EnemyBehaviour : MonoBehaviour
     {
         if (timedSpell.IsEffectApplied) return;
 
-        bool anyCleared = false;
+        bool anyCleared = timedSpell.ConsumeClearedCount() > 0;
+        Debug.Log($" Cleared count: {anyCleared}");
 
-        //Keep positions since OnTargetCleared mutates the list
         var positions = new List<Vector2Int>(timedSpell.TargetedPositions);
         Debug.Log($"Checking {positions.Count} targeted positions for clearing...");
-        
+
+        if (positions.Count == 0)
+        {
+            if (timedSpellMonitor != null)
+            {
+                StopCoroutine(timedSpellMonitor);
+                timedSpellMonitor = null;
+            }
+            timedSpell.Cleanup(grid);
+            StartCoroutine(RerollAndRetarget());
+            return;
+        }
+
         foreach (var pos in positions)
         {
             ElementVisual visual = grid.GetElementVisualAt(pos);
              
             if (visual == null || !visual.IsTargetedByEnemy)
             {
-                // Calls base OnTargetCleared: removes position + adds bonus time
                 bool allCleared = timedSpell.OnTargetCleared(grid, pos);
                 anyCleared = true;
 
@@ -214,8 +225,7 @@ public class EnemyBehaviour : MonoBehaviour
                 }
             }
         }
-
-        // Re-apply targeting visuals to any new elements that fell into targeted positions
+       // Re-apply targeting visuals to any new elements that fell into targeted positions
         timedSpell.ReapplyTargetingVisuals(grid);
 
         if (anyCleared && timedSpell is HiddenDestroySpell hiddenSpell && hiddenSpell.ElementsHidden)

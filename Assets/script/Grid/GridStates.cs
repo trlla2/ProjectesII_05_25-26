@@ -106,6 +106,8 @@ public class RefillState : IGridState
             yield return grid.StartCoroutine(visualGrid.AnimateGravity(movedPositions, gravityDuration));
         }
 
+        grid.RetargetActiveSpell();
+
         List<Vector2Int> emptyPositions = GetEmptyPositions();
 
         if (emptyPositions.Count > 0)
@@ -159,7 +161,6 @@ public class RefillState : IGridState
         {
             isRefilling = false;
         }
-        grid.RetargetActiveSpell();
     }
 
     private List<Vector2Int> GetEmptyPositions()

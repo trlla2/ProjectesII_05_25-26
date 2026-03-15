@@ -1,3 +1,4 @@
+using Mono.Cecil;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -294,6 +295,8 @@ public class PlayerStats
 
         return 0;
     }
+    public int GetElementLevel(ElementType t) { return elementalLevels[t]; }
+    public int GetElementUpgradeLevel(ElementType t) { return elementalUpgrades[t]; }
     public int GetEXPForNextLevel() { return (int)Math.Pow(4, level); }
     public bool CanLevelUp() { return experiencePoints >= GetEXPForNextLevel(); }
     public bool IsAlive() { return hp > 0; }

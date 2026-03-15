@@ -22,8 +22,9 @@ public class LevelUIBehaviour : MonoBehaviour
     }
 
 
-    public void OnUpgradeElement(int i)
+    public void OnUpgradeElement(float i)
     {
+        Debug.Log("Hola?");
        GameManager.Instance.PlayerStats.UpgradeElementalLevel((ElementType)i);
     }
 

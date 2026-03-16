@@ -4,11 +4,12 @@ using UnityEngine;
 public interface ISpellValidator
 {
     bool HasValidSpell(GridData gridData, List<Spell> spells);
+    List<Vector2Int> FindFirstValidSpellPath(GridData gridData, List<Spell> spells);
 }
 
 public class SpellValidator : ISpellValidator
 {
-    private static readonly Vector2Int[] Directions = 
+    private static Vector2Int[] Directions = 
     {
         Vector2Int.up,
         Vector2Int.down,
@@ -34,6 +35,35 @@ public class SpellValidator : ISpellValidator
         }
 
         return false;
+    }
+
+    public List<Vector2Int> FindFirstValidSpellPath(GridData gridData, List<Spell> spells)
+    {
+        if (spells == null || spells.Count == 0)
+            return null;
+
+        int size = gridData.GridSize;
+        int maxLength = GetMaxSpellLength(spells);
+
+        for (int x = 0; x < size; x++)
+        {
+            for (int y = 0; y < size; y++)
+            {
+                Vector2Int startPos = new Vector2Int(x, y);
+                Element startElement = gridData.GetElementAt(startPos);
+                if (startElement == null)
+                    continue;
+
+                List<Vector2Int> path = new List<Vector2Int> { startPos };
+                List<Element> elements = new List<Element> { startElement };
+
+                List<Vector2Int> result = SearchPathForPositions(gridData, spells, path, elements, maxLength);
+                if (result != null)
+                    return result;
+            }
+        }
+
+        return null;
     }
 
     private bool FindSpellFromPosition(GridData gridData, List<Spell> spells, Vector2Int startPos)
@@ -79,6 +109,41 @@ public class SpellValidator : ISpellValidator
         return false;
     }
 
+    private List<Vector2Int> SearchPathForPositions(GridData gridData, List<Spell> spells, List<Vector2Int> path, List<Element> elements, int maxLength)
+    {
+        if (MatchesAnySpellSilent(elements, spells))
+            return new List<Vector2Int>(path);
+
+        if (path.Count >= maxLength)
+            return null;
+
+        Vector2Int current = path[path.Count - 1];
+
+        foreach (Vector2Int dir in Directions)
+        {
+            Vector2Int next = current + dir;
+
+            if (!gridData.IsPositionValid(next) || path.Contains(next))
+                continue;
+
+            Element element = gridData.GetElementAt(next);
+            if (element == null)
+                continue;
+
+            path.Add(next);
+            elements.Add(element);
+
+            List<Vector2Int> result = SearchPathForPositions(gridData, spells, path, elements, maxLength);
+            if (result != null)
+                return result;
+
+            path.RemoveAt(path.Count - 1);
+            elements.RemoveAt(elements.Count - 1);
+        }
+
+        return null;
+    }
+
     private bool MatchesAnySpell(List<Element> elements, List<Spell> spells)
     {
         foreach (Spell spell in spells)
@@ -88,6 +153,16 @@ public class SpellValidator : ISpellValidator
                 Debug.Log($"Found VALID matching spell: {spell.Name}");
                 return true;
             }
+        }
+        return false;
+    }
+
+    private bool MatchesAnySpellSilent(List<Element> elements, List<Spell> spells)
+    {
+        foreach (Spell spell in spells)
+        {
+            if (spell.Matches(elements))
+                return true;
         }
         return false;
     }

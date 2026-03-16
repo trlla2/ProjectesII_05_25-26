@@ -6,13 +6,12 @@ public class DiagonalDestroySpell : EnemySpellBase
 {
     private bool useMainDiagonal;
 
-    public DiagonalDestroySpell(float damage = 4f, int moves = 2, bool excludeBelowTargets = true, bool mainDiagonal = true)
+    public DiagonalDestroySpell(float damage = 4f, int moves = 2, bool mainDiagonal = true)
     {
         damagePerElement = damage;
         remainingMoves = moves;
         initialMoves = moves;
         spellName = "Diagonal Destroy";
-        this.excludeBelowTargets = excludeBelowTargets;
         useMainDiagonal = mainDiagonal;
     }
 

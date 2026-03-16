@@ -1,104 +1,88 @@
-using System.Collections;
+using DG.Tweening;
 using UnityEngine;
 
 public class SpellTimer
 {
-    public float delaySeconds;
-    public float countdownSeconds;
-
-    private Coroutine activeCoroutine;
-    private Grid grid;
-    private System.Action cachedOnDelayComplete;
-    private System.Action cachedOnCountdownExpired;
-
-    private float delayElapsed;
-    private float countdownElapsed;
-    private bool delayDone;
+    private float totalSeconds;
+    private float remainingSeconds;
+    private Tween countdownTween; // base the timer on a tween for easy pause/resume and time manipulation, aslo easy integration with visuals
     private bool isPaused;
 
-    public float CountdownSeconds => countdownSeconds;
+    public float TotalSeconds => totalSeconds;
+    public float RemainingSeconds => remainingSeconds;
     public bool IsPaused => isPaused;
+    public bool IsExpired => remainingSeconds <= 0f;
 
-    public SpellTimer(float delay, float countdown)
+    public event System.Action OnTimerExpired;
+    public event System.Action<float> OnTimeAdded; 
+
+    public SpellTimer(float countdown)
     {
-        delaySeconds = delay;
-        countdownSeconds = countdown;
+        totalSeconds = countdown;
+        remainingSeconds = countdown;
     }
 
-    public void Start(Grid grid, System.Action onDelayComplete, System.Action onCountdownExpired)
+    public void Start()
     {
-        if (grid == null) return;
-
-        Stop(grid);
-
-        this.grid = grid;
-        cachedOnDelayComplete = onDelayComplete;
-        cachedOnCountdownExpired = onCountdownExpired;
-        delayElapsed = 0f;
-        countdownElapsed = 0f;
-        delayDone = false;
+        Stop();
+        remainingSeconds = totalSeconds;
         isPaused = false;
-
-        activeCoroutine = grid.StartCoroutine(TimerRoutine());
+        StartTween();
     }
 
-    public void Stop(Grid grid)
+    public void Stop()
     {
-        if (activeCoroutine != null && grid != null)
-        {
-            grid.StopCoroutine(activeCoroutine);
-            activeCoroutine = null;
-        }
+        countdownTween?.Kill();
+        countdownTween = null;
     }
 
-    public void Pause(Grid grid)
+    public void Pause()
     {
-        if (isPaused) return;
+        if (isPaused || countdownTween == null) return;
         isPaused = true;
-
-        if (activeCoroutine != null && grid != null)
-        {
-            grid.StopCoroutine(activeCoroutine);
-            activeCoroutine = null;
-        }
+        countdownTween.Pause();
     }
 
-    public void Resume(Grid grid)
+    public void Resume()
     {
-        if (!isPaused) return;
+        if (!isPaused || countdownTween == null) return;
         isPaused = false;
-
-        if (grid == null) return;
-        activeCoroutine = grid.StartCoroutine(TimerRoutine());
+        countdownTween.Play();
     }
 
-    private IEnumerator TimerRoutine()
+    public void AddTime(float seconds)
     {
-        // Delay phase — continue from delayElapsed
-        while (delayElapsed < delaySeconds)
-        {
-            if (grid == null) yield break;
-            delayElapsed += Time.deltaTime;
-            yield return null;
-        }
+        if (IsExpired) return;
 
-        if (grid == null) yield break;
+        bool wasPaused = isPaused;
+        countdownTween?.Kill();
 
-        if (!delayDone)
-        {
-            delayDone = true;
-            cachedOnDelayComplete?.Invoke();
-        }
+        remainingSeconds += seconds;
+        totalSeconds += seconds;
 
-        // Countdown phase — continue from countdownElapsed
-        while (countdownElapsed < countdownSeconds)
-        {
-            if (grid == null) yield break;
-            countdownElapsed += Time.deltaTime;
-            yield return null;
-        }
+        StartTween();
 
-        activeCoroutine = null;
-        cachedOnCountdownExpired?.Invoke();
+        if (wasPaused)
+            countdownTween.Pause();
+
+        OnTimeAdded?.Invoke(remainingSeconds);
     }
+
+    private void StartTween()
+    {
+        countdownTween = DOTween.To(
+            () => remainingSeconds,
+            x => remainingSeconds = x,
+            0f,
+            remainingSeconds
+        )
+        .SetEase(Ease.Linear)
+        .OnComplete(() =>
+        {
+            remainingSeconds = 0f;
+            OnTimerExpired?.Invoke();
+        });
+    }
+
+    public float GetNormalizedRemaining() => totalSeconds > 0f ? remainingSeconds / totalSeconds : 0f;
 }

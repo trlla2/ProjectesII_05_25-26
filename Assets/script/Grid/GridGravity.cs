@@ -29,39 +29,37 @@ public class GridGravity
     {
         int gridSize = gridData.GridSize;
 
-        //Buscar la fila más baja donde haya un elemento targeted
-        int blockedRow = -1;
-        for (int row = 0; row < gridSize; row++)
+        // If the column contains a bomb in row 2 or lower (indices 0 or 1), 
+        // do not apply gravity to this column at all.
+        for (int r = 0; r <= 1 && r < gridSize; r++)
         {
-            Vector2Int pos = new Vector2Int(columnIndex, row);
-            ElementVisual e = gridData.GetVisualAt(pos);
-
-            if (e != null && e.IsTargetedByEnemy)
+            Element el = gridData.GetElementAt(new Vector2Int(columnIndex, r));
+            if (el != null && el.Type == ElementType.Bomb)
             {
-                blockedRow = row;
-                break;
+                return; 
             }
         }
 
-        //Procesar gravedad SOLO por encima de blockedRow (o toda la columna si blockedRow = -1)
-        int maxProcessRow = (blockedRow == -1) ? gridSize - 1 : blockedRow - 1;
-
-        for (int row = 0; row < maxProcessRow; row++)
+        for (int row = 0; row < gridSize; row++)
         {
             Vector2Int currentPos = new Vector2Int(columnIndex, row);
             Element currentElement = gridData.GetElementAt(currentPos);
 
             if (currentElement == emptyElement || currentElement == null)
             {
-                //Buscar elemento que pueda caer
-                for (int aboveRow = row + 1; aboveRow <= maxProcessRow; aboveRow++)
+                for (int aboveRow = row + 1; aboveRow < gridSize; aboveRow++)
                 {
                     Vector2Int abovePos = new Vector2Int(columnIndex, aboveRow);
                     Element aboveElement = gridData.GetElementAt(abovePos);
-                    ElementVisual aboveElementVisual = gridData.GetVisualAt(abovePos);
-                    //No pueden caer elementos targeted
-                    if (aboveElement != null && aboveElement != emptyElement && !aboveElementVisual.IsTargetedByEnemy)
+
+                    if (aboveElement != null && aboveElement != emptyElement)
                     {
+                        // A bomb cannot fall into the bottom row
+                        if (aboveElement.Type == ElementType.Bomb && row < 1)
+                        {
+                            break; 
+                        }
+
                         gridData.SetElementAt(currentPos, aboveElement);
                         gridData.SetElementAt(abovePos, emptyElement);
 
@@ -81,5 +79,4 @@ public class GridGravity
             }
         }
     }
-
 }

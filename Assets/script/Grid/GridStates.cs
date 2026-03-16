@@ -81,7 +81,6 @@ public class RefillState : IGridState
             }
             else
             {
-                //if not specifies, go to validatoipon
                 grid.ChangeState(new ValidateSpellState(grid, GameManager.Instance.PlayerStats.GetSpellBook()));
             }
         }
@@ -106,6 +105,8 @@ public class RefillState : IGridState
         {
             yield return grid.StartCoroutine(visualGrid.AnimateGravity(movedPositions, gravityDuration));
         }
+
+        grid.RetargetActiveSpell();
 
         List<Vector2Int> emptyPositions = GetEmptyPositions();
 
@@ -398,6 +399,10 @@ public class RerollState : IGridState
                     visual.SetWorldPosition(visualGrid.GridToWorldPosition(pos));
                     visual.SetSelectable(true);
                 }
+                else if (element != null)
+                {
+                    visualGrid.EnsureVisualAt(pos, element);
+                }
             }
         }
     }
@@ -412,17 +417,15 @@ public class EnemySpellState : IGridState
     private bool isProcessing;
     private float refillDuration = 0.15f;
 
-    private bool excludeBelowTargets = true;
     private bool rerollAfterProcess = false;
 
     public EnemySpellState(Grid gridController, VisualGrid visual, List<Vector2Int> positionsToProcess, 
-                           System.Action onCompleteCallback, bool excludeBelowTargets = true, bool rerollAfter = false)
+                           System.Action onCompleteCallback, bool rerollAfter = false)
     {
         grid = gridController;
         visualGrid = visual;
-        positions = positionsToProcess ?? new List<Vector2Int>(); //if null, create empty list
+        positions = positionsToProcess ?? new List<Vector2Int>();
         onComplete = onCompleteCallback;
-        this.excludeBelowTargets = excludeBelowTargets;
         this.rerollAfterProcess = rerollAfter;
     }
 
@@ -476,12 +479,7 @@ public class EnemySpellState : IGridState
             yield return grid.StartCoroutine(visualGrid.AnimateGravity(movedPositions, refillDuration));
         }
 
-        List<Vector2Int> emptyPositions;
-
-        if (excludeBelowTargets)
-            emptyPositions = GetEmptyPositionsExcludingBelowTargets();
-        else
-            emptyPositions = GetEmptyPositions();
+        List<Vector2Int> emptyPositions = GetEmptyPositions();
 
         if (emptyPositions.Count > 0)
         {
@@ -532,44 +530,6 @@ public class EnemySpellState : IGridState
                 if (element == grid.EmptyElement || element == null)
                 {
                     emptyPositions.Add(pos);
-                }
-            }
-        }
-
-        return emptyPositions;
-    }
-
-    private List<Vector2Int> GetEmptyPositionsExcludingBelowTargets()
-    {
-        List<Vector2Int> emptyPositions = new List<Vector2Int>();
-        int size = grid.GridData.GridSize;
-
-        for (int x = 0; x < size; x++)
-        {
-            for (int y = 0; y < size; y++)
-            {
-                Vector2Int pos = new Vector2Int(x, y);
-                Element element = grid.GridData.GetElementAt(pos);
-
-                if (element == grid.EmptyElement || element == null)
-                {
-                    bool isBelowTargeted = false;
-                    for (int yAbove = y + 1; yAbove < size; yAbove++)
-                    {
-                        Vector2Int abovePos = new Vector2Int(x, yAbove);
-                        ElementVisual aboveVisual = grid.GridData.GetVisualAt(abovePos);
-                        Element aboveElement = grid.GridData.GetElementAt(abovePos);
-
-                        if (aboveVisual != null && aboveVisual.IsTargetedByEnemy
-                            && aboveElement != null && aboveElement != grid.EmptyElement)
-                        {
-                            isBelowTargeted = true;
-                            break;
-                        }
-                    }
-
-                    if (!isBelowTargeted)
-                        emptyPositions.Add(pos);
                 }
             }
         }

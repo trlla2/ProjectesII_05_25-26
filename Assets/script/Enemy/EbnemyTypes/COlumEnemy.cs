@@ -5,14 +5,13 @@ public class ColumnDestroySpell : EnemySpellBase
 {
     private int columnIndex;
 
-    public ColumnDestroySpell(float damage = 4f, int moves = 2, bool excludeBelowTargets = true, int column = -1)
+    public ColumnDestroySpell(float damage = 4f, int moves = 2, int column = -1)
     {
         damagePerElement = damage;
         remainingMoves = moves;
         initialMoves = moves;
         columnIndex = column;
         spellName = "Column Destroy";
-        this.excludeBelowTargets = excludeBelowTargets;
     }
 
     public override void Execute(Grid grid)
@@ -44,38 +43,5 @@ public class ColumnDestroySpell : EnemySpellBase
             }
         }
     }
-
-    //private void InsertFirstPlayerSpellBottomLeft(Grid grid)
-    //{
-    //    if (grid == null || GameManager.Instance == null)
-    //        return;
-
-    //    List<Spell> spellBook = GameManager.Instance.PlayerStats.GetSpellBook();
-    //    if (spellBook == null || spellBook.Count == 0)
-    //        return;
-
-    //    List<Element> recipe = spellBook[0].Recipe;
-    //    if (recipe == null || recipe.Count == 0)
-    //        return;
-
-    //    int y = 0;
-    //    int count = Mathf.Min(3, recipe.Count);
-
-    //    for (int x = 0; x < count; x++)
-    //    {
-    //        Vector2Int pos = new Vector2Int(x, y);
-
-    //        if (!grid.IsPositionValid(pos))
-    //            continue;
-
-    //        grid.SetElementAt(pos, recipe[x]);
-
-    //        ElementVisual visual = grid.GetElementVisualAt(pos);
-    //        if (visual != null)
-    //        {
-    //            visual.UpdateVisual(recipe[x]);
-    //        }
-    //    }
-    //}
 
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class SingleElementTimedSpell : TimedDestroySpellBase
 {
-    public SingleElementTimedSpell(float timer = 4f, float damage = 4f, bool excludeBelowTargets = true) : base(0f, timer, damage, excludeBelowTargets)
+    public SingleElementTimedSpell(float timer = 4f, float damage = 4f) : base(timer, damage)
     {
         spellName = "Single Timed Target";
         shouldRerollAfterAttack = false;
@@ -24,7 +24,7 @@ public class SingleElementTimedSpell : TimedDestroySpellBase
         }
     }
 
-    private Vector2Int PickRandomValidPosition(Grid grid)
+    private Vector2Int PickRandomValidPosition(Grid grid)   
     {
         List<Vector2Int> candidates = new List<Vector2Int>();
         for (int x = 0; x < Grid.GridSize; x++)

@@ -33,7 +33,11 @@ public class ElementLevelUpButton : MonoBehaviour
     private Element currentElement;
 
 
-    public void OnEnable()
+    private void Start()
+    {
+        UpdateVisuals();
+    }
+    private void OnEnable()
     {
         UpdateVisuals();
     }
@@ -46,12 +50,13 @@ public class ElementLevelUpButton : MonoBehaviour
 
         int upgradesRequired = (int)Math.Pow(2, GameManager.Instance.PlayerStats.GetElementLevel(currentElement.Type) - 1);
 
-        foreach (Transform child in transform)
+        foreach (Transform child in upgradesParent)
         {
             Destroy(child.gameObject);
         }
+        Debug.Log(GameManager.Instance.PlayerStats.GetElementUpgradeLevel(currentElement.Type));
 
-        for (int i = 0; i <= upgradesRequired; i++)
+        for (int i = 0; i < upgradesRequired; i++)
         {
             GameObject temp = Instantiate(elementSlotPrefab, upgradesParent);
 

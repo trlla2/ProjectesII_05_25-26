@@ -36,12 +36,12 @@ public class EnemyType : ScriptableObject
     [SerializeField] private float lvl2Countdown = 8f; 
     [SerializeField] private float lvl2BonusTimeOnClear = 2f; 
 
+    [Header("Continuously Timed Settings")]
+    [SerializeField] private float continuousSelectionInterval = 2.5f;
+
     [Header("Hidden Enemy Settings")]
     [SerializeField] private float visibilityDuration = 2.5f;
     [SerializeField] private Sprite hiddenSprite;
-
-    [Header("Refill Behavior")]
-    public bool excludeBelowTargets = false;
 
     [Header("Drops")]
     [SerializeField] private bool haveDrops = false;
@@ -123,6 +123,9 @@ public class EnemyType : ScriptableObject
             case EnemySpellType.TutorialStage2TimedSpell:
                 return new TutorialStage2TimedSpell(attackTimer, damagePerElement);
 
+            case EnemySpellType.ContinuouslyTimedTarget:
+                return new ContinuouslyTimedSpell(continuousSelectionInterval, attackTimer, damagePerElement, lvl2BonusTimeOnClear);
+
             default:
                 return new ColumnDestroySpell(damagePerElement, moveCount);
         }
@@ -167,5 +170,6 @@ public enum EnemySpellType
     BombAttack,
     HiddenDestroy,
     TutorialStage2FixedTargets,
-    TutorialStage2TimedSpell
+    TutorialStage2TimedSpell,
+    ContinuouslyTimedTarget
 }

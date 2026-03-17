@@ -119,6 +119,11 @@ public class EnemyBehaviour : MonoBehaviour
             activeSpell.Cleanup(grid);
         }
 
+        // Stop interval timer if present
+        EnemySpellTimer enemyTimer = GetComponent<EnemySpellTimer>();
+        if (enemyTimer != null)
+            enemyTimer.StopTimer();
+
         activeSpell = null;
         if (timedSpellMonitor != null)
         {
@@ -140,14 +145,35 @@ public class EnemyBehaviour : MonoBehaviour
             return;
         }
 
+        // Don't recreate if it's an active MultipleTimedSpellBase (persists across grid states)
+        if (activeSpell is MultipleTimedSpellBase existingMulti && existingMulti.IsActive)
+            return;
+
         activeSpell = enemyType.CreateSpell();
         if (activeSpell != null)
         {
-            activeSpell.Execute(grid);
-
-            if (activeSpell is TimedDestroySpellBase)
+            if (activeSpell is MultipleTimedSpellBase newMultiSpell)
             {
-                timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
+                EnemySpellTimer enemyTimer = GetComponent<EnemySpellTimer>();
+                if (enemyTimer == null)
+                    enemyTimer = gameObject.AddComponent<EnemySpellTimer>();
+
+                newMultiSpell.SetIntervalTimer(enemyTimer);
+                newMultiSpell.Execute(grid);
+
+                enemyTimer.Initialize(newMultiSpell.SelectionInterval, grid, newMultiSpell.OnIntervalTick);
+                enemyTimer.StartTimer();
+
+                timedSpellMonitor = StartCoroutine(MonitorMultipleTimedSpell());
+            }
+            else
+            {
+                activeSpell.Execute(grid);
+
+                if (activeSpell is TimedDestroySpellBase)
+                {
+                    timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
+                }
             }
         }
     }
@@ -168,6 +194,12 @@ public class EnemyBehaviour : MonoBehaviour
 
         if (!inBattle || grid == null || activeSpell == null)
             yield break;
+
+        if (activeSpell is MultipleTimedSpellBase multiSpell)
+        {
+            CheckForMultipleClearedTargets(multiSpell);
+            yield break;
+        }
 
         if (activeSpell is TimedDestroySpellBase timedSpell)
         {
@@ -234,6 +266,24 @@ public class EnemyBehaviour : MonoBehaviour
         }
     }
 
+    private void CheckForMultipleClearedTargets(MultipleTimedSpellBase multiSpell)
+    {
+        if (!multiSpell.IsActive) return;
+
+        var positions = new List<Vector2Int>(multiSpell.TargetedPositions);
+
+        foreach (var pos in positions)
+        {
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual == null || !visual.IsTargetedByEnemy)
+            {
+                multiSpell.OnTargetCleared(grid, pos);
+            }
+        }
+
+        multiSpell.ReapplyTargetingVisuals(grid);
+    }
+
     private IEnumerator MonitorTimedSpell()
     {
         TimedDestroySpellBase timedSpell = activeSpell as TimedDestroySpellBase;
@@ -278,6 +328,52 @@ public class EnemyBehaviour : MonoBehaviour
             StartCoroutine(RerollAndRetarget());
         else
             CreateAndExecuteSpell();
+    }
+
+    private IEnumerator MonitorMultipleTimedSpell()
+    {
+        MultipleTimedSpellBase multiSpell = activeSpell as MultipleTimedSpellBase;
+        if (multiSpell == null) yield break;
+
+        while (multiSpell.IsActive && inBattle && grid != null)
+        {
+            // Wait until a per-target timer has expired
+            if (!multiSpell.HasExpiredTargets)
+            {
+                yield return null;
+                continue;
+            }
+
+            // Wait for grid idle before processing
+            while (grid != null && grid.CurrentState != GridStateType.Idle)
+                yield return null;
+
+            if (!inBattle || grid == null || !multiSpell.IsActive)
+                yield break;
+
+            // Process one expired targe
+            bool effectDone = false;
+            multiSpell.ProcessNextExpiredTarget(grid, () => effectDone = true);
+
+            while (!effectDone)
+            {
+                if (!inBattle || grid == null)
+                    yield break;
+                yield return null;
+            }
+
+            // Wait for grid to settle after gravity / refill
+            while (grid != null && grid.CurrentState != GridStateType.Idle)
+                yield return null;
+
+            if (!inBattle || grid == null)
+                yield break;
+
+            // Remap positions and resume all timers
+            multiSpell.OnPostEffectSettle(grid);
+        }
+
+        timedSpellMonitor = null;
     }
 
     private IEnumerator RerollAndRetarget()
@@ -346,7 +442,13 @@ public class EnemyBehaviour : MonoBehaviour
 
     public void PauseActiveTimedSpell()
     {
-        if (activeSpell is TimedDestroySpellBase timedSpell)
+        if (activeSpell is MultipleTimedSpellBase multiSpell)
+        {
+            multiSpell.PauseAllTargets();
+            multiSpell.IntervalTimer?.Pause();
+            timersPaused = true;
+        }
+        else if (activeSpell is TimedDestroySpellBase timedSpell)
         {
             timedSpell.PauseTimer();
             timersPaused = true;
@@ -355,7 +457,13 @@ public class EnemyBehaviour : MonoBehaviour
 
     public void ResumeActiveTimedSpell()
     {
-        if (activeSpell is TimedDestroySpellBase timedSpell)
+        if (activeSpell is MultipleTimedSpellBase multiSpell)
+        {
+            multiSpell.ResumeAllTargets();
+            multiSpell.IntervalTimer?.Resume();
+            timersPaused = false;
+        }
+        else if (activeSpell is TimedDestroySpellBase timedSpell)
         {
             timedSpell.ResumeTimer();
             timersPaused = false;

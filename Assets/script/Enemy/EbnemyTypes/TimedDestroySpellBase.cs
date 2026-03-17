@@ -13,7 +13,7 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
 
     public SpellTimer Timer => spellTimer;
     public bool IsEffectApplied => effectApplied;
-    public bool IsTimerExpired => spellTimer?.IsExpired ?? false;
+    public virtual bool IsTimerExpired => spellTimer?.IsExpired ?? false;
     public float BonusTimePerClearedTarget => bonusTimePerClearedTarget;
     public List<Vector2Int> TargetedPositions => targetedPositions;
 
@@ -76,16 +76,13 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
     }
 
     public bool OnTargetCleared(Grid grid, Vector2Int clearedPosition)
-    {
-        Debug.Log($"OnTargetCleared called for position {clearedPosition}. Contains check: {targetedPositions.Contains(clearedPosition)}. TargetedPositions count: {targetedPositions.Count}");
-        
+    {        
         if (!targetedPositions.Contains(clearedPosition)) return false;
 
         targetedPositions.Remove(clearedPosition);
 
         if (bonusTimePerClearedTarget > 0f)
         {
-            Debug.Log($"Adding {bonusTimePerClearedTarget} seconds to timer for cleared target at {clearedPosition}");
             AddTime(bonusTimePerClearedTarget);
         }
 

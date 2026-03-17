@@ -50,10 +50,14 @@ public class ElementVisual : MonoBehaviour
 
     public void Initialize(Vector2Int position, Element element)
     {
+        StopHoverAnimation();
+
         highlighter = GetComponent<Highlighter>();
+        highlighter?.SetHighlight(false);
+
         gridPosition = position;
         UpdateVisual(element);
-        
+
         if (!isTargetedByEnemy)
         {
             if (targetFillImage != null)

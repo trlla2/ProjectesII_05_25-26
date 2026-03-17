@@ -362,14 +362,6 @@ public class EnemyBehaviour : MonoBehaviour
         }
     }
 
-    public void AddTimeToActiveSpell(float seconds)
-    {
-        if (activeSpell is TimedDestroySpellBase timedSpell)
-        {
-            timedSpell.AddTime(seconds);
-        }
-    }
-
     private void Die()
     {
         StopBattle();

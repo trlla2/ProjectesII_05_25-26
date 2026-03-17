@@ -535,6 +535,7 @@ public class VisualGrid : MonoBehaviour
                 if (visual != null)
                 {
                     visual.highlighter.SetHighlight(false);
+                    visual.StopHoverAnimation();
                 }
             }
         }

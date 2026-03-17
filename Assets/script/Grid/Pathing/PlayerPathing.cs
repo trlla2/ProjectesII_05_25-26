@@ -24,7 +24,6 @@ public class PlayerPathing : MonoBehaviour
     private IInputHandler inputHandler;
     private IPathValidator pathValidator;
     private ISpellMatcher spellMatcher;
-
     private PathData pathData;
     private PathVisualizer pathVisualizer;
 
@@ -86,6 +85,7 @@ public class PlayerPathing : MonoBehaviour
         if (grid != null)
         {
             grid.OnRerollStarted += HandleRerollStarted;
+            grid.OnEnemySpellStarted += HandleEnemySpellStarted;
         }
     }
 
@@ -102,10 +102,16 @@ public class PlayerPathing : MonoBehaviour
         if (grid != null)
         {
             grid.OnRerollStarted -= HandleRerollStarted;
+            grid.OnEnemySpellStarted -= HandleEnemySpellStarted;
         }
     }
 
     private void HandleRerollStarted()
+    {
+        ForceEndPathing();
+    }
+
+    private void HandleEnemySpellStarted()
     {
         ForceEndPathing();
     }
@@ -129,12 +135,15 @@ public class PlayerPathing : MonoBehaviour
     private void Update()
     {
         if (grid.CurrentState != GridStateType.Idle)
+        {
+            if (isPathing)
+                ForceEndPathing();
             return;
-        
-        // Disable pathing during QTE
+        }
+
         if (isQTEActive)
             return;
-        
+
         if (!canPath)
             return;
 
@@ -143,7 +152,7 @@ public class PlayerPathing : MonoBehaviour
         {
             grid.VisualGrid.ShowInactiveGrid(true);
             return;
-        }   
+        }
 
         HandleInput();
         UpdateVisuals();
@@ -256,6 +265,7 @@ public class PlayerPathing : MonoBehaviour
         foreach (Vector2Int pos in positions)
         {
             pathVisualizer.HighlightElement(pos, false);
+
         }
 
         pathData.Clear();
@@ -400,7 +410,7 @@ public class PlayerPathing : MonoBehaviour
     }
 
     private void HandleBattleEnd(bool isWin, int exp, Spell drop)
-    {
+    {   
         SetPathingEnabled(false);
     }
 

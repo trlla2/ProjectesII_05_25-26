@@ -91,6 +91,7 @@ public class PathVisualizer : MonoBehaviour
             HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.RigidImpact);
             visual.highlighter.SetHighlight(highlight);
             visual.GetComponent<ScaleAnimator>().PlayScale(0.5f, 0.15f);
+            visual.StartHoverAnimation(highlight);
         }
     }
 
@@ -98,7 +99,13 @@ public class PathVisualizer : MonoBehaviour
     {
         if (lineRenderer != null)
             lineRenderer.positionCount = 0;
-
+        foreach (Vector2Int pos in pathData.Positions)
+        {
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual != null)
+                visual.highlighter.SetHighlight(false);
+                visual.StopHoverAnimation();
+        }
         ShowCursor(false);
     }
 }

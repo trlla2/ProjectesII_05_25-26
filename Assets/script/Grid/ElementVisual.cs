@@ -34,6 +34,16 @@ public class ElementVisual : MonoBehaviour
     private Sprite overrideSprite;
     private bool hasOverrideSprite;
 
+    private Tween hoverMoveTween;
+    private Tween hoverRotateTween;
+    private Tween hoverScaleTween;
+
+    private Vector3 initialPosition;
+    private Quaternion initialRotation;
+    private Vector3 initialScale;
+
+    private bool isHoverAnimating;
+
     public Vector2Int GridPosition => gridPosition;
     public bool CanSelect => canSelect;
     public bool IsTargetedByEnemy => isTargetedByEnemy;
@@ -330,6 +340,58 @@ public class ElementVisual : MonoBehaviour
 
         if (currentElement != null)
             UpdateVisual(currentElement);
+    }
+
+    public void StartHoverAnimation(bool highlight)
+    {
+        StopHoverAnimation();
+
+        if (elementRenderer == null) return;
+
+        initialPosition = elementRenderer.transform.localPosition;
+        initialRotation = elementRenderer.transform.localRotation;
+        initialScale = elementRenderer.transform.localScale;
+
+        if (!highlight) return;
+
+        isHoverAnimating = true;
+
+        TweenCallback onKillReset = () =>
+        {
+            if (elementRenderer == null) return;
+            elementRenderer.transform.localPosition = initialPosition;
+            elementRenderer.transform.localRotation = initialRotation;
+            elementRenderer.transform.localScale = initialScale;
+        };
+
+        hoverMoveTween = elementRenderer.transform.DOLocalMoveY(initialPosition.y + 0.1f, 0.9f)
+            .SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo).OnKill(onKillReset);
+        hoverRotateTween = elementRenderer.transform.DOLocalRotate(new Vector3(0f, 0f, 3f), 1.0f)
+            .SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo).OnKill(onKillReset);
+        hoverScaleTween = elementRenderer.transform.DOScale(1.05f, 0.9f)
+            .SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo).OnKill(onKillReset);
+    }
+
+    public void StopHoverAnimation()
+    {
+        hoverMoveTween?.Kill();
+        hoverRotateTween?.Kill();
+        hoverScaleTween?.Kill();
+
+        hoverMoveTween = null;
+        hoverRotateTween = null;
+        hoverScaleTween = null;
+
+        if (!isHoverAnimating || elementRenderer == null)
+        {
+            isHoverAnimating = false;
+            return;
+        }
+
+        isHoverAnimating = false;
+        elementRenderer.transform.localPosition = initialPosition;
+        elementRenderer.transform.localRotation = initialRotation;
+        elementRenderer.transform.localScale = initialScale;
     }
 
     public void StartTimedCountdown(float totalSeconds)

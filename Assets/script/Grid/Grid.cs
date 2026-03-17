@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,6 +28,7 @@ public class Grid : MonoBehaviour
 
     public event System.Action OnRerollStarted;
     public event System.Action OnRerollCompleted;
+    public event System.Action OnEnemySpellStarted;
 
     public void NotifyRerollStarted() => OnRerollStarted?.Invoke();
     public void NotifyRerollCompleted() => OnRerollCompleted?.Invoke();
@@ -120,10 +122,16 @@ public class Grid : MonoBehaviour
         foreach (Vector2Int pos in positions)
         {
             ElementVisual visual = gridData.GetVisualAt(pos);
-            if (visual != null && visual.IsTargetedByEnemy)
+            if (visual != null)
             {
-                visual.SetTargetedByEnemy(false);
-                visual.ClearOverrideSprite();
+                visual.StopHoverAnimation();
+                visual.highlighter?.SetHighlight(false);
+
+                if (visual.IsTargetedByEnemy)
+                {
+                    visual.SetTargetedByEnemy(false);
+                    visual.ClearOverrideSprite();
+                }
             }
             gridData.SetElementAt(pos, emptyElement);
             if (visualGrid.GetVisualAt(pos) != null)
@@ -258,7 +266,9 @@ public class Grid : MonoBehaviour
             return;
         }
 
-        // If the grid is busy (refill, reroll, etc.), wait for it to finish first
+        // Notify before any state change so PlayerPathing can clean up
+        OnEnemySpellStarted?.Invoke();
+
         if (CurrentState != GridStateType.Idle)
         {
             StartCoroutine(ProcessEnemySpellWhenReady(positions, onComplete, rerollAfter));

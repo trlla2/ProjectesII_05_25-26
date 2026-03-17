@@ -30,8 +30,9 @@ public class IdleState : IGridState
     private float idleTimer;
     private float hintDelay = 4f;
     private bool hintPlaying;
-    private Coroutine hintCoroutine;
     private List<Vector2Int> currentHintPath;
+    private List<ElementVisual> hintedVisuals;
+    private Sequence hintSequence;
 
     private float bopScaleStrength = 0.2f;
     private float bopMoveUpStrength = 0.15f;
@@ -48,6 +49,8 @@ public class IdleState : IGridState
         idleTimer = 0f;
         hintPlaying = false;
         currentHintPath = null;
+        hintedVisuals = null;
+        hintSequence = null;
     }
 
     public void Update()
@@ -93,45 +96,50 @@ public class IdleState : IGridState
 
     private void PlayHintAnimation(List<Vector2Int> path)
     {
+        // Always stop any running hint before starting a new one
+        StopHint();
+
+        hintedVisuals = new List<ElementVisual>();
         Sequence bop = DOTween.Sequence();
+
         for (int i = 0; i < path.Count; i++)
         {
             ElementVisual visual = grid.GridData.GetVisualAt(path[i]);
-
             if (visual == null)
                 continue;
 
+            hintedVisuals.Add(visual);
             bop.Append(visual.transform.DOPunchScale(Vector3.one * bopScaleStrength, bopDuration, 1, 0.5f));
             bop.Join(visual.transform.DOPunchPosition(new Vector3(0f, bopMoveUpStrength, 0f), bopDuration, 1, 0.5f));
         }
-        bop.SetLoops(-1).SetEase(Ease.InOutSine).SetDelay(0.25f);
+
+        hintSequence = bop.SetLoops(-1).SetEase(Ease.InOutSine).SetDelay(0.25f);
+        hintPlaying = true;
         idleTimer = 0f;
     }
 
     private void StopHint()
     {
-        if (hintCoroutine != null)
-        {
-            grid.StopCoroutine(hintCoroutine);
-            hintCoroutine = null;
-        }
+        hintSequence?.Kill();
+        hintSequence = null;
 
-        if (currentHintPath != null)
+        if (hintedVisuals != null)
         {
-            foreach (Vector2Int pos in currentHintPath)
+            foreach (ElementVisual visual in hintedVisuals)
             {
-                ElementVisual visual = grid.GridData.GetVisualAt(pos);
-                if (visual != null)
-                {
-                    visual.transform.DOKill();
-                    visual.transform.localScale = Vector3.one;
-                    visual.transform.position = grid.VisualGrid.GridToWorldPosition(pos);
-                }
+                if (visual == null)
+                    continue;
+
+                visual.transform.DOKill();
+                visual.transform.localScale = Vector3.one;
+                visual.transform.position = grid.VisualGrid.GridToWorldPosition(visual.GridPosition);
             }
-            currentHintPath = null;
+            hintedVisuals = null;
         }
 
+        currentHintPath = null;
         hintPlaying = false;
+        idleTimer = 0f;
     }
 }
 

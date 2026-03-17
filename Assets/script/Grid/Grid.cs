@@ -29,6 +29,7 @@ public class Grid : MonoBehaviour
     public event System.Action OnRerollStarted;
     public event System.Action OnRerollCompleted;
     public event System.Action OnEnemySpellStarted;
+    public event System.Action<GridStateType> OnStateChanged;
 
     public void NotifyRerollStarted() => OnRerollStarted?.Invoke();
     public void NotifyRerollCompleted() => OnRerollCompleted?.Invoke();
@@ -411,6 +412,7 @@ public class Grid : MonoBehaviour
         currentState?.Exit();
         currentState = newState;
         currentState?.Enter();
+        OnStateChanged?.Invoke(currentState.GetStateType());
     }
 
     private void InitializeComponents()

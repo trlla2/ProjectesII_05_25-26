@@ -88,6 +88,9 @@ public class EnemyBehaviour : MonoBehaviour
 
         if (GameManager.Instance != null)
             GameManager.Instance.OnPlayerMove += HandlePlayerMove;
+
+        if (grid != null)
+            grid.OnStateChanged += HandleGridStateChanged;
     }
 
     public void StopBattle()
@@ -98,6 +101,9 @@ public class EnemyBehaviour : MonoBehaviour
         inBattle = false;
         if (GameManager.Instance != null)
             GameManager.Instance.OnPlayerMove -= HandlePlayerMove;
+
+        if (grid != null)
+            grid.OnStateChanged -= HandleGridStateChanged;
 
         if (activeSpell != null && grid != null)
         {
@@ -156,7 +162,7 @@ public class EnemyBehaviour : MonoBehaviour
             {
                 EnemySpellTimer enemyTimer = GetComponent<EnemySpellTimer>();
                 if (enemyTimer == null)
-                    enemyTimer = gameObject.AddComponent<EnemySpellTimer>();
+                    Debug.LogError("NO ENEMY TIMER!");
 
                 newMultiSpell.SetIntervalTimer(enemyTimer);
                 newMultiSpell.Execute(grid);
@@ -488,4 +494,14 @@ public class EnemyBehaviour : MonoBehaviour
 
     public float GetMaxHP() => enemyType.Health;
     public EnemyType GetEnemyType() => enemyType;
+
+    private void HandleGridStateChanged(GridStateType newState)
+    {
+        if (!inBattle || activeSpell == null) return;
+
+        if (newState == GridStateType.Idle)
+            ResumeActiveTimedSpell();
+        else
+            PauseActiveTimedSpell();
+    }
 }

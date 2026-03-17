@@ -457,22 +457,21 @@ public class ElementVisual : MonoBehaviour
     {
         if (targetFillTimedImage == null) return;
 
-        bool wasPaused = isTimedCountdownPaused;
-
         timedFillTween?.Kill();
 
         timedCountdownRemaining = newRemainingTime;
         timedCountdownTotal = newTotalTime;
 
-        float currentFill = targetFillTimedImage.fillAmount;
         float targetFill = Mathf.Clamp01(newRemainingTime / newTotalTime);
 
-        // Create a sequence to first animate the fill change, then start the countdown from the new time
         Sequence seq = DOTween.Sequence();
 
-        seq.Append(DOTween.To(() => targetFillTimedImage.fillAmount,x => targetFillTimedImage.fillAmount = x, targetFill, 0.25f).SetEase(Ease.OutQuad));
+        seq.Append(DOTween.To(
+            () => targetFillTimedImage.fillAmount,
+            x => targetFillTimedImage.fillAmount = x,
+            targetFill, 0.25f)
+        .SetEase(Ease.OutQuad));
 
-        // Continue countdown from new position
         seq.AppendCallback(() =>
         {
             timedFillTween = DOTween.To(
@@ -483,8 +482,7 @@ public class ElementVisual : MonoBehaviour
                     targetFillTimedImage.fillAmount = Mathf.Clamp01(x / timedCountdownTotal);
                 },
                 0f,
-                newRemainingTime
-            )
+                newRemainingTime)
             .SetEase(Ease.Linear)
             .OnComplete(() =>
             {
@@ -492,11 +490,8 @@ public class ElementVisual : MonoBehaviour
                 timedFillTween = null;
             });
 
-            if (wasPaused)
-            {
+            if (isTimedCountdownPaused)
                 timedFillTween.Pause();
-                isTimedCountdownPaused = true;
-            }
         });
 
         timedFillTween = seq;

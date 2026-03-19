@@ -45,13 +45,13 @@ public class ElementVisual : MonoBehaviour
     private bool isHoverAnimating;
 
     private bool isBlocked;
-    private int blockBreakProgress;
+    private float blockBreakProgress;
 
     public Vector2Int GridPosition => gridPosition;
     public bool CanSelect => canSelect;
     public bool IsTargetedByEnemy => isTargetedByEnemy;
     public bool IsBlocked => isBlocked;
-    public int BlockBreakProgress => blockBreakProgress;
+    public float BlockBreakProgress => blockBreakProgress;
 
     public void Initialize(Vector2Int position, Element element)
     {
@@ -244,23 +244,6 @@ public class ElementVisual : MonoBehaviour
             StopCoroutine(fillCoroutine);
 
         fillCoroutine = StartCoroutine(FillRoutine(targetFill, animDuration, fillCurve));
-    }
-
-    public void StartCountdown(float totalSeconds)
-    {
-        if (targetFillImage == null)
-            return;
-
-        totalSeconds = Mathf.Max(0.0001f, totalSeconds);
-
-        if (fillCoroutine != null)
-        {
-            StopCoroutine(fillCoroutine);
-            fillCoroutine = null;
-        }
-
-        targetFillImage.enabled = true;
-        fillCoroutine = StartCoroutine(CountdownRoutine(totalSeconds));
     }
 
     public void StopCountdown()
@@ -518,43 +501,27 @@ public class ElementVisual : MonoBehaviour
             blockadeVisual.SetActive(blocked);
             if (blocked)
             {
-                blockBreakProgress = 0;
+                blockBreakProgress = 0f;
                 blockadeVisual.UpdateProgress(0f);
             }
         }
-
     }
 
-    public void UpdateBlockProgress(int adjacentUsed, int requiredToBreak = 3)
+    public void UpdateBlockProgress(float normalizedProgress)
     {
         if (!isBlocked) return;
 
-        blockBreakProgress = adjacentUsed;
+        blockBreakProgress = normalizedProgress;
 
         if (blockadeVisual != null)
-        {
-            float progress = (float)adjacentUsed / requiredToBreak;
-            blockadeVisual.UpdateProgress(progress);
-        }
+            blockadeVisual.UpdateProgress(normalizedProgress);
     }
 
     public void ResetBlockProgress()
     {
-        blockBreakProgress = 0;
+        blockBreakProgress = 0f;
         if (blockadeVisual != null)
             blockadeVisual.UpdateProgress(0f);
-    }
-
-    public bool TryBreakBlock(int requiredToBreak = 3)
-    {
-        if (!isBlocked) return false;
-
-        if (blockBreakProgress >= requiredToBreak)
-        {
-            SetBlocked(false);
-            return true;
-        }
-        return false;
     }
 
 
@@ -590,26 +557,6 @@ public class ElementVisual : MonoBehaviour
         if (targetFill <= 0f && !isTargetedByEnemy)
             targetFillImage.enabled = false;
 
-        fillCoroutine = null;
-    }
-
-    private IEnumerator CountdownRoutine(float totalSeconds)
-    {
-        if (targetFillImage == null)
-            yield break;
-
-        float elapsed = 0f;
-        targetFillImage.fillAmount = 1f;
-
-        while (elapsed < totalSeconds)
-        {
-            elapsed += Time.deltaTime;
-            float remainingFraction = Mathf.Clamp01(1f - (elapsed / totalSeconds));
-            targetFillImage.fillAmount = remainingFraction;
-            yield return null;
-        }
-
-        targetFillImage.fillAmount = 0f;
         fillCoroutine = null;
     }
 }

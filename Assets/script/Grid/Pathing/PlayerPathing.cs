@@ -14,7 +14,7 @@ public class PlayerPathing : MonoBehaviour
     [SerializeField] private float selectScaleAmount = 0.2f;
     [SerializeField] private float selectScaleTime = 0.2f;
     [SerializeField] private float xDistanceBetween = 1.25f;
-    [SerializeField] private float castCooldown = 0.45f;
+    [SerializeField] private float castCooldown = 0.25f;
 
     [SerializeField] private SpellPathAnimator spellPathAnimator;
 
@@ -50,7 +50,7 @@ public class PlayerPathing : MonoBehaviour
 
     private void InitializeComponents()
     {
-        float adjacencyDistance = xDistanceBetween * 1.1f;
+        float adjacencyDistance = xDistanceBetween;
 
         inputHandler = new MouseInputHandler();
         pathValidator = new WorldSpacePathValidator(grid, adjacencyDistance);

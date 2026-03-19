@@ -37,8 +37,8 @@ public class BlockadeVisual : MonoBehaviour
 
         progress = Mathf.Clamp01(progress);
 
-        // Calculate sprite index based on progress form 0 to 1
-        int spriteIndex = Mathf.FloorToInt(progress * (blockadeSprites.Length - 1));
+        // progress > 0 immediately advances to the first breaking sprite.
+        int spriteIndex = Mathf.CeilToInt(progress * (blockadeSprites.Length - 1));
         spriteIndex = Mathf.Clamp(spriteIndex, 0, blockadeSprites.Length - 1);
 
         if (spriteIndex != currentSpriteIndex || blockadeRenderer.sprite == null)

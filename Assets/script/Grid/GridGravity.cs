@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class GridGravity
 {
@@ -29,15 +28,13 @@ public class GridGravity
     {
         int gridSize = gridData.GridSize;
 
-        // If the column contains a bomb in row 2 or lower (indices 0 or 1), 
+        // If the column contains a bomb in row 2 or lower (indices 0 or 1),
         // do not apply gravity to this column at all.
         for (int r = 0; r <= 1 && r < gridSize; r++)
         {
             Element el = gridData.GetElementAt(new Vector2Int(columnIndex, r));
             if (el != null && el.Type == ElementType.Bomb)
-            {
-                return; 
-            }
+                return;
         }
 
         for (int row = 0; row < gridSize; row++)
@@ -50,21 +47,24 @@ public class GridGravity
                 for (int aboveRow = row + 1; aboveRow < gridSize; aboveRow++)
                 {
                     Vector2Int abovePos = new Vector2Int(columnIndex, aboveRow);
+
+                    // Blocked elements
+                    ElementVisual aboveVisual = gridData.GetVisualAt(abovePos);
+                    if (aboveVisual != null && aboveVisual.IsBlocked)
+                        break;
+
                     Element aboveElement = gridData.GetElementAt(abovePos);
 
                     if (aboveElement != null && aboveElement != emptyElement)
                     {
                         // A bomb cannot fall into the bottom row
                         if (aboveElement.Type == ElementType.Bomb && row < 1)
-                        {
-                            break; 
-                        }
+                            break;
 
                         gridData.SetElementAt(currentPos, aboveElement);
                         gridData.SetElementAt(abovePos, emptyElement);
 
                         ElementVisual currentVisual = gridData.GetVisualAt(currentPos);
-                        ElementVisual aboveVisual = gridData.GetVisualAt(abovePos);
 
                         gridData.SetVisualAt(currentPos, aboveVisual);
                         gridData.SetVisualAt(abovePos, currentVisual);

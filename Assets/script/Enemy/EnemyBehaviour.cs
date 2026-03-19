@@ -223,6 +223,7 @@ public class EnemyBehaviour : MonoBehaviour
 
         if (activeSpell is BlockerSpell blockerSpell)
         {
+            blockerSpell.CheckForClearedAttackTarget(grid);
             yield break;
         }
 
@@ -243,10 +244,8 @@ public class EnemyBehaviour : MonoBehaviour
         if (timedSpell.IsEffectApplied) return;
 
         bool anyCleared = timedSpell.ConsumeClearedCount() > 0;
-        Debug.Log($" Cleared count: {anyCleared}");
 
         var positions = new List<Vector2Int>(timedSpell.TargetedPositions);
-        Debug.Log($"Checking {positions.Count} targeted positions for clearing...");
 
         if (positions.Count == 0)
         {
@@ -255,7 +254,15 @@ public class EnemyBehaviour : MonoBehaviour
                 StopCoroutine(timedSpellMonitor);
                 timedSpellMonitor = null;
             }
+
             timedSpell.Cleanup(grid);
+
+            if (timedSpell is SingleElementTimedSpell)
+            {
+                CreateAndExecuteSpell();
+                return;
+            }
+
             StartCoroutine(RerollAndRetarget());
             return;
         }
@@ -276,7 +283,15 @@ public class EnemyBehaviour : MonoBehaviour
                         StopCoroutine(timedSpellMonitor);
                         timedSpellMonitor = null;
                     }
+
                     timedSpell.Cleanup(grid);
+
+                    if (timedSpell is SingleElementTimedSpell)
+                    {
+                        CreateAndExecuteSpell();
+                        return;
+                    }
+
                     StartCoroutine(RerollAndRetarget());
                     return;
                 }
@@ -408,6 +423,38 @@ public class EnemyBehaviour : MonoBehaviour
 
         while (blockerSpell.IsActive && inBattle && grid != null)
         {
+            // Monitor the inner timed-attack spell for expiry
+            if (blockerSpell.HasActiveAttackSpell && blockerSpell.IsAttackTimerExpired)
+            {
+                // Wait for grid to be idle before processing the attack
+                while (grid != null && grid.CurrentState != GridStateType.Idle)
+                    yield return null;
+
+                if (!inBattle || grid == null || !blockerSpell.IsActive)
+                    yield break;
+
+                // Process the expired attack (deal damage, destroy element)
+                bool effectDone = false;
+                blockerSpell.ProcessExpiredAttack(grid, () => effectDone = true);
+
+                while (!effectDone)
+                {
+                    if (!inBattle || grid == null)
+                        yield break;
+                    yield return null;
+                }
+
+                // Wait for grid to settle after gravity / refill
+                while (grid != null && grid.CurrentState != GridStateType.Idle)
+                    yield return null;
+
+                if (!inBattle || grid == null || !blockerSpell.IsActive)
+                    yield break;
+
+                // Retarget a fresh single element
+                blockerSpell.RestartAttackSpell(grid);
+            }
+
             yield return null;
         }
 
@@ -421,9 +468,9 @@ public class EnemyBehaviour : MonoBehaviour
 
         if (activeSpell is BlockerSpell blockerSpell)
         {
-            bool blockBroken = blockerSpell.OnAdjacentElementsUsed(grid, usedPositions);
+            bool allBroken = blockerSpell.OnAdjacentElementsUsed(grid, usedPositions);
             
-            if (blockBroken)
+            if (allBroken)
             {
                 StartCoroutine(HandleBlockBroken(blockerSpell));
             }
@@ -432,6 +479,16 @@ public class EnemyBehaviour : MonoBehaviour
 
     private IEnumerator HandleBlockBroken(BlockerSpell blockerSpell)
     {
+        // Wait for grid to be idle before starting reroll
+        while (grid != null && grid.CurrentState != GridStateType.Idle)
+            yield return null;
+
+        if (!inBattle || grid == null)
+            yield break;
+
+        // Cleanup attack spell and trigger reroll
+        blockerSpell.OnAllBlocksBroken(grid);
+
         // Wait for reroll to complete
         while (grid != null && grid.CurrentState != GridStateType.Idle)
             yield return null;
@@ -439,7 +496,7 @@ public class EnemyBehaviour : MonoBehaviour
         if (!inBattle || grid == null)
             yield break;
 
-        // Notify spell that reroll is complete
+        // Place new blocks and start a new attack spell
         blockerSpell.OnRerollComplete(grid);
     }
 
@@ -525,7 +582,12 @@ public class EnemyBehaviour : MonoBehaviour
 
     public void PauseActiveTimedSpell()
     {
-        if (activeSpell is MultipleTimedSpellBase multiSpell)
+        if (activeSpell is BlockerSpell blockerSpell)
+        {
+            blockerSpell.PauseAttackTimer();
+            timersPaused = true;
+        }
+        else if (activeSpell is MultipleTimedSpellBase multiSpell)
         {
             multiSpell.PauseAllTargets();
             multiSpell.IntervalTimer?.Pause();
@@ -540,7 +602,12 @@ public class EnemyBehaviour : MonoBehaviour
 
     public void ResumeActiveTimedSpell()
     {
-        if (activeSpell is MultipleTimedSpellBase multiSpell)
+        if (activeSpell is BlockerSpell blockerSpell)
+        {
+            blockerSpell.ResumeAttackTimer();
+            timersPaused = false;
+        }
+        else if (activeSpell is MultipleTimedSpellBase multiSpell)
         {
             multiSpell.ResumeAllTargets();
             multiSpell.IntervalTimer?.Resume();

@@ -38,6 +38,10 @@ public class SingleElementTimedSpell : TimedDestroySpellBase
                 Element element = grid.GetElementAt(pos);
                 if (element != null && element != grid.EmptyElement)
                 {
+                    ElementVisual visual = grid.GetElementVisualAt(pos);
+                    if (visual != null && visual.IsBlocked)
+                        continue;
+
                     candidates.Add(pos);
                 }
             }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//weird enemy so it cant directly inherit from spell base, it contains a separate timed spell inside it tracked separately tho
 public class BlockerSpell : IEnemySpell
 {
     private int blockCount;
@@ -9,19 +10,23 @@ public class BlockerSpell : IEnemySpell
     private float damagePerElement;
 
     private List<Vector2Int> blockedPositions = new List<Vector2Int>();
-    private Dictionary<Vector2Int, int> blockProgress = new Dictionary<Vector2Int, int>();//Track progress for each block position
+    private Dictionary<Vector2Int, float> blockProgress = new Dictionary<Vector2Int, float>();
 
     private SingleElementTimedSpell activeAttackSpell;
-    private Grid cachedGrid;
     private EnemyBehaviour cachedEnemy;
+    private Grid cachedGrid;
 
     private bool isActive;
-    private int requiredToBreak = 3;
+    private const int requiredAdjacentCount = 4;
+    private const float requiredToBreak = 1.0f;
+    private const float progressPerAdjacent = 1f / requiredAdjacentCount;
 
-    public int RemainingMoves => activeAttackSpell?.RemainingMoves ?? 0;
-    public bool ShouldRerollAfterAttack => false; // We handle our own reroll logic
+    public int RemainingMoves => activeAttackSpell?.RemainingMoves == null ? 0 : activeAttackSpell.RemainingMoves;
+    public bool ShouldRerollAfterAttack => false;
     public bool IsActive => isActive;
-    public List<Vector2Int> BlockedPositions => blockedPositions;
+    public bool AllBlocksBroken => blockedPositions.Count == 0;
+    public bool IsAttackTimerExpired => activeAttackSpell?.IsTimerExpired ?? false;
+    public bool HasActiveAttackSpell => activeAttackSpell != null;
 
     public BlockerSpell(int blockCount = 2, float damagePercent = 0.25f, float attackTimer = 6f, float damagePerElement = 4f)
     {
@@ -37,23 +42,21 @@ public class BlockerSpell : IEnemySpell
     {
         if (grid == null) return;
 
-        cachedGrid = grid;
         isActive = true;
+        cachedGrid = grid;
 
         if (GameManager.Instance != null && GameManager.Instance.CombatHandler != null)
-        {
             cachedEnemy = GameManager.Instance.CombatHandler.GetEnemyRef();
-        }
+
+        grid.OnRerollCompleted += HandleRerollCompleted;
 
         PlaceBlocks(grid, blockCount);
-
         StartAttackSpell(grid);
     }
 
     public void Tick(Grid grid, System.Action onComplete = null)
     {
         // The timed attack spell handles its own ticking
-
         activeAttackSpell?.Tick(grid, onComplete);
     }
 
@@ -61,15 +64,19 @@ public class BlockerSpell : IEnemySpell
     {
         isActive = false;
 
+        if (cachedGrid != null)
+        {
+            cachedGrid.OnRerollCompleted -= HandleRerollCompleted;
+            cachedGrid = null;
+        }
+
         foreach (var pos in blockedPositions)
         {
             if (!grid.IsPositionValid(pos)) continue;
 
             ElementVisual visual = grid.GetElementVisualAt(pos);
             if (visual != null && visual.IsBlocked)
-            {
                 visual.SetBlocked(false);
-            }
         }
 
         blockedPositions.Clear();
@@ -97,9 +104,7 @@ public class BlockerSpell : IEnemySpell
 
             ElementVisual visual = grid.GetElementVisualAt(pos);
             if (visual == null || !visual.IsBlocked)
-            {
                 invalidBlocks.Add(pos);
-            }
         }
 
         foreach (var pos in invalidBlocks)
@@ -109,72 +114,114 @@ public class BlockerSpell : IEnemySpell
         }
 
         activeAttackSpell?.RetargetAfterGravity(grid);
+        
+        // Check if the player cleared the targeted element during their move
+        CheckAndRetargetIfCleared(grid);
     }
 
     public bool OnAdjacentElementsUsed(Grid grid, List<Vector2Int> usedPositions)
     {
         if (!isActive || grid == null) return false;
 
-        bool anyBlockBroken = false;
+        // Check if player used the targeted element
+        CheckIfTargetUsedByPlayer(grid, usedPositions);
+
         List<Vector2Int> brokenBlocks = new List<Vector2Int>();
+        HashSet<Vector2Int> usedSet = new HashSet<Vector2Int>(usedPositions);
 
         foreach (var blockPos in blockedPositions)
         {
-            int adjacentCount = CountAdjacentPositions(blockPos, usedPositions);
-            
-            if (adjacentCount > 0)
+            int adjacentCount = CountAdjacentPositions(blockPos, usedSet);
+            if (adjacentCount <= 0)
+                continue;
+
+            if (!blockProgress.ContainsKey(blockPos))
+                blockProgress[blockPos] = 0f;
+
+            blockProgress[blockPos] += adjacentCount * progressPerAdjacent;
+            blockProgress[blockPos] = Mathf.Clamp01(blockProgress[blockPos]);
+
+            ElementVisual blockVisual = grid.GetElementVisualAt(blockPos);
+            if (blockVisual != null)
+                blockVisual.UpdateBlockProgress(blockProgress[blockPos] / requiredToBreak);
+
+            if (blockProgress[blockPos] >= requiredToBreak)
+                brokenBlocks.Add(blockPos);
+        }
+
+        if (brokenBlocks.Count > 0)
+        {
+            // Animate blockade breaking to enemy
+            AnimateBlockadeBreaking(grid, brokenBlocks, () =>
             {
-                //Accumulate progress
-                if (!blockProgress.ContainsKey(blockPos))
-                    blockProgress[blockPos] = 0;
+                // After animation, complete the break process
+                foreach (var brokenPos in brokenBlocks)
+                    CompleteBreakBlock(grid, brokenPos);
 
-                blockProgress[blockPos] += adjacentCount;
-
-                //Update visual
-                ElementVisual blockVisual = grid.GetElementVisualAt(blockPos);
-                if (blockVisual != null)
+                // Check if all blocks are broken
+                if (blockedPositions.Count == 0)
                 {
-                    blockVisual.UpdateBlockProgress(blockProgress[blockPos], requiredToBreak);
+                    // Signal to EnemyBehaviour that all blocks are broken
+                    if (activeAttackSpell != null)
+                    {
+                        activeAttackSpell.Cleanup(grid);
+                        activeAttackSpell = null;
+                    }
+
+                    grid.Reroll(2);
                 }
+            });
+        }
 
-                //Check if block is broken
-                if (blockProgress[blockPos] >= requiredToBreak)
+        // Only signal a full reset when every block has been destroyed
+        return blockedPositions.Count == 0;
+    }
+
+    // Check if player used any of the targeted positions
+    private void CheckIfTargetUsedByPlayer(Grid grid, List<Vector2Int> usedPositions)
+    {
+        if (activeAttackSpell == null || activeAttackSpell.IsEffectApplied)
+            return;
+
+        // Check if any of the used positions match the targeted positions
+        foreach (var usedPos in usedPositions)
+        {
+            if (activeAttackSpell.TargetedPositions.Contains(usedPos))
+            {
+                // Player used the targeted element - immediately retarget
+                RestartAttackSpell(grid);
+                return;
+            }
+        }
+    }
+
+    // Helper method to check and retarget after gravity
+    private void CheckAndRetargetIfCleared(Grid grid)
+    {
+        if (activeAttackSpell == null || activeAttackSpell.IsEffectApplied)
+            return;
+
+        var positions = new List<Vector2Int>(activeAttackSpell.TargetedPositions);
+
+        foreach (var pos in positions)
+        {
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual == null || !visual.IsTargetedByEnemy)
+            {
+                bool allCleared = activeAttackSpell.OnTargetCleared(grid, pos);
+                if (allCleared)
                 {
-                    brokenBlocks.Add(blockPos);
-                    anyBlockBroken = true;
+                    RestartAttackSpell(grid);
+                    return;
                 }
             }
         }
 
-        foreach (var brokenPos in brokenBlocks)
-        {
-            BreakBlock(grid, brokenPos);
-        }
-
-        return anyBlockBroken;
+        activeAttackSpell.ReapplyTargetingVisuals(grid);
     }
 
-    private void BreakBlock(Grid grid, Vector2Int position)
-    {
-        ElementVisual visual = grid.GetElementVisualAt(position);
-        if (visual != null)
-        {
-            visual.SetBlocked(false);
-        }
-
-        blockedPositions.Remove(position);
-        blockProgress.Remove(position);
-
-        if (cachedEnemy != null)
-        {
-            cachedEnemy.dealBossDamage(damagePercent);
-            Debug.Log($"Block broken! Dealt {damagePercent * 100}% damage to enemy.");
-        }
-
-        OnBlockBroken(grid);
-    }
-
-    private void OnBlockBroken(Grid grid)
+    // Called by EnemyBehaviour when all blocks are broken to trigger the reroll cycle.
+    public void OnAllBlocksBroken(Grid grid)
     {
         if (activeAttackSpell != null)
         {
@@ -182,27 +229,150 @@ public class BlockerSpell : IEnemySpell
             activeAttackSpell = null;
         }
 
+        grid.Reroll(2);
+    }
+
+    // Covers both ValidateSpellState rerolls and OnAllBlocksBroken rerolls.
+    private void HandleRerollCompleted()
+    {
+        if (cachedGrid == null || !isActive) return;
+
         foreach (var pos in blockedPositions)
         {
-            if (blockProgress.ContainsKey(pos))
-                blockProgress[pos] = 0;
+            if (!cachedGrid.IsPositionValid(pos)) continue;
 
-            ElementVisual visual = grid.GetElementVisualAt(pos);
-            if (visual != null)
-                visual.ResetBlockProgress();
+            ElementVisual visual = cachedGrid.GetElementVisualAt(pos);
+            if (visual == null) continue;
+
+            if (!visual.IsBlocked)
+                visual.SetBlocked(true);
+
+            float progress = blockProgress.ContainsKey(pos) ? blockProgress[pos] : 0f;
+            visual.UpdateBlockProgress((progress / requiredToBreak));
+        }
+    }
+
+    private void AnimateBlockadeBreaking(Grid grid, List<Vector2Int> brokenPositions, System.Action onComplete)
+    {
+        if (brokenPositions == null || brokenPositions.Count == 0)
+        {
+            onComplete?.Invoke();
+            return;
         }
 
-        grid.Reroll(3);
+        //Get the enemy SpellPathAnimator to reuse the same animation system
+        if (cachedEnemy == null)
+        {
+            Debug.LogWarning("No cached enemy reference for animation");
+            onComplete?.Invoke();
+            return;
+        }
 
-        //We need to wait for reroll to complete, then place new blocks
-        //this will be handled by the EnemyBehaviour's RerollAndRetarget
+        SpellPathAnimator animator = cachedEnemy.GetComponentInChildren<SpellPathAnimator>();
+        if (animator == null)
+        {
+            Debug.LogWarning("No SpellPathAnimator found on enemy");
+            onComplete?.Invoke();
+            return;
+        }
+
+        // Gather elements from broken block positions
+        List<Element> elements = new List<Element>();
+        foreach (var pos in brokenPositions)
+        {
+            Element element = grid.GetElementAt(pos);
+            if (element != null && element != grid.EmptyElement)
+                elements.Add(element);
+        }
+
+        if (elements.Count == 0)
+        {
+            onComplete?.Invoke();
+            return;
+        }
+
+        // Convert List to array for animator
+        Vector2Int[] pathArray = brokenPositions.ToArray();
+
+        // Animate the blockade visuals flying to the enemy
+        animator.OnSpellCast(pathArray, elements, onComplete);
+    }
+
+    private void CompleteBreakBlock(Grid grid, Vector2Int position)
+    {
+        ElementVisual visual = grid.GetElementVisualAt(position);
+        if (visual != null)
+            visual.SetBlocked(false);
+
+        blockedPositions.Remove(position);
+        blockProgress.Remove(position);
+
+        if (cachedEnemy != null)
+        {
+            cachedEnemy.dealBossDamage(damagePercent);
+        }
     }
 
     public void OnRerollComplete(Grid grid)
     {
-        PlaceBlocks(grid, 2);
+        // Clear all surviving blocks before placing a fresh set
+        foreach (var pos in blockedPositions)
+        {
+            if (!grid.IsPositionValid(pos)) continue;
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual != null && visual.IsBlocked)
+                visual.SetBlocked(false);
+        }
+        blockedPositions.Clear();
+        blockProgress.Clear();
 
+        PlaceBlocks(grid, blockCount);
         StartAttackSpell(grid);
+    }
+    public void ProcessExpiredAttack(Grid grid, System.Action onComplete)
+    {
+        activeAttackSpell?.Tick(grid, onComplete);
+    }
+
+
+    public void RestartAttackSpell(Grid grid)
+    {
+        activeAttackSpell?.Cleanup(grid);
+        activeAttackSpell = null;
+        StartAttackSpell(grid);
+    }
+
+    public void CheckForClearedAttackTarget(Grid grid)
+    {
+        if (activeAttackSpell == null || activeAttackSpell.IsEffectApplied) return;
+
+        var positions = new List<Vector2Int>(activeAttackSpell.TargetedPositions);
+
+        foreach (var pos in positions)
+        {
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual == null || !visual.IsTargetedByEnemy)
+            {
+                bool allCleared = activeAttackSpell.OnTargetCleared(grid, pos);
+                if (allCleared)
+                {
+                    RestartAttackSpell(grid);
+                    return;
+                }
+            }
+        }
+
+        activeAttackSpell.ReapplyTargetingVisuals(grid);
+    }
+
+    public void PauseAttackTimer()
+    {
+        activeAttackSpell?.PauseTimer();
+    }
+
+    public void ResumeAttackTimer()
+    {
+        activeAttackSpell?.ResumeTimer();
     }
 
     private void PlaceBlocks(Grid grid, int count)
@@ -222,13 +392,11 @@ public class BlockerSpell : IEnemySpell
     private void PlaceBlockAt(Grid grid, Vector2Int position)
     {
         blockedPositions.Add(position);
-        blockProgress[position] = 0;
+        blockProgress[position] = 0f;
 
         ElementVisual visual = grid.GetElementVisualAt(position);
         if (visual != null)
-        {
             visual.SetBlocked(true);
-        }
     }
 
     private List<Vector2Int> GetValidBlockPositions(Grid grid)
@@ -241,20 +409,12 @@ public class BlockerSpell : IEnemySpell
             {
                 Vector2Int pos = new Vector2Int(x, y);
 
-                if (!grid.IsPositionValid(pos))
-                    continue;
-
-                // Don't place on existing blocks
-                if (blockedPositions.Contains(pos))
-                    continue;
+                if (!grid.IsPositionValid(pos)) continue;
+                if (blockedPositions.Contains(pos)) continue;
 
                 Element element = grid.GetElementAt(pos);
-                if (element == null || element == grid.EmptyElement)
-                    continue;
-
-                //Don't place on bomb elements
-                if (element.Type == ElementType.Bomb)
-                    continue;
+                if (element == null || element == grid.EmptyElement) continue;
+                if (element.Type == ElementType.Bomb) continue;
 
                 valid.Add(pos);
             }
@@ -269,53 +429,16 @@ public class BlockerSpell : IEnemySpell
         activeAttackSpell.Execute(grid);
     }
 
-
-    private int CountAdjacentPositions(Vector2Int blockPos, List<Vector2Int> positions)
+    private int CountAdjacentPositions(Vector2Int blockPos, HashSet<Vector2Int> positions)
     {
         int count = 0;
-        Vector2Int[] directions = new Vector2Int[]
-        {
-            Vector2Int.up,
-            Vector2Int.down,
-            Vector2Int.left,
-            Vector2Int.right
-        };
+        Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
 
-        foreach (var pos in positions)
-        {
-            foreach (var dir in directions)
-            {
-                if (blockPos + dir == pos)
-                {
-                    count++;
-                    break;
-                }
-            }
-        }
+        foreach (var dir in directions)
+            if (positions.Contains(blockPos + dir))
+                count++;
 
         return count;
-    }
-
-    public bool IsAdjacentToBlock(Vector2Int position)
-    {
-        Vector2Int[] directions = new Vector2Int[]
-        {
-            Vector2Int.up,
-            Vector2Int.down,
-            Vector2Int.left,
-            Vector2Int.right
-        };
-
-        foreach (var blockPos in blockedPositions)
-        {
-            foreach (var dir in directions)
-            {
-                if (blockPos + dir == position)
-                    return true;
-            }
-        }
-
-        return false;
     }
 
     public HashSet<Vector2Int> GetBlockedPositionsSet()

@@ -58,7 +58,7 @@ public class SpellTimer
         countdownTween?.Kill();
 
         remainingSeconds += seconds;
-        totalSeconds += seconds;
+        remainingSeconds = Mathf.Min(remainingSeconds, totalSeconds);
 
         StartTween();
 

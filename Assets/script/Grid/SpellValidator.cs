@@ -5,6 +5,7 @@ public interface ISpellValidator
 {
     bool HasValidSpell(GridData gridData, List<Spell> spells);
     List<Vector2Int> FindFirstValidSpellPath(GridData gridData, List<Spell> spells);
+    void SetBlockedPositions(HashSet<Vector2Int> blocked);
 }
 
 public class SpellValidator : ISpellValidator
@@ -16,6 +17,13 @@ public class SpellValidator : ISpellValidator
         Vector2Int.left,
         Vector2Int.right
     };
+
+    private HashSet<Vector2Int> blockedPositions = new HashSet<Vector2Int>();
+
+    public void SetBlockedPositions(HashSet<Vector2Int> blocked)
+    {
+        blockedPositions = blocked ?? new HashSet<Vector2Int>();
+    }
 
     public bool HasValidSpell(GridData gridData, List<Spell> spells)
     {
@@ -29,6 +37,11 @@ public class SpellValidator : ISpellValidator
             for (int y = 0; y < size; y++)
             {
                 Vector2Int startPos = new Vector2Int(x, y);
+                
+                // Skip blocked positions as starting points
+                if (blockedPositions.Contains(startPos))
+                    continue;
+
                 if (FindSpellFromPosition(gridData, spells, startPos))
                     return true;
             }
@@ -50,6 +63,10 @@ public class SpellValidator : ISpellValidator
             for (int y = 0; y < size; y++)
             {
                 Vector2Int startPos = new Vector2Int(x, y);
+                
+                if (blockedPositions.Contains(startPos))
+                    continue;
+
                 Element startElement = gridData.GetElementAt(startPos);
                 if (startElement == null)
                     continue;
@@ -92,6 +109,9 @@ public class SpellValidator : ISpellValidator
             if (!gridData.IsPositionValid(next) || path.Contains(next))
                 continue;
 
+            if (blockedPositions.Contains(next))
+                continue;
+
             Element element = gridData.GetElementAt(next);
             if (element == null)
                 continue;
@@ -124,6 +144,10 @@ public class SpellValidator : ISpellValidator
             Vector2Int next = current + dir;
 
             if (!gridData.IsPositionValid(next) || path.Contains(next))
+                continue;
+
+
+            if (blockedPositions.Contains(next))
                 continue;
 
             Element element = gridData.GetElementAt(next);

@@ -6,7 +6,7 @@ public class ContinuouslyTimedSpell : MultipleTimedSpellBase
         float selectionInterval = 2.5f,
         float timer = 8f,
         float damage = 4f,
-        float bonusTime = 2f)
+        float bonusTime = 3f)
         : base(selectionInterval, timer, damage, bonusTime)
     {
         spellName = "Continuously Timed Target";

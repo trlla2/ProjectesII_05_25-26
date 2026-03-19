@@ -11,7 +11,6 @@ public enum GridStateType
     Reroll,
     Processing,
     ValidateSpell,
-    EnemySpell
 }
 
 public interface IGridState
@@ -665,7 +664,7 @@ public class EnemySpellState : IGridState
 public class ValidateSpellState : IGridState
 {
     private Grid grid;
-    private ISpellValidator spellValidator;
+    private SpellValidator spellValidator;
     private List<Spell> availableSpells;
     private bool isValidating;
 
@@ -702,6 +701,9 @@ public class ValidateSpellState : IGridState
 
     private void ValidateGrid()
     {
+        HashSet<Vector2Int> blockedPositions = GetBlockedPositions();
+        spellValidator.SetBlockedPositions(blockedPositions);
+
         bool hasValidSpell = spellValidator.HasValidSpell(grid.GridData, availableSpells);
 
         if (!hasValidSpell)
@@ -719,5 +721,17 @@ public class ValidateSpellState : IGridState
         }
 
         isValidating = false;
+    }
+
+    private HashSet<Vector2Int> GetBlockedPositions()
+    {
+        if (GameManager.Instance == null || GameManager.Instance.CombatHandler == null)
+            return new HashSet<Vector2Int>();
+
+        EnemyBehaviour enemy = GameManager.Instance.CombatHandler.GetEnemyRef();
+        if (enemy == null)
+            return new HashSet<Vector2Int>();
+
+        return enemy.GetBlockedPositions();
     }
 }

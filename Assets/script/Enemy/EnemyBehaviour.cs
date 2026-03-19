@@ -119,6 +119,11 @@ public class EnemyBehaviour : MonoBehaviour
                     if (visual != null)
                     {
                         visual.SetSpriteVisible(true);
+                        // Clear any blocked state
+                        if (visual.IsBlocked)
+                        {
+                            visual.SetBlocked(false);
+                        }
                     }
                 }
 
@@ -151,8 +156,12 @@ public class EnemyBehaviour : MonoBehaviour
             return;
         }
 
-        // Don't recreate if it's an active MultipleTimedSpellBase (persists across grid states)
+        // Don't recreate if it's an active MultipleTimedSpellBase (it persists across grid states)
         if (activeSpell is MultipleTimedSpellBase existingMulti && existingMulti.IsActive)
+            return;
+
+        //Same in blocker spell
+        if (activeSpell is BlockerSpell existingBlocker && existingBlocker.IsActive)
             return;
 
         activeSpell = enemyType.CreateSpell();
@@ -171,6 +180,11 @@ public class EnemyBehaviour : MonoBehaviour
                 enemyTimer.StartTimer();
 
                 timedSpellMonitor = StartCoroutine(MonitorMultipleTimedSpell());
+            }
+            else if (activeSpell is BlockerSpell blockerSpell)
+            {
+                blockerSpell.Execute(grid);
+                timedSpellMonitor = StartCoroutine(MonitorBlockerSpell());
             }
             else
             {
@@ -204,6 +218,11 @@ public class EnemyBehaviour : MonoBehaviour
         if (activeSpell is MultipleTimedSpellBase multiSpell)
         {
             CheckForMultipleClearedTargets(multiSpell);
+            yield break;
+        }
+
+        if (activeSpell is BlockerSpell blockerSpell)
+        {
             yield break;
         }
 
@@ -382,6 +401,57 @@ public class EnemyBehaviour : MonoBehaviour
         timedSpellMonitor = null;
     }
 
+    private IEnumerator MonitorBlockerSpell()
+    {
+        BlockerSpell blockerSpell = activeSpell as BlockerSpell;
+        if (blockerSpell == null) yield break;
+
+        while (blockerSpell.IsActive && inBattle && grid != null)
+        {
+            yield return null;
+        }
+
+        timedSpellMonitor = null;
+    }
+
+    public void NotifyAdjacentElementsUsed(List<Vector2Int> usedPositions)
+    {
+        if (!inBattle || activeSpell == null || grid == null)
+            return;
+
+        if (activeSpell is BlockerSpell blockerSpell)
+        {
+            bool blockBroken = blockerSpell.OnAdjacentElementsUsed(grid, usedPositions);
+            
+            if (blockBroken)
+            {
+                StartCoroutine(HandleBlockBroken(blockerSpell));
+            }
+        }
+    }
+
+    private IEnumerator HandleBlockBroken(BlockerSpell blockerSpell)
+    {
+        // Wait for reroll to complete
+        while (grid != null && grid.CurrentState != GridStateType.Idle)
+            yield return null;
+
+        if (!inBattle || grid == null)
+            yield break;
+
+        // Notify spell that reroll is complete
+        blockerSpell.OnRerollComplete(grid);
+    }
+
+    public HashSet<Vector2Int> GetBlockedPositions()
+    {
+        if (activeSpell is BlockerSpell blockerSpell)
+        {
+            return blockerSpell.GetBlockedPositionsSet();
+        }
+        return new HashSet<Vector2Int>();
+    }
+
     private IEnumerator RerollAndRetarget()
     {
         if (grid == null || grid.VisualGrid == null)
@@ -430,6 +500,13 @@ public class EnemyBehaviour : MonoBehaviour
 
     public void DealDamage(DamageType damageType)
     {
+        // For blocker enemy, only take damage from block breaks (handled by dealBossDamage)
+        if (activeSpell is BlockerSpell)
+        {
+            Debug.Log("Blocker enemy ignores spell damage - only damaged by block breaks!");
+            return;
+        }
+
         deathParticles.Play();
         HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.MediumImpact);
 

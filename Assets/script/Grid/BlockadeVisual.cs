@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using DG.Tweening;
 public class BlockadeVisual : MonoBehaviour
 {
     [Header("Blockade Sprites")]
@@ -8,6 +8,7 @@ public class BlockadeVisual : MonoBehaviour
 
     private bool isActive;
     private int currentSpriteIndex;
+    private float currentProgress;
 
     public bool IsActive => isActive;
 
@@ -37,6 +38,12 @@ public class BlockadeVisual : MonoBehaviour
 
         progress = Mathf.Clamp01(progress);
 
+        //Use DoTween to perform a shake animation to the sr
+        if (blockadeRenderer != null && currentProgress != progress)
+        {
+            blockadeRenderer.transform.DOShakePosition(0.2f + progress, new Vector3(0.1f, 0.1f, 0), (int)(10 * progress * 2), 90);
+        }
+
         // progress > 0 immediately advances to the first breaking sprite.
         int spriteIndex = Mathf.CeilToInt(progress * (blockadeSprites.Length - 1));
         spriteIndex = Mathf.Clamp(spriteIndex, 0, blockadeSprites.Length - 1);
@@ -46,12 +53,6 @@ public class BlockadeVisual : MonoBehaviour
             currentSpriteIndex = spriteIndex;
             blockadeRenderer.sprite = blockadeSprites[spriteIndex];
         }
-    }
-
-    public void ResetVisual()
-    {
-        currentSpriteIndex = 0;
-        if (blockadeSprites != null && blockadeSprites.Length > 0 && blockadeRenderer != null)
-            blockadeRenderer.sprite = blockadeSprites[0];
+        currentProgress = progress;
     }
 }

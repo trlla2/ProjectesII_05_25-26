@@ -486,8 +486,20 @@ public class EnemyBehaviour : MonoBehaviour
         if (!inBattle || grid == null)
             yield break;
 
-        // Cleanup attack spell and trigger reroll
-        blockerSpell.OnAllBlocksBroken(grid);
+        // Wait for animation to complete before triggering reroll
+        bool animationComplete = false;
+        blockerSpell.OnAllBlocksBroken(grid, () => animationComplete = true);
+
+        // Wait for the animation to finish
+        while (!animationComplete)
+        {
+            if (!inBattle || grid == null)
+                yield break;
+            yield return null;
+        }
+
+        // Now trigger the reroll
+        grid.Reroll(2);
 
         // Wait for reroll to complete
         while (grid != null && grid.CurrentState != GridStateType.Idle)

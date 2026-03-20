@@ -24,7 +24,6 @@ public class BlockerSpell : IEnemySpell
     public int RemainingMoves => activeAttackSpell?.RemainingMoves == null ? 0 : activeAttackSpell.RemainingMoves;
     public bool ShouldRerollAfterAttack => false;
     public bool IsActive => isActive;
-    public bool AllBlocksBroken => blockedPositions.Count == 0;
     public bool IsAttackTimerExpired => activeAttackSpell?.IsTimerExpired ?? false;
     public bool HasActiveAttackSpell => activeAttackSpell != null;
 
@@ -151,30 +150,18 @@ public class BlockerSpell : IEnemySpell
 
         if (brokenBlocks.Count > 0)
         {
-            // Animate blockade breaking to enemy
+            // Animation happens but we don't complete the break yet
+            // The callback from AnimateBlockadeBreaking will handle CompleteBreakBlock
             AnimateBlockadeBreaking(grid, brokenBlocks, () =>
             {
-                // After animation, complete the break process
+                // After animation completes, finish breaking the blocks
                 foreach (var brokenPos in brokenBlocks)
                     CompleteBreakBlock(grid, brokenPos);
-
-                // Check if all blocks are broken
-                if (blockedPositions.Count == 0)
-                {
-                    // Signal to EnemyBehaviour that all blocks are broken
-                    if (activeAttackSpell != null)
-                    {
-                        activeAttackSpell.Cleanup(grid);
-                        activeAttackSpell = null;
-                    }
-
-                    grid.Reroll(2);
-                }
             });
         }
 
-        // Only signal a full reset when every block has been destroyed
-        return blockedPositions.Count == 0;
+        // Return true immediately if all blocks will be broken
+        return blockedPositions.Count - brokenBlocks.Count == 0;
     }
 
     // Check if player used any of the targeted positions
@@ -221,7 +208,8 @@ public class BlockerSpell : IEnemySpell
     }
 
     // Called by EnemyBehaviour when all blocks are broken to trigger the reroll cycle.
-    public void OnAllBlocksBroken(Grid grid)
+    // Now accepts a completion callback to signal when reroll should start
+    public void OnAllBlocksBroken(Grid grid, System.Action onAnimationComplete)
     {
         if (activeAttackSpell != null)
         {
@@ -229,7 +217,8 @@ public class BlockerSpell : IEnemySpell
             activeAttackSpell = null;
         }
 
-        grid.Reroll(2);
+        // Invoke callback immediately - the animation has already completed via AnimateBlockadeBreaking
+        onAnimationComplete?.Invoke();
     }
 
     // Covers both ValidateSpellState rerolls and OnAllBlocksBroken rerolls.

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ColumnLvl2
   m_EditorClassIdentifier: 
   name: Small Orc
-  health: 120
+  health: 100
   damage: 10
   elementCount: 3
   level: 2
@@ -30,8 +30,10 @@ MonoBehaviour:
   attackTimer: 6
   lvl2Countdown: 7
   lvl2BonusTimeOnClear: 2.5
+  continuousSelectionInterval: 2.5
   visibilityDuration: 2.5
   hiddenSprite: {fileID: 0}
-  excludeBelowTargets: 0
+  blockerCount: 2
+  blockerDamagePercent: 0.25
   haveDrops: 0
   spellDrops: []

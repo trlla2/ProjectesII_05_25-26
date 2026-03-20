@@ -43,6 +43,10 @@ public class EnemyType : ScriptableObject
     [SerializeField] private float visibilityDuration = 2.5f;
     [SerializeField] private Sprite hiddenSprite;
 
+    [Header("Blocker Enemy Settings")]
+    [SerializeField] private int blockerCount = 2;
+    [SerializeField] private float blockerDamagePercent = 0.25f; // 25% of enemy health per block break
+
     [Header("Drops")]
     [SerializeField] private bool haveDrops = false;
     [SerializeField] private List<Spell> spellDrops = new List<Spell>();
@@ -126,6 +130,9 @@ public class EnemyType : ScriptableObject
             case EnemySpellType.ContinuouslyTimedTarget:
                 return new ContinuouslyTimedSpell(continuousSelectionInterval, attackTimer, damagePerElement, lvl2BonusTimeOnClear);
 
+            case EnemySpellType.BlockerAttack:
+                return new BlockerSpell(blockerCount, blockerDamagePercent, attackTimer, damagePerElement);
+
             default:
                 return new ColumnDestroySpell(damagePerElement, moveCount);
         }
@@ -155,8 +162,6 @@ public class EnemyType : ScriptableObject
     }
 }
 
-
-
 public enum EnemySpellType
 {
     ColumnDestroy,
@@ -171,5 +176,6 @@ public enum EnemySpellType
     HiddenDestroy,
     TutorialStage2FixedTargets,
     TutorialStage2TimedSpell,
-    ContinuouslyTimedTarget
+    ContinuouslyTimedTarget,
+    BlockerAttack
 }

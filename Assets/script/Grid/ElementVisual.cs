@@ -6,11 +6,11 @@ using DG.Tweening;
 public class ElementVisual : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer elementRenderer;
-    [SerializeField] private GameObject deletionEffectPrefab; 
     [SerializeField] private Image targetFillImage;
     [SerializeField] private Image targetFillTimedImage;
     [SerializeField] private Image targetFillBombImage;
     [SerializeField] private GameObject breakEnemyHoverParticles;
+    [SerializeField] private BlockadeVisual blockadeVisual;
 
     [HideInInspector]
     public Highlighter highlighter;
@@ -44,9 +44,14 @@ public class ElementVisual : MonoBehaviour
 
     private bool isHoverAnimating;
 
+    private bool isBlocked;
+    private float blockBreakProgress;
+
     public Vector2Int GridPosition => gridPosition;
     public bool CanSelect => canSelect;
     public bool IsTargetedByEnemy => isTargetedByEnemy;
+    public bool IsBlocked => isBlocked;
+    public float BlockBreakProgress => blockBreakProgress;
 
     public void Initialize(Vector2Int position, Element element)
     {
@@ -88,7 +93,7 @@ public class ElementVisual : MonoBehaviour
         if (isBombTarget)
             bombOriginalColor = element.Color;
 
-        // Preserve active sprite override (e.g. hidden enemy "?" image)
+        //Preserve active sprite override
         if (hasOverrideSprite && overrideSprite != null)
         {
             elementRenderer.sprite = overrideSprite;
@@ -105,8 +110,8 @@ public class ElementVisual : MonoBehaviour
         if (elementRenderer != null)
             elementRenderer.transform.position = position;
 
-        if (deletionEffectPrefab != null)
-            deletionEffectPrefab.transform.position = position;
+        if(blockadeVisual != null)
+            blockadeVisual.transform.position = position;
 
         if (targetFillImage != null)
             targetFillImage.rectTransform.position = position;
@@ -131,11 +136,11 @@ public class ElementVisual : MonoBehaviour
         if (elementRenderer != null)
             elementRenderer.transform.localPosition = localPosition;
 
-        if (deletionEffectPrefab != null)
-            deletionEffectPrefab.transform.localPosition = localPosition;
-
         if (targetFillImage != null)
             targetFillImage.rectTransform.localPosition = localPosition;
+
+        if(blockadeVisual != null)
+            blockadeVisual.transform.localPosition = localPosition;
 
         if (targetFillTimedImage != null)
             targetFillTimedImage.rectTransform.localPosition = localPosition;
@@ -154,8 +159,8 @@ public class ElementVisual : MonoBehaviour
         if (elementRenderer != null)
             elementRenderer.transform.localScale = scale;
 
-        if (deletionEffectPrefab != null)
-            deletionEffectPrefab.transform.localScale = scale;
+        if(blockadeVisual != null)
+            blockadeVisual.transform.localScale = scale;
 
         if (targetFillImage != null)
             targetFillImage.rectTransform.localScale = scale;
@@ -178,8 +183,12 @@ public class ElementVisual : MonoBehaviour
         if (selectable && currentElement != null && currentElement.Type == ElementType.Bomb)
             return;
 
+        if (selectable && isBlocked)
+            return;
+
         canSelect = selectable;
     }
+
     public void SetSpriteVisible(bool visible)
     {
         if (elementRenderer != null)
@@ -237,23 +246,6 @@ public class ElementVisual : MonoBehaviour
         fillCoroutine = StartCoroutine(FillRoutine(targetFill, animDuration, fillCurve));
     }
 
-    public void StartCountdown(float totalSeconds)
-    {
-        if (targetFillImage == null)
-            return;
-
-        totalSeconds = Mathf.Max(0.0001f, totalSeconds);
-
-        if (fillCoroutine != null)
-        {
-            StopCoroutine(fillCoroutine);
-            fillCoroutine = null;
-        }
-
-        targetFillImage.enabled = true;
-        fillCoroutine = StartCoroutine(CountdownRoutine(totalSeconds));
-    }
-
     public void StopCountdown()
     {
         if (fillCoroutine != null)
@@ -277,6 +269,7 @@ public class ElementVisual : MonoBehaviour
             targetFillImage.enabled = false;
         }
     }
+
     public void SetBombVisual(bool active, float progress)
     {
         if (targetFillBombImage != null)
@@ -416,9 +409,9 @@ public class ElementVisual : MonoBehaviour
             x =>
             {
                 timedCountdownRemaining = x;
-                targetFillTimedImage.fillAmount = Mathf.Clamp(x / timedCountdownTotal,0f,1f);
+                targetFillTimedImage.fillAmount = Mathf.Clamp(x / timedCountdownTotal, 0f, 1f);
             }
-            ,0f,totalSeconds).SetEase(Ease.Linear)
+            , 0f, totalSeconds).SetEase(Ease.Linear)
         .OnComplete(() =>
         {
             targetFillTimedImage.fillAmount = 0f;
@@ -497,6 +490,41 @@ public class ElementVisual : MonoBehaviour
         timedFillTween = seq;
     }
 
+
+    public void SetBlocked(bool blocked)
+    {
+        isBlocked = blocked;
+        canSelect = !blocked;
+
+        if (blockadeVisual != null)
+        {
+            blockadeVisual.SetActive(blocked);
+            if (blocked)
+            {
+                blockBreakProgress = 0f;
+                blockadeVisual.UpdateProgress(0f);
+            }
+        }
+    }
+
+    public void UpdateBlockProgress(float normalizedProgress)
+    {
+        if (!isBlocked) return;
+
+        blockBreakProgress = normalizedProgress;
+
+        if (blockadeVisual != null)
+            blockadeVisual.UpdateProgress(normalizedProgress);
+    }
+
+    public void ResetBlockProgress()
+    {
+        blockBreakProgress = 0f;
+        if (blockadeVisual != null)
+            blockadeVisual.UpdateProgress(0f);
+    }
+
+
     private IEnumerator FillRoutine(float targetFill, float duration, AnimationCurve curve)
     {
         if (targetFillImage == null)
@@ -529,26 +557,6 @@ public class ElementVisual : MonoBehaviour
         if (targetFill <= 0f && !isTargetedByEnemy)
             targetFillImage.enabled = false;
 
-        fillCoroutine = null;
-    }
-
-    private IEnumerator CountdownRoutine(float totalSeconds)
-    {
-        if (targetFillImage == null)
-            yield break;
-
-        float elapsed = 0f;
-        targetFillImage.fillAmount = 1f;
-
-        while (elapsed < totalSeconds)
-        {
-            elapsed += Time.deltaTime;
-            float remainingFraction = Mathf.Clamp01(1f - (elapsed / totalSeconds));
-            targetFillImage.fillAmount = remainingFraction;
-            yield return null;
-        }
-
-        targetFillImage.fillAmount = 0f;
         fillCoroutine = null;
     }
 }

@@ -7,7 +7,8 @@ public enum ElementType
     Green = 2,
     Yellow = 3,
     EMPTY,
-    Bomb
+    Bomb,
+    Blocked
 }
 
 [System.Serializable]

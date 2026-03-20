@@ -14,7 +14,7 @@ public class PlayerPathing : MonoBehaviour
     [SerializeField] private float selectScaleAmount = 0.2f;
     [SerializeField] private float selectScaleTime = 0.2f;
     [SerializeField] private float xDistanceBetween = 1.25f;
-    [SerializeField] private float castCooldown = 0.45f;
+    [SerializeField] private float castCooldown = 0.25f;
 
     [SerializeField] private SpellPathAnimator spellPathAnimator;
 
@@ -50,7 +50,7 @@ public class PlayerPathing : MonoBehaviour
 
     private void InitializeComponents()
     {
-        float adjacencyDistance = xDistanceBetween * 1.1f;
+        float adjacencyDistance = xDistanceBetween;
 
         inputHandler = new MouseInputHandler();
         pathValidator = new WorldSpacePathValidator(grid, adjacencyDistance);
@@ -295,9 +295,11 @@ public class PlayerPathing : MonoBehaviour
 
     private void ExecuteSpell(Spell spell, List<Element> pathElements)
     {
-
         Vector2Int[] positions = pathData.Positions;
         List<Vector2Int> posList = new List<Vector2Int>(positions);
+
+        // Notify blocker enemy of used positions (for block breaking)
+        NotifyBlockerEnemyOfUsedPositions(posList);
 
         grid.InstantVisualEmpty(posList, chargeOrb: true);
 
@@ -305,7 +307,6 @@ public class PlayerPathing : MonoBehaviour
         {
             spellPathAnimator.OnSpellCast(positions, spell.Recipe, () =>
             {
-
                 StartCoroutine(CompleteSpellWhenGridReady(spell, positions));
             });
         }
@@ -313,6 +314,18 @@ public class PlayerPathing : MonoBehaviour
         {
             CompleteSpellExecution(spell, positions);
         }
+    }
+
+    private void NotifyBlockerEnemyOfUsedPositions(List<Vector2Int> usedPositions)
+    {
+        if (GameManager.Instance == null || GameManager.Instance.CombatHandler == null)
+            return;
+
+        EnemyBehaviour enemy = GameManager.Instance.CombatHandler.GetEnemyRef();
+        if (enemy == null)
+            return;
+
+        enemy.NotifyAdjacentElementsUsed(usedPositions);
     }
 
     private IEnumerator CompleteSpellWhenGridReady(Spell spell, Vector2Int[] positions)

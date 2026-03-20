@@ -119,6 +119,11 @@ public class EnemyBehaviour : MonoBehaviour
                     if (visual != null)
                     {
                         visual.SetSpriteVisible(true);
+                        // Clear any blocked state
+                        if (visual.IsBlocked)
+                        {
+                            visual.SetBlocked(false);
+                        }
                     }
                 }
 
@@ -151,8 +156,12 @@ public class EnemyBehaviour : MonoBehaviour
             return;
         }
 
-        // Don't recreate if it's an active MultipleTimedSpellBase (persists across grid states)
+        // Don't recreate if it's an active MultipleTimedSpellBase (it persists across grid states)
         if (activeSpell is MultipleTimedSpellBase existingMulti && existingMulti.IsActive)
+            return;
+
+        //Same in blocker spell
+        if (activeSpell is BlockerSpell existingBlocker && existingBlocker.IsActive)
             return;
 
         activeSpell = enemyType.CreateSpell();
@@ -171,6 +180,11 @@ public class EnemyBehaviour : MonoBehaviour
                 enemyTimer.StartTimer();
 
                 timedSpellMonitor = StartCoroutine(MonitorMultipleTimedSpell());
+            }
+            else if (activeSpell is BlockerSpell blockerSpell)
+            {
+                blockerSpell.Execute(grid);
+                timedSpellMonitor = StartCoroutine(MonitorBlockerSpell());
             }
             else
             {
@@ -207,6 +221,12 @@ public class EnemyBehaviour : MonoBehaviour
             yield break;
         }
 
+        if (activeSpell is BlockerSpell blockerSpell)
+        {
+            blockerSpell.CheckForClearedAttackTarget(grid);
+            yield break;
+        }
+
         if (activeSpell is TimedDestroySpellBase timedSpell)
         {
             CheckForClearedTargets(timedSpell);
@@ -224,10 +244,8 @@ public class EnemyBehaviour : MonoBehaviour
         if (timedSpell.IsEffectApplied) return;
 
         bool anyCleared = timedSpell.ConsumeClearedCount() > 0;
-        Debug.Log($" Cleared count: {anyCleared}");
 
         var positions = new List<Vector2Int>(timedSpell.TargetedPositions);
-        Debug.Log($"Checking {positions.Count} targeted positions for clearing...");
 
         if (positions.Count == 0)
         {
@@ -236,7 +254,15 @@ public class EnemyBehaviour : MonoBehaviour
                 StopCoroutine(timedSpellMonitor);
                 timedSpellMonitor = null;
             }
+
             timedSpell.Cleanup(grid);
+
+            if (timedSpell is SingleElementTimedSpell)
+            {
+                CreateAndExecuteSpell();
+                return;
+            }
+
             StartCoroutine(RerollAndRetarget());
             return;
         }
@@ -257,7 +283,15 @@ public class EnemyBehaviour : MonoBehaviour
                         StopCoroutine(timedSpellMonitor);
                         timedSpellMonitor = null;
                     }
+
                     timedSpell.Cleanup(grid);
+
+                    if (timedSpell is SingleElementTimedSpell)
+                    {
+                        CreateAndExecuteSpell();
+                        return;
+                    }
+
                     StartCoroutine(RerollAndRetarget());
                     return;
                 }
@@ -382,6 +416,111 @@ public class EnemyBehaviour : MonoBehaviour
         timedSpellMonitor = null;
     }
 
+    private IEnumerator MonitorBlockerSpell()
+    {
+        BlockerSpell blockerSpell = activeSpell as BlockerSpell;
+        if (blockerSpell == null) yield break;
+
+        while (blockerSpell.IsActive && inBattle && grid != null)
+        {
+            // Monitor the inner timed-attack spell for expiry
+            if (blockerSpell.HasActiveAttackSpell && blockerSpell.IsAttackTimerExpired)
+            {
+                // Wait for grid to be idle before processing the attack
+                while (grid != null && grid.CurrentState != GridStateType.Idle)
+                    yield return null;
+
+                if (!inBattle || grid == null || !blockerSpell.IsActive)
+                    yield break;
+
+                // Process the expired attack (deal damage, destroy element)
+                bool effectDone = false;
+                blockerSpell.ProcessExpiredAttack(grid, () => effectDone = true);
+
+                while (!effectDone)
+                {
+                    if (!inBattle || grid == null)
+                        yield break;
+                    yield return null;
+                }
+
+                // Wait for grid to settle after gravity / refill
+                while (grid != null && grid.CurrentState != GridStateType.Idle)
+                    yield return null;
+
+                if (!inBattle || grid == null || !blockerSpell.IsActive)
+                    yield break;
+
+                // Retarget a fresh single element
+                blockerSpell.RestartAttackSpell(grid);
+            }
+
+            yield return null;
+        }
+
+        timedSpellMonitor = null;
+    }
+
+    public void NotifyAdjacentElementsUsed(List<Vector2Int> usedPositions)
+    {
+        if (!inBattle || activeSpell == null || grid == null)
+            return;
+
+        if (activeSpell is BlockerSpell blockerSpell)
+        {
+            bool allBroken = blockerSpell.OnAdjacentElementsUsed(grid, usedPositions);
+            
+            if (allBroken)
+            {
+                StartCoroutine(HandleBlockBroken(blockerSpell));
+            }
+        }
+    }
+
+    private IEnumerator HandleBlockBroken(BlockerSpell blockerSpell)
+    {
+        // Wait for grid to be idle before starting reroll
+        while (grid != null && grid.CurrentState != GridStateType.Idle)
+            yield return null;
+
+        if (!inBattle || grid == null)
+            yield break;
+
+        // Wait for animation to complete before triggering reroll
+        bool animationComplete = false;
+        blockerSpell.OnAllBlocksBroken(grid, () => animationComplete = true);
+
+        // Wait for the animation to finish
+        while (!animationComplete)
+        {
+            if (!inBattle || grid == null)
+                yield break;
+            yield return null;
+        }
+
+        // Now trigger the reroll
+        grid.Reroll(2);
+
+        // Wait for reroll to complete
+        while (grid != null && grid.CurrentState != GridStateType.Idle)
+            yield return null;
+
+        if (!inBattle || grid == null)
+            yield break;
+
+        // Place new blocks and start a new attack spell
+        blockerSpell.OnRerollComplete(grid);
+    }
+
+    public HashSet<Vector2Int> GetBlockedPositions()
+    {
+        if (activeSpell is BlockerSpell blockerSpell)
+        {
+            return blockerSpell.GetBlockedPositionsSet();
+        }
+        return new HashSet<Vector2Int>();
+    }
+
     private IEnumerator RerollAndRetarget()
     {
         if (grid == null || grid.VisualGrid == null)
@@ -430,6 +569,13 @@ public class EnemyBehaviour : MonoBehaviour
 
     public void DealDamage(DamageType damageType)
     {
+        // For blocker enemy, only take damage from block breaks (handled by dealBossDamage)
+        if (activeSpell is BlockerSpell)
+        {
+            Debug.Log("Blocker enemy ignores spell damage - only damaged by block breaks!");
+            return;
+        }
+
         deathParticles.Play();
         HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.MediumImpact);
 
@@ -448,7 +594,12 @@ public class EnemyBehaviour : MonoBehaviour
 
     public void PauseActiveTimedSpell()
     {
-        if (activeSpell is MultipleTimedSpellBase multiSpell)
+        if (activeSpell is BlockerSpell blockerSpell)
+        {
+            blockerSpell.PauseAttackTimer();
+            timersPaused = true;
+        }
+        else if (activeSpell is MultipleTimedSpellBase multiSpell)
         {
             multiSpell.PauseAllTargets();
             multiSpell.IntervalTimer?.Pause();
@@ -463,7 +614,12 @@ public class EnemyBehaviour : MonoBehaviour
 
     public void ResumeActiveTimedSpell()
     {
-        if (activeSpell is MultipleTimedSpellBase multiSpell)
+        if (activeSpell is BlockerSpell blockerSpell)
+        {
+            blockerSpell.ResumeAttackTimer();
+            timersPaused = false;
+        }
+        else if (activeSpell is MultipleTimedSpellBase multiSpell)
         {
             multiSpell.ResumeAllTargets();
             multiSpell.IntervalTimer?.Resume();

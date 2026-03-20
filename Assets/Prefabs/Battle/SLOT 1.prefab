@@ -166,6 +166,7 @@ GameObject:
   - component: {fileID: 1342581851594023797}
   - component: {fileID: 6615864335302080099}
   - component: {fileID: 2154929571846906713}
+  - component: {fileID: -8574451047407527287}
   m_Layer: 0
   m_Name: SLOT 1
   m_TagString: Untagged
@@ -187,7 +188,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2400829774340108946}
-  - {fileID: 6387932651764979540}
   - {fileID: 3644131887164436925}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -408,11 +408,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   elementRenderer: {fileID: 6620927897873003692}
-  deletionEffectPrefab: {fileID: 6445842253489571223}
   targetFillImage: {fileID: 5049900259293711660}
   targetFillTimedImage: {fileID: 3337448413337435500}
   targetFillBombImage: {fileID: 3868742652679726170}
   breakEnemyHoverParticles: {fileID: 47084697860822780, guid: 3c3466539aaf9584f926203257558bf4, type: 3}
+  blockadeVisual: {fileID: -8574451047407527287}
+  highlighter: {fileID: 0}
+--- !u!114 &-8574451047407527287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5074324612046381537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f9dbd41cb0f108448474d0a48cfd8db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blockadeSprites:
+  - {fileID: 21300000, guid: 958632d30b9a5a7499a7cad018a8492b, type: 3}
+  - {fileID: 21300000, guid: 50eb86734aebf664a9b65528260fd6d1, type: 3}
+  - {fileID: 21300000, guid: 197729cb0b8a9744692fc54ed2e08fd7, type: 3}
+  - {fileID: -1455096403836856330, guid: f42327e294931814b8787a882eb07812, type: 3}
+  blockadeRenderer: {fileID: 7854258304136683472}
 --- !u!1 &5853473086742218126
 GameObject:
   m_ObjectHideFlags: 0
@@ -447,6 +466,7 @@ RectTransform:
   - {fileID: 6803692435009125935}
   - {fileID: 6542227929438738351}
   - {fileID: 5389985380836051750}
+  - {fileID: 193347635601310932}
   m_Father: {fileID: 2491107412474957035}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -592,7 +612,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!1 &6445842253489571223
+--- !u!1 &7048098684170724778
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -600,37 +620,37 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6387932651764979540}
-  - component: {fileID: 1568834581015526959}
+  - component: {fileID: 193347635601310932}
+  - component: {fileID: 7854258304136683472}
   m_Layer: 0
-  m_Name: Triangle
+  m_Name: Breakimage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6387932651764979540
+--- !u!4 &193347635601310932
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6445842253489571223}
+  m_GameObject: {fileID: 7048098684170724778}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.013, y: -0.192, z: 1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.018663883, z: -1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2491107412474957035}
+  m_Father: {fileID: 3644131887164436925}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &1568834581015526959
+--- !u!212 &7854258304136683472
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6445842253489571223}
+  m_GameObject: {fileID: 7048098684170724778}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -667,9 +687,9 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -100
-  m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_SortingOrder: -61
+  m_Sprite: {fileID: 21300000, guid: 958632d30b9a5a7499a7cad018a8492b, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

@@ -54,7 +54,6 @@ public class ElementLevelUpButton : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
-        Debug.Log(GameManager.Instance.PlayerStats.GetElementUpgradeLevel(currentElement.Type));
 
         for (int i = 0; i < upgradesRequired; i++)
         {

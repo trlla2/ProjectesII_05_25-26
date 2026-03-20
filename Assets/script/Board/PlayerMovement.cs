@@ -31,7 +31,8 @@ public class PlayerMovement : MonoBehaviour
     public void InitPlayer()
     {
         currentTile = _boardManager.startingTile;
-        //transform.position = _boardManager.startingTile.transform.position;
+        if (!_boardManager.IsTutorial)
+            transform.position = _boardManager.startingTile.transform.position;
         _jumpParticlesDuration = jumpParticles.main.duration;
     }
 

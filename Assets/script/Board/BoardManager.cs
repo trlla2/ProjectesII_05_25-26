@@ -10,6 +10,9 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private bool _isTutorial;
     public bool IsTutorial => _isTutorial;
 
+    [SerializeField] private bool _isHallOfEgress;
+    public bool IsHallOfEgress => _isHallOfEgress;
+
     public StageLevelData currentStageLevelData;
 
     public BoardTile startingTile;
@@ -21,12 +24,15 @@ public class BoardManager : MonoBehaviour
     public BoardTileData chestOfEgressTileData;
 
     [SerializeField] private BoardGenerator boardGenerator;
+    [SerializeField] private PlayerMovement _player;
+    public PlayerMovement Player => _player;
 
     public List<BoardTile> generatedTiles;
 
     [SerializeField] private OpenChestScreen openChestPanel;
     [SerializeField] private NewSpellPanelBehaviour newSpellPanel;
     [SerializeField] private ChestOfEgressScreen chestOfEgressPanel;
+    [SerializeField] private BranchChoicePanelHandler branchChoicePanel;
     [SerializeField] private BoardTileData fogTileData;
 
     [Header("Encounters")]
@@ -79,7 +85,6 @@ public class BoardManager : MonoBehaviour
             startingTile.SetGridPosition(new Vector2Int(0, 0));
             generatedTiles.Add(startingTile);
         }
-        
 
         boardCamera = Camera.main;
     }
@@ -135,7 +140,12 @@ public class BoardManager : MonoBehaviour
         UpdateNeighbors(newTile);
 
         if (newData == fogTileData) newTile.GetComponent<FogTile>().SetFoggedTileData(tile.GetData());
+        
+        if (_revealedBranch.Contains(tile))
+            _revealedBranch.Add(newTile);
 
+        if (tile.generatedBranch != null)
+            newTile.SetTileAsBranchOrigin();
         newTile.generatedBranch = tile.generatedBranch;
 
         generatedTiles.Remove(tile);
@@ -160,12 +170,11 @@ public class BoardManager : MonoBehaviour
 
     public void PutFogOnBranch(List<BoardTile> branch)
     {
-        // Guardar las posiciones antes de destruir los tiles
         List<Vector2Int> branchPositions = new List<Vector2Int>();
         foreach (BoardTile tile in branch)
             branchPositions.Add(tile.GetGridPosition());
 
-        BoardTile originTile = branch[0]; // la EmptyTile origen no se reemplaza
+        BoardTile originTile = branch[0];
 
         foreach (BoardTile tile in branch)
         {
@@ -173,7 +182,6 @@ public class BoardManager : MonoBehaviour
             ReplaceTileType(tile, fogTileData);
         }
 
-        // Reconstruir la lista de la branch con las FogTiles recién creadas
         List<BoardTile> updatedBranch = new List<BoardTile>();
         foreach (Vector2Int pos in branchPositions)
         {
@@ -210,7 +218,6 @@ public class BoardManager : MonoBehaviour
                 updatedBranch.Add(found);
         }
 
-        // Actualizar generatedBranch del origin con las referencias actuales
         BoardTile originTile = updatedBranch.Count > 0 ? updatedBranch[0] : null;
         if (originTile != null)
             originTile.generatedBranch = updatedBranch;
@@ -218,6 +225,40 @@ public class BoardManager : MonoBehaviour
         _revealedBranch = updatedBranch;
     }
 
+    public void ShowBranchChoice(BoardTile originTile)
+    {
+        if (branchChoicePanel == null || originTile.generatedBranch == null
+            || originTile.generatedBranch.Count < 2) return;
+
+        Vector2Int originPos    = originTile.GetGridPosition();
+        Vector2Int branchNextPos = originTile.generatedBranch[1].GetGridPosition();
+
+        BoardTile mainNext = null;
+        foreach (BoardTile neighbor in originTile.neighbors)
+        {
+            if (neighbor.GetGridPosition() == branchNextPos) continue;
+            if (!neighbor.IsWalkable()) continue;
+
+            Vector2Int delta = neighbor.GetGridPosition() - originPos;
+            bool isForward = (delta.x > 0 && delta.y == 0)
+                          || (delta.x == 0 && delta.y > 0)
+                          || (delta.x > 0 && delta.y > 0);
+            if (isForward)
+            {
+                mainNext = neighbor;
+                break;
+            }
+        }
+
+        if (mainNext == null) return;
+
+        RevealBranch(originTile.generatedBranch);
+
+        BoardTile freshBranchNext = generatedTiles.Find(t => t.GetGridPosition() == branchNextPos);
+        if (freshBranchNext == null) return;
+
+        branchChoicePanel.Show(mainNext, freshBranchNext);
+    }
 
     public void OpenChest(ChestTile chestTile)
     {
@@ -254,6 +295,4 @@ public class BoardManager : MonoBehaviour
 
     public bool HasChoosedBranchPath() { return _branchPathChoosed; }
     public void BranchPathChoosed() { _branchPathChoosed = true; }
-
-    //public bool IsTutorial() { return _isTutorial; }
 }

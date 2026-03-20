@@ -10749,10 +10749,12 @@ MonoBehaviour:
   stairsTileData: {fileID: 11400000, guid: 5109a009fed6a2d4595e73f54ebbf5c4, type: 2}
   chestOfEgressTileData: {fileID: 11400000, guid: ed969576c0b28114788ef96d425d97a6, type: 2}
   boardGenerator: {fileID: 0}
+  _player: {fileID: 1660267099}
   generatedTiles: []
   openChestPanel: {fileID: 137198783}
   newSpellPanel: {fileID: 0}
   chestOfEgressPanel: {fileID: 542902945}
+  branchChoicePanel: {fileID: 0}
   fogTileData: {fileID: 0}
   encountersManager: {fileID: 0}
   _revealedBranch: []
@@ -11521,7 +11523,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 1106537846}
-  player: {fileID: 1660267099}
   _boardManager: {fileID: 1035823810}
   raycastActive: 1
 --- !u!1 &1108751532
@@ -17598,7 +17599,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.0011134523, y: -6509.412}
+  m_AnchoredPosition: {x: 0.0011134523, y: -6705.487}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1618195481

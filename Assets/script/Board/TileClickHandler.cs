@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.Tilemaps;
+using UnityEngine.EventSystems;
 
 public class TileClickHandler : MonoBehaviour
 {
@@ -7,69 +7,88 @@ public class TileClickHandler : MonoBehaviour
 
     private Ray mouseRay;
     private BoardTile _lastTileHovered;
-    [SerializeField] PlayerMovement player;
+    //[SerializeField] PlayerMovement player;
+    [SerializeField] private BoardManager _boardManager;
 
-    [SerializeField] private bool raycastActive; // = true
+    [SerializeField] private bool raycastActive;
 
     private void Awake()
     {
-        //player = GetComponent<PlayerMovement>();
         cam = gameObject.GetComponent<Camera>();
     }
+
     void Update()
     {
         mouseRay = cam.ScreenPointToRay(Input.mousePosition);
 
-        if (!player.isMoving/*FORCED*/ && raycastActive) 
+        if (!_boardManager.Player.isMoving && raycastActive)
         {
-            //HandleMouseHover();
             if (Input.GetMouseButtonDown(0))
-                HandleTileClick();
-        }
-    }
-
-    void HandleMouseHover()
-    {
-        if (Physics.Raycast(mouseRay, out RaycastHit hit))
-        {
-            if (hit.collider.TryGetComponent(out BoardTile hoverTile))
             {
-                if (_lastTileHovered != null)
-                    _lastTileHovered.HighlightTile(false);
-                _lastTileHovered = hoverTile;
-                hoverTile.HighlightTile(true);
-
+                if (_boardManager.IsHallOfEgress)
+                    HandleTileClick();
+                else
+                    HandleScreenClick();
             }
-        }
-        else
-        {
-            if (_lastTileHovered != null)
-                _lastTileHovered.HighlightTile(false);
         }
     }
 
     void HandleTileClick()
     {
+        if (IsPointerOverUI()) return;
+
         if (Physics.Raycast(mouseRay, out RaycastHit hit))
         {
             BoardTile clickedTile = hit.collider.GetComponent<BoardTile>();
-            if (clickedTile == null)
-                return;
+            if (clickedTile == null) return;
 
             clickedTile.HighlightTile(true);
-            player.TryMoveTo(clickedTile, () =>
+            _boardManager.Player.TryMoveTo(clickedTile, () =>
             {
                 clickedTile.HighlightTile(false);
 
-                Vector2Int playerGridPos = new Vector2Int(Mathf.RoundToInt(player.transform.position.x), Mathf.RoundToInt(player.transform.position.z));
+                Vector2Int playerGridPos = new Vector2Int(
+                    Mathf.RoundToInt(_boardManager.Player.transform.position.x),
+                    Mathf.RoundToInt(_boardManager.Player.transform.position.z));
+
                 if (playerGridPos == clickedTile.GetGridPosition())
-                    clickedTile.OnPlayerArrive(); // oculta branch revelada si clickedTile no es su origin
+                    clickedTile.OnPlayerArrive();
+
                 clickedTile.Interact();
             });
 
-            if (!player.isMoving && clickedTile.IsHighlighted())
+            if (!_boardManager.Player.isMoving && clickedTile.IsHighlighted())
                 clickedTile.HighlightTile(false);
         }
+    }
+
+    void HandleScreenClick()
+    {
+        if (IsPointerOverUI()) return;
+
+        _boardManager.Player.MoveOneStepForward(() =>
+        {
+            BoardTile arrivedTile = GetCurrentTileFromPlayer();
+            if (arrivedTile == null) return;
+
+            arrivedTile.OnPlayerArrive();
+            arrivedTile.Interact();
+        });
+    }
+
+    private BoardTile GetCurrentTileFromPlayer()
+    {
+        Vector2Int playerGridPos = new Vector2Int(
+            Mathf.RoundToInt(_boardManager.Player.transform.position.x),
+            Mathf.RoundToInt(_boardManager.Player.transform.position.z));
+
+        return _boardManager.generatedTiles
+            .Find(t => t.GetGridPosition() == playerGridPos);
+    }
+
+    private bool IsPointerOverUI()
+    {
+        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
     }
 
     public void HandleBoardRaycast(bool enable)

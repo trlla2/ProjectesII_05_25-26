@@ -48,6 +48,7 @@ public class BoardBranchBuilder
         branch.AddTile(origin);
 
         BoardTile current = origin;
+        origin.SetTileAsBranchOrigin();
         List<BoardTile> instanced = new List<BoardTile>();
         HashSet<Vector2Int> occupiedAll = new HashSet<Vector2Int>(
             _boardManager.generatedTiles.Select(t => t.GetGridPosition()));

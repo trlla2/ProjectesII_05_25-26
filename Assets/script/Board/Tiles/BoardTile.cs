@@ -15,6 +15,7 @@ public abstract class BoardTile : MonoBehaviour
     public List<BoardTile> neighbors = new List<BoardTile>();
     protected BoardManager _boardManager;
 
+    protected bool _isOriginOfBranch = false;
     public List<BoardTile> generatedBranch;
 
     private void Awake()
@@ -96,4 +97,8 @@ public abstract class BoardTile : MonoBehaviour
     public BoardTileData GetData() { return this._data; }
     public Renderer GetRenderer() { return _renderer; }
     public void SetBoardManager(BoardManager boardManager) { _boardManager = boardManager; }
+    public void SetTileAsBranchOrigin()
+    {
+        _isOriginOfBranch = true;
+    }
 }

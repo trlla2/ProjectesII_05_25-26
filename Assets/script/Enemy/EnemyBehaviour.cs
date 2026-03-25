@@ -28,6 +28,8 @@ public class EnemyBehaviour : MonoBehaviour
     public IEnemySpell ActiveSpell => activeSpell;
     private Coroutine timedSpellMonitor;
 
+    public Grid GetGrid() => grid;
+
     private bool timersPaused;
 
     //Legacy System

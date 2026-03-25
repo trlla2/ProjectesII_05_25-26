@@ -28,8 +28,6 @@ public class CombatHandler : MonoBehaviour
 
     public event System.Action<EnemyBehaviour> OnSetEnemyReference;
 
-    
-
     public void Awake()
     {
         GameManager.Instance.SetCombatHandler(this);

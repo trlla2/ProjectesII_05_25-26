@@ -16,3 +16,10 @@ public enum ItemLevel
     LVL3 = 2,
     LVL4 = 3
 }
+
+public enum ItemActivationType
+{
+    Passive,
+    Immediate,
+    GridTarget
+}

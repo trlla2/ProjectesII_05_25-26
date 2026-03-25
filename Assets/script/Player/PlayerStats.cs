@@ -227,7 +227,6 @@ public class PlayerStats
         inventory.Remove(item);
         item.RemoveEffects(this);
         OnInventoryChange?.Invoke();
-
     }
 
     public void RemoveAllItems()
@@ -240,6 +239,40 @@ public class PlayerStats
         inventory.Clear();
 
         OnInventoryChange?.Invoke();
+    }
+
+    public bool UseItem(Item item, ItemContext context, Action onComplete = null)
+    {
+        if (!inventory.Contains(item))
+        {
+            Debug.LogWarning("Item not in inventory!");
+            return false;
+        }
+
+        if (!item.IsActivatable)
+        {
+            Debug.LogWarning($"Item {item.NameItem} is not activatable!");
+            return false;
+        }
+
+        if (!item.CanActivate(context))
+        {
+            Debug.LogWarning($"Cannot activate {item.NameItem} right now!");
+            return false;
+        }
+
+        item.Activate(context, () =>
+        {
+            // Remove item if consumable
+            if (item.ConsumeOnUse)
+            {
+                RemoveItemFromInventory(item);
+            }
+
+            onComplete?.Invoke();
+        });
+
+        return true;
     }
 
 

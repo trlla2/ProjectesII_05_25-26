@@ -12,24 +12,45 @@ public class InventoryUIHandler : MonoBehaviour
         RefreshInventoryUI();
     }
 
-    private void OnEnable() { RefreshInventoryUI(); }
+    private void OnEnable() 
+    { 
+        RefreshInventoryUI(); 
+    }
 
     private void RefreshInventoryUI()
     {
+        // Clear existing UI elements
         foreach (Transform child in transform)
             Destroy(child.gameObject);
 
+        //Create UI for each item in inventory
         foreach (Item item in GameManager.Instance.PlayerStats.Inventory)
         {
             GameObject itemUI = Instantiate(itemUIPrefab, transform);
-            itemUI.GetComponent<Image>().sprite = item.Sprite;
-            itemUI.GetComponent<TranslatorUI>().ToTarget();
+            
+            ItemUIButton itemButton = itemUI.GetComponent<ItemUIButton>();
+            if (itemButton == null)
+            {
+                Debug.LogError("No ITEM BUTTON SCRIPT attached");
+            }
+            else
+            {
+                itemButton.Initialize(item);
+            }
 
+            TranslatorUI translator = itemUI.GetComponent<TranslatorUI>();
+            if (translator != null)
+            {
+                translator.ToTarget();
+            }
         }
     }
 
     private void OnDestroy()
     {
-        GameManager.Instance.PlayerStats.OnInventoryChange -= RefreshInventoryUI;
+        if (GameManager.Instance != null && GameManager.Instance.PlayerStats != null)
+        {
+            GameManager.Instance.PlayerStats.OnInventoryChange -= RefreshInventoryUI;
+        }
     }   
 }

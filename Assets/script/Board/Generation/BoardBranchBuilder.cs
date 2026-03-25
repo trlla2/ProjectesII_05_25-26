@@ -32,9 +32,12 @@ public class BoardBranchBuilder
         Shuffle(candidates);
 
         int branchesCreated = 0;
-        foreach (BoardTile origin in candidates)
+        foreach (BoardTile emptyOrigin in candidates)
         {
             if (branchesCreated >= minBranches) break;
+
+            BranchOriginTile origin = PromoteToBranchOrigin(emptyOrigin, mainPath, parent);
+            if (origin == null) continue;
 
             BoardPath branch = BuildBranch(origin, parent, maxBranchLength, minBranchLength);
             if (branch != null)
@@ -42,13 +45,46 @@ public class BoardBranchBuilder
         }
     }
 
-    public BoardPath BuildBranch(BoardTile origin, Transform parent, int maxLength, int minLength)
+    private BranchOriginTile PromoteToBranchOrigin(BoardTile emptyOrigin, BoardPath mainPath, Transform parent)
+    {
+        if (_boardManager.branchOriginTileData == null)
+        {
+            Debug.LogError("BoardBranchBuilder: branchOriginTileData no está asignado en BoardManager.");
+            return null;
+        }
+
+        Vector2Int originPos = emptyOrigin.GetGridPosition();
+        Transform originParent = emptyOrigin.transform.parent;
+
+        foreach (BoardTile neighbor in emptyOrigin.neighbors)
+        {
+            if (neighbor != null)
+                neighbor.neighbors.Remove(emptyOrigin);
+        }
+
+        _boardManager.generatedTiles.Remove(emptyOrigin);
+        Object.Destroy(emptyOrigin.gameObject);
+
+        BranchOriginTile origin = _boardManager.CreateBranchOriginTile(originPos, originParent);
+        if (origin == null)
+        {
+            // Restaurar como EmptyTile para no dejar un hueco en el tablero
+            _boardManager.CreateNewTile(_boardManager.emptyTileData, originPos, originParent);
+            return null;
+        }
+
+        _boardManager.UpdateNeighbors(origin);
+        mainPath.UpdateTileReference(emptyOrigin, origin);
+
+        return origin;
+    }
+
+    public BoardPath BuildBranch(BranchOriginTile origin, Transform parent, int maxLength, int minLength)
     {
         BoardPath branch = new BoardPath(isMain: false, isHidden: true);
         branch.AddTile(origin);
 
         BoardTile current = origin;
-        origin.SetTileAsBranchOrigin();
         List<BoardTile> instanced = new List<BoardTile>();
         HashSet<Vector2Int> occupiedAll = new HashSet<Vector2Int>(
             _boardManager.generatedTiles.Select(t => t.GetGridPosition()));
@@ -80,27 +116,45 @@ public class BoardBranchBuilder
             {
                 if (branch.Tiles.Count - 1 >= minLength)
                 {
-                    origin.generatedBranch = branch.Tiles;
+                    origin.SetGeneratedBranch(branch.Tiles);
                     _allPaths.Add(branch);
                     return branch;
                 }
-                else
-                {
-                    DestroyBranchTiles(instanced);
-                    return null;
-                }
+
+                DestroyBranchTiles(instanced);
+                RevertBranchOrigin(origin, parent);
+                return null;
             }
         }
 
         if (branch.Tiles.Count - 1 >= minLength)
         {
-            origin.generatedBranch = branch.Tiles;
+            origin.SetGeneratedBranch(branch.Tiles);
             _allPaths.Add(branch);
             return branch;
         }
 
         DestroyBranchTiles(instanced);
+        RevertBranchOrigin(origin, parent);
         return null;
+    }
+
+    private void RevertBranchOrigin(BranchOriginTile origin, Transform parent)
+    {
+        Vector2Int pos = origin.GetGridPosition();
+        Transform originParent = origin.transform.parent;
+
+        foreach (BoardTile neighbor in origin.neighbors)
+        {
+            if (neighbor != null)
+                neighbor.neighbors.Remove(origin);
+        }
+
+        _boardManager.generatedTiles.Remove(origin);
+        Object.Destroy(origin.gameObject);
+
+        BoardTile restored = _boardManager.CreateNewTile(_boardManager.emptyTileData, pos, originParent);
+        _boardManager.UpdateNeighbors(restored);
     }
 
     public bool HasMinSeparationFromOtherPaths(Vector2Int candidatePos, BoardPath currentBranch)

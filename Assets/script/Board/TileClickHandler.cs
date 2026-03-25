@@ -7,7 +7,6 @@ public class TileClickHandler : MonoBehaviour
 
     private Ray mouseRay;
     private BoardTile _lastTileHovered;
-    //[SerializeField] PlayerMovement player;
     [SerializeField] private BoardManager _boardManager;
 
     [SerializeField] private bool raycastActive;
@@ -66,24 +65,30 @@ public class TileClickHandler : MonoBehaviour
     {
         if (IsPointerOverUI()) return;
 
-        _boardManager.Player.MoveOneStepForward(() =>
+        _boardManager.Player.MoveUntilStop(arrivedTile =>
         {
-            BoardTile arrivedTile = GetCurrentTileFromPlayer();
             if (arrivedTile == null) return;
 
+            // arrivedTile es SIEMPRE la tile donde está el jugador (EmptyTile o BranchOrigin)
             arrivedTile.OnPlayerArrive();
-            arrivedTile.Interact();
+
+            if (arrivedTile.IsBranchOrigin())
+            {
+                // El jugador está sobre la branch origin: interactúa con ella
+                // y espera el input del panel de elección
+                arrivedTile.Interact();
+            }
+            else
+            {
+                // El jugador está en una EmptyTile normal: interactúa con la
+                // siguiente tile no-walkable sin moverse
+                BoardTile nextInteractable = _boardManager.Player
+                    .GetNextForwardTileFrom(arrivedTile, walkableOnly: false);
+
+                if (nextInteractable != null)
+                    nextInteractable.Interact();
+            }
         });
-    }
-
-    private BoardTile GetCurrentTileFromPlayer()
-    {
-        Vector2Int playerGridPos = new Vector2Int(
-            Mathf.RoundToInt(_boardManager.Player.transform.position.x),
-            Mathf.RoundToInt(_boardManager.Player.transform.position.z));
-
-        return _boardManager.generatedTiles
-            .Find(t => t.GetGridPosition() == playerGridPos);
     }
 
     private bool IsPointerOverUI()

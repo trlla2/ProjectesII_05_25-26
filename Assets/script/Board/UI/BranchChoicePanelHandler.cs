@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -43,16 +42,30 @@ public class BranchChoicePanelHandler : MonoBehaviour
     private void OnRightChosen() => Choose(_mainTile);
     private void OnLeftChosen()  => Choose(_branchTile);
 
-    private void Choose(BoardTile target)
+    private void Choose(BoardTile firstTileOfChosenPath)
     {
-        if (target == null) return;
+        if (firstTileOfChosenPath == null) return;
 
         Hide();
 
-        _player.MoveOneStepTo(target, () =>
+        _player.MoveUntilStopFrom(firstTileOfChosenPath, arrivedTile =>
         {
-            target.OnPlayerArrive();
-            target.Interact();
+            if (arrivedTile == null) return;
+
+            arrivedTile.OnPlayerArrive();
+
+            if (arrivedTile.IsBranchOrigin())
+            {
+                arrivedTile.Interact();
+            }
+            else
+            {
+                BoardTile nextInteractable = _player
+                    .GetNextForwardTileFrom(arrivedTile, walkableOnly: false);
+
+                if (nextInteractable != null)
+                    nextInteractable.Interact();
+            }
         });
     }
 }

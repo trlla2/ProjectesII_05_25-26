@@ -81,6 +81,9 @@ public class IdleState : IGridState
         if (GameManager.Instance != null && GameManager.Instance.PlayerStats != null)
             spells = GameManager.Instance.PlayerStats.GetSpellBook();
 
+        HashSet<Vector2Int> blockedPositions = GetBlockedPositions();
+        spellValidator.SetBlockedPositions(blockedPositions);
+
         List<Vector2Int> hintPath = spellValidator.FindFirstValidSpellPath(grid.GridData, spells);
         if (hintPath != null && hintPath.Count > 0)
         {
@@ -91,6 +94,18 @@ public class IdleState : IGridState
         {
             idleTimer = 0f;
         }
+    }
+
+    private HashSet<Vector2Int> GetBlockedPositions()
+    {
+        if (GameManager.Instance == null || GameManager.Instance.CombatHandler == null)
+            return new HashSet<Vector2Int>();
+
+        EnemyBehaviour enemy = GameManager.Instance.CombatHandler.GetEnemyRef();
+        if (enemy == null)
+            return new HashSet<Vector2Int>();
+
+        return enemy.GetBlockedPositions();
     }
 
     private void PlayHintAnimation(List<Vector2Int> path)
@@ -189,6 +204,7 @@ public class RefillState : IGridState
 
     private void PerformRefill()
     {
+        //pass through the slots that were emptied by gravity
         List<Vector2Int> movedPositions = grid.GravityHandler.ApplyGravity();
         grid.StartCoroutine(RefillSequence(movedPositions, refillDuration));
     }

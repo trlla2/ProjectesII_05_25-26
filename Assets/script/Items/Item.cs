@@ -17,10 +17,13 @@ public class Item : ScriptableObject
     [Header("Art Stuff")]
     [SerializeField]
     private Sprite sprite;
+    [SerializeField]
+    private Sprite TargetSprite; // Used for targeting visuals in grid
 
     [Header("Behaviour")]
-    [SerializeReference]
-    private IItemEffect effect;
+    [SerializeField] private ItemEffectType effectType;
+    [SerializeField] private ExtraDamageEffect extraDamageEffect;
+    [SerializeField] private FireRingEffect fireRingEffect;
 
     [Header("Activation")]
     [SerializeField] private ItemActivationType activationType;
@@ -28,6 +31,10 @@ public class Item : ScriptableObject
     [SerializeField] private float cooldown;
 
     private float lastUsedTime = -999f;
+    private IItemEffect _effect;
+
+    //Cerate the effec when used and save it 
+    public IItemEffect Effect => _effect == null ? ItemEffectFactory.Create(effectType, extraDamageEffect, fireRingEffect) : _effect;
 
     public string NameItem => nameItem;
     public string Description => description;
@@ -39,16 +46,29 @@ public class Item : ScriptableObject
     public bool ConsumeOnUse => consumeOnUse;
     public float Cooldown => cooldown;
 
-    public bool IsActivatable => effect is IActivatableEffect && activationType != ItemActivationType.Passive;
+    public bool IsActivatable => Effect is IActivatableEffect && activationType != ItemActivationType.Passive;
+
+    private void OnValidate()
+    {
+        _effect = null; // Invalidate the saved item when inspector values change
+        //yeah... figure out the bug they said
+    }
+
+    private void OnEnable()
+    {
+        // Reset runtime state; SOs persist in memory between
+        //editor and play sessions, so lastUsedTime must be cleared.
+        lastUsedTime = -999f;
+    }
 
     public void ApplyEffects(PlayerStats player)
     {
-        if (effect != null) effect.Equip(player, level);
+        if (Effect != null) Effect.Equip(player, level);
     }
 
     public void RemoveEffects(PlayerStats player)
     {
-        if (effect != null) effect.UnEquip(player, level);
+        if (Effect != null) Effect.UnEquip(player, level);
     }
 
     public bool CanActivate(ItemContext context)
@@ -59,7 +79,7 @@ public class Item : ScriptableObject
         if (Time.time - lastUsedTime < cooldown) return false;
 
         // Check if effect can be activated
-        if (effect is IActivatableEffect activatable)
+        if (Effect is IActivatableEffect activatable)
         {
             return activatable.CanActivate(context);
         }
@@ -75,8 +95,12 @@ public class Item : ScriptableObject
             return;
         }
 
-        if (effect is IActivatableEffect activatable)
+        if (Effect is IActivatableEffect activatable)
         {
+            if(Effect is FireRingEffect fireRingEffect)
+            {
+                fireRingEffect.xSprite = TargetSprite;
+            }
             lastUsedTime = Time.time;
             activatable.Activate(level, context, onComplete);
         }
@@ -84,6 +108,7 @@ public class Item : ScriptableObject
 
     public float GetCooldownRemaining()
     {
+        Debug.Log(cooldown);
         return Mathf.Max(0f, cooldown - (Time.time - lastUsedTime));
     }
 

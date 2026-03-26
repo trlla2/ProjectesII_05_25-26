@@ -23,3 +23,10 @@ public enum ItemActivationType
     Immediate,
     GridTarget
 }
+
+public enum ItemEffectType
+{
+    None,
+    ExtraDamage,
+    FireRing
+}

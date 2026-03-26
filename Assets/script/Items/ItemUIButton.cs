@@ -85,10 +85,10 @@ public class ItemUIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         }
     }
 
-    private void OnItemClicked()
+    public void OnItemClicked()
     {
+        Debug.Log($"Attempting to activate {item.NameItem}...");
         if (item == null || !item.IsActivatable) return;
-
         ItemContext context = new ItemContext
         {
             Grid = GameManager.Instance.CombatHandler.GetEnemyRef().GetGrid(),
@@ -122,9 +122,13 @@ public class ItemUIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     private void ActivateItem(ItemContext context)
     {
+        if(item.Effect is FireRingEffect fireRingEffect)
+        {
+            Vector2 PlayerPos = FindFirstObjectByType<PlayerHandler>().transform.position; //ineficient but i dont wanna go thoguh reference hell
+            fireRingEffect.SetUIPosition(PlayerPos); //pas origin postion to te ring effect
+        }
         item.Activate(context, () =>
         {
-            Debug.Log($"{item.NameItem} activated successfully!");
             
             // Remove from inventory 
             if (item.ConsumeOnUse)

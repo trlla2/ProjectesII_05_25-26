@@ -1,3 +1,4 @@
+using NUnit.Framework.Internal;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,6 +25,9 @@ public class Item : ScriptableObject
     [SerializeField] private ItemEffectType effectType;
     [SerializeField] private ExtraDamageEffect extraDamageEffect;
     [SerializeField] private FireRingEffect fireRingEffect;
+    [SerializeField] private LightningRingEffect lightningRingEffect;
+    [SerializeField] private MoonRingEffect moonRingEffect;
+    [SerializeField] private ShamrockRingEffect shamrockRingEffect;
 
     [Header("Activation")]
     [SerializeField] private ItemActivationType activationType;
@@ -34,7 +38,7 @@ public class Item : ScriptableObject
     private IItemEffect _effect;
 
     //Cerate the effec when used and save it 
-    public IItemEffect Effect => _effect == null ? ItemEffectFactory.Create(effectType, extraDamageEffect, fireRingEffect) : _effect;
+    public IItemEffect Effect => _effect == null ? ItemEffectFactory.Create(effectType, extraDamageEffect, fireRingEffect, lightningRingEffect, moonRingEffect, shamrockRingEffect) : _effect;
 
     public string NameItem => nameItem;
     public string Description => description;
@@ -97,12 +101,29 @@ public class Item : ScriptableObject
 
         if (Effect is IActivatableEffect activatable)
         {
-            if(Effect is FireRingEffect fireRingEffect)
-            {
-                fireRingEffect.xSprite = TargetSprite;
-            }
+            SetActivationItemReferences();
             lastUsedTime = Time.time;
             activatable.Activate(level, context, onComplete);
+        }
+    }
+    
+    private void SetActivationItemReferences()
+    {
+        if(Effect is FireRingEffect fireRingEffect)
+        {
+            fireRingEffect.xSprite = TargetSprite;
+        }
+        if (Effect is MoonRingEffect moonRingEffect)
+        {
+            moonRingEffect.xSprite = TargetSprite;
+        }
+        if (Effect is ShamrockRingEffect shamrockEffect)
+        {
+            shamrockEffect.xSprite = TargetSprite;
+        }
+        if (Effect is LightningRingEffect lightningEffect)
+        {
+            lightningEffect.xSprite = TargetSprite;
         }
     }
 

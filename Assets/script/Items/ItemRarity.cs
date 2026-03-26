@@ -28,5 +28,8 @@ public enum ItemEffectType
 {
     None,
     ExtraDamage,
-    FireRing
+    FireRing,
+    LightningRing,
+    MoonRing,
+    ShamrockRing,
 }

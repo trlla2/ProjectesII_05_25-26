@@ -23,7 +23,7 @@ public class SpellPathAnimator : MonoBehaviour
     private CameraShake cameraShake;
     private List<GameObject> activeClones = new List<GameObject>();
     private Dictionary<GameObject, Element> cloneElementMap = new Dictionary<GameObject, Element>();
-
+    public System.Action OnAttack;
 
     private void Start()
     {
@@ -124,6 +124,7 @@ public class SpellPathAnimator : MonoBehaviour
 
         activeClones.RemoveAll(obj => obj == null);
         cloneElementMap.Clear();
+        OnAttack?.Invoke();
         onComplete?.Invoke();
     }
 

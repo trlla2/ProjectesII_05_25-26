@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2846971166117907650}
   - component: {fileID: -4314391346991907853}
   - component: {fileID: -7554970353908700877}
+  - component: {fileID: 1070892389116377718}
   m_Layer: 5
   m_Name: ItemUI
   m_TagString: Untagged
@@ -153,7 +154,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 0.41509432, g: 0.41509432, b: 0.41509432, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -199,3 +200,18 @@ MonoBehaviour:
   activeColor: {r: 1, g: 1, b: 1, a: 1}
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   cooldownColor: {r: 1, g: 0.5, b: 0.5, a: 1}
+  upwardOffset: 1000
+  scaleMultiplier: 10
+  shakeAngle: 30
+--- !u!225 &1070892389116377718
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1014751903965103548}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0

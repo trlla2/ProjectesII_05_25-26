@@ -27,7 +27,7 @@ public class IdleState : IGridState
     private SpellValidator spellValidator;
 
     private float idleTimer;
-    private float hintDelay = 4f;
+    private float hintDelay = 3f;
     private bool hintPlaying;
     private List<Vector2Int> currentHintPath;
     private List<ElementVisual> hintedVisuals;

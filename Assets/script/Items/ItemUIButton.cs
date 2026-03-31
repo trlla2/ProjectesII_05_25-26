@@ -1,11 +1,10 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using DG.Tweening;
 
 [RequireComponent(typeof(Button))]
-public class ItemUIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class ItemUIButton : MonoBehaviour
 {
     private Item item;
     private Button button;
@@ -21,6 +20,11 @@ public class ItemUIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     [SerializeField] private float upwardOffset = 100f;
     [SerializeField] private float scaleMultiplier = 10f;
     [SerializeField] private float shakeAngle = 15f;
+
+    [Header("Animation Timing")]
+    [SerializeField] private float moveDuration = 0.4f;
+    [SerializeField] private float shakeStepDuration = 0.075f;
+    [SerializeField] private float impactDuration = 0.2f;
 
     private static Vector2 centerOffset = new Vector2(900, 2000); //we need it be the ItemUi is in the inventorycanvas  
 
@@ -92,6 +96,7 @@ public class ItemUIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public void OnItemClicked()
     {
         if (item == null || !item.IsActivatable) return;
+
         ItemContext context = new ItemContext
         {
             Grid = GameManager.Instance.CombatHandler.GetEnemyRef().GetGrid(),
@@ -106,62 +111,70 @@ public class ItemUIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
             return;
         }
 
-        if (item.ActivationType == ItemActivationType.GridTarget)
+        if (item.Effect is GridModifierEffectBase gridModifierEffect)
         {
-            StartGridTargetSelection(context);
+            // for Gridmodifying items start selection immediately, then play the UI animation at half speed
+            Vector2 playerPos = FindFirstObjectByType<PlayerHandler>().transform.position;
+            gridModifierEffect.SetUIPosition(playerPos);
+            gridModifierEffect.BeforeAnimation = (continueActivation) =>
+                PlayItemUseAnimation(context, 0.5f, continueActivation);
+
+            ActivateItem(context);
         }
         else
         {
-            // Start animation sequence before activation
-            PlayItemUseAnimation(context);
+            // Immediate items, play UI animation first, then activate.
+            PlayItemUseAnimation(context, 1f);
         }
     }
 
-    private void PlayItemUseAnimation(ItemContext context)
+    private void PlayItemUseAnimation(ItemContext context, float timeMultiplier = 1f, Action onComplete = null)
     {
-        // Create a clone of this item UI element
         GameObject clone = Instantiate(gameObject, transform.parent);
         clone.GetComponent<CanvasGroup>().alpha = 1f;
+        Destroy(clone.GetComponent<ItemUIButton>());
+        Destroy(clone.GetComponent<Button>());
+        clone.GetComponent<Image>().color = activeColor;
         RectTransform cloneRect = clone.GetComponent<RectTransform>();
-        Image cloneImage = clone.GetComponent<Image>();
 
-        // Disable the button on the clone so it can't be clicked
-        Button cloneButton = clone.GetComponent<Button>();
-        if (cloneButton != null)
-        {
-            cloneButton.interactable = false;
-        }
+        
 
-        // Store original position and scale
         Vector3 originalPosition = cloneRect.anchoredPosition;
         Vector3 originalScale = cloneRect.localScale;
 
-        // Screen center is at 0,0, add upward offset
         Vector2 centerWithOffset = centerOffset + new Vector2(0, upwardOffset);
         Vector2 screenCenter = centerOffset;
 
-        // Create animation sequence
+        float move   = moveDuration      * timeMultiplier;
+        float half   = shakeStepDuration * timeMultiplier / 2f;
+        float full   = shakeStepDuration * timeMultiplier;
+        float impact = impactDuration    * timeMultiplier;
+
         Sequence animSequence = DOTween.Sequence();
 
         //Move to center
-        animSequence.Append(cloneRect.DOAnchorPos(centerWithOffset, 0.4f).SetEase(Ease.OutCubic));
-        animSequence.Join(cloneRect.DOScale(originalScale * scaleMultiplier, 0.4f).SetEase(Ease.OutCubic));
+        animSequence.Append(cloneRect.DOAnchorPos(centerWithOffset, move).SetEase(Ease.OutCubic));
+        animSequence.Join(cloneRect.DOScale(originalScale * scaleMultiplier, move).SetEase(Ease.OutCubic));
 
         //Shake
-        animSequence.Append(cloneRect.DORotate(new Vector3(0, 0, shakeAngle), 0.075f/2.0f).SetEase(Ease.InOutSine));
-        animSequence.Append(cloneRect.DORotate(new Vector3(0, 0, -shakeAngle), 0.15f / 2.0f).SetEase(Ease.InOutSine));
-        animSequence.Append(cloneRect.DORotate(new Vector3(0, 0, 0), 0.075f / 2.0f).SetEase(Ease.InOutSine));
-        animSequence.Append(cloneRect.DORotate(new Vector3(0, 0, shakeAngle), 0.075f/2.0f).SetEase(Ease.InOutSine));
-        animSequence.Append(cloneRect.DORotate(new Vector3(0, 0, -shakeAngle), 0.15f / 2.0f).SetEase(Ease.InOutSine));
-        animSequence.Append(cloneRect.DORotate(new Vector3(0, 0, 0), 0.075f / 2.0f).SetEase(Ease.InOutSine));
+        animSequence.Append(cloneRect.DORotate(new Vector3(0, 0,  shakeAngle), half).SetEase(Ease.InOutSine));
+        animSequence.Append(cloneRect.DORotate(new Vector3(0, 0, -shakeAngle), full).SetEase(Ease.InOutSine));
+        animSequence.Append(cloneRect.DORotate(new Vector3(0, 0,  0),          half).SetEase(Ease.InOutSine));
+        animSequence.Append(cloneRect.DORotate(new Vector3(0, 0,  shakeAngle), half).SetEase(Ease.InOutSine));
+        animSequence.Append(cloneRect.DORotate(new Vector3(0, 0, -shakeAngle), full).SetEase(Ease.InOutSine));
+        animSequence.Append(cloneRect.DORotate(new Vector3(0, 0,  0),          half).SetEase(Ease.InOutSine));
 
         //Final Impact
-        animSequence.Append(cloneRect.DOScale(originalScale, 0.2f).SetEase(Ease.InCubic));
-        animSequence.Join(cloneRect.DOAnchorPos(screenCenter, 0.2f).SetEase(Ease.OutCubic));
+        animSequence.Append(cloneRect.DOScale(originalScale, impact).SetEase(Ease.InCubic));
+        animSequence.Join(cloneRect.DOAnchorPos(screenCenter, impact).SetEase(Ease.OutCubic));
 
         animSequence.OnComplete(() =>
         {
-            ActivateItem(context);
+            if (onComplete != null)
+                onComplete.Invoke();
+            else
+                ActivateItem(context);
+
             Destroy(clone);
         });
 
@@ -170,63 +183,27 @@ public class ItemUIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     private void ActivateItem(ItemContext context)
     {
-        if (item.Effect is FireRingEffect fireRingEffect)
+        // Provide origin position for flying element animations on immediate effects
+        if (item.Effect is ActivatableEffectBase baseEffect)
         {
-            Vector2 PlayerPos = FindFirstObjectByType<PlayerHandler>().transform.position; //ineficient but i dont wanna go thoguh reference hell
-            fireRingEffect.SetUIPosition(PlayerPos); //pas origin postion to te ring effect
+            Vector2 playerPos = FindFirstObjectByType<PlayerHandler>().transform.position;
+            baseEffect.SetUIPosition(playerPos);
         }
+
         item.Activate(context, () =>
         {
-
-            // Remove from inventory 
             if (item.ConsumeOnUse)
-            {
                 GameManager.Instance.PlayerStats.RemoveItemFromInventory(item);
-            }
             else
-            {
                 UpdateVisualState();
-            }
         });
-    }
-
-    private void StartGridTargetSelection(ItemContext context)
-    {
-        // Placeholder for grid target selection
-        //Need to implement a method to select the grid and stop the current game events
-        //This should be a whole nother class
-        Debug.LogWarning("Grid target selection not yet implemented!");
-
-        // For now, just play animation and activate
-        PlayItemUseAnimation(context);
-    }
-
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        if (item != null)
-        {
-            // TODO: Show tooltip with item info
-            Debug.Log($"{item.NameItem}: {item.Description}");
-            if (item.IsOnCooldown())
-            {
-                Debug.Log($"Cooldown: {item.GetCooldownRemaining():F1}s");
-            }
-        }
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        // TODO: Hide tooltip
     }
 
     private void OnDestroy()
     {
         if (button != null)
-        {
             button.onClick.RemoveListener(OnItemClicked);
-        }
 
-        // Kill any tweens on this object to prevent errors
         transform.DOKill();
     }
 }

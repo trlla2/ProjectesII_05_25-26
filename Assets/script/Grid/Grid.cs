@@ -356,7 +356,6 @@ public class Grid : MonoBehaviour
             if (visual != null)
             {
                 visual.SetSelectable(false);
-                //future: add block visual effect
             }
         }
 

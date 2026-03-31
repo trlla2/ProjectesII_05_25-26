@@ -7,19 +7,14 @@ using UnityEngine;
 public class Item : ScriptableObject
 {
     [Header("SETUP")]
-    [SerializeField]
-    private string nameItem;
-    [SerializeField]
-    private string description;
-    [SerializeField]
-    private ItemRarity rarity;
+    [SerializeField] private string nameItem;
+    [SerializeField] private string description;
+    [SerializeField] private ItemRarity rarity;
     private ItemLevel level = ItemLevel.LVL1;
 
     [Header("Art Stuff")]
-    [SerializeField]
-    private Sprite sprite;
-    [SerializeField]
-    private Sprite TargetSprite; // Used for targeting visuals in grid
+    [SerializeField] private Sprite sprite;
+    [SerializeField] private Sprite TargetSprite;
 
     [Header("Behaviour")]
     [SerializeField] private ItemEffectType effectType;
@@ -28,17 +23,21 @@ public class Item : ScriptableObject
     [SerializeField] private LightningRingEffect lightningRingEffect;
     [SerializeField] private MoonRingEffect moonRingEffect;
     [SerializeField] private ShamrockRingEffect shamrockRingEffect;
+    [SerializeField] private FireInstanceEffect fireInstanceEffect;
+    [SerializeField] private MoonInstanceEffect moonInstanceEffect;
+    [SerializeField] private LightningInstanceEffect lightningInstanceEffect;
+    [SerializeField] private ShamrockInstanceEffect shamrockInstanceEffect;
+    [SerializeField] private FireObliterateEffect fireObliterateEffect;
 
     [Header("Activation")]
     [SerializeField] private ItemActivationType activationType;
-    [SerializeField] private bool consumeOnUse = true; // Default to true for IActivatableEffect items
+    [SerializeField] private bool consumeOnUse = true;
     [SerializeField] private float cooldown;
 
     private float lastUsedTime = -999f;
     private IItemEffect _effect;
 
-    //Cerate the effec when used and save it 
-    public IItemEffect Effect => _effect == null ? ItemEffectFactory.Create(effectType, extraDamageEffect, fireRingEffect, lightningRingEffect, moonRingEffect, shamrockRingEffect) : _effect;
+    public IItemEffect Effect => _effect == null ? ItemEffectFactory.Create(effectType, extraDamageEffect, fireRingEffect, lightningRingEffect, moonRingEffect, shamrockRingEffect, fireInstanceEffect, moonInstanceEffect, lightningInstanceEffect, shamrockInstanceEffect, fireObliterateEffect) : _effect;
 
     public string NameItem => nameItem;
     public string Description => description;
@@ -78,15 +77,10 @@ public class Item : ScriptableObject
     public bool CanActivate(ItemContext context)
     {
         if (!IsActivatable) return false;
-        
-        // Check cooldown
         if (Time.time - lastUsedTime < cooldown) return false;
 
-        // Check if effect can be activated
         if (Effect is IActivatableEffect activatable)
-        {
             return activatable.CanActivate(context);
-        }
 
         return false;
     }
@@ -106,30 +100,17 @@ public class Item : ScriptableObject
             activatable.Activate(level, context, onComplete);
         }
     }
-    
+
     private void SetActivationItemReferences()
     {
-        if(Effect is FireRingEffect fireRingEffect)
+        if (Effect is ActivatableEffectBase baseEffect)
         {
-            fireRingEffect.xSprite = TargetSprite;
-        }
-        if (Effect is MoonRingEffect moonRingEffect)
-        {
-            moonRingEffect.xSprite = TargetSprite;
-        }
-        if (Effect is ShamrockRingEffect shamrockEffect)
-        {
-            shamrockEffect.xSprite = TargetSprite;
-        }
-        if (Effect is LightningRingEffect lightningEffect)
-        {
-            lightningEffect.xSprite = TargetSprite;
+            baseEffect.xSprite = TargetSprite;
         }
     }
 
     public float GetCooldownRemaining()
     {
-        Debug.Log(cooldown);
         return Mathf.Max(0f, cooldown - (Time.time - lastUsedTime));
     }
 

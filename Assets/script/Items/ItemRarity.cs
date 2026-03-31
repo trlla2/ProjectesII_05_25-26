@@ -32,4 +32,9 @@ public enum ItemEffectType
     LightningRing,
     MoonRing,
     ShamrockRing,
+    FireInstance,
+    MoonInstance,
+    LightningInstance,
+    ShamrockInstance,
+    FireObliterate,
 }

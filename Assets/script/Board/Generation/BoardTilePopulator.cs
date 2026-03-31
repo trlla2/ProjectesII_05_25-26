@@ -8,6 +8,10 @@ public class BoardTilePopulator
     private readonly BoardGenerationConfig _config;
     private readonly List<BoardPath> _allPaths;
 
+    // Caché de posiciones ocupadas por tiles especiales (no-empty), actualizado
+    // cada vez que se coloca una tile. Es la fuente de verdad para evitar solapamientos.
+    private readonly HashSet<Vector2Int> _occupiedBySpecial = new HashSet<Vector2Int>();
+
     public BoardTilePopulator(BoardManager boardManager, BoardGenerationConfig config, List<BoardPath> allPaths)
     {
         _boardManager = boardManager;
@@ -15,7 +19,7 @@ public class BoardTilePopulator
         _allPaths = allPaths;
     }
 
-    // ?? End Zones ????????????????????????????????????????????????????????????
+    // — End Zones ——————————————————————————————————————————————————————————————
 
     public void AssignEndZones(Transform parent)
     {
@@ -40,16 +44,21 @@ public class BoardTilePopulator
         BoardTile stairsTarget = _boardManager.generatedTiles.FirstOrDefault(t => t.GetGridPosition() == stairsPos)
             ?? _boardManager.CreateNewTile(_boardManager.emptyTileData, stairsPos, parent);
 
-        _boardManager.ReplaceTileType(stairsTarget, _boardManager.stairsTileData);
+        ReplaceTileAndUpdatePaths(stairsTarget, _boardManager.stairsTileData);
         _boardManager.UpdateNeighbors(path.EndTile);
-        _boardManager.UpdateNeighbors(stairsTarget);
 
-        List<BoardTile> validNeighbors = stairsTarget.neighbors.Where(n => n != null).ToList();
+        // Buscar la nueva stairs tras el reemplazo
+        BoardTile newStairs = _boardManager.generatedTiles.FirstOrDefault(t => t.GetGridPosition() == stairsPos);
+        if (newStairs == null) return;
+
+        _boardManager.UpdateNeighbors(newStairs);
+
+        List<BoardTile> validNeighbors = newStairs.neighbors.Where(n => n != null).ToList();
         int externalNeighbors = validNeighbors.Count(n => !path.Contains(n));
         if (externalNeighbors > 0)
         {
-            _boardManager.ReplaceTileType(stairsTarget, _boardManager.emptyTileData);
-            _boardManager.UpdateNeighbors(stairsTarget);
+            ReplaceTileAndUpdatePaths(newStairs, _boardManager.emptyTileData);
+            _boardManager.UpdateNeighbors(_boardManager.generatedTiles.FirstOrDefault(t => t.GetGridPosition() == stairsPos));
             return;
         }
 
@@ -71,14 +80,18 @@ public class BoardTilePopulator
         if (tile.GetData() == _boardManager.chestOfEgressTileData) return;
 
         ReplaceTileAndUpdatePaths(tile, data);
-        _boardManager.UpdateNeighbors(path.Tiles[index]);
+        if (index < path.Tiles.Count && path.Tiles[index] != null)
+            _boardManager.UpdateNeighbors(path.Tiles[index]);
     }
 
-    // ?? Enemies & Chests ?????????????????????????????????????????????????????
+    // — Enemies & Chests ———————————————————————————————————————————————————————
 
     public void AssignEnemiesAndChests(int numEnemies, int numChests)
     {
         if (_allPaths == null || _allPaths.Count == 0) return;
+
+        // Inicializar el caché con las tiles especiales ya existentes (stairs, boss, etc.)
+        RebuildOccupiedCache();
 
         BoardPath mainPath = _allPaths[0];
         HashSet<BoardTile> startZoneSet = mainPath.GetStartZone(_config.StartZoneReserveTiles).ToHashSet();
@@ -112,6 +125,9 @@ public class BoardTilePopulator
         PlaceChests(startZoneSet, numChests);
     }
 
+    /// <summary>
+    /// Garantiza que la primera tile de cada branch (Tiles[1]) sea EmptyTile.
+    /// </summary>
     public void EnsureBranchEntriesAreEmpty()
     {
         for (int b = 1; b < _allPaths.Count; b++)
@@ -120,7 +136,7 @@ public class BoardTilePopulator
             if (branch == null || branch.Tiles.Count < 2) continue;
 
             BoardTile entry = branch.Tiles[1];
-            if (entry is EmptyTile) continue;
+            if (entry is EmptyTile || entry is BranchOriginTile) continue;
 
             int swapIdx = -1;
             for (int i = 2; i < branch.Tiles.Count; i++)
@@ -137,7 +153,30 @@ public class BoardTilePopulator
         }
     }
 
-    // ?? Helpers ???????????????????????????????????????????????????????????????
+    // — Helpers ————————————————————————————————————————————————————————————————
+
+    /// <summary>
+    /// Reconstruye el set de posiciones con tiles especiales a partir de generatedTiles.
+    /// Se llama antes de asignar enemigos y cofres para tener un estado limpio.
+    /// </summary>
+    private void RebuildOccupiedCache()
+    {
+        _occupiedBySpecial.Clear();
+        foreach (BoardTile tile in _boardManager.generatedTiles)
+        {
+            if (tile == null) continue;
+            if (!IsPlainEmptyTile(tile))
+                _occupiedBySpecial.Add(tile.GetGridPosition());
+        }
+    }
+
+    /// <summary>
+    /// Devuelve true si la tile es una EmptyTile pura (no BranchOriginTile ni ningún tipo especial).
+    /// </summary>
+    private bool IsPlainEmptyTile(BoardTile tile)
+    {
+        return tile is EmptyTile && tile.GetData() == _boardManager.emptyTileData;
+    }
 
     private void PlaceEnemiesOnPath(List<BoardTile> candidates, int count)
     {
@@ -220,7 +259,7 @@ public class BoardTilePopulator
             !IsEnemyTile(t) &&
             t.GetData() != _boardManager.stairsTileData &&
             t.GetData() != _boardManager.bossTileData &&
-            t.IsWalkable()
+            t is EmptyTile  // solo EmptyTile; BranchOriginTile queda excluida
         ).ToList();
     }
 

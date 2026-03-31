@@ -27,6 +27,11 @@ public class FireObliterateEffect : ActivatableEffectBase
             return;
         }
 
+        // Snapshot elements before any grid data is cleared
+        List<Element> fireElements = new List<Element>();
+        foreach (var pos in positions)
+            fireElements.Add(grid.GetElementAt(pos));
+
         grid.ChangeState(new ItemProcessingState(grid));
 
         List<GameObject> xMarkers = new List<GameObject>();
@@ -55,8 +60,7 @@ public class FireObliterateEffect : ActivatableEffectBase
             foreach (var marker in xMarkers)
                 GameObject.Destroy(marker);
 
-            grid.DeleteElementsByPlayer(positions);
-            onComplete?.Invoke();
+            AttackWithElements(context, positions, fireElements, onComplete);
         });
     }
 

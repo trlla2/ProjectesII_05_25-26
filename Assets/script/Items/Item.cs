@@ -28,6 +28,9 @@ public class Item : ScriptableObject
     [SerializeField] private LightningInstanceEffect lightningInstanceEffect;
     [SerializeField] private ShamrockInstanceEffect shamrockInstanceEffect;
     [SerializeField] private FireObliterateEffect fireObliterateEffect;
+    [SerializeField] private LightningObliterateEffect lightningObliterateEffect;
+    [SerializeField] private ShamrockObliterateEffect shamrockObliterateEffect;
+    [SerializeField] private MoonObliterateEffect moonObliterateEffect;
 
     [Header("Activation")]
     [SerializeField] private ItemActivationType activationType;
@@ -37,7 +40,7 @@ public class Item : ScriptableObject
     private float lastUsedTime = -999f;
     private IItemEffect _effect;
 
-    public IItemEffect Effect => _effect == null ? ItemEffectFactory.Create(effectType, extraDamageEffect, fireRingEffect, lightningRingEffect, moonRingEffect, shamrockRingEffect, fireInstanceEffect, moonInstanceEffect, lightningInstanceEffect, shamrockInstanceEffect, fireObliterateEffect) : _effect;
+    public IItemEffect Effect => _effect == null ? ItemEffectFactory.Create(effectType, extraDamageEffect, fireRingEffect, lightningRingEffect, moonRingEffect, shamrockRingEffect, fireInstanceEffect, moonInstanceEffect, lightningInstanceEffect, shamrockInstanceEffect, fireObliterateEffect, lightningObliterateEffect, shamrockObliterateEffect, moonObliterateEffect) : _effect;
 
     public string NameItem => nameItem;
     public string Description => description;

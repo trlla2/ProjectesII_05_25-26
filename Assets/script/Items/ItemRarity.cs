@@ -8,7 +8,6 @@ public enum ItemRarity
     LEGENDARY = 3
 }
 
-
 public enum ItemLevel
 {
     LVL1 = 0,
@@ -37,4 +36,7 @@ public enum ItemEffectType
     LightningInstance,
     ShamrockInstance,
     FireObliterate,
+    LightningObliterate,
+    ShamrockObliterate,
+    MoonObliterate,
 }

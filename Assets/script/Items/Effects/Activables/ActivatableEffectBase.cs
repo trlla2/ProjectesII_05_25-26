@@ -124,4 +124,38 @@ public abstract class ActivatableEffectBase : IActivatableEffect
             GameObject.Destroy(tempVisual);
         });
     }
+
+    protected void AttackWithElements(ItemContext context, List<Vector2Int> positions, List<Element> elements, Action onComplete)
+    {
+        Grid grid = context.Grid;
+
+        NotifyBlockerEnemyOfUsedPositions(positions);
+
+        grid.InstantVisualEmpty(positions);
+
+        // Animate clones along the path
+        context.SpellAnimator.OnSpellCast(positions.ToArray(), elements, () =>
+        {
+            // Destroy ElementVisual objects and queue refill
+            grid.DeleteElementsByPlayer(positions);
+
+            GameManager.Instance.NotifyPlayerMove();
+
+            grid.ChangeState(new IdleState(grid));
+            onComplete?.Invoke();
+        });
+    }
+    
+    //need to reeimplement it here from playerpathing
+    protected void NotifyBlockerEnemyOfUsedPositions(List<Vector2Int> usedPositions)
+    {
+        if (GameManager.Instance == null || GameManager.Instance.CombatHandler == null)
+            return;
+
+        EnemyBehaviour enemy = GameManager.Instance.CombatHandler.GetEnemyRef();
+        if (enemy == null)
+            return;
+
+        enemy.NotifyAdjacentElementsUsed(usedPositions);
+    }
 }

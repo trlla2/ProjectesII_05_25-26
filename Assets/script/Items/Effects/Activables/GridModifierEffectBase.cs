@@ -15,9 +15,6 @@ public abstract class GridModifierEffectBase : ActivatableEffectBase, IGridModif
 
     protected abstract ElementType TargetElementType { get; }
 
-    public virtual void OnElementSpawn(GridData gridData, Vector2Int position, ref Element element,
-                                        ItemLevel level, List<Element> availableElements) { }
-
     public override bool CanActivate(ItemContext context)
     {
         return context.Grid != null &&
@@ -53,6 +50,7 @@ public abstract class GridModifierEffectBase : ActivatableEffectBase, IGridModif
 
         while (selectedPositions.Count < selectCount)
         {
+            //same as InputHander 
             if (Input.GetMouseButtonDown(0))
             {
                 Camera cam = Camera.main;

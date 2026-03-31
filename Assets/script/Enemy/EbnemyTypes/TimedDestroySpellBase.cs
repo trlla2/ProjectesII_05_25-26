@@ -14,7 +14,6 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
     public SpellTimer Timer => spellTimer;
     public bool IsEffectApplied => effectApplied;
     public virtual bool IsTimerExpired => spellTimer?.IsExpired ?? false;
-    public float BonusTimePerClearedTarget => bonusTimePerClearedTarget;
     public List<Vector2Int> TargetedPositions => targetedPositions;
 
     protected TimedDestroySpellBase(float countdown, float damage)

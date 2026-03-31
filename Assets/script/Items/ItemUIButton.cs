@@ -113,7 +113,7 @@ public class ItemUIButton : MonoBehaviour
 
         if (item.Effect is GridModifierEffectBase gridModifierEffect)
         {
-            // for Gridmodifying items start selection immediately, then play the UI animation at half speed
+            // for Grid targeting items, ActivateItem sets ItemProcessingState immediately,
             Vector2 playerPos = FindFirstObjectByType<PlayerHandler>().transform.position;
             gridModifierEffect.SetUIPosition(playerPos);
             gridModifierEffect.BeforeAnimation = (continueActivation) =>
@@ -123,7 +123,7 @@ public class ItemUIButton : MonoBehaviour
         }
         else
         {
-            // Immediate items, play UI animation first, then activate.
+            context.Grid.ChangeState(new ItemProcessingState(context.Grid));
             PlayItemUseAnimation(context, 1f);
         }
     }

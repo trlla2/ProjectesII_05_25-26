@@ -11,21 +11,27 @@ public static class ItemEffectFactory //static so we can call it anywhere
         MoonInstanceEffect moonInstanceEffect,
         LightningInstanceEffect lightningInstanceEffect,
         ShamrockInstanceEffect shamrockInstanceEffect,
-        FireObliterateEffect fireObliterateEffect)
+        FireObliterateEffect fireObliterateEffect,
+        LightningObliterateEffect lightningObliterateEffect,
+        ShamrockObliterateEffect shamrockObliterateEffect,
+        MoonObliterateEffect moonObliterateEffect)
     {
         switch (effectType)
         {
-            case ItemEffectType.ExtraDamage:        return extraDamageEffect;
-            case ItemEffectType.FireRing:            return fireRingEffect;
-            case ItemEffectType.LightningRing:       return lightningRingEffect;
-            case ItemEffectType.MoonRing:            return moonRingEffect;
-            case ItemEffectType.ShamrockRing:        return shamrockRingEffect;
-            case ItemEffectType.FireInstance:        return fireInstanceEffect;
-            case ItemEffectType.MoonInstance:        return moonInstanceEffect;
-            case ItemEffectType.LightningInstance:   return lightningInstanceEffect;
-            case ItemEffectType.ShamrockInstance:    return shamrockInstanceEffect;
-            case ItemEffectType.FireObliterate:      return fireObliterateEffect;
-            default:                                 return null;
+            case ItemEffectType.ExtraDamage:            return extraDamageEffect;
+            case ItemEffectType.FireRing:               return fireRingEffect;
+            case ItemEffectType.LightningRing:          return lightningRingEffect;
+            case ItemEffectType.MoonRing:               return moonRingEffect;
+            case ItemEffectType.ShamrockRing:           return shamrockRingEffect;
+            case ItemEffectType.FireInstance:           return fireInstanceEffect;
+            case ItemEffectType.MoonInstance:           return moonInstanceEffect;
+            case ItemEffectType.LightningInstance:      return lightningInstanceEffect;
+            case ItemEffectType.ShamrockInstance:       return shamrockInstanceEffect;
+            case ItemEffectType.FireObliterate:         return fireObliterateEffect;
+            case ItemEffectType.LightningObliterate:    return lightningObliterateEffect;
+            case ItemEffectType.ShamrockObliterate:     return shamrockObliterateEffect;
+            case ItemEffectType.MoonObliterate:         return moonObliterateEffect;
+            default:                                    return null;
         }
     }
 }

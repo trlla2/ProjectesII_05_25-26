@@ -34,6 +34,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private NewSpellPanelBehaviour newSpellPanel;
     [SerializeField] private ChestOfEgressScreen chestOfEgressPanel;
     [SerializeField] private BranchChoicePanelHandler branchChoicePanel;
+    [SerializeField] private ShopScreen shopPanel;
     [SerializeField] private BoardTileData fogTileData;
 
     [Header("Encounters")]
@@ -295,6 +296,14 @@ public class BoardManager : MonoBehaviour
     {
         boardCamera.gameObject.GetComponent<TileClickHandler>().HandleBoardRaycast(false);
         newSpellPanel.Show(tile);
+    }
+
+    public void OpenShop(ShopTile tile)
+    {
+        if (shopPanel != null)
+            shopPanel.Open(tile);
+        else
+            Debug.LogWarning("BoardManager: shopPanel no está asignado.");
     }
 
     public void HandleBoardCamera(bool enable)

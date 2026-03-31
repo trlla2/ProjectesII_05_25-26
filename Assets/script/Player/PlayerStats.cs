@@ -64,7 +64,7 @@ public class PlayerStats
 
 
         // currency 
-        money = 10;
+        money = 1000;
 
         // spells  & Items
         spellBook = new Spell[spellBookSize];

@@ -7,7 +7,6 @@ public class BoardGenerator : MonoBehaviour
     [SerializeField] private BoardManager _boardManager;
     [SerializeField] private BoardGenerationConfig _config;
 
-    // Datos de la stage actual
     private int _numOfEmptyTiles;
     private int _numOfEnemyTiles;
     private int _numOfMiniBossTiles;
@@ -22,7 +21,6 @@ public class BoardGenerator : MonoBehaviour
 
     public List<BoardPath> Paths { get; private set; } = new List<BoardPath>();
 
-    // Compatibilidad: expone la lista plana de tiles por path para otros sistemas que accedan a _paths
     public List<List<BoardTile>> _paths => Paths.Select(p => p.Tiles).ToList();
 
     void Start()
@@ -69,7 +67,7 @@ public class BoardGenerator : MonoBehaviour
 
         BoardTilePopulator populator = new BoardTilePopulator(_boardManager, _config, Paths);
         populator.AssignEndZones(parent);
-        populator.AssignEnemiesAndChests(_numOfEnemyTiles, _numOfChestTiles);
+        populator.AssignEnemiesAndSpecialTiles(_numOfEnemyTiles);
         populator.EnsureBranchEntriesAreEmpty();
 
         foreach (BoardPath path in Paths)

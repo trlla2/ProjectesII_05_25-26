@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -8,8 +8,6 @@ public class BoardTilePopulator
     private readonly BoardGenerationConfig _config;
     private readonly List<BoardPath> _allPaths;
 
-    // Caché de posiciones ocupadas por tiles especiales (no-empty), actualizado
-    // cada vez que se coloca una tile. Es la fuente de verdad para evitar solapamientos.
     private readonly HashSet<Vector2Int> _occupiedBySpecial = new HashSet<Vector2Int>();
 
     public BoardTilePopulator(BoardManager boardManager, BoardGenerationConfig config, List<BoardPath> allPaths)
@@ -18,8 +16,6 @@ public class BoardTilePopulator
         _config = config;
         _allPaths = allPaths;
     }
-
-    // — End Zones ——————————————————————————————————————————————————————————————
 
     public void AssignEndZones(Transform parent)
     {
@@ -47,7 +43,6 @@ public class BoardTilePopulator
         ReplaceTileAndUpdatePaths(stairsTarget, _boardManager.stairsTileData);
         _boardManager.UpdateNeighbors(path.EndTile);
 
-        // Buscar la nueva stairs tras el reemplazo
         BoardTile newStairs = _boardManager.generatedTiles.FirstOrDefault(t => t.GetGridPosition() == stairsPos);
         if (newStairs == null) return;
 
@@ -84,13 +79,10 @@ public class BoardTilePopulator
             _boardManager.UpdateNeighbors(path.Tiles[index]);
     }
 
-    // — Enemies & Chests ———————————————————————————————————————————————————————
-
-    public void AssignEnemiesAndChests(int numEnemies, int numChests)
+    public void AssignEnemiesAndSpecialTiles(int numEnemies)
     {
         if (_allPaths == null || _allPaths.Count == 0) return;
 
-        // Inicializar el caché con las tiles especiales ya existentes (stairs, boss, etc.)
         RebuildOccupiedCache();
 
         BoardPath mainPath = _allPaths[0];
@@ -122,12 +114,71 @@ public class BoardTilePopulator
             PlaceEnemiesOnPath(branchCandidates, enemiesNeeded);
         }
 
-        PlaceChests(startZoneSet, numChests);
+        AssignSpecialTilesFromPool(startZoneSet);
     }
 
-    /// <summary>
-    /// Garantiza que la primera tile de cada branch (Tiles[1]) sea EmptyTile.
-    /// </summary>
+    private void AssignSpecialTilesFromPool(HashSet<BoardTile> startZoneSet)
+    {
+        StageLevelData stageData = _boardManager.currentStageLevelData;
+
+        if (stageData == null || !stageData.HasSpecialTilePool())
+        {
+            // fallback => chest tile spawns
+            PlaceSpecialTilesFixed(startZoneSet, _boardManager.chestTileData, stageData?.GetNumOfChestTiles() ?? 0);
+            return;
+        }
+
+        List<BoardTile> candidates = BuildSpecialTileCandidatePool(startZoneSet);
+        Shuffle(candidates);
+
+        foreach (BoardTile tile in candidates)
+        {
+            if (HasSpecialNeighbor(tile)) continue;
+
+            BoardTileData rolled = stageData.RollSpecialTile();
+            if (rolled == null) continue;
+
+            ReplaceTileAndUpdatePaths(tile, rolled);
+        }
+    }
+
+    private void PlaceSpecialTilesFixed(HashSet<BoardTile> startZoneSet, BoardTileData tileData, int count)
+    {
+        List<BoardTile> available = BuildSpecialTileCandidatePool(startZoneSet);
+        Shuffle(available);
+
+        int placed = 0;
+        foreach (BoardTile tile in available)
+        {
+            if (placed >= count) break;
+            if (HasSpecialNeighbor(tile)) continue;
+            ReplaceTileAndUpdatePaths(tile, tileData);
+            placed++;
+        }
+
+        Debug.Log($"[Fallback] {tileData?.name} colocadas: {placed}");
+    }
+
+    private List<BoardTile> BuildSpecialTileCandidatePool(HashSet<BoardTile> startZoneSet)
+    {
+        HashSet<BoardTile> allEndZones = new HashSet<BoardTile>();
+        foreach (BoardPath path in _allPaths)
+        {
+            if (path == null || path.Tiles.Count == 0) continue;
+            allEndZones.UnionWith(path.GetEndZone(_config.EndZoneReservedTiles));
+        }
+
+        return _boardManager.generatedTiles
+            .Where(t =>
+                t != null &&
+                !startZoneSet.Contains(t) &&
+                !allEndZones.Contains(t) &&
+                t != _boardManager.startingTile &&
+                t.GetData() == _boardManager.emptyTileData &&
+                t.IsWalkable())
+            .ToList();
+    }
+
     public void EnsureBranchEntriesAreEmpty()
     {
         for (int b = 1; b < _allPaths.Count; b++)
@@ -153,12 +204,7 @@ public class BoardTilePopulator
         }
     }
 
-    // — Helpers ————————————————————————————————————————————————————————————————
-
-    /// <summary>
-    /// Reconstruye el set de posiciones con tiles especiales a partir de generatedTiles.
-    /// Se llama antes de asignar enemigos y cofres para tener un estado limpio.
-    /// </summary>
+    // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     private void RebuildOccupiedCache()
     {
         _occupiedBySpecial.Clear();
@@ -170,13 +216,8 @@ public class BoardTilePopulator
         }
     }
 
-    /// <summary>
-    /// Devuelve true si la tile es una EmptyTile pura (no BranchOriginTile ni ningún tipo especial).
-    /// </summary>
-    private bool IsPlainEmptyTile(BoardTile tile)
-    {
-        return tile is EmptyTile && tile.GetData() == _boardManager.emptyTileData;
-    }
+    private bool IsPlainEmptyTile(BoardTile tile) =>
+        tile is EmptyTile && tile.GetData() == _boardManager.emptyTileData;
 
     private void PlaceEnemiesOnPath(List<BoardTile> candidates, int count)
     {
@@ -217,38 +258,6 @@ public class BoardTilePopulator
         }
     }
 
-    private void PlaceChests(HashSet<BoardTile> startZoneSet, int numChests)
-    {
-        HashSet<BoardTile> allEndZones = new HashSet<BoardTile>();
-        foreach (BoardPath path in _allPaths)
-        {
-            if (path == null || path.Tiles.Count == 0) continue;
-            allEndZones.UnionWith(path.GetEndZone(_config.EndZoneReservedTiles));
-        }
-
-        List<BoardTile> available = _boardManager.generatedTiles
-            .Where(t =>
-                !startZoneSet.Contains(t) &&
-                !allEndZones.Contains(t) &&
-                t != _boardManager.startingTile &&
-                t.GetData() == _boardManager.emptyTileData &&
-                t.IsWalkable())
-            .ToList();
-
-        Shuffle(available);
-
-        int placed = 0;
-        foreach (BoardTile tile in available)
-        {
-            if (placed >= numChests) break;
-            if (HasSpecialNeighbor(tile)) continue;
-            ReplaceTileAndUpdatePaths(tile, _boardManager.chestTileData);
-            placed++;
-        }
-
-        Debug.Log($"Cofres colocados: {placed}");
-    }
-
     private List<BoardTile> GetValidEnemyPositions(BoardPath path, HashSet<BoardTile> startZoneSet)
     {
         HashSet<BoardTile> endZone = path.GetEndZone(_config.EndZoneReservedTiles);
@@ -259,7 +268,7 @@ public class BoardTilePopulator
             !IsEnemyTile(t) &&
             t.GetData() != _boardManager.stairsTileData &&
             t.GetData() != _boardManager.bossTileData &&
-            t is EmptyTile  // solo EmptyTile; BranchOriginTile queda excluida
+            t is EmptyTile
         ).ToList();
     }
 
@@ -275,11 +284,8 @@ public class BoardTilePopulator
         return newTile;
     }
 
-    private bool IsEnemyTile(BoardTile tile)
-    {
-        if (tile == null) return false;
-        return tile.GetData() == _boardManager.enemyTileData;
-    }
+    private bool IsEnemyTile(BoardTile tile) =>
+        tile != null && tile.GetData() == _boardManager.enemyTileData;
 
     private bool HasSpecialNeighbor(BoardTile tile)
     {

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class ShopTile : BoardTile
 {
-    private const int ShopSlots = 3;
+    private const int ItemSlots = 3;
 
     [SerializeField] private BoardTileData _postInteractionTile;
 
@@ -18,17 +18,18 @@ public class ShopTile : BoardTile
     [SerializeField] private float _evasionUpgradeAmount = 5f;
     [SerializeField] private float _defenseUpgradeAmount = 3f;
 
-    [Header("Item Offer Settings")]
-    [SerializeField] private int _itemCost = 25;
+    private List<ShopOffer> _itemOffers = new List<ShopOffer>();
+    private ShopOffer _healOffer;
+    private ShopOffer _statOffer;
 
-    private List<ShopOffer> _offers;
-    public IReadOnlyList<ShopOffer> Offers => _offers;
+    public IReadOnlyList<ShopOffer> ItemOffers => _itemOffers;
+    public ShopOffer HealOffer => _healOffer;
+    public ShopOffer StatOffer => _statOffer;
 
     private List<Item> _shopItemPool;
 
     private void Start()
     {
-        // Cargar la pool de items desde el StageLevelData al instanciarse la tile
         if (_boardManager != null && _boardManager.currentStageLevelData != null)
             _shopItemPool = _boardManager.currentStageLevelData.GetShopItemPool();
 
@@ -42,29 +43,21 @@ public class ShopTile : BoardTile
         _boardManager.OpenShop(this);
     }
 
-    /// <summary>
-    /// Genera las 3 ofertas de la tienda de forma aleatoria al interactuar con la casilla.
-    /// Siempre hay al menos una oferta de curación y una de mejora de estadística.
-    /// El tercer slot siempre es un item.
-    /// </summary>
     public void GenerateOffers()
     {
-        _offers = new List<ShopOffer>(ShopSlots);
+        _itemOffers = new List<ShopOffer>(ItemSlots);
 
-        // Slot 1: curación
-        _offers.Add(ShopOffer.CreateHealOffer(_healPercent, _healCost));
+        for (int i = 0; i < ItemSlots; i++)
+        {
+            Item item = _boardManager.currentStageLevelData.GetShopItem();
+            if (item != null)
+                _itemOffers.Add(ShopOffer.CreateItemOffer(item, item.Rarity.GetShopPrice()));
+        }
 
-        // Slot 2: mejora de estadística aleatoria
-        _offers.Add(CreateRandomStatUpgradeOffer());
+        _healOffer = ShopOffer.CreateHealOffer(_healPercent, _healCost);
+        _statOffer = CreateRandomStatUpgradeOffer();
 
-        // Slot 3: item aleatorio de la pool
-        Item item = _boardManager.currentStageLevelData.GetShopItem();
-        if (item != null)
-            _offers.Add(ShopOffer.CreateItemOffer(item, _itemCost));
-        else
-            _offers.Add(CreateRandomStatUpgradeOffer()); // fallback si no hay items
-
-        Debug.Log($"ShopTile: {_offers.Count} ofertas generadas.");
+        Debug.Log($"ShopTile: {_itemOffers.Count} items, 1 heal, 1 stat generados.");
     }
 
     private ShopOffer CreateRandomStatUpgradeOffer()
@@ -75,10 +68,10 @@ public class ShopTile : BoardTile
         float amount = chosen switch
         {
             StatUpgradeType.ExtraDamage => _damageUpgradeAmount,
-            StatUpgradeType.MaxHealth   => _healthUpgradeAmount,
-            StatUpgradeType.Evasion     => _evasionUpgradeAmount,
-            StatUpgradeType.Defense     => _defenseUpgradeAmount,
-            _                           => 1f
+            StatUpgradeType.MaxHealth => _healthUpgradeAmount,
+            StatUpgradeType.Evasion => _evasionUpgradeAmount,
+            StatUpgradeType.Defense => _defenseUpgradeAmount,
+            _ => 1f
         };
 
         return ShopOffer.CreateStatUpgradeOffer(chosen, amount, _statUpgradeCost);

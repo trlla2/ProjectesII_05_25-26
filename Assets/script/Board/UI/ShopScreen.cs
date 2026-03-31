@@ -5,8 +5,12 @@ using UnityEngine.UI;
 
 public class ShopScreen : MonoBehaviour
 {
-    [Header("Slots")]
-    [SerializeField] private List<ShopSlotUI> _slots;
+    [Header("Item Slots")]
+    [SerializeField] private List<ShopSlotUI> _itemSlots;
+
+    [Header("Utility Slots")]
+    [SerializeField] private ShopSlotUI _healSlot;
+    [SerializeField] private ShopSlotUI _statSlot;
 
     [Header("Feedback")]
     [SerializeField] private TMP_Text _feedbackText;
@@ -41,15 +45,22 @@ public class ShopScreen : MonoBehaviour
 
     private void RefreshSlots()
     {
-        if (_currentTile == null || _currentTile.Offers == null) return;
+        if (_currentTile == null) return;
 
-        for (int i = 0; i < _slots.Count; i++)
+        IReadOnlyList<ShopOffer> itemOffers = _currentTile.ItemOffers;
+        for (int i = 0; i < _itemSlots.Count; i++)
         {
-            if (i < _currentTile.Offers.Count)
-                _slots[i].Setup(_currentTile.Offers[i], this);
+            if (i < itemOffers.Count)
+                _itemSlots[i].Setup(itemOffers[i], this);
             else
-                _slots[i].gameObject.SetActive(false);
+                _itemSlots[i].gameObject.SetActive(false);
         }
+
+        if (_healSlot != null && _currentTile.HealOffer != null)
+            _healSlot.Setup(_currentTile.HealOffer, this);
+
+        if (_statSlot != null && _currentTile.StatOffer != null)
+            _statSlot.Setup(_currentTile.StatOffer, this);
     }
 
     public void TryBuy(ShopOffer offer)
@@ -67,7 +78,6 @@ public class ShopScreen : MonoBehaviour
             case ShopOffer.OfferType.Item:
                 if (!stats.AddItemToInventory(offer.Item))
                 {
-                    // Devolver el dinero si el inventario está lleno
                     stats.AddMoney(offer.Cost);
                     ShowFeedback("¡Inventario lleno!");
                     return;

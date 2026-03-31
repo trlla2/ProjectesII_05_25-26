@@ -5,6 +5,7 @@ public class EnemyAnimationHandler : MonoBehaviour
 {
     private Animator animator;
     private EnemyBehaviour behaviour;
+    [SerializeField] private Grid grid;
 
     private void Awake()
     {
@@ -16,6 +17,8 @@ public class EnemyAnimationHandler : MonoBehaviour
         animator = GetComponent<Animator>();
 
         behaviour.OnHitRecived += HitAnimation;
+        behaviour.OnEnemyDeath += () => animator.SetBool("Dead", true);
+        grid.EnemySpellAnimator.OnAttack += () => animator.SetTrigger("Attack");
     }
 
     private void HitAnimation(float hp)
@@ -26,5 +29,7 @@ public class EnemyAnimationHandler : MonoBehaviour
     private void OnDestroy()
     {
         behaviour.OnHitRecived -= HitAnimation;
+        behaviour.OnEnemyDeath -= () => animator.SetBool("Dead", true);
+        grid.EnemySpellAnimator.OnAttack -= () => animator.SetTrigger("Attack");
     }
 }

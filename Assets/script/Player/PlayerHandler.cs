@@ -17,8 +17,8 @@ public class PlayerHandler : MonoBehaviour
     {
         killParticles.Play();
 
-        if (GameManager.Instance.PlayerStats.Hp <= 0)
-            spriteRenderer.enabled = false;
+       // if (GameManager.Instance.PlayerStats.Hp <= 0)
+           // spriteRenderer.enabled = false;
     }
 
     private void OnDestroy()

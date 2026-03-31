@@ -32,6 +32,8 @@ public class PlayerPathing : MonoBehaviour
     private bool isQTEActive = false;
     private float lastCastTime = -100000000.0f;
 
+    public System.Action OnSpellCast;
+
     private void Awake()
     {
         InitializeComponents();
@@ -290,6 +292,7 @@ public class PlayerPathing : MonoBehaviour
         {
             lastCastTime = Time.time;
             ExecuteSpell(matchedSpell, pathElements);
+            OnSpellCast?.Invoke();
         }
     }
 

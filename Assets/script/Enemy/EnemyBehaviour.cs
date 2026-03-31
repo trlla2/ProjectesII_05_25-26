@@ -39,6 +39,8 @@ public class EnemyBehaviour : MonoBehaviour
     public delegate void GetOnDamageList(DamageType damageType);
     public event GetOnDamageList OnGetDamage;
 
+    public System.Action OnEnemyDeath;
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -638,14 +640,14 @@ public class EnemyBehaviour : MonoBehaviour
     {
         StopBattle();
 
+        OnEnemyDeath?.Invoke();
+
         deathParticles.Play();
 
         if (tutorialManager != null)
             tutorialManager.NotifyEnemyDeath();
 
         GameManager.Instance.CombatHandler.OnEnemyDead();
-
-        spriteRenderer.enabled = false;
 
         Debug.Log($"Enemy {enemyType.name} has been defeated!");
     }

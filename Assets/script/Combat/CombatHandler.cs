@@ -23,6 +23,7 @@ public class CombatHandler : MonoBehaviour
     public event GetOnEndBattle OnEndBattle;
 
     public event System.Action OnPlayerHitRecived;
+    public event System.Action OnPlayerDead;
     public event System.Action OnPlayerHealed;
     public event System.Action OnPlayerHitEvaded;
 
@@ -95,7 +96,7 @@ public class CombatHandler : MonoBehaviour
         OnPlayerHitRecived?.Invoke();
 
         if (!GameManager.Instance.PlayerStats.IsAlive())
-            OnPlayerDead();
+            PlayerDead();
     }
 
     public void HealPlayer(int amount)
@@ -104,9 +105,10 @@ public class CombatHandler : MonoBehaviour
         OnPlayerHealed?.Invoke();
     }
 
-    public void OnPlayerDead()
+    public void PlayerDead()
     {
         enemyInCombat?.StopBattle();
+        OnPlayerDead?.Invoke();
         OnEndBattle?.Invoke(false, 0, null);
     }
 

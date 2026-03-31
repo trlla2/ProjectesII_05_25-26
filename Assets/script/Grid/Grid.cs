@@ -37,6 +37,7 @@ public class Grid : MonoBehaviour
     public AnimationCurve EnemyTargetFillCurve => enemyBlinkCurve;
     public float EnemyTargetAnimDuration => enemyDeletionDuration;
 
+    public SpellPathAnimator EnemySpellAnimator => enemySpellAnimator;
     private GridData gridData;
     private GridGravity gravityHandler;
     private ISpellInserter spellInserter;

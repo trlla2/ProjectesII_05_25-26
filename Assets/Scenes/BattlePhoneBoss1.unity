@@ -24192,13 +24192,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 806185220}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5089faa8aa8f981468d790dfeaa1fece, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   items: []
-  ForceSpells: 0
+  ForceSpells: 1
   spells:
   - {fileID: 11400000, guid: d65283c45b7504446948b1b821bc9cb0, type: 2}
   - {fileID: 11400000, guid: e9afe958fcdfa78458bbde73be344e18, type: 2}
@@ -55489,6 +55489,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 710040041163105777, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 359acc7ef901d244488d5def4a6ed2aa, type: 3}
+    - target: {fileID: 2496224515864261584, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: d8f6c1f4677b16040a51c1f75afa1740, type: 2}
     - target: {fileID: 2881528849542322018, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
       propertyPath: InitialModule.gravitySource
       value: 1
@@ -55546,12 +55554,20 @@ PrefabInstance:
       value: 0.2735849
       objectReference: {fileID: 0}
     - target: {fileID: 4447280998866706708, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 4447280998866706708, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 4447280998866706708, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.72
+      value: -1.8
       objectReference: {fileID: 0}
     - target: {fileID: 4447280998866706708, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.94
+      value: -4
       objectReference: {fileID: 0}
     - target: {fileID: 4447280998866706708, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -55710,13 +55726,17 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 4766559138943698823, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
+      propertyPath: grid
+      value: 
+      objectReference: {fileID: 190367786}
     - target: {fileID: 4888071274111498029, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.25
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 4888071274111498029, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.25
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 4888071274111498029, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: m_LocalPosition.x
@@ -55724,7 +55744,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4888071274111498029, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.1
+      value: 3.26
       objectReference: {fileID: 0}
     - target: {fileID: 4888071274111498029, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: m_LocalPosition.z
@@ -55777,7 +55797,7 @@ PrefabInstance:
     - target: {fileID: 7310261192604355882, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: -5418932733711996721, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
+      objectReference: {fileID: 21300000, guid: 6e73faeff3d53ef4ab9e1d76b914bda2, type: 3}
     - target: {fileID: 7310261192604355882, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: m_Color.b
       value: 0.9858491

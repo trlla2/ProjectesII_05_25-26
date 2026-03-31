@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ab529a0c12673a408eb38b86a880060, type: 3}
   m_Name: BombEnemy
   m_EditorClassIdentifier: 
-  name: Terrorist Orc
+  name: Terrorist Goblin
   health: 100
   damage: 10
   elementCount: 3
@@ -22,16 +22,18 @@ MonoBehaviour:
   weaknessMultiplier: 2
   resistances: 
   resistanceMultiplier: 0.5
-  enemySprite: {fileID: 4558744868989341921, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
-  animatorController: {fileID: 9100000, guid: 9a9c569f609a6fa4d899976fb8b39b74, type: 2}
+  enemySprite: {fileID: 21300000, guid: 1d40c2026f4a37640b225e4e2eaff164, type: 3}
+  animatorController: {fileID: 9100000, guid: ee35ba5421caff849858167d420ce40e, type: 2}
   spellType: 8
   damagePerElement: 4
   moveCount: 5
-  AtackTimer: 4
-  lvl2Delay: 5
+  attackTimer: 6
   lvl2Countdown: 15
+  lvl2BonusTimeOnClear: 2
+  continuousSelectionInterval: 2.5
   visibilityDuration: 2.5
   hiddenSprite: {fileID: 0}
-  excludeBelowTargets: 0
+  blockerCount: 2
+  blockerDamagePercent: 0.25
   haveDrops: 0
   spellDrops: []

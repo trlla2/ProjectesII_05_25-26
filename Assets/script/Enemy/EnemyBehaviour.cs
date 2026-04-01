@@ -31,6 +31,7 @@ public class EnemyBehaviour : MonoBehaviour
     public Grid GetGrid() => grid;
 
     private bool timersPaused;
+    private bool isFrozen;
 
     //Legacy System
     public delegate void GetOnHitRecived(float health);
@@ -618,6 +619,8 @@ public class EnemyBehaviour : MonoBehaviour
 
     public void ResumeActiveTimedSpell()
     {
+        if (isFrozen) return;
+
         if (activeSpell is BlockerSpell blockerSpell)
         {
             blockerSpell.ResumeAttackTimer();
@@ -634,6 +637,20 @@ public class EnemyBehaviour : MonoBehaviour
             timedSpell.ResumeTimer();
             timersPaused = false;
         }
+    }
+
+    public void FreezeForDuration(float duration)
+    {
+        StartCoroutine(FreezeCoroutine(duration));
+    }
+
+    private IEnumerator FreezeCoroutine(float duration)
+    {
+        isFrozen = true;
+        PauseActiveTimedSpell();
+        yield return new WaitForSeconds(duration);
+        isFrozen = false;
+        ResumeActiveTimedSpell();
     }
 
     private void Die()

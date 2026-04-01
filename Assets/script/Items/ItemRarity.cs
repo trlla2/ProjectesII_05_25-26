@@ -39,4 +39,8 @@ public enum ItemEffectType
     LightningObliterate,
     ShamrockObliterate,
     MoonObliterate,
+    OrangeInstance,
+    MelonInstance,
+    OrangePile,
+    MelonPile
 }

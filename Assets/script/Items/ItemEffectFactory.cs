@@ -11,6 +11,10 @@ public static class ItemEffectFactory //static so we can call it anywhere
         MoonInstanceEffect moonInstanceEffect,
         LightningInstanceEffect lightningInstanceEffect,
         ShamrockInstanceEffect shamrockInstanceEffect,
+        OrangeInstanceEffect orangeInstanceEffect,
+        MelonInstanceEffect melonInstanceEffect,
+        OrangePileEffect orangePileEffect,
+        MelonPileEffect melonPileEffect,
         FireObliterateEffect fireObliterateEffect,
         LightningObliterateEffect lightningObliterateEffect,
         ShamrockObliterateEffect shamrockObliterateEffect,
@@ -27,6 +31,10 @@ public static class ItemEffectFactory //static so we can call it anywhere
             case ItemEffectType.MoonInstance:           return moonInstanceEffect;
             case ItemEffectType.LightningInstance:      return lightningInstanceEffect;
             case ItemEffectType.ShamrockInstance:       return shamrockInstanceEffect;
+            case ItemEffectType.OrangeInstance:         return orangeInstanceEffect;
+            case ItemEffectType.MelonInstance:          return melonInstanceEffect;
+            case ItemEffectType.OrangePile:             return orangePileEffect;
+            case ItemEffectType.MelonPile:              return melonPileEffect;
             case ItemEffectType.FireObliterate:         return fireObliterateEffect;
             case ItemEffectType.LightningObliterate:    return lightningObliterateEffect;
             case ItemEffectType.ShamrockObliterate:     return shamrockObliterateEffect;

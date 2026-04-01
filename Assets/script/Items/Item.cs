@@ -35,6 +35,7 @@ public class Item : ScriptableObject
     [SerializeField] private LightningObliterateEffect lightningObliterateEffect;
     [SerializeField] private ShamrockObliterateEffect shamrockObliterateEffect;
     [SerializeField] private MoonObliterateEffect moonObliterateEffect;
+    [SerializeField] private FreezeEffect freezeEffect;
 
     [Header("Activation")]
     [SerializeField] private ItemActivationType activationType;
@@ -49,7 +50,8 @@ public class Item : ScriptableObject
             moonRingEffect, shamrockRingEffect, fireInstanceEffect, moonInstanceEffect,
             lightningInstanceEffect, shamrockInstanceEffect, orangeInstanceEffect, melonInstanceEffect,
             orangePileEffect, melonPileEffect,
-            fireObliterateEffect, lightningObliterateEffect, shamrockObliterateEffect, moonObliterateEffect)
+            fireObliterateEffect, lightningObliterateEffect, shamrockObliterateEffect, moonObliterateEffect,
+            freezeEffect)
         : _effect;
 
     public string NameItem => nameItem;

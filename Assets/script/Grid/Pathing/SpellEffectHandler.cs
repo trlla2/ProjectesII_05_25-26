@@ -63,7 +63,7 @@ public class SpellEffectHandler : MonoBehaviour
             tutorialManager.NotifySpellCast();
     }
 
-    private void PlayEffectsForSpell(string spellName)
+    public void PlayEffectsForSpell(string spellName)
     {
         SpellEffectActivationData data = spellEffects.Find(e => e.SpellName == spellName);
         if (data.SpellName == null) return;
@@ -75,7 +75,7 @@ public class SpellEffectHandler : MonoBehaviour
             data.Particles.Play();
     }
 
-    private void TryFreezeEnemy()
+    private void TryFreezeEnemy(float duration = FreezeDuration)
     {
         EnemyBehaviour enemy = GameManager.Instance?.CombatHandler?.GetEnemyRef();
         if (enemy == null) return;
@@ -175,7 +175,7 @@ public class SpellEffectHandler : MonoBehaviour
         spellPathAnimator.OnSpellCast(strikePositions.ToArray(), strikeElements, () =>
         {
             grid.DeleteElementsByPlayer(strikePositions);
-            grid.ChangeState(new IdleState(grid));
+            grid.ChangeState(new ValidateSpellState(grid, GameManager.Instance.PlayerStats.GetSpellBook()));
             attackDone = true;
         });
 

@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using DG.Tweening;
 
 [RequireComponent(typeof(Button))]
@@ -26,13 +27,39 @@ public class ItemUIButton : MonoBehaviour
     [SerializeField] private float shakeStepDuration = 0.075f;
     [SerializeField] private float impactDuration = 0.2f;
 
+    PlayerPathing playerRef;
+
     private static Vector2 centerOffset = new Vector2(900, 2000); //we need it be the ItemUi is in the inventorycanvas  
+
+    private Scene currentScene;
 
     private void Awake()
     {
+        playerRef = FindFirstObjectByType<PlayerPathing>();
         button = GetComponent<Button>();
         image = GetComponent<Image>();
         canvasGroup = GetComponent<CanvasGroup>();
+        currentScene = SceneManager.GetActiveScene();
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.activeSceneChanged += OnActiveSceneChanged;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+    }
+
+    private void OnActiveSceneChanged(Scene previous, Scene next)
+    {
+        currentScene = next;
+    }
+
+    private bool IsInCombatScene()
+    {
+        return GameManager.Instance != null && GameManager.Instance.CombatHandler != null;
     }
 
     public void Initialize(Item itemData)
@@ -57,50 +84,49 @@ public class ItemUIButton : MonoBehaviour
     {
         if (item == null) return;
 
-        if (!item.IsActivatable)
+        if (!item.IsActivatable || !IsInCombatScene())
         {
             button.interactable = false;
             canvasGroup.alpha = 0.7f;
             image.color = inactiveColor;
+            return;
+        }
+
+        ItemContext context = new ItemContext
+        {
+            Grid = GameManager.Instance.CombatHandler.GetEnemyRef()?.GetGrid() ?? null,
+            Player = playerRef ?? null,
+            Enemy = GameManager.Instance.CombatHandler.GetEnemyRef() ?? null
+        };
+
+        bool canActivate = item.CanActivate(context);
+        button.interactable = canActivate;
+
+        if (item.IsOnCooldown())
+        {
+            canvasGroup.alpha = 0.5f;
+            image.color = cooldownColor;
+        }
+        if (canActivate)
+        {
+            canvasGroup.alpha = 1f;
+            image.color = activeColor;
         }
         else
         {
-            ItemContext context = new ItemContext
-            {
-                Grid = GameManager.Instance.CombatHandler.GetEnemyRef().GetGrid(),
-                Player = GameManager.Instance.PlayerStats,
-                Enemy = GameManager.Instance.CombatHandler.GetEnemyRef()
-            };
-
-            bool canActivate = item.CanActivate(context);
-            button.interactable = canActivate;
-
-            if (item.IsOnCooldown())
-            {
-                canvasGroup.alpha = 0.5f;
-                image.color = cooldownColor;
-            }
-            if (canActivate)
-            {
-                canvasGroup.alpha = 1f;
-                image.color = activeColor;
-            }
-            else
-            {
-                canvasGroup.alpha = 0.7f;
-                image.color = inactiveColor;
-            }
+            canvasGroup.alpha = 0.7f;
+            image.color = inactiveColor;
         }
     }
 
     public void OnItemClicked()
     {
-        if (item == null || !item.IsActivatable) return;
+        if (item == null || !item.IsActivatable || !IsInCombatScene()) return;
 
         ItemContext context = new ItemContext
         {
             Grid = GameManager.Instance.CombatHandler.GetEnemyRef().GetGrid(),
-            Player = GameManager.Instance.PlayerStats,
+            Player = playerRef,
             Enemy = GameManager.Instance.CombatHandler.GetEnemyRef(),
             SpellAnimator = GameManager.Instance.CombatHandler.GetEnemyRef().GetComponentInChildren<SpellPathAnimator>() ?? null
         };
@@ -192,6 +218,8 @@ public class ItemUIButton : MonoBehaviour
 
         item.Activate(context, () =>
         {
+            context.Grid.ChangeState(new IdleState(context.Grid));
+
             if (item.ConsumeOnUse)
                 GameManager.Instance.PlayerStats.RemoveItemFromInventory(item);
             else

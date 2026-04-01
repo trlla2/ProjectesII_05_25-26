@@ -350,7 +350,6 @@ public class PlayerPathing : MonoBehaviour
         HandleSpellEffects(spell);
     }
 
-    //Can be converted into a SpellEffectHandler class in the future if more complex effects are needed
     private void HandleSpellEffects(Spell spell)
     {
         if (spellEffectHandler != null)

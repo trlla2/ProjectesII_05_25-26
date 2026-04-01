@@ -8,6 +8,7 @@ public class PlayerPathing : MonoBehaviour
     [Header("References")]
     [SerializeField] private Grid grid;
     [SerializeField] private Transform cursorVisual;
+    [SerializeField] private SpellEffectHandler spellEffectHandler;
 
     [Header("Pathing Settings")]
     [SerializeField] private int maxPathLength = 6;
@@ -43,6 +44,7 @@ public class PlayerPathing : MonoBehaviour
     {
         ValidateSetup();
         SubscribeToEvents();
+        spellEffectHandler?.Initialize(tutorialManager);
     }
 
     private void OnDestroy()
@@ -348,14 +350,16 @@ public class PlayerPathing : MonoBehaviour
         HandleSpellEffects(spell);
     }
 
-    //Can be converted into a SpellEffectHandler class in the future if more complex effects are needed
     private void HandleSpellEffects(Spell spell)
     {
+        if (spellEffectHandler != null)
+        {
+            spellEffectHandler.HandleSpellEffects(spell);
+            return;
+        }
+
+        // Fallback if handler is not assigned
         GameManager.Instance.NotifyPlayerMove();
-
-        if (spell.Name == "HEAL") GameManager.Instance.CombatHandler.HealPlayer(5);
-
-        // Notify tutorial system that a spell was cast
         if (tutorialManager != null)
             tutorialManager.NotifySpellCast();
     }

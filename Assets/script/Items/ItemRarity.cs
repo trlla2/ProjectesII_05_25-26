@@ -57,5 +57,6 @@ public enum ItemEffectType
     OrangeInstance,
     MelonInstance,
     OrangePile,
-    MelonPile
+    MelonPile,
+    FreezePotion
 }

@@ -47,7 +47,7 @@ public interface IOnSpellCastEffect : IItemEffect
 public struct ItemContext
 {
     public Grid Grid;
-    public PlayerStats Player;
+    public PlayerPathing Player;
     public EnemyBehaviour Enemy;
     public SpellPathAnimator SpellAnimator;
 }

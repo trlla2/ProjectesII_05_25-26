@@ -18,7 +18,8 @@ public static class ItemEffectFactory //static so we can call it anywhere
         FireObliterateEffect fireObliterateEffect,
         LightningObliterateEffect lightningObliterateEffect,
         ShamrockObliterateEffect shamrockObliterateEffect,
-        MoonObliterateEffect moonObliterateEffect)
+        MoonObliterateEffect moonObliterateEffect,
+        FreezeEffect freezeEffect)
     {
         switch (effectType)
         {
@@ -39,6 +40,7 @@ public static class ItemEffectFactory //static so we can call it anywhere
             case ItemEffectType.LightningObliterate:    return lightningObliterateEffect;
             case ItemEffectType.ShamrockObliterate:     return shamrockObliterateEffect;
             case ItemEffectType.MoonObliterate:         return moonObliterateEffect;
+            case ItemEffectType.FreezePotion:           return freezeEffect;
             default:                                    return null;
         }
     }

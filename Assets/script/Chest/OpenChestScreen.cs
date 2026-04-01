@@ -27,7 +27,6 @@ public class OpenChestScreen : MonoBehaviour
 
     private void Start()
     {
-        //Pull();
         _translator.ToTarget();
     }
     private void OnEnable() { _translator.ToTarget(); }
@@ -41,7 +40,7 @@ public class OpenChestScreen : MonoBehaviour
                 candidates.Add(item);
         }
 
-        _selectedItem = candidates[Random.Range(0, candidates.Count)];
+        _selectedItem = candidates[Random.Range(0, candidates.Count - 1)];
 
         
 

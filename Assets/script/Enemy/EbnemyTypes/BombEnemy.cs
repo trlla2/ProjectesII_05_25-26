@@ -44,6 +44,7 @@ public class BombSpell : EnemySpellBase
 
     public override void Execute(Grid grid)
     {
+        base.Execute(grid);
         if (grid == null) return;
 
         targetedPositions.Clear();

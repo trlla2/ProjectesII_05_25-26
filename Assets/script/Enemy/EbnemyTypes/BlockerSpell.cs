@@ -35,7 +35,7 @@ public class BlockerSpell : IEnemySpell
         this.damagePerElement = damagePerElement;
     }
 
-    public string GetSpellName() => "Blocker";
+    public override string GetSpellName() => "Blocker";
 
     public void Execute(Grid grid)
     {
@@ -53,13 +53,13 @@ public class BlockerSpell : IEnemySpell
         StartAttackSpell(grid);
     }
 
-    public void Tick(Grid grid, System.Action onComplete = null)
+    public override void Tick(Grid grid, System.Action onComplete = null)
     {
         // The timed attack spell handles its own ticking
         activeAttackSpell?.Tick(grid, onComplete);
     }
 
-    public void Cleanup(Grid grid)
+    public override void Cleanup(Grid grid)
     {
         isActive = false;
 
@@ -86,7 +86,7 @@ public class BlockerSpell : IEnemySpell
         activeAttackSpell = null;
     }
 
-    public void RetargetAfterGravity(Grid grid)
+    public override void RetargetAfterGravity(Grid grid)
     {
         if (grid == null) return;
 

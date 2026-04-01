@@ -49,6 +49,8 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
 
     public override void Execute(Grid grid)
     {
+
+        base.Execute(grid);
         cachedGrid = grid;
         IsActive = true;
         isProcessingEffect = false;

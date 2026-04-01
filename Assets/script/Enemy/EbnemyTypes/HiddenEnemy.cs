@@ -77,6 +77,7 @@ public class HiddenDestroySpell : TimedDestroySpellBase
 
     public override void Execute(Grid grid)
     {
+        base.Execute(grid);
         CleanupCoroutines(grid);
 
         elementsHidden = false;

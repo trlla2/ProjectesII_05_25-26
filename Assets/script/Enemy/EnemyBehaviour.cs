@@ -38,7 +38,6 @@ public class EnemyBehaviour : MonoBehaviour
     public event GetOnDamageList OnGetDamage;
 
     public System.Action OnEnemyDeath;
-
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -148,6 +147,7 @@ public class EnemyBehaviour : MonoBehaviour
 
     private void CreateAndExecuteSpell()
     {
+
         if (enemyType == null || grid == null)
             return;
 

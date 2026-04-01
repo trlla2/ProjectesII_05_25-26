@@ -65,6 +65,12 @@ public class ShopScreen : MonoBehaviour
 
     public void TryBuy(ShopOffer offer)
     {
+        if (offer.IsPurchased)
+        {
+            ShowFeedback("¡Ya comprado!");
+            return;
+        }
+
         PlayerStats stats = GameManager.Instance.PlayerStats;
 
         if (!stats.UseMoney(offer.Cost))
@@ -97,7 +103,9 @@ public class ShopScreen : MonoBehaviour
                 break;
         }
 
+        offer.MarkAsPurchased();
         RefreshGold();
+        RefreshSlots();
     }
 
     private void ApplyStatUpgrade(PlayerStats stats, ShopOffer offer)

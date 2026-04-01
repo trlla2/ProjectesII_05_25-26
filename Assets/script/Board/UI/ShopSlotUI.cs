@@ -22,8 +22,6 @@ public class ShopSlotUI : MonoBehaviour
         _buyButton.onClick.RemoveAllListeners();
         _buyButton.onClick.AddListener(OnBuyClicked);
 
-        _costText.text = $"{offer.Cost} oro";
-
         switch (offer.Type)
         {
             case ShopOffer.OfferType.Item:
@@ -41,6 +39,10 @@ public class ShopSlotUI : MonoBehaviour
                 if (_icon != null) _icon.sprite = null;
                 break;
         }
+
+        bool purchased = offer.IsPurchased;
+        _buyButton.interactable = !purchased;
+        _costText.text = purchased ? "Agotado" : $"{offer.Cost} oro";
     }
 
     private void OnBuyClicked()

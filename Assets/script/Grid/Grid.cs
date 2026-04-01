@@ -51,6 +51,36 @@ public class Grid : MonoBehaviour
     public List<Element> AvailableElements => availableElements;
     public VisualGrid VisualGrid => visualGrid;
 
+    public List<Element> SpawnableElements => availableElements.FindAll(e => GetEffectiveSpawnWeight(e) > 0f);
+
+    private float GetEffectiveSpawnWeight(Element element)
+    {
+        if (GridSpawnRegistry.TryGetWeightOverride(element.Type, out float overrideWeight))
+            return overrideWeight;
+        return element.spawnableInGrid ? element.spawnWeight : 0f;
+    }
+
+    //Picks a random element from the list using each element's wheighs
+    public Element PickWeightedRandom(List<Element> elements)
+    {
+        float totalWeight = 0f;
+        foreach (Element e in elements)
+            totalWeight += GetEffectiveSpawnWeight(e);
+
+        if (totalWeight <= 0f)
+            return elements[Random.Range(0, elements.Count)];
+
+        float roll = Random.Range(0f, totalWeight);
+        foreach (Element e in elements)
+        {
+            roll -= GetEffectiveSpawnWeight(e);
+            if (roll <= 0f)
+                return e;
+        }
+
+        return elements[elements.Count - 1];
+    }
+
     private void Awake()
     {
         Initialize(availableElements, emptyElement);
@@ -68,13 +98,12 @@ public class Grid : MonoBehaviour
 
         InitializeComponents();
         visualGrid.Initialize(this);
-        RandomizeBoard(availableElements);
+        RandomizeBoard(SpawnableElements);
 
         if (GameManager.Instance != null)
         {
             InsertSpell(GameManager.Instance.PlayerStats.GetSpellBook()[(int)Random.Range(0, GameManager.Instance.PlayerStats.GetSpellBook().Count)].Recipe);
             Debug.Log("Inserting");
-            
         }
         else
         {
@@ -226,7 +255,7 @@ public class Grid : MonoBehaviour
                 spellsToUse = GameManager.Instance.PlayerStats.GetSpellBook();
             }
 
-            ChangeState(new RerollState(this, visualGrid, availableElements, spellsToUse, scrollTimes));
+            ChangeState(new RerollState(this, visualGrid, SpawnableElements, spellsToUse, scrollTimes));
         }
     }
 
@@ -331,10 +360,10 @@ public class Grid : MonoBehaviour
             if (useTutorialRefill)
                 element = tutorialManager.GetRefillElement(pos.x, pos.y);
             else
-                element = elements[Random.Range(0, elements.Count)];
+                element = PickWeightedRandom(elements);
 
             if (element == null)
-                element = elements[Random.Range(0, elements.Count)];
+                element = PickWeightedRandom(elements);
 
             gridData.SetElementAt(pos, element);
 
@@ -357,7 +386,6 @@ public class Grid : MonoBehaviour
             if (visual != null)
             {
                 visual.SetSelectable(false);
-                //future: add block visual effect
             }
         }
 
@@ -433,7 +461,7 @@ public class Grid : MonoBehaviour
             for (int y = 0; y < GridSize; y++)
             {
                 Vector2Int pos = new Vector2Int(x, y);
-                Element randomElement = elements[Random.Range(0, elements.Count)];
+                Element randomElement = PickWeightedRandom(elements);
                 gridData.SetElementAt(pos, randomElement);
 
                 ElementVisual visual = gridData.GetVisualAt(pos);

@@ -10,6 +10,16 @@ public class Spell : ScriptableObject
     public List<Element> Recipe;
     public UnityEvent OnCast;
 
+    private static bool TypeMatches(ElementType pathType, ElementType recipeType)
+    {
+        if (pathType == recipeType) return true;
+        if (pathType == ElementType.Orange && (recipeType == ElementType.Red || recipeType == ElementType.Yellow))
+            return true;
+        if (pathType == ElementType.Melon && (recipeType == ElementType.Blue || recipeType == ElementType.Green))
+            return true;
+        return false;
+    }
+
     public bool Matches(List<Element> path)
     {
         if (path == null) { Debug.LogWarning("Be careful! tried to match an empty path"); return false; }
@@ -19,7 +29,7 @@ public class Spell : ScriptableObject
         bool forwardMatch = true;
         for (int i = 0; i < Recipe.Count; i++)
         {
-            if (path[i] == null || path[i].Type != Recipe[i].Type)
+            if (path[i] == null || !TypeMatches(path[i].Type, Recipe[i].Type))
             {
                 forwardMatch = false;
                 break;
@@ -34,13 +44,13 @@ public class Spell : ScriptableObject
         bool backwardMatch = true;
         for (int i = 0; i < Recipe.Count; i++)
         {
-            if (path[i] == null || path[i].Type != Recipe[Recipe.Count - 1 - i].Type)
+            if (path[i] == null || !TypeMatches(path[i].Type, Recipe[Recipe.Count - 1 - i].Type))
             {
                 backwardMatch = false;
                 break;
             }
         }
-        
+
         return backwardMatch;
     }
 }

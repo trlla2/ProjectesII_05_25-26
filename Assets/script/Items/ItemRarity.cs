@@ -42,5 +42,20 @@ public enum ItemEffectType
 {
     None,
     ExtraDamage,
-    FireRing
+    FireRing,
+    LightningRing,
+    MoonRing,
+    ShamrockRing,
+    FireInstance,
+    MoonInstance,
+    LightningInstance,
+    ShamrockInstance,
+    FireObliterate,
+    LightningObliterate,
+    ShamrockObliterate,
+    MoonObliterate,
+    OrangeInstance,
+    MelonInstance,
+    OrangePile,
+    MelonPile
 }

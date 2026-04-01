@@ -35,8 +35,7 @@ public interface IActivatableEffect : IItemEffect
 
 public interface IGridModifierEffect : IActivatableEffect
 {
-    void OnElementSpawn(GridData gridData, Vector2Int position, ref Element element,
-                        ItemLevel level, List<Element> availableElements);
+
 }
 
 public interface IOnSpellCastEffect : IItemEffect

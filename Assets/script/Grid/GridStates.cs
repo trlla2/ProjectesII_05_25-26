@@ -27,7 +27,7 @@ public class IdleState : IGridState
     private SpellValidator spellValidator;
 
     private float idleTimer;
-    private float hintDelay = 4f;
+    private float hintDelay = 3f;
     private bool hintPlaying;
     private List<Vector2Int> currentHintPath;
     private List<ElementVisual> hintedVisuals;
@@ -222,7 +222,7 @@ public class RefillState : IGridState
 
         if (emptyPositions.Count > 0)
         {
-            grid.FillEmptySlots(grid.AvailableElements, emptyPositions);
+            grid.FillEmptySlots(grid.SpawnableElements, emptyPositions);
 
             foreach (var pos in emptyPositions)
             {
@@ -386,7 +386,7 @@ public class RerollState : IGridState
                 if (bombEl != null && current == bombEl)
                     result[x, y] = bombEl;
                 else
-                    result[x, y] = availableElements[Random.Range(0, availableElements.Count)];
+                    result[x, y] = grid.PickWeightedRandom(availableElements);
             }
         }
 
@@ -549,9 +549,10 @@ public class EnemySpellState : IGridState
     {
         if (!isProcessing)
         {
+
             if (rerollAfterProcess)
             {
-                grid.ChangeState(new RerollState(grid, visualGrid, grid.AvailableElements,
+                grid.ChangeState(new RerollState(grid, visualGrid, grid.SpawnableElements,
                     GameManager.Instance.PlayerStats.GetSpellBook(), 3));
             }
             else
@@ -593,7 +594,7 @@ public class EnemySpellState : IGridState
 
         if (emptyPositions.Count > 0)
         {
-            grid.FillEmptySlots(grid.AvailableElements, emptyPositions);
+            grid.FillEmptySlots(grid.SpawnableElements, emptyPositions);
 
             foreach (var pos in emptyPositions)
             {

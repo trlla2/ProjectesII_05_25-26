@@ -1,10 +1,10 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
+using DG.Tweening;
 
 [RequireComponent(typeof(Button))]
-public class ItemUIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class ItemUIButton : MonoBehaviour
 {
     private Item item;
     private Button button;
@@ -16,24 +16,32 @@ public class ItemUIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     [SerializeField] private Color inactiveColor = new Color(0.5f, 0.5f, 0.5f, 1f);
     [SerializeField] private Color cooldownColor = new Color(1f, 0.5f, 0.5f, 1f);
 
+    [Header("Animation")]
+    [SerializeField] private float upwardOffset = 100f;
+    [SerializeField] private float scaleMultiplier = 10f;
+    [SerializeField] private float shakeAngle = 15f;
+
+    [Header("Animation Timing")]
+    [SerializeField] private float moveDuration = 0.4f;
+    [SerializeField] private float shakeStepDuration = 0.075f;
+    [SerializeField] private float impactDuration = 0.2f;
+
+    private static Vector2 centerOffset = new Vector2(900, 2000); //we need it be the ItemUi is in the inventorycanvas  
+
     private void Awake()
     {
         button = GetComponent<Button>();
         image = GetComponent<Image>();
-        
-        if (canvasGroup == null)
-        {
-            canvasGroup = gameObject.AddComponent<CanvasGroup>();
-        }
+        canvasGroup = GetComponent<CanvasGroup>();
     }
 
     public void Initialize(Item itemData)
     {
         item = itemData;
         image.sprite = item.Sprite;
-        
+
         button.onClick.AddListener(OnItemClicked);
-        
+
         UpdateVisualState();
     }
 
@@ -72,7 +80,7 @@ public class ItemUIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
                 canvasGroup.alpha = 0.5f;
                 image.color = cooldownColor;
             }
-            else if (canActivate)
+            if (canActivate)
             {
                 canvasGroup.alpha = 1f;
                 image.color = activeColor;
@@ -87,8 +95,8 @@ public class ItemUIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     public void OnItemClicked()
     {
-        Debug.Log($"Attempting to activate {item.NameItem}...");
         if (item == null || !item.IsActivatable) return;
+
         ItemContext context = new ItemContext
         {
             Grid = GameManager.Instance.CombatHandler.GetEnemyRef().GetGrid(),
@@ -97,85 +105,105 @@ public class ItemUIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
             SpellAnimator = GameManager.Instance.CombatHandler.GetEnemyRef().GetComponentInChildren<SpellPathAnimator>() ?? null
         };
 
-        if(context.SpellAnimator == null)
-        {
-            Debug.LogWarning("No SpellAnimator found in enemy!");
-        }   
-
         if (!item.CanActivate(context))
         {
             Debug.Log($"Cannot activate {item.NameItem} right now!");
             return;
         }
 
-        if (item.ActivationType == ItemActivationType.GridTarget)
+        if (item.Effect is GridModifierEffectBase gridModifierEffect)
         {
-            // TODO: Start grid target selection mode
-            StartGridTargetSelection(context);
+            // for Grid targeting items, ActivateItem sets ItemProcessingState immediately,
+            Vector2 playerPos = FindFirstObjectByType<PlayerHandler>().transform.position;
+            gridModifierEffect.SetUIPosition(playerPos);
+            gridModifierEffect.BeforeAnimation = (continueActivation) =>
+                PlayItemUseAnimation(context, 0.5f, continueActivation);
+
+            ActivateItem(context);
         }
         else
         {
-            // Immediate activation
-            ActivateItem(context);
+            context.Grid.ChangeState(new ItemProcessingState(context.Grid));
+            PlayItemUseAnimation(context, 1f);
         }
+    }
+
+    private void PlayItemUseAnimation(ItemContext context, float timeMultiplier = 1f, Action onComplete = null)
+    {
+        GameObject clone = Instantiate(gameObject, transform.parent);
+        clone.GetComponent<CanvasGroup>().alpha = 1f;
+        Destroy(clone.GetComponent<ItemUIButton>());
+        Destroy(clone.GetComponent<Button>());
+        clone.GetComponent<Image>().color = activeColor;
+        RectTransform cloneRect = clone.GetComponent<RectTransform>();
+
+        
+
+        Vector3 originalPosition = cloneRect.anchoredPosition;
+        Vector3 originalScale = cloneRect.localScale;
+
+        Vector2 centerWithOffset = centerOffset + new Vector2(0, upwardOffset);
+        Vector2 screenCenter = centerOffset;
+
+        float move   = moveDuration      * timeMultiplier;
+        float half   = shakeStepDuration * timeMultiplier / 2f;
+        float full   = shakeStepDuration * timeMultiplier;
+        float impact = impactDuration    * timeMultiplier;
+
+        Sequence animSequence = DOTween.Sequence();
+
+        //Move to center
+        animSequence.Append(cloneRect.DOAnchorPos(centerWithOffset, move).SetEase(Ease.OutCubic));
+        animSequence.Join(cloneRect.DOScale(originalScale * scaleMultiplier, move).SetEase(Ease.OutCubic));
+
+        //Shake
+        animSequence.Append(cloneRect.DORotate(new Vector3(0, 0,  shakeAngle), half).SetEase(Ease.InOutSine));
+        animSequence.Append(cloneRect.DORotate(new Vector3(0, 0, -shakeAngle), full).SetEase(Ease.InOutSine));
+        animSequence.Append(cloneRect.DORotate(new Vector3(0, 0,  0),          half).SetEase(Ease.InOutSine));
+        animSequence.Append(cloneRect.DORotate(new Vector3(0, 0,  shakeAngle), half).SetEase(Ease.InOutSine));
+        animSequence.Append(cloneRect.DORotate(new Vector3(0, 0, -shakeAngle), full).SetEase(Ease.InOutSine));
+        animSequence.Append(cloneRect.DORotate(new Vector3(0, 0,  0),          half).SetEase(Ease.InOutSine));
+
+        //Final Impact
+        animSequence.Append(cloneRect.DOScale(originalScale, impact).SetEase(Ease.InCubic));
+        animSequence.Join(cloneRect.DOAnchorPos(screenCenter, impact).SetEase(Ease.OutCubic));
+
+        animSequence.OnComplete(() =>
+        {
+            if (onComplete != null)
+                onComplete.Invoke();
+            else
+                ActivateItem(context);
+
+            Destroy(clone);
+        });
+
+        animSequence.Play();
     }
 
     private void ActivateItem(ItemContext context)
     {
-        if(item.Effect is FireRingEffect fireRingEffect)
+        // Provide origin position for flying element animations on immediate effects
+        if (item.Effect is ActivatableEffectBase baseEffect)
         {
-            Vector2 PlayerPos = FindFirstObjectByType<PlayerHandler>().transform.position; //ineficient but i dont wanna go thoguh reference hell
-            fireRingEffect.SetUIPosition(PlayerPos); //pas origin postion to te ring effect
+            Vector2 playerPos = FindFirstObjectByType<PlayerHandler>().transform.position;
+            baseEffect.SetUIPosition(playerPos);
         }
+
         item.Activate(context, () =>
         {
-            
-            // Remove from inventory 
             if (item.ConsumeOnUse)
-            {
                 GameManager.Instance.PlayerStats.RemoveItemFromInventory(item);
-            }
             else
-            {
                 UpdateVisualState();
-            }
         });
-    }
-
-    private void StartGridTargetSelection(ItemContext context)
-    {
-        // Placeholder for grid target selection
-        //Need to implement a method to select the grid and stop the current game events
-        //This should be a whole nother class
-        Debug.LogWarning("Grid target selection not yet implemented!");
-        
-        // For now, just activate immediately
-        ActivateItem(context);
-    }
-
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        if (item != null)
-        {
-            // TODO: Show tooltip with item info
-            Debug.Log($"{item.NameItem}: {item.Description}");
-            if (item.IsOnCooldown())
-            {
-                Debug.Log($"Cooldown: {item.GetCooldownRemaining():F1}s");
-            }
-        }
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        // TODO: Hide tooltip
     }
 
     private void OnDestroy()
     {
         if (button != null)
-        {
             button.onClick.RemoveListener(OnItemClicked);
-        }
+
+        transform.DOKill();
     }
 }

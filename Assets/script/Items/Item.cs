@@ -1,3 +1,4 @@
+using NUnit.Framework.Internal;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,35 +7,50 @@ using UnityEngine;
 public class Item : ScriptableObject
 {
     [Header("SETUP")]
-    [SerializeField]
-    private string nameItem;
-    [SerializeField]
-    private string description;
-    [SerializeField]
-    private ItemRarity rarity;
+    [SerializeField] private string nameItem;
+    [SerializeField] private string description;
+    [SerializeField] private ItemRarity rarity;
     private ItemLevel level = ItemLevel.LVL1;
 
     [Header("Art Stuff")]
-    [SerializeField]
-    private Sprite sprite;
-    [SerializeField]
-    private Sprite TargetSprite; // Used for targeting visuals in grid
+    [SerializeField] private Sprite sprite;
+    [SerializeField] private Sprite TargetSprite;
 
     [Header("Behaviour")]
     [SerializeField] private ItemEffectType effectType;
     [SerializeField] private ExtraDamageEffect extraDamageEffect;
     [SerializeField] private FireRingEffect fireRingEffect;
+    [SerializeField] private LightningRingEffect lightningRingEffect;
+    [SerializeField] private MoonRingEffect moonRingEffect;
+    [SerializeField] private ShamrockRingEffect shamrockRingEffect;
+    [SerializeField] private FireInstanceEffect fireInstanceEffect;
+    [SerializeField] private MoonInstanceEffect moonInstanceEffect;
+    [SerializeField] private LightningInstanceEffect lightningInstanceEffect;
+    [SerializeField] private ShamrockInstanceEffect shamrockInstanceEffect;
+    [SerializeField] private OrangeInstanceEffect orangeInstanceEffect;
+    [SerializeField] private MelonInstanceEffect melonInstanceEffect;
+    [SerializeField] private OrangePileEffect orangePileEffect;
+    [SerializeField] private MelonPileEffect melonPileEffect;
+    [SerializeField] private FireObliterateEffect fireObliterateEffect;
+    [SerializeField] private LightningObliterateEffect lightningObliterateEffect;
+    [SerializeField] private ShamrockObliterateEffect shamrockObliterateEffect;
+    [SerializeField] private MoonObliterateEffect moonObliterateEffect;
 
     [Header("Activation")]
     [SerializeField] private ItemActivationType activationType;
-    [SerializeField] private bool consumeOnUse = true; // Default to true for IActivatableEffect items
+    [SerializeField] private bool consumeOnUse = true;
     [SerializeField] private float cooldown;
 
     private float lastUsedTime = -999f;
     private IItemEffect _effect;
 
-    //Cerate the effec when used and save it 
-    public IItemEffect Effect => _effect == null ? ItemEffectFactory.Create(effectType, extraDamageEffect, fireRingEffect) : _effect;
+    public IItemEffect Effect => _effect == null
+        ? ItemEffectFactory.Create(effectType, extraDamageEffect, fireRingEffect, lightningRingEffect,
+            moonRingEffect, shamrockRingEffect, fireInstanceEffect, moonInstanceEffect,
+            lightningInstanceEffect, shamrockInstanceEffect, orangeInstanceEffect, melonInstanceEffect,
+            orangePileEffect, melonPileEffect,
+            fireObliterateEffect, lightningObliterateEffect, shamrockObliterateEffect, moonObliterateEffect)
+        : _effect;
 
     public string NameItem => nameItem;
     public string Description => description;
@@ -74,15 +90,10 @@ public class Item : ScriptableObject
     public bool CanActivate(ItemContext context)
     {
         if (!IsActivatable) return false;
-        
-        // Check cooldown
         if (Time.time - lastUsedTime < cooldown) return false;
 
-        // Check if effect can be activated
         if (Effect is IActivatableEffect activatable)
-        {
             return activatable.CanActivate(context);
-        }
 
         return false;
     }
@@ -97,18 +108,22 @@ public class Item : ScriptableObject
 
         if (Effect is IActivatableEffect activatable)
         {
-            if(Effect is FireRingEffect fireRingEffect)
-            {
-                fireRingEffect.xSprite = TargetSprite;
-            }
+            SetActivationItemReferences();
             lastUsedTime = Time.time;
             activatable.Activate(level, context, onComplete);
         }
     }
 
+    private void SetActivationItemReferences()
+    {
+        if (Effect is ActivatableEffectBase baseEffect)
+        {
+            baseEffect.xSprite = TargetSprite;
+        }
+    }
+
     public float GetCooldownRemaining()
     {
-        Debug.Log(cooldown);
         return Mathf.Max(0f, cooldown - (Time.time - lastUsedTime));
     }
 

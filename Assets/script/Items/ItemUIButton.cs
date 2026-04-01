@@ -218,11 +218,12 @@ public class ItemUIButton : MonoBehaviour
 
         item.Activate(context, () =>
         {
-            context.Grid.ChangeState(new IdleState(context.Grid));
-
             if (item.ConsumeOnUse)
                 GameManager.Instance.PlayerStats.RemoveItemFromInventory(item);
-            else
+
+            context.Grid.ChangeState(new IdleState(context.Grid));
+
+            if (!item.ConsumeOnUse)
                 UpdateVisualState();
         });
     }

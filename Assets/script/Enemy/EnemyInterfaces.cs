@@ -9,7 +9,7 @@ public abstract class IEnemySpell
 
     public virtual void Execute(Grid grid)
     {
-        OnExecute.Invoke();
+        OnExecute?.Invoke();
     }
     //Tick once per player move. if max moves reached, apply effect.
     public abstract void Tick(Grid grid, System.Action onComplete = null);

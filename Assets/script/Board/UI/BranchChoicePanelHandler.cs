@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,8 +9,8 @@ public class BranchChoicePanelHandler : MonoBehaviour
     [SerializeField] private TileClickHandler _tileClickHandler;
     [SerializeField] private PlayerMovement _player;
 
-    private BoardTile _mainTile;
-    private BoardTile _branchTile;
+    private BoardTile _rightTile;
+    private BoardTile _leftTile;
 
     private void Awake()
     {
@@ -24,10 +25,10 @@ public class BranchChoicePanelHandler : MonoBehaviour
         _leftButton.onClick.RemoveListener(OnLeftChosen);
     }
 
-    public void Show(BoardTile mainTile, BoardTile branchTile)
+    public void Show(BoardTile rightTile, BoardTile leftTile)
     {
-        _mainTile = mainTile;
-        _branchTile = branchTile;
+        _rightTile = rightTile;
+        _leftTile = leftTile;
 
         _tileClickHandler.HandleBoardRaycast(false);
         gameObject.SetActive(true);
@@ -39,8 +40,8 @@ public class BranchChoicePanelHandler : MonoBehaviour
         _tileClickHandler.HandleBoardRaycast(true);
     }
 
-    private void OnRightChosen() => Choose(_mainTile);
-    private void OnLeftChosen()  => Choose(_branchTile);
+    private void OnRightChosen() => Choose(_rightTile);
+    private void OnLeftChosen()  => Choose(_leftTile);
 
     private void Choose(BoardTile firstTileOfChosenPath)
     {

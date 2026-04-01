@@ -276,7 +276,36 @@ public class BoardManager : MonoBehaviour
         BoardTile freshBranchNext = generatedTiles.Find(t => t.GetGridPosition() == branchNextPos);
         if (freshBranchNext == null) return;
 
-        branchChoicePanel.Show(mainNext, freshBranchNext);
+
+        BoardTile rightTile, leftTile;
+        if (mainNext.GetGridPosition().x == _player.GetCurrentTile().GetGridPosition().x + 1)
+        {
+            rightTile = mainNext;
+            leftTile = freshBranchNext;
+        }
+        else
+        {
+            if (mainNext.GetGridPosition().y == _player.GetCurrentTile().GetGridPosition().y + 1)
+            {
+                if (freshBranchNext.GetGridPosition().x == _player.GetCurrentTile().GetGridPosition().x + 1)
+                {
+                    rightTile = freshBranchNext;
+                    leftTile = mainNext;
+                }
+                else
+                {
+                    rightTile = mainNext;
+                    leftTile = freshBranchNext;
+                }
+            }
+            else
+            {
+                rightTile = freshBranchNext;
+                leftTile = mainNext;
+            }
+        }
+
+            branchChoicePanel.Show(rightTile, leftTile);
     }
 
     public void OpenChest(ChestTile chestTile)

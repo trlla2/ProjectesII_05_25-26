@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Green Ring
   m_EditorClassIdentifier: 
   nameItem: ShamRock Ring
-  description: yeye
+  description: Insert 3 Shamrock elmenets in the grid
   rarity: 2
   sprite: {fileID: -3429032328405847642, guid: 83060742167dc2b449c4625c2173ea9c, type: 3}
   TargetSprite: {fileID: 21300000, guid: 9855830ce6184084b8a49a66bd923a4b, type: 3}
@@ -21,33 +21,103 @@ MonoBehaviour:
   extraDamageEffect:
     inspectorAmount: []
   fireRingEffect:
-    fireElementType: 0
-    elementCount: 3
-    delayBetweenElements: 0.2
     animationDuration: 0.4
     curveStrength: 1.5
     xSprite: {fileID: 21300000, guid: 9855830ce6184084b8a49a66bd923a4b, type: 3}
+    fireElementType: 0
+    elementCount: 3
+    delayBetweenElements: 0.2
   lightningRingEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
     yellowElementType: 3
     elementCount: 3
     delayBetweenElements: 0.2
+  moonRingEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-  moonRingEffect:
     blueElementType: 1
     elementCount: 3
     delayBetweenElements: 0.2
+  shamrockRingEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-  shamrockRingEffect:
     greenElementType: 2
     elementCount: 3
     delayBetweenElements: 0.2
+  fireInstanceEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
+    selectCount: 1
+    fireElementType: 0
+    delayBetweenElements: 0.2
+  moonInstanceEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    selectCount: 1
+    moonElementType: 1
+    delayBetweenElements: 0.2
+  lightningInstanceEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    selectCount: 1
+    lightningElementType: 3
+    delayBetweenElements: 0.2
+  shamrockInstanceEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    selectCount: 1
+    shamrockElementType: 2
+    delayBetweenElements: 0.2
+  orangeInstanceEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    selectCount: 1
+    orangeElementType: 7
+    delayBetweenElements: 0.2
+  melonInstanceEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    selectCount: 1
+    melonElementType: 8
+    delayBetweenElements: 0.2
+  orangePileEffect:
+    orangeSpawnWeight: 0.6
+  melonPileEffect:
+    melonSpawnWeight: 0.6
+  fireObliterateEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    fireElementType: 0
+    delayBetweenElements: 0.15
+  lightningObliterateEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    lightningElementType: 3
+    delayBetweenElements: 0.15
+  shamrockObliterateEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    shamrockElementType: 2
+    delayBetweenElements: 0.15
+  moonObliterateEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    moonElementType: 1
+    delayBetweenElements: 0.15
   activationType: 1
   consumeOnUse: 1
   cooldown: 1

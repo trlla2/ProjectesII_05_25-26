@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2de90ffb221997447a171e015eca53c6, type: 3}
   m_Name: MelonInstance
   m_EditorClassIdentifier: 
-  nameItem: 
+  nameItem: Melon Instance
   description: Instanciate a Melon element in the grid pos
   rarity: 1
   sprite: {fileID: 1011678967, guid: 71176c8eaa438204183310174053306d, type: 3}
@@ -90,6 +90,10 @@ MonoBehaviour:
     selectCount: 1
     melonElementType: 8
     delayBetweenElements: 0.2
+  orangePileEffect:
+    orangeSpawnWeight: 0.6
+  melonPileEffect:
+    melonSpawnWeight: 0.6
   fireObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5

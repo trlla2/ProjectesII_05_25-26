@@ -3,16 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IEnemySpell
+public abstract class IEnemySpell
 {
-    void Execute(Grid grid);
+    public System.Action OnExecute;
+
+    public virtual void Execute(Grid grid)
+    {
+        OnExecute?.Invoke();
+    }
     //Tick once per player move. if max moves reached, apply effect.
-    void Tick(Grid grid, System.Action onComplete = null);
+    public abstract void Tick(Grid grid, System.Action onComplete = null);
     int RemainingMoves { get; }
-    string GetSpellName();
+    public abstract string GetSpellName();
     bool ShouldRerollAfterAttack { get; }
-    void Cleanup(Grid grid); // For spells taht use spelcial elements
-    void RetargetAfterGravity(Grid grid);
+    public abstract void Cleanup(Grid grid); // For spells taht use spelcial elements
+    public abstract void RetargetAfterGravity(Grid grid);
 }
 
 public abstract class EnemySpellBase : IEnemySpell  
@@ -26,15 +31,18 @@ public abstract class EnemySpellBase : IEnemySpell
     protected bool shouldRerollAfterAttack = true;
 
     public int RemainingMoves => remainingMoves;
-    public string GetSpellName() => spellName;
+    public override string GetSpellName() => spellName;
     public bool ShouldRerollAfterAttack => shouldRerollAfterAttack;
 
-    public abstract void Execute(Grid grid);
+    public override void Execute(Grid grid)
+    {
+        base.Execute(grid);
+    }
 
     // Default no-op – only spells that place persistent grid state need to override this
-    public virtual void Cleanup(Grid grid) { }
+    public override void Cleanup(Grid grid) { }
 
-    public virtual void RetargetAfterGravity(Grid grid)
+    public override void RetargetAfterGravity(Grid grid)
     {
         if (grid == null) return;
 
@@ -55,7 +63,7 @@ public abstract class EnemySpellBase : IEnemySpell
         }
     }
 
-    public virtual void Tick(Grid grid, System.Action onComplete = null)
+    public override void Tick(Grid grid, System.Action onComplete = null)
     {
         if (grid != null)
         {

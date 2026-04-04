@@ -34,6 +34,7 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
 
     public override void Execute(Grid grid)
     {
+        base.Execute(grid);
         targetedPositions.Clear();
         cachedGrid = grid;
         effectApplied = false;

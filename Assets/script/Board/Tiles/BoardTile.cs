@@ -10,6 +10,7 @@ public abstract class BoardTile : MonoBehaviour
     [SerializeField] private Vector2Int forcedPos = new Vector2Int();
 
     private Vector2Int _gridPos;
+    [SerializeField]
     private Renderer _renderer;
 
     public List<BoardTile> neighbors = new List<BoardTile>();

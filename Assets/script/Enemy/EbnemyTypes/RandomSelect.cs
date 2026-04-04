@@ -17,6 +17,7 @@ public class RandomDestroySpell : EnemySpellBase
 
     public override void Execute(Grid grid)
     {
+        base.Execute(grid);
         targetedPositions.Clear();
 
         if (grid == null)

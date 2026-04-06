@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ab529a0c12673a408eb38b86a880060, type: 3}
+  m_Name: ColumnLvl2Stage2
+  m_EditorClassIdentifier: 
+  name: Small Orc
+  health: 90
+  damage: 10
+  elementCount: 3
+  level: 2
+  difficulty: 3
+  weaknesses: 
+  weaknessMultiplier: 2
+  resistances: 
+  resistanceMultiplier: 0.5
+  enemySprite: {fileID: -8757687425309242859, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
+  animatorController: {fileID: 9100000, guid: 53ace101f40647143a4de0d935943b21, type: 2}
+  spellType: 5
+  damagePerElement: 4
+  moveCount: 2
+  attackTimer: 5
+  lvl2Countdown: 7
+  lvl2BonusTimeOnClear: 2.5
+  continuousSelectionInterval: 2.5
+  visibilityDuration: 2.5
+  hiddenSprite: {fileID: 0}
+  blockerCount: 2
+  blockerDamagePercent: 0.25
+  haveDrops: 0
+  spellDrops: []

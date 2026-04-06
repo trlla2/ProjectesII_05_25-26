@@ -12,28 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f429702b582c65949ae43bcdb3c40145, type: 3}
   m_Name: Stage2Data
   m_EditorClassIdentifier: 
-  _numOfEmptyTiles: 31
+  _numOfEmptyTiles: 21
   _numOfEnemyTiles: 5
   _numOfMiniBossTiles: 0
   _numOfChestTiles: 5
+  _specialTilePool: []
   _minBranches: 1
   _maxBranches: 3
   _minBranchLengthBeforeRejoin: 14
   _maxBranchLength: 20
   _branchProbabilityPerCandidate: 0.2
   _enemyList:
-  - {fileID: 11400000, guid: 7825248ffb3a9fe4bad66a1ac0583bc4, type: 2}
-  - {fileID: 11400000, guid: 5a68dbd4268eb7749b497b05fa080c5c, type: 2}
-  - {fileID: 11400000, guid: 3ddc38c9790bdd44bacbeb43cb61cada, type: 2}
-  - {fileID: 11400000, guid: 8da2630b56083c44abb033c12f629f0e, type: 2}
-  - {fileID: 11400000, guid: 5d98f1c5df92ad7479bd352825842b75, type: 2}
-  - {fileID: 11400000, guid: 79d07f17a589c324d9832fa0d07aa8f0, type: 2}
-  - {fileID: 11400000, guid: 0f615755cce1d3b409215e446884a96d, type: 2}
+  - {fileID: 11400000, guid: c6df23f55e485294da286c934bcd5fb8, type: 2}
+  - {fileID: 11400000, guid: 8421013d247ddfe498a755cab4445ee1, type: 2}
+  - {fileID: 11400000, guid: cc4883347e375764181a8b09e275d883, type: 2}
+  - {fileID: 11400000, guid: a0254dff86a5a8f4a8554eb97930585b, type: 2}
+  - {fileID: 11400000, guid: b58a165a179e5564c8881963ab38360b, type: 2}
+  - {fileID: 11400000, guid: f6597793e434c104088e3144d54542b6, type: 2}
   _bossList:
   - {fileID: 11400000, guid: 9168d9f4aa1ee834ea1164744d0e797d, type: 2}
-  encountersOrder: 0300000003000000040000000500000003000000
+  encountersOrder: 0300000005000000040000000300000005000000
   interactableTiles: []
-  commonRarityPercentage: 40
-  rareRarityPercentage: 30
+  commonRarityPercentage: 35
+  rareRarityPercentage: 35
   epicRarityPercentage: 20
   legendaryRarityPercentage: 10
+  _shopItemPool: []

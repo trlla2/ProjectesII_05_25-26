@@ -12,14 +12,11 @@ public class ElementLevelUpButton : MonoBehaviour
     private Transform upgradesParent;
     [SerializeField]
     private GameObject elementSlotPrefab;
+    
     [SerializeField]
-    private Sprite greenSlot;
-    [SerializeField]
-    private Sprite yellowSlot;
-    [SerializeField]
-    private Sprite redSlot;
-    [SerializeField]
-    private Sprite blueSlot;
+    private Sprite slotMarked;
+    
+    
 
     [Header("ELementSetup")]
     [SerializeField]
@@ -45,6 +42,7 @@ public class ElementLevelUpButton : MonoBehaviour
     public void UpdateVisuals()
     {
         elementImage.sprite = currentElement.Sprite;
+        elementImage.color = currentElement.Color;
         lvl.color = currentElement.Color;
         lvl.text = $"Lvl {GameManager.Instance.PlayerStats.GetElementLevel(currentElement.Type)}";
 
@@ -59,23 +57,12 @@ public class ElementLevelUpButton : MonoBehaviour
         {
             GameObject temp = Instantiate(elementSlotPrefab, upgradesParent);
 
+            temp.transform.GetChild(0).GetComponent<Image>().color = currentElement.Color;
+
+
             if (i < GameManager.Instance.PlayerStats.GetElementUpgradeLevel(currentElement.Type))
             {
-                switch (currentElement.Type)
-                {
-                    case ElementType.Red:
-                        temp.transform.GetChild(0).GetComponent<Image>().sprite = redSlot;
-                        break;
-                    case ElementType.Blue:
-                        temp.transform.GetChild(0).GetComponent<Image>().sprite = blueSlot;
-                        break;
-                    case ElementType.Green:
-                        temp.transform.GetChild(0).GetComponent<Image>().sprite = greenSlot;
-                        break;
-                    case ElementType.Yellow:
-                        temp.transform.GetChild(0).GetComponent<Image>().sprite = yellowSlot;
-                        break;
-                }
+                temp.transform.GetChild(0).GetComponent<Image>().sprite = slotMarked;
             }
             else if (i == GameManager.Instance.PlayerStats.GetElementUpgradeLevel(currentElement.Type))
             {

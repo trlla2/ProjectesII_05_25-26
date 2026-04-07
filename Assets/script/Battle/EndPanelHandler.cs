@@ -36,14 +36,8 @@ public class EndPanelHandler : MonoBehaviour
     [SerializeField]
     private CanvasGroupFader continueFader;
     [SerializeField]
-    private float continueDuration = 5;
+    private float continueDuration = 2;
     private float continueTime = 0;
-
-    [Header("NextStage")]
-    [SerializeField]
-    private float notInteractableDuration = 2;
-    private float notInteractableTime = 0;
-
 
     [Header("Stage 1")]
     [SerializeField]
@@ -65,10 +59,6 @@ public class EndPanelHandler : MonoBehaviour
     }
     private void Update()
     {
-
-        if (notInteractableTime < notInteractableDuration)
-            notInteractableTime += Time.deltaTime;
-
         if (currentStage < EndBattleStage.STAGE3 && currentStage != EndBattleStage.UNDEFINED)
         {
 
@@ -111,10 +101,11 @@ public class EndPanelHandler : MonoBehaviour
 
     public void NextStage()
     {
-        if (notInteractableTime < notInteractableDuration)
+        if (continueTime < continueDuration)
             return;
 
-        notInteractableTime = 0;
+        continueFader.ResetToOrigin();
+        continueTime = 0;
 
         if (!isWin)
         {
@@ -132,8 +123,6 @@ public class EndPanelHandler : MonoBehaviour
                 break;
             case EndBattleStage.STAGE3:
                 SceneTransition.Instance.UnloadScene(sceneToUnload);
-                continueFader.ResetToOrigin();
-                continueTime = 0;
                 break;
             default:
                 SceneTransition.Instance.UnloadScene(sceneToUnload);
@@ -141,9 +130,6 @@ public class EndPanelHandler : MonoBehaviour
         }
 
         currentStage++;
-
-        continueFader.ResetToOrigin();
-        continueTime = 0;
     }
 
 

@@ -5,23 +5,26 @@ using UnityEngine;
 public class MoneyUIHandler : MonoBehaviour
 {
     private TMP_Text moneyText;
-
+    
+    public bool useGameManager = true;
 
     private void Start()
     {
         moneyText = GetComponent<TMP_Text>();
-        GameManager.Instance.PlayerStats.OnMoneyChange += UpdateMoneyUI; 
+        if(useGameManager)
+            GameManager.Instance.PlayerStats.OnMoneyChange += UpdateMoneyUI; 
         UpdateMoneyUI();
     }
 
 
-    private void UpdateMoneyUI()
+    public void UpdateMoneyUI()
     {
-        moneyText.text = GameManager.Instance.PlayerStats.Money.ToString() + "$";
+        moneyText.text = GameManager.Instance.PlayerStats.Money.ToString();
     }
 
     private void OnDestroy()
     {
-        GameManager.Instance.PlayerStats.OnMoneyChange -= UpdateMoneyUI;
+        if (useGameManager)
+            GameManager.Instance.PlayerStats.OnMoneyChange -= UpdateMoneyUI;
     }
 }

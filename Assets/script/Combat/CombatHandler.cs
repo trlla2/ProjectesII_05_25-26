@@ -124,6 +124,7 @@ public class CombatHandler : MonoBehaviour
             GameManager.Instance.PlayerStats.AddKnownSpell(drop);
 
         int gold = enemyInCombat.GetEnemyType().GoldReward;
+        GameManager.Instance.PlayerStats.AddMoney(gold);
 
         DeleteEnemyRef();
         //_boardClickHandler.HandleBoardRaycast(true);

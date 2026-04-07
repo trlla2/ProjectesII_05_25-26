@@ -29,6 +29,22 @@ public class LevelBarHandle : MonoBehaviour
     private bool isAnimatingLevelUp = false;
     private Image fillImage;
 
+    [SerializeField]
+    private bool pauseUpdates = false;
+
+    public bool PauseUpdates
+    {
+        get => pauseUpdates;
+        set
+        {
+            pauseUpdates = value;
+            if (!pauseUpdates)
+            {
+                UpdateEXPBar();
+            }
+        }
+    }
+
     private void Start()
     {
         if (expSlider.fillRect != null)
@@ -52,7 +68,10 @@ public class LevelBarHandle : MonoBehaviour
         HandleLevelUpAnimation();
     }
 
-    private void OnEnable() {  StopLevelUpAnimation(); }
+    private void OnEnable()
+    {
+        StopLevelUpAnimation();
+    }
 
     private void HandleInterpolation()
     {
@@ -84,7 +103,7 @@ public class LevelBarHandle : MonoBehaviour
 
     private void HandleLevelUpAnimation()
     {
-        if (!isAnimatingLevelUp || fillImage == null) return;
+        if (!isAnimatingLevelUp || fillImage == null || pauseUpdates) return;
 
         if (!breathingBackwards)
         {
@@ -121,6 +140,8 @@ public class LevelBarHandle : MonoBehaviour
 
     private void UpdateEXPBar()
     {
+        if (pauseUpdates) return;
+
         lvlText.text = GameManager.Instance.PlayerStats.Level + "lvl";
 
         interpolationTime = 0.0f;

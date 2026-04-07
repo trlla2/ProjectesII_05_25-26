@@ -25,7 +25,7 @@ public class EnemyTutorialTile : BoardTile
         GameManager.Instance.CombatHandler.OnEndBattle += Replace;
     }
 
-    public void Replace(bool win, int xp, Spell drop)
+    public void Replace(bool win, int xp, int g, Spell drop)
     {
         _boardRaycast.HandleBoardRaycast(true);
         if (win)

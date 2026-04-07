@@ -4,8 +4,8 @@ using UnityEngine.Events;
 [RequireComponent(typeof(CanvasGroup))]
 public class CanvasGroupFader : MonoBehaviour
 {
-    private CanvasGroup canvasGroup;
-    private float originalAlpha = 1f;
+    public CanvasGroup canvasGroup;
+    public float OriginAlpha = 1f;
     public float TargetAlpha = 0f;
     public AnimationCurve TransitionCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
     public float Duration = 1f;
@@ -21,66 +21,71 @@ public class CanvasGroupFader : MonoBehaviour
 
     private void Awake()
     {
-        canvasGroup = GetComponent<CanvasGroup>();
-    }
-
-    private void Start()
-    {
-        if (canvasGroup != null)
+        if (canvasGroup == null)
         {
-            originalAlpha = canvasGroup.alpha;
+            canvasGroup = GetComponent<CanvasGroup>();
         }
     }
 
     private void Update()
     {
         if (!isPlaying || canvasGroup == null || Duration <= 0f) return;
-
-        // Update time
         if (movingToTarget)
         {
             timer += Time.deltaTime;
+
+            if (timer >= Duration)
+            {
+
+                timer = Duration;
+                UpdateAlpha();
+
+                if (Loop)
+                {
+
+                    movingToTarget = false;
+
+                }
+                else
+                {
+                    isPlaying = false;
+                }
+
+                onReachTarget?.Invoke();
+
+                return;
+            }
         }
         else
         {
             timer -= Time.deltaTime;
+            if (timer <= 0f)
+            {
+                timer = 0f;
+                UpdateAlpha();
+
+                if (Loop)
+                {
+                    movingToTarget = true;
+                }
+                else
+                {
+                    isPlaying = false;
+                }
+
+                onReachOrigin?.Invoke();
+                return;
+            }
         }
 
-        // Update alpha
+        UpdateAlpha();
+    }
+
+    private void UpdateAlpha()
+    {
         float normalizedTime = Mathf.Clamp01(timer / Duration);
         float curveValue = TransitionCurve.Evaluate(normalizedTime);
-
-        canvasGroup.alpha = Mathf.LerpUnclamped(originalAlpha, TargetAlpha, curveValue);
-
-        // Check if reach
-        if (movingToTarget && timer >= Duration)
-        {
-            timer = Duration;
-            onReachTarget?.Invoke();
-
-            if (Loop)
-            {
-                movingToTarget = false;
-            }
-            else
-            {
-                isPlaying = false;
-            }
-        }
-        else if (!movingToTarget && timer <= 0f)
-        {
-            timer = 0f;
-            onReachOrigin?.Invoke();
-
-            if (Loop)
-            {
-                movingToTarget = true;
-            }
-            else
-            {
-                isPlaying = false;
-            }
-        }
+        canvasGroup.alpha = Mathf.LerpUnclamped(OriginAlpha, TargetAlpha, curveValue);
     }
 
     public void Play()
@@ -107,13 +112,10 @@ public class CanvasGroupFader : MonoBehaviour
 
     public void ResetToOrigin()
     {
-        if (canvasGroup != null)
-        {
-            canvasGroup.alpha = originalAlpha;
-        }
-
         timer = 0f;
         movingToTarget = true;
         isPlaying = false;
+
+        canvasGroup.alpha = OriginAlpha;
     }
 }

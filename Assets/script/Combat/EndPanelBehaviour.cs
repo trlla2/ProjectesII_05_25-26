@@ -40,7 +40,7 @@ public class EndPanelBehaviour : MonoBehaviour
         losePanel.SetActive(false);
     }
 
-    private void SetWinLosePanel(bool isWin, int exp, Spell drop)
+    private void SetWinLosePanel(bool isWin, int exp, int g, Spell drop)
     {
 
 

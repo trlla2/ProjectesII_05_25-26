@@ -429,7 +429,7 @@ public class PlayerPathing : MonoBehaviour
         }
     }
 
-    private void HandleBattleEnd(bool isWin, int exp, Spell drop)
+    private void HandleBattleEnd(bool isWin, int exp, int g, Spell drop)
     {   
         SetPathingEnabled(false);
     }

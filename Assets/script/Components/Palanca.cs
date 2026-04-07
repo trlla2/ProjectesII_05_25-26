@@ -83,7 +83,7 @@ public class Palanca : MonoBehaviour
         }
     }
 
-    private void HandleBattleEnd(bool isWin, int exp, Spell s)
+    private void HandleBattleEnd(bool isWin, int exp, int g, Spell s)
     {
         SetEnabled(false);
     }

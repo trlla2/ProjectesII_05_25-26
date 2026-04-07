@@ -19,7 +19,7 @@ public class CombatHandler : MonoBehaviour
     [SerializeField] private EnemyType forcedEnemyType;
 
     // Events
-    public delegate void GetOnEndBattle(bool isWin, int exp, Spell drop);
+    public delegate void GetOnEndBattle(bool isWin, int exp, int gold, Spell drop);
     public event GetOnEndBattle OnEndBattle;
 
     public event System.Action OnPlayerHitRecived;
@@ -109,7 +109,7 @@ public class CombatHandler : MonoBehaviour
     {
         enemyInCombat?.StopBattle();
         OnPlayerDead?.Invoke();
-        OnEndBattle?.Invoke(false, 0, null);
+        OnEndBattle?.Invoke(false, 0, 0, null);
     }
 
     public void OnEnemyDead()
@@ -123,9 +123,11 @@ public class CombatHandler : MonoBehaviour
         if(drop != null)
             GameManager.Instance.PlayerStats.AddKnownSpell(drop);
 
+        int gold = enemyInCombat.GetEnemyType().GoldReward;
+
         DeleteEnemyRef();
         //_boardClickHandler.HandleBoardRaycast(true);
-        OnEndBattle?.Invoke(true, exp, drop);
+        OnEndBattle?.Invoke(true, exp, gold, drop);
     }
 
     public void SetHoverHandlerRef(SpellHoverHandler spellHover) { spellHoverHandler = spellHover; }

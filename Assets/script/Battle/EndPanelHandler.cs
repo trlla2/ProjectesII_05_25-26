@@ -36,8 +36,14 @@ public class EndPanelHandler : MonoBehaviour
     [SerializeField]
     private CanvasGroupFader continueFader;
     [SerializeField]
-    private float duration = 5;
-    private float time = 0;
+    private float continueDuration = 5;
+    private float continueTime = 0;
+
+    [Header("NextStage")]
+    [SerializeField]
+    private float notInteractableDuration = 2;
+    private float notInteractableTime = 0;
+
 
     [Header("Stage 1")]
     [SerializeField]
@@ -59,15 +65,20 @@ public class EndPanelHandler : MonoBehaviour
     }
     private void Update()
     {
-        if (currentStage >= EndBattleStage.STAGE3 || currentStage == EndBattleStage.UNDEFINED)
-            return;
 
-        if(time < duration)
-            time += Time.deltaTime;
-        else
+        if (notInteractableTime < notInteractableDuration)
+            notInteractableTime += Time.deltaTime;
+
+        if (currentStage < EndBattleStage.STAGE3 && currentStage != EndBattleStage.UNDEFINED)
         {
-            continueFader.Loop = true;
-            continueFader.ToTarget();
+
+            if (continueTime < continueDuration)
+                continueTime += Time.deltaTime;
+            else
+            {
+                continueFader.Loop = true;
+                continueFader.ToTarget();
+            }
         }
     }
     private void OnDestroy()
@@ -76,8 +87,10 @@ public class EndPanelHandler : MonoBehaviour
         GameManager.Instance.CombatHandler.OnEndBattle -= SetWinLosePanel;
     }
 
-    private void SetWinLosePanel(bool isWin, int exp, Spell drop)
+    private void SetWinLosePanel(bool isWin, int exp, int g, Spell drop)
     {
+        this.isWin = isWin;
+
         if (isWin)
         {
             container.sprite = winContainer;
@@ -91,21 +104,23 @@ public class EndPanelHandler : MonoBehaviour
             title1.color = loseColor;
         }
 
-        bgFader.ToOrigin();
-
+        bgFader.ToTarget();
+        currentStage = EndBattleStage.STAGE1;
         OnStage1Enter?.Invoke();
-
-        this.isWin = isWin;
     }
 
-    public void NextStaga()
+    public void NextStage()
     {
+        if (notInteractableTime < notInteractableDuration)
+            return;
+
+        notInteractableTime = 0;
+
         if (!isWin)
         {
             SceneTransition.Instance.LoadScene(loseScene, false);
             return;
         }
-
 
         switch (currentStage)
         {
@@ -117,6 +132,8 @@ public class EndPanelHandler : MonoBehaviour
                 break;
             case EndBattleStage.STAGE3:
                 SceneTransition.Instance.UnloadScene(sceneToUnload);
+                continueFader.ResetToOrigin();
+                continueTime = 0;
                 break;
             default:
                 SceneTransition.Instance.UnloadScene(sceneToUnload);
@@ -126,7 +143,7 @@ public class EndPanelHandler : MonoBehaviour
         currentStage++;
 
         continueFader.ResetToOrigin();
-        time = 0;
+        continueTime = 0;
     }
 
 

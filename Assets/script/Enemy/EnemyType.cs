@@ -29,6 +29,10 @@ public class EnemyType : ScriptableObject
     [SerializeField] private float damagePerElement = 4f;
     [SerializeField] private int moveCount = 2; // number of player moves until spell triggers
 
+    [Header("Rewards")]
+    [SerializeField] private int goldReward = 100;
+    public int GoldReward => goldReward;
+
     [Header("Timed Enemy Settings")]
     [SerializeField] private float attackTimer = 6f;
 

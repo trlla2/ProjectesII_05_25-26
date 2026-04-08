@@ -26277,8 +26277,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Heals and do damage and idk what more
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f68f4a576a41f394ea7cf1e2ffe45647, type: 2}
+  m_sharedMaterial: {fileID: -6217068774378911194, guid: f68f4a576a41f394ea7cf1e2ffe45647, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -26302,8 +26302,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 210
-  m_fontSizeBase: 210
+  m_fontSize: 150
+  m_fontSizeBase: 150
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -26961,8 +26961,8 @@ RectTransform:
   - {fileID: 41620963}
   m_Father: {fileID: 1507392192}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.02, y: 0.2}
-  m_AnchorMax: {x: 0.98, y: 0.8}
+  m_AnchorMin: {x: 0.02, y: 0.3}
+  m_AnchorMax: {x: 0.98, y: 0.7}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -26981,7 +26981,7 @@ MonoBehaviour:
   spellName: {fileID: 2059794172}
   description: {fileID: 986190586}
   recipeParent: {fileID: 41620963}
-  element: {fileID: 9026554862998488073, guid: 4784cfd8ebedd7c43a0f1b8cf240dbdb, type: 3}
+  element: {fileID: 3732986788292953389, guid: 8e71bf90aa5c81f48b07607be519c82d, type: 3}
 --- !u!114 &1146153459
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27052,7 +27052,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -5128414119810140461, guid: 40ec649488dfb054ebb1285089645f20, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 765a953a3f9f56a46a64243c8196094f, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -49825,6 +49825,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 1809231360}
+        m_TargetAssemblyTypeName: UnityEngine.CanvasGroup, UnityEngine
+        m_MethodName: set_blocksRaycasts
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
   OnStage2Enter:
     m_PersistentCalls:
       m_Calls:
@@ -56520,8 +56532,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Spell Name
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 257509fbed9dfd24283ef1d79664678b, type: 2}
+  m_sharedMaterial: {fileID: -400981444396403145, guid: 257509fbed9dfd24283ef1d79664678b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

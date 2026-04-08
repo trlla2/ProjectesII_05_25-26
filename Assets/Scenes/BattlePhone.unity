@@ -13846,8 +13846,8 @@ MonoBehaviour:
   bossManager: {fileID: 0}
   isBossBattle: 0
   BossWeakElement: 0
-  isEnemyTypeForced: 0
-  forcedEnemyType: {fileID: 11400000, guid: 5d98f1c5df92ad7479bd352825842b75, type: 2}
+  isEnemyTypeForced: 1
+  forcedEnemyType: {fileID: 11400000, guid: 7825248ffb3a9fe4bad66a1ac0583bc4, type: 2}
 --- !u!4 &733892386
 Transform:
   m_ObjectHideFlags: 0
@@ -21194,6 +21194,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useGameManager: 0
+  showAlways: 0
+  parentFader: {fileID: 1913678525}
+  duration: 3
 --- !u!114 &1222009466
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24186,6 +24189,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1913678523}
   - component: {fileID: 1913678524}
+  - component: {fileID: 1913678526}
+  - component: {fileID: 1913678525}
   m_Layer: 5
   m_Name: Money
   m_TagString: Untagged
@@ -24223,6 +24228,65 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1913678522}
   m_CullTransparentMesh: 1
+--- !u!114 &1913678525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1913678522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 749c4882529255e4cb8055f7a514b386, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 0}
+  OriginAlpha: 0
+  TargetAlpha: 1
+  TransitionCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  Duration: 1
+  Loop: 0
+  onReachOrigin:
+    m_PersistentCalls:
+      m_Calls: []
+  onReachTarget:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!225 &1913678526
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1913678522}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &1937170122
 GameObject:
   m_ObjectHideFlags: 0
@@ -25537,38 +25601,14 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  Duration: 0.25
+  Duration: 4
   Loop: 1
   onReachOrigin:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2082348241}
-        m_TargetAssemblyTypeName: CanvasGroupFader, Assembly-CSharp
-        m_MethodName: ToTarget
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onReachTarget:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2082348241}
-        m_TargetAssemblyTypeName: CanvasGroupFader, Assembly-CSharp
-        m_MethodName: ToOrigin
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!225 &2082348242
 CanvasGroup:
   m_ObjectHideFlags: 0

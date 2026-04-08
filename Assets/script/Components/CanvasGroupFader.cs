@@ -30,21 +30,19 @@ public class CanvasGroupFader : MonoBehaviour
     private void Update()
     {
         if (!isPlaying || canvasGroup == null || Duration <= 0f) return;
+
         if (movingToTarget)
         {
             timer += Time.deltaTime;
 
             if (timer >= Duration)
             {
-
                 timer = Duration;
                 UpdateAlpha();
 
                 if (Loop)
                 {
-
                     movingToTarget = false;
-
                 }
                 else
                 {
@@ -52,13 +50,13 @@ public class CanvasGroupFader : MonoBehaviour
                 }
 
                 onReachTarget?.Invoke();
-
                 return;
             }
         }
         else
         {
             timer -= Time.deltaTime;
+
             if (timer <= 0f)
             {
                 timer = 0f;
@@ -100,12 +98,14 @@ public class CanvasGroupFader : MonoBehaviour
 
     public void ToTarget()
     {
+        if (timer >= Duration) timer = 0f;
         movingToTarget = true;
         isPlaying = true;
     }
 
     public void ToOrigin()
     {
+        if (timer <= 0f) timer = Duration;
         movingToTarget = false;
         isPlaying = true;
     }
@@ -115,7 +115,6 @@ public class CanvasGroupFader : MonoBehaviour
         timer = 0f;
         movingToTarget = true;
         isPlaying = false;
-
         canvasGroup.alpha = OriginAlpha;
     }
 }

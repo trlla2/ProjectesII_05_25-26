@@ -9,13 +9,16 @@ public class ItemUIButton : MonoBehaviour
 {
     private Item item;
     private Button button;
-    private Image image;
     private CanvasGroup canvasGroup;
 
     [Header("UI")]
-    [SerializeField] private Color activeColor = Color.white;
+    [SerializeField] private Color backgroundActiveColor = Color.white;
+    [SerializeField] private Color backgroundCooldownColor = new Color(1f, 0.5f, 0.5f, 1f);
+    [SerializeField] private Color backgroundInactiveColor = new Color(0.5f, 0.5f, 0.5f, 1f);
     [SerializeField] private Color inactiveColor = new Color(0.5f, 0.5f, 0.5f, 1f);
-    [SerializeField] private Color cooldownColor = new Color(1f, 0.5f, 0.5f, 1f);
+
+    [SerializeField] private Image bg;
+    [SerializeField] private Image itemImage;
 
     [Header("Animation")]
     [SerializeField] private float upwardOffset = 100f;
@@ -37,7 +40,6 @@ public class ItemUIButton : MonoBehaviour
     {
         playerRef = FindFirstObjectByType<PlayerPathing>();
         button = GetComponent<Button>();
-        image = GetComponent<Image>();
         canvasGroup = GetComponent<CanvasGroup>();
         currentScene = SceneManager.GetActiveScene();
     }
@@ -65,7 +67,7 @@ public class ItemUIButton : MonoBehaviour
     public void Initialize(Item itemData)
     {
         item = itemData;
-        image.sprite = item.Sprite;
+        itemImage.sprite = item.Sprite;
 
         button.onClick.AddListener(OnItemClicked);
 
@@ -88,7 +90,8 @@ public class ItemUIButton : MonoBehaviour
         {
             button.interactable = false;
             canvasGroup.alpha = 0.7f;
-            image.color = inactiveColor;
+            //itemImage.color = inactiveColor;
+            bg.color = new Color(0,0,0,0);
             return;
         }
 
@@ -105,17 +108,18 @@ public class ItemUIButton : MonoBehaviour
         if (item.IsOnCooldown())
         {
             canvasGroup.alpha = 0.5f;
-            image.color = cooldownColor;
+            bg.color = backgroundCooldownColor;
         }
         if (canActivate)
         {
             canvasGroup.alpha = 1f;
-            image.color = activeColor;
+            bg.color = backgroundActiveColor;
         }
         else
         {
             canvasGroup.alpha = 0.7f;
-            image.color = inactiveColor;
+            bg.color = backgroundInactiveColor;
+            itemImage.color = inactiveColor;
         }
     }
 
@@ -160,7 +164,7 @@ public class ItemUIButton : MonoBehaviour
         clone.GetComponent<CanvasGroup>().alpha = 1f;
         Destroy(clone.GetComponent<ItemUIButton>());
         Destroy(clone.GetComponent<Button>());
-        clone.GetComponent<Image>().color = activeColor;
+        clone.GetComponent<Image>().color = Color.white;
         RectTransform cloneRect = clone.GetComponent<RectTransform>();
 
         

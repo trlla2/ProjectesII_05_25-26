@@ -56,7 +56,7 @@ public class EnemyTile : BoardTile
         _boardManager.IncrementEnemyDefeatedCount();
     }
 
-    public void ReplaceWhenWin(bool win, int xp, Spell drop)
+    public void ReplaceWhenWin(bool win, int xp, int g, Spell drop)
     {
         _boardRaycast.HandleBoardRaycast(true);
 

@@ -9,5 +9,6 @@ public class UIElement_Behaviour : MonoBehaviour
     public void SetupElementUI(Element element)
     {
         elementImage.sprite = element.Sprite;
+        elementImage.color = element.Color;
     }
 }

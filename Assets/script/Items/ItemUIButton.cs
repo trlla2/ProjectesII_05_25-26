@@ -158,13 +158,16 @@ public class ItemUIButton : MonoBehaviour
         }
     }
 
+    public void UnShowBG() { bg.gameObject.SetActive(false); }
+
     private void PlayItemUseAnimation(ItemContext context, float timeMultiplier = 1f, Action onComplete = null)
     {
         GameObject clone = Instantiate(gameObject, transform.parent);
         clone.GetComponent<CanvasGroup>().alpha = 1f;
         Destroy(clone.GetComponent<ItemUIButton>());
         Destroy(clone.GetComponent<Button>());
-        clone.GetComponent<Image>().color = Color.white;
+        clone.GetComponentInChildren<Image>().color = Color.white;
+        clone.GetComponent<ItemUIButton>().UnShowBG();
         RectTransform cloneRect = clone.GetComponent<RectTransform>();
 
         

@@ -11,6 +11,7 @@ public enum GridStateType
     Reroll,
     Processing,
     ValidateSpell,
+    Swap,
 }
 
 public interface IGridState
@@ -766,4 +767,57 @@ public class ItemProcessingState : IGridState
     public void Update() { }
     public void Exit() { }
     public GridStateType GetStateType() => GridStateType.Processing;
+}
+
+public class SwapState : IGridState
+{
+    private Grid grid;
+    private VisualGrid visualGrid;
+    private List<(Vector2Int, Vector2Int)> swapPairs;
+    private float previewDuration;
+    private float swapDuration;
+    private bool isSwapping;
+
+    public SwapState(Grid gridController, VisualGrid visual, List<(Vector2Int, Vector2Int)> pairs, float previewDuration, float swapDuration)
+    {
+        grid = gridController;
+        visualGrid = visual;
+        swapPairs = pairs;
+        this.previewDuration = previewDuration;
+        this.swapDuration = swapDuration;
+    }
+
+    public void Enter()
+    {
+        isSwapping = true;
+        grid.StartCoroutine(PerformSwap());
+    }
+
+    public void Update()
+    {
+        if (!isSwapping)
+            grid.ChangeState(new IdleState(grid));
+    }
+
+    public void Exit()
+    {
+        isSwapping = false;
+    }
+
+    public GridStateType GetStateType() => GridStateType.Swap;
+
+    private IEnumerator PerformSwap()
+    {
+        // Phase 1: warn with ScaleAnimator blink on all elements being swapped
+        yield return grid.StartCoroutine(visualGrid.PreviewSwapTargets(swapPairs, previewDuration));
+
+        // Phase 2: swap data – visuals are now in correct data slots but old screen positions
+        foreach (var pair in swapPairs)
+            grid.GridData.SwapElements(pair.Item1, pair.Item2);
+
+        // Phase 3: animate visuals from their old positions to the new grid positions
+        yield return grid.StartCoroutine(visualGrid.AnimateEnemySwap(swapPairs, swapDuration));
+
+        isSwapping = false;
+    }
 }

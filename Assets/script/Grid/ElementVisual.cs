@@ -559,4 +559,13 @@ public class ElementVisual : MonoBehaviour
 
         fillCoroutine = null;
     }
+
+    public void PlaySwapWarning(float duration, System.Action onComplete = null)
+    {
+        ScaleAnimator scaleAnimator = GetComponent<ScaleAnimator>();
+        if (scaleAnimator != null)
+            scaleAnimator.PlayDelayBlink(0.1f, 1f, duration, onComplete);
+        else
+            onComplete?.Invoke();
+    }
 }

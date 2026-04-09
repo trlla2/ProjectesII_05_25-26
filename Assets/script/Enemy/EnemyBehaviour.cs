@@ -150,7 +150,6 @@ public class EnemyBehaviour : MonoBehaviour
 
     private void CreateAndExecuteSpell()
     {
-
         if (enemyType == null || grid == null)
             return;
 
@@ -161,12 +160,16 @@ public class EnemyBehaviour : MonoBehaviour
             return;
         }
 
-        // Don't recreate if it's an active MultipleTimedSpellBase (it persists across grid states)
+        // Don't recreate if it's an active MultipleTimedSpellBase
         if (activeSpell is MultipleTimedSpellBase existingMulti && existingMulti.IsActive)
             return;
 
-        //Same in blocker spell
+        // Same in blocker spell
         if (activeSpell is BlockerSpell existingBlocker && existingBlocker.IsActive)
+            return;
+
+        // Same in swapper spell
+        if (activeSpell is SwapperSpell existingSwapper && existingSwapper.IsActive)
             return;
 
         activeSpell = enemyType.CreateSpell();
@@ -190,6 +193,16 @@ public class EnemyBehaviour : MonoBehaviour
             {
                 blockerSpell.Execute(grid);
                 timedSpellMonitor = StartCoroutine(MonitorBlockerSpell());
+            }
+            else if (activeSpell is SwapperSpell newSwapperSpell)
+            {
+                EnemySpellTimer enemyTimer = GetComponent<EnemySpellTimer>();
+                if (enemyTimer == null)
+                    Debug.LogError("NO ENEMY TIMER!");
+
+                newSwapperSpell.Execute(grid);
+                newSwapperSpell.SetupAttackSpell(grid, enemyTimer);
+                timedSpellMonitor = StartCoroutine(MonitorSwapperSpell());
             }
             else
             {
@@ -229,6 +242,12 @@ public class EnemyBehaviour : MonoBehaviour
         if (activeSpell is BlockerSpell blockerSpell)
         {
             blockerSpell.CheckForClearedAttackTarget(grid);
+            yield break;
+        }
+
+        if (activeSpell is SwapperSpell swapSpell)
+        {
+            CheckForMultipleClearedTargets(swapSpell.AttackSpell);
             yield break;
         }
 
@@ -466,6 +485,55 @@ public class EnemyBehaviour : MonoBehaviour
         timedSpellMonitor = null;
     }
 
+    private IEnumerator MonitorSwapperSpell()
+    {
+        SwapperSpell swapperSpell = activeSpell as SwapperSpell;
+        if (swapperSpell == null) yield break;
+
+        ContinuouslyTimedSpell attackSpell = swapperSpell.AttackSpell;
+
+        while (swapperSpell.IsActive && inBattle && grid != null)
+        {
+            if (!attackSpell.HasExpiredTargets)
+            {
+                yield return null;
+                continue;
+            }
+
+            // Wait for grid idle before processing
+            while (grid != null && grid.CurrentState != GridStateType.Idle)
+                yield return null;
+
+            if (!inBattle || grid == null || !swapperSpell.IsActive)
+                yield break;
+
+            // Pause swap loop while processing effect
+            swapperSpell.PauseSwapLoop();
+
+            bool effectDone = false;
+            attackSpell.ProcessNextExpiredTarget(grid, () => effectDone = true);
+
+            while (!effectDone)
+            {
+                if (!inBattle || grid == null)
+                    yield break;
+                yield return null;
+            }
+
+            // Wait for grid to settle after gravity / refill
+            while (grid != null && grid.CurrentState != GridStateType.Idle)
+                yield return null;
+
+            if (!inBattle || grid == null)
+                yield break;
+
+            attackSpell.OnPostEffectSettle(grid);
+            swapperSpell.ResumeSwapLoop();
+        }
+
+        timedSpellMonitor = null;
+    }
+
     public void NotifyAdjacentElementsUsed(List<Vector2Int> usedPositions)
     {
         if (!inBattle || activeSpell == null || grid == null)
@@ -602,6 +670,11 @@ public class EnemyBehaviour : MonoBehaviour
         if (activeSpell is BlockerSpell blockerSpell)
         {
             blockerSpell.PauseAttackTimer();
+            timersPaused = true;
+        }
+        else if (activeSpell is SwapperSpell swapperSpell)
+        {
+            swapperSpell.PauseAllTimers();
             timersPaused = true;
         }
         else if (activeSpell is MultipleTimedSpellBase multiSpell)

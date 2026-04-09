@@ -42,7 +42,7 @@ public class RemoveItemPanelHandler : MonoBehaviour
 
         newItemSelectable.SetItem(this,newItem);
 
-        newItemSelectable.Select();
+        //newItemSelectable.Select();
     }
 
     public void ShowPanel(Item newItem)

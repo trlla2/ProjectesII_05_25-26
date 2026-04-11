@@ -774,16 +774,14 @@ public class SwapState : IGridState
     private Grid grid;
     private VisualGrid visualGrid;
     private List<(Vector2Int, Vector2Int)> swapPairs;
-    private float previewDuration;
     private float swapDuration;
     private bool isSwapping;
 
-    public SwapState(Grid gridController, VisualGrid visual, List<(Vector2Int, Vector2Int)> pairs, float previewDuration, float swapDuration)
+    public SwapState(Grid gridController, VisualGrid visual, List<(Vector2Int, Vector2Int)> pairs, float swapDuration)
     {
         grid = gridController;
         visualGrid = visual;
         swapPairs = pairs;
-        this.previewDuration = previewDuration;
         this.swapDuration = swapDuration;
     }
 
@@ -796,7 +794,7 @@ public class SwapState : IGridState
     public void Update()
     {
         if (!isSwapping)
-            grid.ChangeState(new IdleState(grid));
+            grid.ChangeState(new ValidateSpellState(grid, GameManager.Instance.PlayerStats.GetSpellBook()));
     }
 
     public void Exit()
@@ -808,14 +806,9 @@ public class SwapState : IGridState
 
     private IEnumerator PerformSwap()
     {
-        // Phase 1: warn with ScaleAnimator blink on all elements being swapped
-        yield return grid.StartCoroutine(visualGrid.PreviewSwapTargets(swapPairs, previewDuration));
-
-        // Phase 2: swap data – visuals are now in correct data slots but old screen positions
         foreach (var pair in swapPairs)
             grid.GridData.SwapElements(pair.Item1, pair.Item2);
 
-        // Phase 3: animate visuals from their old positions to the new grid positions
         yield return grid.StartCoroutine(visualGrid.AnimateEnemySwap(swapPairs, swapDuration));
 
         isSwapping = false;

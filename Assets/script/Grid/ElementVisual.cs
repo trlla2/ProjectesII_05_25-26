@@ -46,12 +46,14 @@ public class ElementVisual : MonoBehaviour
 
     private bool isBlocked;
     private float blockBreakProgress;
+    private bool isSwapTargeted;
 
     public Vector2Int GridPosition => gridPosition;
     public bool CanSelect => canSelect;
     public bool IsTargetedByEnemy => isTargetedByEnemy;
     public bool IsBlocked => isBlocked;
     public float BlockBreakProgress => blockBreakProgress;
+    public bool IsSwapTargeted => isSwapTargeted;
 
     public void Initialize(Vector2Int position, Element element)
     {
@@ -562,10 +564,18 @@ public class ElementVisual : MonoBehaviour
 
     public void PlaySwapWarning(float duration, System.Action onComplete = null)
     {
+        isSwapTargeted = true;
+
+        System.Action setFlag = () =>
+        {
+            isSwapTargeted = false;
+            onComplete?.Invoke();
+        };
+
         ScaleAnimator scaleAnimator = GetComponent<ScaleAnimator>();
         if (scaleAnimator != null)
-            scaleAnimator.PlayDelayBlink(0.1f, 1f, duration, onComplete);
+            scaleAnimator.PlayDelayBlink(0.1f, 1f, duration, setFlag);
         else
-            onComplete?.Invoke();
+            setFlag.Invoke();
     }
 }

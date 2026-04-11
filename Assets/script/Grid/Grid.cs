@@ -537,11 +537,11 @@ public class Grid : MonoBehaviour
         return spellInserter.TryInsertSpell(gridData, spell.Recipe);
     }
 
-    public void ProcessEnemySwap(List<(Vector2Int, Vector2Int)> pairs, float swapDuration, float previewDuration = 0.35f)
+    public void ProcessEnemySwap(List<(Vector2Int, Vector2Int)> pairs, float swapDuration)
     {
         if (CurrentState != GridStateType.Idle) return;
         if (pairs == null || pairs.Count == 0) return;
 
-        ChangeState(new SwapState(this, visualGrid, pairs, previewDuration, swapDuration));
+        ChangeState(new SwapState(this, visualGrid, pairs, swapDuration));
     }
 }

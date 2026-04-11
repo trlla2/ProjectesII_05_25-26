@@ -196,13 +196,8 @@ public class EnemyBehaviour : MonoBehaviour
             }
             else if (activeSpell is SwapperSpell newSwapperSpell)
             {
-                EnemySpellTimer enemyTimer = GetComponent<EnemySpellTimer>();
-                if (enemyTimer == null)
-                    Debug.LogError("NO ENEMY TIMER!");
-
                 newSwapperSpell.Execute(grid);
-                newSwapperSpell.SetupAttackSpell(grid, enemyTimer);
-                timedSpellMonitor = StartCoroutine(MonitorSwapperSpell());
+                // SwapperSpell now handles everything internally, no need for monitoring
             }
             else
             {
@@ -245,9 +240,9 @@ public class EnemyBehaviour : MonoBehaviour
             yield break;
         }
 
-        if (activeSpell is SwapperSpell swapSpell)
+        // SwapperSpell no longer needs player move handling - it's fully autonomous
+        if (activeSpell is SwapperSpell)
         {
-            CheckForMultipleClearedTargets(swapSpell.AttackSpell);
             yield break;
         }
 
@@ -485,55 +480,6 @@ public class EnemyBehaviour : MonoBehaviour
         timedSpellMonitor = null;
     }
 
-    private IEnumerator MonitorSwapperSpell()
-    {
-        SwapperSpell swapperSpell = activeSpell as SwapperSpell;
-        if (swapperSpell == null) yield break;
-
-        ContinuouslyTimedSpell attackSpell = swapperSpell.AttackSpell;
-
-        while (swapperSpell.IsActive && inBattle && grid != null)
-        {
-            if (!attackSpell.HasExpiredTargets)
-            {
-                yield return null;
-                continue;
-            }
-
-            // Wait for grid idle before processing
-            while (grid != null && grid.CurrentState != GridStateType.Idle)
-                yield return null;
-
-            if (!inBattle || grid == null || !swapperSpell.IsActive)
-                yield break;
-
-            // Pause swap loop while processing effect
-            swapperSpell.PauseSwapLoop();
-
-            bool effectDone = false;
-            attackSpell.ProcessNextExpiredTarget(grid, () => effectDone = true);
-
-            while (!effectDone)
-            {
-                if (!inBattle || grid == null)
-                    yield break;
-                yield return null;
-            }
-
-            // Wait for grid to settle after gravity / refill
-            while (grid != null && grid.CurrentState != GridStateType.Idle)
-                yield return null;
-
-            if (!inBattle || grid == null)
-                yield break;
-
-            attackSpell.OnPostEffectSettle(grid);
-            swapperSpell.ResumeSwapLoop();
-        }
-
-        timedSpellMonitor = null;
-    }
-
     public void NotifyAdjacentElementsUsed(List<Vector2Int> usedPositions)
     {
         if (!inBattle || activeSpell == null || grid == null)
@@ -697,6 +643,11 @@ public class EnemyBehaviour : MonoBehaviour
         if (activeSpell is BlockerSpell blockerSpell)
         {
             blockerSpell.ResumeAttackTimer();
+            timersPaused = false;
+        }
+        else if (activeSpell is SwapperSpell swapperSpell)
+        {
+            swapperSpell.ResumeAllTimers();
             timersPaused = false;
         }
         else if (activeSpell is MultipleTimedSpellBase multiSpell)

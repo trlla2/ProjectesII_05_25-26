@@ -48,9 +48,9 @@ public class GridGravity
                 {
                     Vector2Int abovePos = new Vector2Int(columnIndex, aboveRow);
 
-                    // Blocked elements
+                    // Blocked elements and swap targeted elements act as anchors
                     ElementVisual aboveVisual = gridData.GetVisualAt(abovePos);
-                    if (aboveVisual != null && aboveVisual.IsBlocked)
+                    if (aboveVisual != null && (aboveVisual.IsBlocked || aboveVisual.IsSwapTargeted))
                         break;
 
                     Element aboveElement = gridData.GetElementAt(abovePos);

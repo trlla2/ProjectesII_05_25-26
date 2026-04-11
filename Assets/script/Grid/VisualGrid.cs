@@ -561,8 +561,14 @@ public class VisualGrid : MonoBehaviour
         // Trigger the warning blink on every visual being swapped
         foreach (var pair in pairs)
         {
-            grid.GridData.GetVisualAt(pair.Item1)?.PlaySwapWarning(duration, () => completed++);
-            grid.GridData.GetVisualAt(pair.Item2)?.PlaySwapWarning(duration, () => completed++);
+            ElementVisual visualA = grid.GridData.GetVisualAt(pair.Item1);
+            ElementVisual visualB = grid.GridData.GetVisualAt(pair.Item2);
+            visualA.PlaySwapWarning(duration, () => completed++);
+            visualB.PlaySwapWarning(duration, () => completed++);
+            visualA.SetTargetedByEnemy(true);
+            visualB.SetTargetedByEnemy(true);
+            visualA.UpdateTargetVisual(1, 1, duration, fillEmptyCurve);
+            visualB.UpdateTargetVisual(1, 1, duration, fillEmptyCurve);
         }
 
         // Wait until all animations have reported completion

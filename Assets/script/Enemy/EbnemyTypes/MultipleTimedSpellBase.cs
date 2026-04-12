@@ -190,7 +190,7 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
             if (!kvp.Value.Fired)
             {
                 kvp.Value.Timer?.Pause();
-                cachedGrid?.GetElementVisualAt(kvp.Value.Position)?.PauseTimedCountdownDOTween();
+                cachedGrid?.GetElementVisualAt(kvp.Value.Position)?.PauseTimedCountdown();
             }
         }
     }
@@ -202,7 +202,7 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
             if (!kvp.Value.Fired)
             {
                 kvp.Value.Timer?.Resume();
-                cachedGrid?.GetElementVisualAt(kvp.Value.Position)?.ResumeTimedCountdownDOTween();
+                cachedGrid?.GetElementVisualAt(kvp.Value.Position)?.ResumeTimedCountdown();
             }
         }
     }

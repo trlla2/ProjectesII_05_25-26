@@ -195,7 +195,7 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
         foreach (var pos in targetedPositions)
         {
             ElementVisual visual = cachedGrid.GetElementVisualAt(pos);
-            visual?.PauseTimedCountdownDOTween();
+            visual?.PauseTimedCountdown();
         }
     }
 
@@ -206,7 +206,7 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
         foreach (var pos in targetedPositions)
         {
             ElementVisual visual = cachedGrid.GetElementVisualAt(pos);
-            visual?.ResumeTimedCountdownDOTween();
+            visual?.ResumeTimedCountdown();
         }
     }
 

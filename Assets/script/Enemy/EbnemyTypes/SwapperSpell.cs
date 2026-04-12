@@ -1,340 +1,548 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
-using DG.Tweening;
 
 public class SwapperSpell : EnemySpellBase
 {
-    private Grid cachedGrid;
-    private bool isActive;
+    public static (Vector2Int, Vector2Int) NULLPAIR = (new Vector2Int(-1, -1), new Vector2Int(-1, -1));
 
-    private float swapInterval;
-    private Sequence swapSequence;
-
-    private bool isSwapPending;
-
-    private const float SwapAnimDuration = 0.2f;
-    private float SwapPreviewDuration;
-
-    public bool IsActive => isActive;
-
-    // Captures both position and element reference at the moment of targeting
-    private struct SwapTarget
+    protected class SwapPairInfo
     {
-        public Vector2Int PosA;
-        public Element ElA;
-        public Vector2Int PosB;
-        public Element ElB;
-
-        public SwapTarget(Vector2Int posA, Element elA, Vector2Int posB, Element elB)
-        {
-            PosA = posA; ElA = elA; PosB = posB; ElB = elB;
-        }
+        public int Id;
+        public Vector2Int PositionA;
+        public Vector2Int PositionB;
+        public SpellTimer Timer;
+        public bool Fired;
+        public bool IsPaused;
     }
 
-    public SwapperSpell(float swapInterval = 2.5f, float damage = 4f, float PreviewDuration = 6.0f)
+    private Dictionary<int, SwapPairInfo> activePairs = new Dictionary<int, SwapPairInfo>();
+    private Queue<int> expiredQueue = new Queue<int>();
+    private int nextPairId;
+    private bool isProcessingEffect;
+
+    protected Grid cachedGrid;
+    protected float perPairCountdown;
+    protected float bonusTimePerClearedPair;
+    private float selectionInterval;
+    private EnemySpellTimer intervalTimer;
+
+    private const float SwapAnimDuration = 0.2f;
+
+    public bool IsActive { get; private set; }
+    public float SelectionInterval => selectionInterval;
+    public EnemySpellTimer IntervalTimer => intervalTimer;
+    public bool HasExpiredPairs => expiredQueue.Count > 0;
+    public bool IsProcessingEffect => isProcessingEffect;
+    public List<Vector2Int> TargetedPositions => targetedPositions;
+
+    public SwapperSpell(float interval = 2.5f, float countdown = 6f, float damage = 4f, float bonusTime = 0f)
     {
-        this.swapInterval = swapInterval;
-        this.damagePerElement = damage;
-        this.SwapPreviewDuration = PreviewDuration;
-        this.remainingMoves = 0;
-        this.initialMoves = 0;
-        this.shouldRerollAfterAttack = false;
-        this.spellName = "Swapper";
+        selectionInterval = interval;
+        perPairCountdown = countdown;
+        damagePerElement = damage;
+        bonusTimePerClearedPair = bonusTime;
+        remainingMoves = 0;
+        initialMoves = 0;
+        shouldRerollAfterAttack = false;
+        spellName = "Swapper";
+    }
+
+    public void SetIntervalTimer(EnemySpellTimer timer)
+    {
+        intervalTimer = timer;
     }
 
     public override void Execute(Grid grid)
     {
         base.Execute(grid);
         cachedGrid = grid;
-        isActive = true;
-        isSwapPending = false;
+        IsActive = true;
+        isProcessingEffect = false;
         targetedPositions.Clear();
-        StartSwapLoop();
+        activePairs.Clear();
+        expiredQueue.Clear();
+        nextPairId = 0;
+
+        if (grid == null) return;
+
+        // Select first pair immediately
+        AddNewSwapPair(grid);
     }
 
-    private void StartSwapLoop()
+    public void OnIntervalTick()
     {
-        swapSequence?.Kill();
-        swapSequence = DOTween.Sequence();
-        swapSequence.AppendInterval(swapInterval);
-        swapSequence.AppendCallback(TryPerformSwap);
-        swapSequence.SetLoops(-1);
+        if (!IsActive || cachedGrid == null) return;
+        AddNewSwapPair(cachedGrid);
     }
 
-    private void TryPerformSwap()
+    protected void AddNewSwapPair(Grid grid)
     {
-        if (!isActive || cachedGrid == null) return;
-        if (cachedGrid.CurrentState != GridStateType.Idle) return;
-        if (isSwapPending) return;
+        var pair = PickSwapPair(grid);
+        if (pair == NULLPAIR) return;
 
-        isSwapPending = true;
-        cachedGrid.StartCoroutine(PreviewThenSwap(PickSwapPairs(cachedGrid)));
-    }
+        int id = nextPairId++;
+        SpellTimer timer = new SpellTimer(perPairCountdown);
 
-    private IEnumerator PreviewThenSwap(List<SwapTarget> targets)
-    {
-        while (isActive && cachedGrid != null)
+        var info = new SwapPairInfo
         {
-            // No candidates yet: wait then re-pick before attempting a preview
-            if (targets.Count == 0)
+            Id = id,
+            PositionA = pair.Item1,
+            PositionB = pair.Item2,
+            Timer = timer,
+            Fired = false,
+            IsPaused = false
+        };
+
+        activePairs[id] = info;
+        targetedPositions.Add(info.PositionA);
+        targetedPositions.Add(info.PositionB);
+
+        // Set visuals for both elements AND mark them as swap-targeted to prevent gravity
+        ElementVisual visualA = grid.GetElementVisualAt(info.PositionA);
+        ElementVisual visualB = grid.GetElementVisualAt(info.PositionB);
+
+        if (visualA != null)
+        {
+            visualA.SetTargetedByEnemy(true);
+            visualA.StartTimedCountdown(perPairCountdown);
+            visualA.PlaySwapWarning(perPairCountdown);
+        }
+        if (visualB != null)
+        {
+            visualB.SetTargetedByEnemy(true);
+            visualB.StartTimedCountdown(perPairCountdown);
+            visualB.PlaySwapWarning(perPairCountdown);
+        }
+
+        int capturedId = id;
+        SpellTimer capturedTimer = timer;
+
+        timer.OnTimerExpired += () => OnPairExpired(capturedId);
+        timer.OnTimeAdded += newRemaining =>
+        {
+            if (cachedGrid == null || !activePairs.TryGetValue(capturedId, out SwapPairInfo p) || p.Fired) return;
+            ElementVisual vA = cachedGrid.GetElementVisualAt(p.PositionA);
+            ElementVisual vB = cachedGrid.GetElementVisualAt(p.PositionB);
+            vA?.ExtendTimedCountdown(newRemaining, capturedTimer.TotalSeconds);
+            vB?.ExtendTimedCountdown(newRemaining, capturedTimer.TotalSeconds);
+        };
+
+        timer.Start();
+    }
+
+    private void OnPairExpired(int id)
+    {
+        if (!activePairs.ContainsKey(id) || activePairs[id].Fired) return;
+        expiredQueue.Enqueue(id);
+    }
+
+    public void ProcessNextExpiredPair(Grid grid, System.Action onComplete)
+    {
+        while (expiredQueue.Count > 0)
+        {
+            int id = expiredQueue.Dequeue();
+            if (!activePairs.TryGetValue(id, out SwapPairInfo info) || info.Fired)
+                continue;
+
+            info.Fired = true;
+            isProcessingEffect = true;
+
+            // Stop countdowns for both positions
+            grid.GetElementVisualAt(info.PositionA)?.StopTimedCountdown();
+            grid.GetElementVisualAt(info.PositionB)?.StopTimedCountdown();
+
+            // DON'T pause all pairs here - let grid state changes handle it
+            grid.StartCoroutine(ExecuteSwapAndAttack(info, onComplete));
+            return;
+        }
+
+        onComplete?.Invoke();
+    }
+
+    private IEnumerator ExecuteSwapAndAttack(SwapPairInfo info, System.Action onComplete)
+    {
+        Vector2Int posA = info.PositionA;
+        Vector2Int posB = info.PositionB;
+
+        Element elementA = cachedGrid.GetElementAt(posA);
+        Element elementB = cachedGrid.GetElementAt(posB);
+        ElementVisual visualA = cachedGrid.GetElementVisualAt(posA);
+        ElementVisual visualB = cachedGrid.GetElementVisualAt(posB);
+
+        bool validA = elementA != null && elementA != cachedGrid.EmptyElement && visualA != null && visualA.IsTargetedByEnemy;
+        bool validB = elementB != null && elementB != cachedGrid.EmptyElement && visualB != null && visualB.IsTargetedByEnemy;
+
+        // Clear targeting visuals and swap-targeted flag
+        if (visualA != null)
+        {
+            visualA.SetTargetedByEnemy(false);
+            visualA.StopHoverAnimation();
+        }
+        if (visualB != null)
+        {
+            visualB.SetTargetedByEnemy(false);
+            visualB.StopHoverAnimation();
+        }
+
+        targetedPositions.Remove(posA);
+        targetedPositions.Remove(posB);
+
+        if (validA && validB)
+        {
+            // Perform swap animation
+            var swapPairs = new List<(Vector2Int, Vector2Int)> { (posA, posB) };
+            cachedGrid.ProcessEnemySwap(swapPairs, SwapAnimDuration);
+
+            // Wait for swap to complete
+            yield return WaitForIdle();
+
+            if (!IsStillValid())
             {
-                yield return new WaitForSeconds(swapInterval);
-                if (!isActive || cachedGrid == null) break;
+                CleanupPair(info.Id);
+                isProcessingEffect = false;
+                onComplete?.Invoke();
+                yield break;
+            }
 
-                while (isActive && cachedGrid != null && cachedGrid.CurrentState != GridStateType.Idle)
-                    yield return null;
-                if (!isActive || cachedGrid == null) break;
+            // Attack player with both elements (use swapped positions)
+            List<Vector2Int> positions = new List<Vector2Int> { posA, posB };
+            List<Element> elements = new List<Element> { elementA, elementB };
 
-                targets = PickSwapPairs(cachedGrid);
+            bool attackDone = false;
+            cachedGrid.ProcessEnemySpell(positions, () =>
+            {
+                DamagePlayerWithAnimation(cachedGrid, positions.ToArray(), elements, damagePerElement, () =>
+                {
+                    attackDone = true;
+                });
+            }, false);
+
+            while (!attackDone)
+            {
+                if (!IsStillValid())
+                {
+                    CleanupPair(info.Id);
+                    isProcessingEffect = false;
+                    onComplete?.Invoke();
+                    yield break;
+                }
+                yield return null;
+            }
+        }
+
+        CleanupPair(info.Id);
+        isProcessingEffect = false;
+        onComplete?.Invoke();
+    }
+
+    private IEnumerator WaitForIdle()
+    {
+        while (IsActive && cachedGrid != null && cachedGrid.CurrentState != GridStateType.Idle)
+            yield return null;
+    }
+
+    private bool IsStillValid()
+    {
+        return IsActive && cachedGrid != null;
+    }
+
+    public void OnPostEffectSettle(Grid grid)
+    {
+        // Swap pairs are position-based and don't follow gravity
+        // Just reapply visuals and resume
+        ReapplyTargetingVisuals(grid);
+        ResumeAllPairs();
+        intervalTimer?.Resume();
+    }
+
+    public void PauseAllPairs()
+    {
+        foreach (var kvp in activePairs)
+        {
+            if (!kvp.Value.Fired && !kvp.Value.IsPaused)
+            {
+                kvp.Value.Timer?.Pause();
+                kvp.Value.IsPaused = true;
+                
+                if (cachedGrid != null)
+                {
+                    cachedGrid.GetElementVisualAt(kvp.Value.PositionA)?.PauseTimedCountdown();
+                    cachedGrid.GetElementVisualAt(kvp.Value.PositionB)?.PauseTimedCountdown();
+                }
+            }
+        }
+    }
+
+    public void ResumeAllPairs()
+    {
+        foreach (var kvp in activePairs)
+        {
+            if (!kvp.Value.Fired && kvp.Value.IsPaused)
+            {
+                kvp.Value.Timer?.Resume();
+                kvp.Value.IsPaused = false;
+                
+                if (cachedGrid != null)
+                {
+                    cachedGrid.GetElementVisualAt(kvp.Value.PositionA)?.ResumeTimedCountdown();
+                    cachedGrid.GetElementVisualAt(kvp.Value.PositionB)?.ResumeTimedCountdown();
+                }
+            }
+        }
+    }
+
+    public void AddTimeToAll(float seconds)
+    {
+        foreach (var kvp in activePairs)
+        {
+            if (!kvp.Value.Fired)
+                kvp.Value.Timer?.AddTime(seconds);
+        }
+    }
+
+    public bool OnTargetCleared(Grid grid, Vector2Int clearedPosition)
+    {
+        int clearedId = -1;
+        foreach (var kvp in activePairs)
+        {
+            if (!kvp.Value.Fired &&
+                (kvp.Value.PositionA == clearedPosition || kvp.Value.PositionB == clearedPosition))
+            {
+                clearedId = kvp.Key;
+                break;
+            }
+        }
+
+        if (clearedId == -1) return false;
+
+        SwapPairInfo info = activePairs[clearedId];
+
+        // Stop both timers and visuals
+        if (cachedGrid != null)
+        {
+            ElementVisual visualA = cachedGrid.GetElementVisualAt(info.PositionA);
+            ElementVisual visualB = cachedGrid.GetElementVisualAt(info.PositionB);
+
+            if (visualA != null)
+            {
+                visualA.StopTimedCountdown();
+                visualA.StopSwapWarning();
+                visualA.SetTargetedByEnemy(false);
+            }
+            if (visualB != null)
+            {
+                visualB.StopTimedCountdown();
+                visualB.StopSwapWarning();
+                visualB.SetTargetedByEnemy(false);
+            }
+        }
+
+        targetedPositions.Remove(info.PositionA);
+        targetedPositions.Remove(info.PositionB);
+        CleanupPair(clearedId);
+
+        if (bonusTimePerClearedPair > 0f)
+            AddTimeToAll(bonusTimePerClearedPair);
+
+        return GetActivePairCount() == 0;
+    }
+
+    public int GetActivePairCount()
+    {
+        int count = 0;
+        foreach (var kvp in activePairs)
+        {
+            if (!kvp.Value.Fired) count++;
+        }
+        return count;
+    }
+
+    public override void RetargetAfterGravity(Grid grid)
+    {
+        // Swap pairs stay at fixed positions
+        if (grid == null) return;
+        ReapplyTargetingVisuals(grid);
+    }
+
+    /// Reapply targeting visuals to elements at pair positions.
+    /// If a position now has a valid element, mark it as targeted.
+    /// If a position is empty or invalid, cancel the pair.
+    public void ReapplyTargetingVisuals(Grid grid)
+    {
+        if (grid == null) return;
+
+        var pairsToCancel = new List<int>();
+
+        foreach (var kvp in activePairs)
+        {
+            if (kvp.Value.Fired) continue;
+
+            SwapPairInfo info = kvp.Value;
+            float remaining = info.Timer.RemainingSeconds;
+
+            Element elA = grid.GetElementAt(info.PositionA);
+            Element elB = grid.GetElementAt(info.PositionB);
+            ElementVisual visualA = grid.GetElementVisualAt(info.PositionA);
+            ElementVisual visualB = grid.GetElementVisualAt(info.PositionB);
+
+            bool validA = elA != null && elA != grid.EmptyElement && visualA != null;
+            bool validB = elB != null && elB != grid.EmptyElement && visualB != null;
+
+            // If either position became invalid cancel the pair
+            if (!validA || !validB)
+            {
+                if (visualA != null)
+                {
+                    visualA.StopTimedCountdown();
+                    visualA.StopSwapWarning();
+                    visualA.SetTargetedByEnemy(false);
+                }
+                if (visualB != null)
+                {
+                    visualB.StopTimedCountdown();
+                    visualB.StopSwapWarning();
+                    visualB.SetTargetedByEnemy(false);
+                }
+                pairsToCancel.Add(kvp.Key);
                 continue;
             }
 
-            // Phase 1 – warning blink while the grid remains in IdleState
-            yield return cachedGrid.StartCoroutine(
-                cachedGrid.VisualGrid.PreviewSwapTargets(ToPositionPairs(targets), SwapPreviewDuration)
-            );
-            if (!isActive || cachedGrid == null) break;
-
-            // Wait for Idle in case the player cast a spell mid-preview
-            while (isActive && cachedGrid != null && cachedGrid.CurrentState != GridStateType.Idle)
-                yield return null;
-            if (!isActive || cachedGrid == null) break;
-
-            // Phase 2 – validate by element identity RIGHT BEFORE swapping
-            targets = FilterValidPairs(targets);
-
-            bool swapPerformed = false;
-            if (targets.Count > 0)
+            // Reapply visuals and swap-targeted flag if needed
+            if (!visualA.IsTargetedByEnemy)
             {
-                // Clear previous targeted positions and mark swapped elements as targeted
-                targetedPositions.Clear();
-                
-                foreach (var target in targets)
-                {
-                    targetedPositions.Add(target.PosA);
-                    targetedPositions.Add(target.PosB);
-
-                    ElementVisual visA = cachedGrid.GetElementVisualAt(target.PosA);
-                    ElementVisual visB = cachedGrid.GetElementVisualAt(target.PosB);
-
-                    if (visA != null)
-                        visA.SetTargetedByEnemy(true);
-                    if (visB != null)
-                        visB.SetTargetedByEnemy(true);
-                }
-
-                // Perform the swap
-                cachedGrid.ProcessEnemySwap(ToPositionPairs(targets), SwapAnimDuration);
-                swapPerformed = true;
-
-                // Wait for SwapState -> ValidateSpellState -> IdleState to settle
-                while (isActive && cachedGrid != null && cachedGrid.CurrentState != GridStateType.Idle)
-                    yield return null;
-                if (!isActive || cachedGrid == null) break;
-
-                // Pause the swap loop while we process the attack
-                PauseSwapLoop();
-
-                // Set remainingMoves to 0 to trigger ApplyEffect in Tick
-                remainingMoves = 0;
-
-                // Call Tick which will trigger ApplyEffect since remainingMoves <= 0
-                bool attackComplete = false;
-                Tick(cachedGrid, () =>
-                {
-                    attackComplete = true;
-                });
-
-                // Wait for attack to complete
-                while (!attackComplete)
-                {
-                    if (!isActive || cachedGrid == null)
-                        yield break;
-                    yield return null;
-                }
-
-                // Wait for grid to settle after gravity/refill
-                while (isActive && cachedGrid != null && cachedGrid.CurrentState != GridStateType.Idle)
-                    yield return null;
-                if (!isActive || cachedGrid == null) break;
-
-                // Resume the swap loop
-                ResumeSwapLoop();
+                visualA.SetTargetedByEnemy(true);
+                visualA.StartTimedCountdown(remaining);
+                visualA.PlaySwapWarning(remaining);
             }
-
-            // If nothing was swapped, insert a cooldown so the routine doesn't re-preview immediately
-            if (!swapPerformed)
+            if (!visualB.IsTargetedByEnemy)
             {
-                yield return new WaitForSeconds(swapInterval);
-                if (!isActive || cachedGrid == null) break;
-
-                while (isActive && cachedGrid != null && cachedGrid.CurrentState != GridStateType.Idle)
-                    yield return null;
-                if (!isActive || cachedGrid == null) break;
+                visualB.SetTargetedByEnemy(true);
+                visualB.StartTimedCountdown(remaining);
+                visualB.PlaySwapWarning(remaining);
             }
-
-            // Always pick fresh targets at the end of each cycle
-            targets = PickSwapPairs(cachedGrid);
         }
 
-        isSwapPending = false;
-    }
-
-    private static List<(Vector2Int, Vector2Int)> ToPositionPairs(List<SwapTarget> targets)
-    {
-        var result = new List<(Vector2Int, Vector2Int)>(targets.Count);
-        foreach (var t in targets)
-            result.Add((t.PosA, t.PosB));
-        return result;
-    }
-
-    private List<SwapTarget> FilterValidPairs(List<SwapTarget> targets)
-    {
-        var valid = new List<SwapTarget>();
-        foreach (var t in targets)
+        // Cancel invalid pairs
+        foreach (int id in pairsToCancel)
         {
-            if (IsPairValid(t.PosA, t.ElA, t.PosB, t.ElB))
-                valid.Add(t);
+            if (activePairs.TryGetValue(id, out SwapPairInfo info))
+            {
+                targetedPositions.Remove(info.PositionA);
+                targetedPositions.Remove(info.PositionB);
+            }
+            CleanupPair(id);
         }
-        return valid;
+
+        if (pairsToCancel.Count > 0 && bonusTimePerClearedPair > 0f)
+            AddTimeToAll(bonusTimePerClearedPair * pairsToCancel.Count);
     }
 
-    private bool IsPairValid(Vector2Int posA, Element expectedA, Vector2Int posB, Element expectedB)
+    private (Vector2Int, Vector2Int) PickSwapPair(Grid grid)
     {
-        Element elA = cachedGrid.GetElementAt(posA);
-        Element elB = cachedGrid.GetElementAt(posB);
+        var used = new HashSet<Vector2Int>(targetedPositions);
+        Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
 
-        if (elA == null || elA == cachedGrid.EmptyElement || elA != expectedA) return false;
-        if (elB == null || elB == cachedGrid.EmptyElement || elB != expectedB) return false;
+        List<Vector2Int> candidates = new List<Vector2Int>();
+        for (int x = 0; x < Grid.GridSize; x++)
+        {
+            for (int y = 0; y < Grid.GridSize; y++)
+            {
+                Vector2Int pos = new Vector2Int(x, y);
+                if (used.Contains(pos)) continue;
+                if (!IsPositionSwappable(pos)) continue;
+                candidates.Add(pos);
+            }
+        }
 
-        ElementVisual visA = cachedGrid.GetElementVisualAt(posA);
-        ElementVisual visB = cachedGrid.GetElementVisualAt(posB);
+        if (candidates.Count == 0) return NULLPAIR;
 
-        if (visA != null && visA.IsBlocked) return false;
-        if (visB != null && visB.IsBlocked) return false;
+        // Shuffle candidates
+        for (int j = candidates.Count - 1; j > 0; j--)
+        {
+            int k = Random.Range(0, j + 1);
+            (candidates[j], candidates[k]) = (candidates[k], candidates[j]);
+        }
+
+        foreach (var pos in candidates)
+        {
+            List<Vector2Int> adjacentCandidates = new List<Vector2Int>();
+            foreach (var dir in directions)
+            {
+                Vector2Int adj = pos + dir;
+                if (used.Contains(adj)) continue;
+                if (!IsPositionSwappable(adj)) continue;
+                adjacentCandidates.Add(adj);
+            }
+
+            if (adjacentCandidates.Count > 0)
+            {
+                Vector2Int adj = adjacentCandidates[Random.Range(0, adjacentCandidates.Count)];
+                return (pos, adj);
+            }
+        }
+
+        return NULLPAIR;
+    }
+
+    private bool IsPositionSwappable(Vector2Int pos)
+    {
+        if (!cachedGrid.IsPositionValid(pos)) return false;
+
+        Element el = cachedGrid.GetElementAt(pos);
+        if (el == null || el == cachedGrid.EmptyElement) return false;
+
+        ElementVisual vis = cachedGrid.GetElementVisualAt(pos);
+        if (vis != null && vis.IsBlocked) return false;
 
         return true;
     }
 
-    private List<SwapTarget> PickSwapPairs(Grid grid)
+    public override void Tick(Grid grid, System.Action onComplete = null)
     {
-        var targets = new List<SwapTarget>();
-        var used = new HashSet<Vector2Int>();
-        Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
-
-        for (int i = 0; i < 2; i++)
-        {
-            List<Vector2Int> candidates = new List<Vector2Int>();
-            for (int x = 0; x < Grid.GridSize; x++)
-            {
-                for (int y = 0; y < Grid.GridSize; y++)
-                {
-                    Vector2Int pos = new Vector2Int(x, y);
-                    if (used.Contains(pos)) continue;
-                    if (!grid.IsPositionValid(pos)) continue;
-
-                    Element element = grid.GetElementAt(pos);
-                    if (element == null || element == grid.EmptyElement) continue;
-
-                    ElementVisual visual = grid.GetElementVisualAt(pos);
-                    if (visual != null && visual.IsBlocked) continue;
-
-                    candidates.Add(pos);
-                }
-            }
-
-            if (candidates.Count == 0) break;
-
-            for (int j = candidates.Count - 1; j > 0; j--)
-            {
-                int k = Random.Range(0, j + 1);
-                var temp = candidates[j];
-                candidates[j] = candidates[k];
-                candidates[k] = temp;
-            }
-
-            bool found = false;
-            foreach (var pos in candidates)
-            {
-                if (used.Contains(pos)) continue;
-
-                List<Vector2Int> adjacentCandidates = new List<Vector2Int>();
-                foreach (var dir in directions)
-                {
-                    Vector2Int adj = pos + dir;
-                    if (used.Contains(adj)) continue;
-                    if (!grid.IsPositionValid(adj)) continue;
-
-                    Element adjElement = grid.GetElementAt(adj);
-                    if (adjElement == null || adjElement == grid.EmptyElement) continue;
-
-                    ElementVisual adjVisual = grid.GetElementVisualAt(adj);
-                    if (adjVisual != null && adjVisual.IsBlocked) continue;
-
-                    adjacentCandidates.Add(adj);
-                }
-
-                if (adjacentCandidates.Count > 0)
-                {
-                    Vector2Int adj = adjacentCandidates[Random.Range(0, adjacentCandidates.Count)];
-                    targets.Add(new SwapTarget(pos, grid.GetElementAt(pos), adj, grid.GetElementAt(adj)));
-                    used.Add(pos);
-                    used.Add(adj);
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) break;
-        }
-
-        return targets;
-    }
-
-    public void PauseSwapLoop()
-    {
-        swapSequence?.Pause();
-    }
-
-    public void ResumeSwapLoop()
-    {
-        swapSequence?.Play();
-    }
-
-    public void PauseAllTimers()
-    {
-        PauseSwapLoop();
-    }
-
-    public void ResumeAllTimers()
-    {
-        ResumeSwapLoop();
+        onComplete?.Invoke();
     }
 
     public override void Cleanup(Grid grid)
     {
-        isActive = false;
-        isSwapPending = false;
+        IsActive = false;
+        intervalTimer?.StopTimer();
 
-        swapSequence?.Kill();
-        swapSequence = null;
-
-        // Clear any targeted visuals
-        if (grid != null)
+        foreach (var kvp in activePairs)
         {
-            foreach (var pos in targetedPositions)
+            kvp.Value.Timer?.Stop();
+            if (grid != null)
             {
-                ElementVisual visual = grid.GetElementVisualAt(pos);
-                if (visual != null && visual.IsTargetedByEnemy)
+                ElementVisual visualA = grid.GetElementVisualAt(kvp.Value.PositionA);
+                ElementVisual visualB = grid.GetElementVisualAt(kvp.Value.PositionB);
+
+                if (visualA != null)
                 {
-                    visual.SetTargetedByEnemy(false);
-                    visual.StopHoverAnimation();
+                    visualA.ClearTargetVisual();
+                    visualA.StopTimedCountdown();
+                    visualA.SetTargetedByEnemy(false);
+                }
+                if (visualB != null)
+                {
+                    visualB.ClearTargetVisual();
+                    visualB.StopTimedCountdown();
+                    visualB.SetTargetedByEnemy(false);
                 }
             }
         }
 
+        activePairs.Clear();
+        expiredQueue.Clear();
         targetedPositions.Clear();
         cachedGrid = null;
+    }
+
+    private void CleanupPair(int id)
+    {
+        if (activePairs.TryGetValue(id, out SwapPairInfo info))
+        {
+            info.Timer?.Stop();
+            activePairs.Remove(id);
+        }
     }
 }

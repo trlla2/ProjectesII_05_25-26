@@ -137,7 +137,7 @@ public class EnemyType : ScriptableObject
                 return new BlockerSpell(blockerCount, blockerDamagePercent, attackTimer, damagePerElement);
 
             case EnemySpellType.SwapperAttack:
-                return new SwapperSpell( swapperSwapInterval, damagePerElement, attackTimer);
+                return new SwapperSpell( swapperSwapInterval, attackTimer, damagePerElement, lvl2BonusTimeOnClear);
 
             default:
                 return new ColumnDestroySpell(damagePerElement, moveCount);

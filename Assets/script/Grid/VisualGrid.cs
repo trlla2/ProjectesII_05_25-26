@@ -541,42 +541,6 @@ public class VisualGrid : MonoBehaviour
         }
     }
 
-    public IEnumerator PreviewSwapTargets(List<(Vector2Int, Vector2Int)> pairs, float duration)
-    {
-        if (!isInitialized || grid == null || grid.GridData == null)
-            yield break;
-
-        int total = 0;
-        int completed = 0;
-
-        // Count how many valid visuals we have
-        foreach (var pair in pairs)
-        {
-            if (grid.GridData.GetVisualAt(pair.Item1) != null) total++;
-            if (grid.GridData.GetVisualAt(pair.Item2) != null) total++;
-        }
-
-        if (total == 0) yield break;
-
-        // Trigger the warning blink on every visual being swapped
-        foreach (var pair in pairs)
-        {
-            ElementVisual visualA = grid.GridData.GetVisualAt(pair.Item1);
-            ElementVisual visualB = grid.GridData.GetVisualAt(pair.Item2);
-            visualA.PlaySwapWarning(duration, () => completed++);
-            visualB.PlaySwapWarning(duration, () => completed++);
-            visualA.SetTargetedByEnemy(true);
-            visualB.SetTargetedByEnemy(true);
-            visualA.UpdateTargetVisual(1, 1, duration, fillEmptyCurve);
-            visualB.UpdateTargetVisual(1, 1, duration, fillEmptyCurve);
-        }
-
-        // Wait until all animations have reported completion
-        while (completed < total)
-            yield return null;
-    }
-
-    // Called AFTER GridData.SwapElements – visuals are in correct data slots but still at old positions.
     public IEnumerator AnimateEnemySwap(List<(Vector2Int, Vector2Int)> pairs, float duration)
     {
         if (!isInitialized || grid == null || grid.GridData == null)
@@ -587,7 +551,7 @@ public class VisualGrid : MonoBehaviour
         foreach (var pair in pairs)
         {
             // GetVisualAt(posA) returns the visual that was at posB – its GetWorldPosition() is still at posB's location.
-            // We animate it to posA's world position (its new data slot).
+            // We animate it to posA's world position
             ElementVisual va = grid.GridData.GetVisualAt(pair.Item1);
             ElementVisual vb = grid.GridData.GetVisualAt(pair.Item2);
 

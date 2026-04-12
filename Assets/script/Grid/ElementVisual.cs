@@ -421,14 +421,14 @@ public class ElementVisual : MonoBehaviour
         });
     }
 
-    public void PauseTimedCountdownDOTween()
+    public void PauseTimedCountdown()
     {
         if (timedFillTween == null) return;
         timedFillTween.Pause();
         isTimedCountdownPaused = true;
     }
 
-    public void ResumeTimedCountdownDOTween()
+    public void ResumeTimedCountdown()
     {
         if (timedFillTween == null || !isTimedCountdownPaused) return;
         timedFillTween.Play();
@@ -566,16 +566,51 @@ public class ElementVisual : MonoBehaviour
     {
         isSwapTargeted = true;
 
-        System.Action setFlag = () =>
+        System.Action animEnd = () =>
         {
             isSwapTargeted = false;
+            elementRenderer.DOKill();
+            this.DOKill();
             onComplete?.Invoke();
         };
 
-        ScaleAnimator scaleAnimator = GetComponent<ScaleAnimator>();
-        if (scaleAnimator != null)
-            scaleAnimator.PlayDelayBlink(0.1f, 1f, duration, setFlag);
+        if (elementRenderer != null)
+        {
+            elementRenderer.DOKill();
+
+            float blinkSpeed = 0.15f;
+            int blinkCount = Mathf.CeilToInt(duration / (blinkSpeed * 2));
+
+            transform.DOShakeScale(duration, 0.07f, 5);
+            elementRenderer.DOFade(0.0f, blinkSpeed).SetLoops(blinkCount * 2, LoopType.Yoyo)
+            .OnComplete(() =>
+            {
+                if (elementRenderer != null)
+                    elementRenderer.DOFade(1f, 0.1f).OnComplete(() => animEnd.Invoke());
+                else
+                    animEnd.Invoke();
+            });
+        }
         else
-            setFlag.Invoke();
+        {
+            animEnd.Invoke();
+        }
+    }
+
+    public void StopSwapWarning()
+    {
+        isSwapTargeted = false;
+
+        if (elementRenderer != null)
+        {
+            elementRenderer.DOFade(1f, 0.01f);
+            elementRenderer.DOKill();
+            Color col = elementRenderer.color;
+            col.a = 1f;
+            elementRenderer.color = col;
+        }
+
+        transform.DOKill();
+        transform.localScale = Vector3.one;
     }
 }

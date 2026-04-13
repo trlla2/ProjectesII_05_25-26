@@ -5,16 +5,16 @@ public class ShopTile : BoardTile
 {
     private const int ItemSlots = 3;
 
-    [SerializeField] private BoardTileData _postInteractionTile;
-
     [Header("Heal Offer Settings")]
     [SerializeField, Range(0f, 1f)] private float _healPercent = 0.30f;
     [SerializeField] private int _healCost = 15;
 
     [Header("Stat Upgrade Settings")]
     [SerializeField] private int _statUpgradeCost = 20;
-    [SerializeField] private float _damageUpgradeAmount = 2f;
-    [SerializeField] private float _healthUpgradeAmount = 10f;
+    [SerializeField, Range(0f, 1f)]
+    private float _statUpgradePercent = 0.1f;
+    [SerializeField] private float _damageUpgradeAmount  = 2f;
+    [SerializeField] private float _healthUpgradeAmount  = 10f;
     [SerializeField] private float _evasionUpgradeAmount = 5f;
     [SerializeField] private float _defenseUpgradeAmount = 3f;
 
@@ -74,12 +74,11 @@ public class ShopTile : BoardTile
             _ => 1f
         };
 
-        return ShopOffer.CreateStatUpgradeOffer(chosen, amount, _statUpgradeCost);
+        return ShopOffer.CreateStatUpgradeOffer(chosen, amount, _statUpgradePercent, _statUpgradeCost);
     }
 
     public void Replace()
     {
-        if (_postInteractionTile != null)
-            _boardManager.ReplaceTileType(this, _postInteractionTile);
+        ReplaceWithPostInteraction();
     }
 }

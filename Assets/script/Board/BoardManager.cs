@@ -35,6 +35,9 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private ChestOfEgressScreen chestOfEgressPanel;
     [SerializeField] private BranchChoicePanelHandler branchChoicePanel;
     [SerializeField] private ShopScreen shopPanel;
+    [SerializeField] private SlotMachineScreen slotMachinePanel;
+
+
     [SerializeField] private BoardTileData fogTileData;
 
     [Header("Encounters")]
@@ -310,6 +313,7 @@ public class BoardManager : MonoBehaviour
 
     public void OpenChest(ChestTile chestTile)
     {
+        if (openChestPanel == null) return;
         openChestPanel.openedChest = chestTile;
         openChestPanel.Pull(currentStageLevelData.GetPullItemRarity());
         openChestPanel.gameObject.SetActive(true);
@@ -333,6 +337,12 @@ public class BoardManager : MonoBehaviour
             shopPanel.Open(tile);
         else
             Debug.LogWarning("BoardManager: shopPanel no está asignado.");
+    }
+
+    public void OpenSlotMachineScreen(SlotMachineTile tile)
+    {
+        if (slotMachinePanel != null)
+            slotMachinePanel.Open();
     }
 
     public void HandleBoardCamera(bool enable)

@@ -3,7 +3,6 @@ using UnityEngine;
 public class EnemyTile : BoardTile
 {
     [SerializeField] private string _combatSceneName;
-    [SerializeField] private BoardTileData _postInteractionTile;
     [SerializeField] private int lootRatePercentage;
 
     private TileClickHandler _boardRaycast;
@@ -34,7 +33,6 @@ public class EnemyTile : BoardTile
 
         GameManager.Instance.OnEnterBoard += Replace;
         GameManager.Instance.OnEnterBoard += TryToRevealGeneratedBranchIfHasOne;
-
     }
 
     protected virtual EnemyType ResolveEnemy()
@@ -52,7 +50,7 @@ public class EnemyTile : BoardTile
     {
         _boardRaycast.HandleBoardRaycast(true);
 
-        _boardManager.ReplaceTileType(this, _postInteractionTile);
+        ReplaceWithPostInteraction();
         _boardManager.IncrementEnemyDefeatedCount();
     }
 
@@ -65,7 +63,7 @@ public class EnemyTile : BoardTile
 
         if (win)
         {
-            _boardManager.ReplaceTileType(this, _postInteractionTile);
+            ReplaceWithPostInteraction();
             _boardManager.IncrementEnemyDefeatedCount();
         }
     }

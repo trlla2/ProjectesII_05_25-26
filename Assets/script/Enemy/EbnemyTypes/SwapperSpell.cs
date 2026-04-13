@@ -537,6 +537,67 @@ public class SwapperSpell : EnemySpellBase
         cachedGrid = null;
     }
 
+    public void UpdateVisuals()
+    {
+        if (!IsActive || cachedGrid == null || isProcessingEffect) return;
+
+        List<int> pairsToCancel = null;
+
+        foreach (var kvp in activePairs)
+        {
+            if (kvp.Value.Fired || kvp.Value.IsPaused) continue;
+
+            SwapPairInfo info = kvp.Value;
+
+            Element elA = cachedGrid.GetElementAt(info.PositionA);
+            Element elB = cachedGrid.GetElementAt(info.PositionB);
+            ElementVisual visualA = cachedGrid.GetElementVisualAt(info.PositionA);
+            ElementVisual visualB = cachedGrid.GetElementVisualAt(info.PositionB);
+
+            bool validA = elA != null && elA != cachedGrid.EmptyElement && visualA != null;
+            bool validB = elB != null && elB != cachedGrid.EmptyElement && visualB != null;
+
+            if (!validA || !validB)
+            {
+                if (visualA != null)
+                {
+                    visualA.StopTimedCountdown();
+                    visualA.StopSwapWarning();
+                    visualA.SetTargetedByEnemy(false);
+                }
+                if (visualB != null)
+                {
+                    visualB.StopTimedCountdown();
+                    visualB.StopSwapWarning();
+                    visualB.SetTargetedByEnemy(false);
+                }
+                pairsToCancel ??= new List<int>();
+                pairsToCancel.Add(kvp.Key);
+                continue;
+            }
+
+            float normalizedTime = info.Timer.GetNormalizedRemaining();
+            visualA.SetSwapWarningProgress(normalizedTime);
+            visualB.SetSwapWarningProgress(normalizedTime);
+            // DOTween drives the countdown fill — no per-frame update needed
+        }
+
+        if (pairsToCancel != null)
+        {
+            foreach (int id in pairsToCancel)
+            {
+                if (activePairs.TryGetValue(id, out SwapPairInfo info))
+                {
+                    targetedPositions.Remove(info.PositionA);
+                    targetedPositions.Remove(info.PositionB);
+                }
+                CleanupPair(id);
+            }
+
+            if (bonusTimePerClearedPair > 0f)
+                AddTimeToAll(bonusTimePerClearedPair * pairsToCancel.Count);
+        }
+    }
     private void CleanupPair(int id)
     {
         if (activePairs.TryGetValue(id, out SwapPairInfo info))

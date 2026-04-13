@@ -65,18 +65,6 @@ public abstract class EnemySpellBase : IEnemySpell
 
     public override void Tick(Grid grid, System.Action onComplete = null)
     {
-        if (grid != null)
-        {
-            float animDuration = grid.EnemyTargetAnimDuration;
-            AnimationCurve curve = grid.EnemyTargetFillCurve;
-            foreach (var pos in targetedPositions)
-            {
-                ElementVisual visual = grid.GetElementVisualAt(pos);
-                if (visual != null && visual.IsTargetedByEnemy)
-                    visual.UpdateTargetVisual(remainingMoves, initialMoves, animDuration, curve);
-            }
-        }
-
         remainingMoves--;
         remainingMoves = Mathf.Max(0, remainingMoves);
 
@@ -89,9 +77,7 @@ public abstract class EnemySpellBase : IEnemySpell
             {
                 ElementVisual visual = grid.GetElementVisualAt(pos);
                 if (visual != null && visual.IsTargetedByEnemy)
-                {
                     visual.UpdateTargetVisual(remainingMoves, initialMoves, animDuration, curve);
-                }
             }
         }
 

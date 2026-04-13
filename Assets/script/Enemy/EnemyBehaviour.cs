@@ -780,4 +780,34 @@ public class EnemyBehaviour : MonoBehaviour
         else
             PauseActiveTimedSpell();
     }
+
+    private void Update()
+    {
+        if (!inBattle || activeSpell == null || grid == null) return;
+
+        // Drive visual updates from spell timers every frame
+        UpdateSpellVisuals();
+    }
+
+    private void UpdateSpellVisuals()
+    {
+        if (timersPaused || isFrozen) return;
+
+        if (activeSpell is TimedDestroySpellBase timedSpell)
+        {
+            timedSpell.UpdateVisuals();
+        }
+        else if (activeSpell is MultipleTimedSpellBase multiSpell)
+        {
+            multiSpell.UpdateVisuals();
+        }
+        else if (activeSpell is BlockerSpell blockerSpell)
+        {
+            blockerSpell.UpdateVisuals();
+        }
+        else if (activeSpell is SwapperSpell swapperSpell)
+        {
+            swapperSpell.UpdateVisuals();
+        }
+    }
 }

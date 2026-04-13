@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
-//This enemy base is the same as timer enemy but with indivisual timer for each target position
+//This enemy base is the same as timer enemy but with individual timer for each target position
 public abstract class MultipleTimedSpellBase : EnemySpellBase
 {
     protected class TargetInfo
@@ -17,6 +16,7 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
     private Queue<int> expiredQueue = new Queue<int>();
     private int nextTargetId;
     private bool isProcessingEffect;
+    private bool isPaused;
 
     protected Grid cachedGrid;
     protected float perTargetCountdown;
@@ -54,6 +54,7 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
         cachedGrid = grid;
         IsActive = true;
         isProcessingEffect = false;
+        isPaused = false;
         targetedPositions.Clear();
         activeTargets.Clear();
         expiredQueue.Clear();
@@ -94,18 +95,12 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
         if (visual != null)
         {
             visual.SetTargetedByEnemy(true);
-            visual.StartTimedCountdown(perTargetCountdown);
+            // Set initial progress to full - UpdateVisuals will drive it
+            visual.SetTimedCountdownProgress(1f);
         }
 
         int capturedId = id;
-        SpellTimer capturedTimer = timer;
         timer.OnTimerExpired += () => OnTargetExpired(capturedId);
-        timer.OnTimeAdded += newRemaining =>
-        {
-            if (cachedGrid == null || !activeTargets.TryGetValue(capturedId, out TargetInfo t) || t.Fired) return;
-            ElementVisual v = cachedGrid.GetElementVisualAt(t.Position);
-            v?.ExtendTimedCountdown(newRemaining, capturedTimer.TotalSeconds);
-        };
         timer.Start();
     }
 
@@ -113,6 +108,59 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
     {
         if (!activeTargets.ContainsKey(id) || activeTargets[id].Fired) return;
         expiredQueue.Enqueue(id);
+    }
+
+    /// <summary>
+    /// Call this every frame to drive visual state from timer state.
+    /// </summary>
+    public void UpdateVisuals()
+    {
+        if (cachedGrid == null || isPaused) return;
+
+        List<int> invalidTargets = null;
+
+        foreach (var kvp in activeTargets)
+        {
+            if (kvp.Value.Fired) continue;
+
+            Vector2Int pos = kvp.Value.Position;
+            ElementVisual visual = cachedGrid.GetElementVisualAt(pos);
+            Element element = cachedGrid.GetElementAt(pos);
+
+            bool valid = element != null && element != cachedGrid.EmptyElement && visual != null;
+
+            if (!valid)
+            {
+                if (visual != null)
+                {
+                    visual.SetTimedCountdownProgress(0f);
+                    visual.SetTargetedByEnemy(false);
+                }
+                invalidTargets ??= new List<int>();
+                invalidTargets.Add(kvp.Key);
+                continue;
+            }
+
+            if (visual.IsTargetedByEnemy)
+            {
+                float progress = kvp.Value.Timer.GetNormalizedRemaining();
+                visual.SetTimedCountdownProgress(progress);
+            }
+        }
+
+        // Handle cleared targets
+        if (invalidTargets != null)
+        {
+            foreach (int id in invalidTargets)
+            {
+                var info = activeTargets[id];
+                targetedPositions.Remove(info.Position);
+                CleanupTarget(id);
+
+                if (bonusTimePerClearedTarget > 0f)
+                    AddTimeToAll(bonusTimePerClearedTarget);
+            }
+        }
     }
 
     public void ProcessNextExpiredTarget(Grid grid, System.Action onComplete)
@@ -128,7 +176,8 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
             isProcessingEffect = true;
             Vector2Int pos = info.Position;
 
-            grid.GetElementVisualAt(pos)?.StopTimedCountdown();
+            // Clear visual progress
+            grid.GetElementVisualAt(pos)?.SetTimedCountdownProgress(0f);
 
             // Pause everything while processing
             PauseAllTargets();
@@ -185,24 +234,24 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
 
     public void PauseAllTargets()
     {
+        isPaused = true;
         foreach (var kvp in activeTargets)
         {
             if (!kvp.Value.Fired)
             {
                 kvp.Value.Timer?.Pause();
-                cachedGrid?.GetElementVisualAt(kvp.Value.Position)?.PauseTimedCountdown();
             }
         }
     }
 
     public void ResumeAllTargets()
     {
+        isPaused = false;
         foreach (var kvp in activeTargets)
         {
             if (!kvp.Value.Fired)
             {
                 kvp.Value.Timer?.Resume();
-                cachedGrid?.GetElementVisualAt(kvp.Value.Position)?.ResumeTimedCountdown();
             }
         }
     }
@@ -215,6 +264,7 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
                 kvp.Value.Timer?.AddTime(seconds);
         }
     }
+
     public bool OnTargetCleared(Grid grid, Vector2Int clearedPosition)
     {
         int? clearedId = null;
@@ -234,7 +284,7 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
             ElementVisual visual = cachedGrid.GetElementVisualAt(clearedPosition);
             if (visual != null)
             {
-                visual.StopTimedCountdown();
+                visual.SetTimedCountdownProgress(0f);
                 visual.SetTargetedByEnemy(false);
             }
         }
@@ -281,7 +331,7 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
         foreach (var list in idsByColumn.Values)
             list.Sort((a, b) => a.y.CompareTo(b.y));
 
-        //Scan grid for live targeted visuals by column
+        // Scan grid for live targeted visuals by column
         var liveByColumn = new Dictionary<int, List<Vector2Int>>();
         for (int x = 0; x < Grid.GridSize; x++)
         {
@@ -313,7 +363,7 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
             for (int i = 0; i < paired; i++)
                 activeTargets[ids[i].id].Position = livePositions[i];
 
-            //IDs with no matching live position, cleared by gravity
+            // IDs with no matching live position, cleared by gravity
             for (int i = paired; i < ids.Count; i++)
             {
                 CleanupTarget(ids[i].id);
@@ -346,8 +396,7 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
             if (visual != null && !visual.IsTargetedByEnemy)
             {
                 visual.SetTargetedByEnemy(true);
-                float remaining = kvp.Value.Timer.RemainingSeconds;
-                visual.StartTimedCountdown(remaining);
+                // Progress will be set on next UpdateVisuals() call
             }
         }
     }
@@ -396,7 +445,7 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
                 if (visual != null)
                 {
                     visual.ClearTargetVisual();
-                    visual.StopTimedCountdown();
+                    visual.SetTimedCountdownProgress(0f);
                     visual.SetTargetedByEnemy(false);
                 }
             }

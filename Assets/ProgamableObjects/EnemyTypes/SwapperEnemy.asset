@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: SwapperEnemy
   m_EditorClassIdentifier: 
   name: 
-  health: 100
-  damage: 4
+  health: 2000
+  damage: 0
   elementCount: 3
   level: 0
   difficulty: 4
@@ -30,7 +30,7 @@ MonoBehaviour:
   attackTimer: 8
   lvl2Countdown: 8
   lvl2BonusTimeOnClear: 2
-  continuousSelectionInterval: 4
+  continuousSelectionInterval: 4.5
   visibilityDuration: 2.5
   hiddenSprite: {fileID: 0}
   blockerCount: 2

@@ -22,7 +22,8 @@ public class ElementVisual : MonoBehaviour
 
     private bool isTimedCountdownPaused;
     private float timedCountdownRemaining;
-    private float timedCountdownTotal;
+    private float timedCountdownTotal;    private Tween fillTween;
+
     private Tween timedFillTween;
 
     private bool isBombTarget;
@@ -207,6 +208,25 @@ public class ElementVisual : MonoBehaviour
         elementRenderer.color = currentColor;
     }
 
+    public void SetBlocked(bool blocked)
+    {
+        isBlocked = blocked;
+        canSelect = !blocked;
+
+        if (blockadeVisual != null)
+            blockadeVisual.SetActive(blocked);
+
+        if (!blocked)
+            blockBreakProgress = 0f;
+    }
+    public void UpdateBlockProgress(float progress)
+    {
+        blockBreakProgress = Mathf.Clamp01(progress);
+
+        if (blockadeVisual != null)
+            blockadeVisual.UpdateProgress(blockBreakProgress);
+    }
+
     public void SetTargetedByEnemy(bool targeted)
     {
         isTargetedByEnemy = targeted;
@@ -237,33 +257,42 @@ public class ElementVisual : MonoBehaviour
 
         float targetFill = 0f;
         if (totalMoves > 0)
-            targetFill = Mathf.Clamp((float)remainingMoves / (float)totalMoves, 0, 1);
+            targetFill = Mathf.Clamp((float)remainingMoves / (float)totalMoves, 0f, 1f);
 
         if (!targetFillImage.enabled)
             targetFillImage.enabled = true;
 
-        if (fillCoroutine != null)
-            StopCoroutine(fillCoroutine);
+        fillTween?.Kill();
+        fillTween = null;
 
-        fillCoroutine = StartCoroutine(FillRoutine(targetFill, animDuration, fillCurve));
+        if (animDuration <= 0f)
+        {
+            targetFillImage.fillAmount = targetFill;
+            if (targetFill <= 0f && !isTargetedByEnemy)
+                targetFillImage.enabled = false;
+            return;
+        }
+
+        fillTween = targetFillImage.DOFillAmount(targetFill, animDuration)
+            .SetEase(fillCurve ?? AnimationCurve.EaseInOut(0f, 0f, 1f, 1f))
+            .OnComplete(() =>
+            {
+                if (targetFill <= 0f && !isTargetedByEnemy)
+                    targetFillImage.enabled = false;
+                fillTween = null;
+            });
     }
 
     public void StopCountdown()
     {
-        if (fillCoroutine != null)
-        {
-            StopCoroutine(fillCoroutine);
-            fillCoroutine = null;
-        }
+        fillTween?.Kill();
+        fillTween = null;
     }
 
     public void ClearTargetVisual()
     {
-        if (fillCoroutine != null)
-        {
-            StopCoroutine(fillCoroutine);
-            fillCoroutine = null;
-        }
+        fillTween?.Kill();
+        fillTween = null;
 
         if (targetFillImage != null)
         {
@@ -393,46 +422,24 @@ public class ElementVisual : MonoBehaviour
         elementRenderer.transform.localScale = initialScale;
     }
 
-    public void StartTimedCountdown(float totalSeconds)
+    public void SetTimedCountdownProgress(float normalizedProgress)
     {
         if (targetFillTimedImage == null) return;
 
-        totalSeconds = Mathf.Max(0.0001f, totalSeconds);
-
+        // Kill any existing tween to prevent conflicts
         timedFillTween?.Kill();
-        timedCountdownTotal = totalSeconds;
-        timedCountdownRemaining = totalSeconds;
+        timedFillTween = null;
         isTimedCountdownPaused = false;
 
-        targetFillTimedImage.enabled = true;
-        targetFillTimedImage.fillAmount = 1f;
-
-        timedFillTween = DOTween.To(() => timedCountdownRemaining,
-            x =>
-            {
-                timedCountdownRemaining = x;
-                targetFillTimedImage.fillAmount = Mathf.Clamp(x / timedCountdownTotal, 0f, 1f);
-            }
-            , 0f, totalSeconds).SetEase(Ease.Linear)
-        .OnComplete(() =>
+        if (normalizedProgress <= 0f)
         {
             targetFillTimedImage.fillAmount = 0f;
-            timedFillTween = null;
-        });
-    }
+            targetFillTimedImage.enabled = false;
+            return;
+        }
 
-    public void PauseTimedCountdown()
-    {
-        if (timedFillTween == null) return;
-        timedFillTween.Pause();
-        isTimedCountdownPaused = true;
-    }
-
-    public void ResumeTimedCountdown()
-    {
-        if (timedFillTween == null || !isTimedCountdownPaused) return;
-        timedFillTween.Play();
-        isTimedCountdownPaused = false;
+        targetFillTimedImage.enabled = true;
+        targetFillTimedImage.fillAmount = Mathf.Clamp01(normalizedProgress);
     }
 
     public void StopTimedCountdown()
@@ -448,82 +455,139 @@ public class ElementVisual : MonoBehaviour
         }
     }
 
-    public void ExtendTimedCountdown(float newRemainingTime, float newTotalTime)
+
+    public void StartTimedFillAnimation(float duration)
     {
         if (targetFillTimedImage == null) return;
 
         timedFillTween?.Kill();
+        timedFillTween = null;
+        isTimedCountdownPaused = false;
 
-        timedCountdownRemaining = newRemainingTime;
-        timedCountdownTotal = newTotalTime;
+        targetFillTimedImage.enabled = true;
+        if (targetFillTimedImage.fillAmount <= 0f)
+            targetFillTimedImage.fillAmount = 1f;
 
-        float targetFill = Mathf.Clamp01(newRemainingTime / newTotalTime);
+        timedCountdownTotal = duration;
+        timedCountdownRemaining = duration;
 
-        Sequence seq = DOTween.Sequence();
-
-        seq.Append(DOTween.To(
-            () => targetFillTimedImage.fillAmount,
-            x => targetFillTimedImage.fillAmount = x,
-            targetFill, 0.25f)
-        .SetEase(Ease.OutQuad));
-
-        seq.AppendCallback(() =>
-        {
-            timedFillTween = DOTween.To(
-                () => timedCountdownRemaining,
-                x =>
-                {
-                    timedCountdownRemaining = x;
-                    targetFillTimedImage.fillAmount = Mathf.Clamp01(x / timedCountdownTotal);
-                },
-                0f,
-                newRemainingTime)
+        timedFillTween = targetFillTimedImage.DOFillAmount(0f, duration)
             .SetEase(Ease.Linear)
-            .OnComplete(() =>
-            {
-                targetFillTimedImage.fillAmount = 0f;
-                timedFillTween = null;
-            });
-
-            if (isTimedCountdownPaused)
-                timedFillTween.Pause();
-        });
-
-        timedFillTween = seq;
+            .OnComplete(() => { timedFillTween = null; });
     }
 
-
-    public void SetBlocked(bool blocked)
+    public void PauseTimedFillAnimation()
     {
-        isBlocked = blocked;
-        canSelect = !blocked;
-
-        if (blockadeVisual != null)
+        if (timedFillTween != null && timedFillTween.IsPlaying())
         {
-            blockadeVisual.SetActive(blocked);
-            if (blocked)
-            {
-                blockBreakProgress = 0f;
-                blockadeVisual.UpdateProgress(0f);
-            }
+            timedFillTween.Pause();
+            isTimedCountdownPaused = true;
         }
     }
 
-    public void UpdateBlockProgress(float normalizedProgress)
+    public void ResumeTimedFillAnimation()
     {
-        if (!isBlocked) return;
-
-        blockBreakProgress = normalizedProgress;
-
-        if (blockadeVisual != null)
-            blockadeVisual.UpdateProgress(normalizedProgress);
+        if (timedFillTween != null && isTimedCountdownPaused)
+        {
+            timedFillTween.Play();
+            isTimedCountdownPaused = false;
+        }
     }
 
-    public void ResetBlockProgress()
+
+    public void StartTimedCountdown(float duration)
     {
-        blockBreakProgress = 0f;
-        if (blockadeVisual != null)
-            blockadeVisual.UpdateProgress(0f);
+        StartTimedFillAnimation(duration);
+    }
+
+    public void ExtendTimedCountdown(float newRemaining, float totalSeconds)
+    {
+        if (targetFillTimedImage == null) return;
+
+        timedFillTween?.Kill();
+        timedFillTween = null;
+
+        float targetFill = totalSeconds > 0f ? Mathf.Clamp01(newRemaining / totalSeconds) : 0f;
+
+        targetFillTimedImage.enabled = true;
+        timedCountdownTotal = totalSeconds;
+        timedCountdownRemaining = newRemaining;
+
+        // Smoothly tween up to the new fill, then continue the countdown to 0
+        Sequence seq = DOTween.Sequence();
+        seq.Append(targetFillTimedImage.DOFillAmount(targetFill, 0.3f).SetEase(Ease.OutCubic));
+        seq.Append(targetFillTimedImage.DOFillAmount(0f, newRemaining).SetEase(Ease.Linear));
+        seq.OnKill(() => timedFillTween = null);
+        timedFillTween = seq;
+    }
+
+    public void PauseTimedCountdown()
+    {
+        PauseTimedFillAnimation();
+    }
+
+    public void ResumeTimedCountdown()
+    {
+        ResumeTimedFillAnimation();
+    }
+
+    public void PlaySwapWarning(float duration)
+    {
+        StartHoverAnimation(true);
+    }
+
+    public void SetSwapWarningProgress(float normalizedProgress)
+    {
+        if (elementRenderer == null) return;
+
+        if (normalizedProgress <= 0f)
+        {
+            StopSwapWarning();
+            return;
+        }
+
+        isSwapTargeted = true;
+
+        // Urgency increases as timer runs out (progress approaches 0)
+        float urgency = 1f - normalizedProgress;
+
+        // Blink faster as urgency increases
+        float blinkSpeed = 5f + urgency * 15f;
+        float blinkAlpha = 0.5f + 0.5f * Mathf.Abs(Mathf.Sin(Time.time * blinkSpeed));
+
+        Color col = elementRenderer.color;
+        col.a = blinkAlpha;
+        elementRenderer.color = col;
+
+        // Shake intensity increases with urgency
+        float shake = urgency * 0.08f;
+        transform.localScale = Vector3.one * (1f + Mathf.Sin(Time.time * 20f) * shake);
+    }
+
+    public void StopSwapWarning()
+    {
+        isSwapTargeted = false;
+
+        if (elementRenderer != null)
+        {
+            elementRenderer.DOKill();
+            Color col = elementRenderer.color;
+            col.a = 1f;
+            elementRenderer.color = col;
+        }
+
+        transform.DOKill();
+        transform.localScale = Vector3.one;
+    }
+
+    // Reset all enemy-related visual states
+    public void ClearAllEnemyVisuals()
+    {
+        SetTargetedByEnemy(false);
+        StopTimedCountdown();
+        StopSwapWarning();
+        StopHoverAnimation();
+        ClearTargetVisual();
     }
 
 
@@ -560,57 +624,5 @@ public class ElementVisual : MonoBehaviour
             targetFillImage.enabled = false;
 
         fillCoroutine = null;
-    }
-
-    public void PlaySwapWarning(float duration, System.Action onComplete = null)
-    {
-        isSwapTargeted = true;
-
-        System.Action animEnd = () =>
-        {
-            isSwapTargeted = false;
-            elementRenderer.DOKill();
-            this.DOKill();
-            onComplete?.Invoke();
-        };
-
-        if (elementRenderer != null)
-        {
-            elementRenderer.DOKill();
-
-            float blinkSpeed = 0.15f;
-            int blinkCount = Mathf.CeilToInt(duration / (blinkSpeed * 2));
-
-            transform.DOShakeScale(duration, 0.07f, 5);
-            elementRenderer.DOFade(0.0f, blinkSpeed).SetLoops(blinkCount * 2, LoopType.Yoyo)
-            .OnComplete(() =>
-            {
-                if (elementRenderer != null)
-                    elementRenderer.DOFade(1f, 0.1f).OnComplete(() => animEnd.Invoke());
-                else
-                    animEnd.Invoke();
-            });
-        }
-        else
-        {
-            animEnd.Invoke();
-        }
-    }
-
-    public void StopSwapWarning()
-    {
-        isSwapTargeted = false;
-
-        if (elementRenderer != null)
-        {
-            elementRenderer.DOFade(1f, 0.01f);
-            elementRenderer.DOKill();
-            Color col = elementRenderer.color;
-            col.a = 1f;
-            elementRenderer.color = col;
-        }
-
-        transform.DOKill();
-        transform.localScale = Vector3.one;
     }
 }

@@ -10,7 +10,6 @@ public class HiddenDestroySpell : TimedDestroySpellBase
     private bool timerStarted;
     private Coroutine visibilityCoroutine;
     private Coroutine revealCoroutine;
-    private Coroutine lowTimeRevealCoroutine;
     private List<Coroutine> targetingAnimations = new List<Coroutine>();
     private const float revealOnMatchDuration = 0.5f;
     private Sprite hiddenSprite;
@@ -77,22 +76,44 @@ public class HiddenDestroySpell : TimedDestroySpellBase
 
     public override void Execute(Grid grid)
     {
-        base.Execute(grid);
+        // Don't call base.Execute - we handle timer start ourselves after visibility phase
+        targetedPositions.Clear();
+        cachedGrid = grid;
+
         CleanupCoroutines(grid);
 
         elementsHidden = false;
         timerStarted = false;
         hasTriggeredLowTimeReveal = false;
-        targetedPositions.Clear();
         targetingAnimations.Clear();
-
-        cachedGrid = grid;
 
         if (grid == null) return;
 
         SelectTargets(grid);
 
         visibilityCoroutine = grid.StartCoroutine(VisibilityPhaseRoutine(grid));
+    }
+
+    /// <summary>
+    /// Call this every frame to drive visual state from timer state.
+    /// Extends base to handle low-time reveal and hidden state.
+    /// </summary>
+    public new void UpdateVisuals()
+    {
+        if (!timerStarted) return;
+
+        // Call base implementation for countdown progress
+        base.UpdateVisuals();
+
+        // Check for low time reveal
+        if (cachedGrid != null && !hasTriggeredLowTimeReveal && elementsHidden)
+        {
+            if (Timer.GetNormalizedRemaining() < lowTimeThreshold)
+            {
+                hasTriggeredLowTimeReveal = true;
+                TriggerBriefReveal(cachedGrid);
+            }
+        }
     }
 
     public override void Tick(Grid grid, System.Action onComplete = null)
@@ -147,40 +168,21 @@ public class HiddenDestroySpell : TimedDestroySpellBase
         StopTargetingAnimations(grid);
         HideAllTargets(grid);
 
-        // Start the countdown timer
+        // Start the countdown timer - now controller-driven
         SubscribeTimerEvents();
         Timer.Start();
         timerStarted = true;
 
-        float duration = Timer.TotalSeconds;
+        // Apply initial targeting visuals with full progress
         foreach (var pos in targetedPositions)
         {
             ElementVisual visual = grid.GetElementVisualAt(pos);
             if (visual == null || !visual.IsTargetedByEnemy) continue;
 
-            visual.StartTimedCountdown(duration);
+            visual.SetTimedCountdownProgress(1f);
         }
-
-        lowTimeRevealCoroutine = grid.StartCoroutine(LowTimeRevealMonitorRoutine(grid));
 
         visibilityCoroutine = null;
-    }
-
-    private IEnumerator LowTimeRevealMonitorRoutine(Grid grid)
-    {
-        while (grid != null && !Timer.IsExpired && !hasTriggeredLowTimeReveal)
-        {
-            if (Timer.GetNormalizedRemaining() < lowTimeThreshold)
-            {
-                hasTriggeredLowTimeReveal = true;
-                TriggerBriefReveal(grid);
-                yield break;
-            }
-
-            yield return null;
-        }
-
-        lowTimeRevealCoroutine = null;
     }
 
     private IEnumerator TargetingAnimationRoutine(Grid grid, Vector2Int pos, float duration)
@@ -311,12 +313,6 @@ public class HiddenDestroySpell : TimedDestroySpellBase
         {
             grid.StopCoroutine(revealCoroutine);
             revealCoroutine = null;
-        }
-
-        if (lowTimeRevealCoroutine != null)
-        {
-            grid.StopCoroutine(lowTimeRevealCoroutine);
-            lowTimeRevealCoroutine = null;
         }
 
         StopTargetingAnimations(grid);

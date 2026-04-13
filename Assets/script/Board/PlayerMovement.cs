@@ -54,30 +54,30 @@ public class PlayerMovement : MonoBehaviour
         }));
     }
 
-    public void MoveOneStepForward(System.Action onArrive = null)
-    {
-        if (isMoving) return;
-        if (currentTile == null) ResetCurrentTile();
+    //public void MoveOneStepForward(System.Action onArrive = null)
+    //{
+    //    if (isMoving) return;
+    //    if (currentTile == null) ResetCurrentTile();
 
-        BoardTile walkableNext = GetNextForwardTile(walkableOnly: true);
-        if (walkableNext != null)
-        {
-            StartCoroutine(MoveAlongPath(new List<BoardTile> { walkableNext }, () =>
-            {
-                onArrive?.Invoke();
-            }));
-            return;
-        }
+    //    BoardTile walkableNext = GetNextForwardTile(walkableOnly: true);
+    //    if (walkableNext != null)
+    //    {
+    //        StartCoroutine(MoveAlongPath(new List<BoardTile> { walkableNext }, () =>
+    //        {
+    //            onArrive?.Invoke();
+    //        }));
+    //        return;
+    //    }
 
-        BoardTile nonWalkableNext = GetNextForwardTile(walkableOnly: false);
-        if (nonWalkableNext != null)
-        {
-            nonWalkableNext.Interact();
-            return;
-        }
+    //    BoardTile nonWalkableNext = GetNextForwardTile(walkableOnly: false);
+    //    if (nonWalkableNext != null)
+    //    {
+    //        nonWalkableNext.Interact();
+    //        return;
+    //    }
 
-        Debug.Log("No hay forward tile disponible");
-    }
+    //    Debug.Log("No hay forward tile disponible");
+    //}
 
     public void MoveUntilStop(System.Action<BoardTile> onStop = null)
     {
@@ -157,7 +157,7 @@ public class PlayerMovement : MonoBehaviour
                 break;
             }
 
-            if (!next.IsEmpty())
+            if (!next.IsWalkable())
                 break;
 
             path.Add(next);
@@ -215,6 +215,7 @@ public class PlayerMovement : MonoBehaviour
             yield return StartCoroutine(JumpToTile(tile.transform.position));
 
             currentTile = tile;
+            currentTile.Interact();
 
             GameObject newParticles = Instantiate(
                 jumpParticles.gameObject,

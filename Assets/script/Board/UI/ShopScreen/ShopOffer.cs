@@ -1,15 +1,16 @@
 public class ShopOffer
 {
     public enum OfferType { Item, Heal, StatUpgrade }
+
     public OfferType Type { get; private set; }
     public Item Item { get; private set; }
     public int Cost { get; private set; }
     public float HealPercent { get; private set; }
-    public StatUpgradeType StatType   { get; private set; }
+    public StatUpgradeType StatType { get; private set; }
     public float StatAmount { get; private set; }
+    public float StatPercent { get; private set; }
 
     public bool IsPurchased { get; private set; }
-
     public void MarkAsPurchased() => IsPurchased = true;
 
     public static ShopOffer CreateItemOffer(Item item, int cost)
@@ -22,8 +23,15 @@ public class ShopOffer
         return new ShopOffer { Type = OfferType.Heal, HealPercent = healPercent, Cost = cost };
     }
 
-    public static ShopOffer CreateStatUpgradeOffer(StatUpgradeType stat, float amount, int cost)
+    public static ShopOffer CreateStatUpgradeOffer(StatUpgradeType stat, float amount, float statPercent, int cost)
     {
-        return new ShopOffer { Type = OfferType.StatUpgrade, StatType = stat, StatAmount = amount, Cost = cost };
+        return new ShopOffer
+        {
+            Type = OfferType.StatUpgrade,
+            StatType = stat,
+            StatAmount = amount,
+            StatPercent = statPercent,
+            Cost = cost
+        };
     }
 }

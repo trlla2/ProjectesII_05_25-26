@@ -9,6 +9,10 @@ public class PlayerHealthBar : MonoBehaviour
 
     private void OnEnable()
     {
+        UpdateHealthBar();
+    }
+    public void UpdateHealthBar()
+    {
         healthBar.value = GameManager.Instance.PlayerStats.GetHPPercentage();
     }
 }

@@ -9,6 +9,8 @@ public abstract class BoardTile : MonoBehaviour
     [SerializeField] private bool isForcedPos;
     [SerializeField] private Vector2Int forcedPos = new Vector2Int();
 
+    [SerializeField] private BoardTileData _postInteractionTile;
+
     private Vector2Int _gridPos;
     [SerializeField]
     private Renderer _renderer;
@@ -56,6 +58,12 @@ public abstract class BoardTile : MonoBehaviour
         {
             _boardManager.PutFogOnRevealedBranch();
         }
+    }
+
+    protected void ReplaceWithPostInteraction()
+    {
+        if (_postInteractionTile != null)
+            _boardManager.ReplaceTileType(this, _postInteractionTile);
     }
 
     public void HighlightTile(bool on)

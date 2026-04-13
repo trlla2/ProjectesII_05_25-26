@@ -2,9 +2,7 @@ using UnityEngine;
 
 public class ChestTile : BoardTile
 {
-    [SerializeField] private BoardTileData _postInteractionTile;
     [SerializeField] private AudioSource openChestSource;
-    //bool isOpen = false;
 
     public override void Interact()
     {
@@ -16,9 +14,6 @@ public class ChestTile : BoardTile
 
     public void Replace()
     {
-        if (_postInteractionTile != null)
-            _boardManager.ReplaceTileType(this, _postInteractionTile);
+        ReplaceWithPostInteraction();
     }
-    
-
 }

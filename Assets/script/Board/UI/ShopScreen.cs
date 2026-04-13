@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -47,7 +48,7 @@ public class ShopScreen : MonoBehaviour
     {
         if (_currentTile == null) return;
 
-        IReadOnlyList<ShopOffer> itemOffers = _currentTile.ItemOffers;
+        List<ShopOffer> itemOffers = new List<ShopOffer>(_currentTile.ItemOffers);
         for (int i = 0; i < _itemSlots.Count; i++)
         {
             if (i < itemOffers.Count)
@@ -113,16 +114,23 @@ public class ShopScreen : MonoBehaviour
         switch (offer.StatType)
         {
             case StatUpgradeType.ExtraDamage:
-                stats.ModifyExtraDamage((int)offer.StatAmount);
+                int extraDmg = Mathf.RoundToInt(offer.StatAmount + stats.ExtraDamage * offer.StatPercent);
+                stats.ModifyExtraDamage(extraDmg);
                 break;
+
             case StatUpgradeType.MaxHealth:
-                stats.ModifyExtraHealth((int)offer.StatAmount);
+                int extraHp = Mathf.RoundToInt(offer.StatAmount + (stats.MaxHp + stats.ExtraHealth) * offer.StatPercent);
+                stats.ModifyExtraHealth(extraHp);
                 break;
+
             case StatUpgradeType.Evasion:
-                stats.ModifyEvasion((int)offer.StatAmount);
+                int extraEvasion = Mathf.RoundToInt(offer.StatAmount + stats.Evasion * offer.StatPercent);
+                stats.ModifyEvasion(extraEvasion);
                 break;
+
             case StatUpgradeType.Defense:
-                stats.ModifyDefense(offer.StatAmount);
+                float extraDef = offer.StatAmount + stats.Defense * offer.StatPercent;
+                stats.ModifyDefense(extraDef);
                 break;
         }
     }
@@ -136,6 +144,15 @@ public class ShopScreen : MonoBehaviour
     private void ShowFeedback(string message)
     {
         if (_feedbackText != null)
+        {
             _feedbackText.text = message;
+            StartCoroutine(ClearFeedbackText());
+        }
+    }
+
+    private IEnumerator ClearFeedbackText()
+    {
+        yield return new WaitForSeconds(1f);
+        _feedbackText.text = "";
     }
 }

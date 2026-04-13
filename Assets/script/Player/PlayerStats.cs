@@ -15,10 +15,13 @@ public class PlayerStats
     public float Hp => hp;
 
     private int evasionPoints;
+    public int Evasion => evasionPoints;
     private int extraHealth;
     public int ExtraHealth => extraHealth;
     private int extraDamage;
+    public int ExtraDamage => extraDamage;
     private float defense;
+    public float Defense => defense;
     private int critPercentage;
     private const float critMultiplayer = 1.5f;
     private int spikeDamage;

@@ -55,6 +55,7 @@ public class PlayerStats
     public event System.Action OnLevelUp;
     public event System.Action OnMoneyChange;
     public event System.Action OnInventoryChange;
+    public event System.Action OnSpellBookChange;
 
     public PlayerStats()
     {
@@ -282,13 +283,15 @@ public class PlayerStats
 
         spellBook[slot] = spell;
 
-        Debug.Log("Spell Added");
+        OnSpellBookChange?.Invoke();
     }
 
     public void ClearSpellBook()
     {
         for (int i = 0; i < spellBookSize; i++)
             spellBook[i] = null;
+
+        OnSpellBookChange?.Invoke();
     }
 
     public bool ExistSpellOnSpellBook(Spell spell)

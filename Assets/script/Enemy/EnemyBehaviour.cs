@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using System.Linq;
 
 [RequireComponent(typeof(SpriteRenderer))]
 public class EnemyBehaviour : MonoBehaviour
@@ -609,6 +610,14 @@ public class EnemyBehaviour : MonoBehaviour
         if (activeSpell is BlockerSpell blockerSpell)
         {
             return blockerSpell.GetBlockedPositionsSet();
+        }
+        if(activeSpell is HiddenDestroySpell hiddenSpell)
+        {
+            if (hiddenSpell.ElementsHidden)
+            {
+                return hiddenSpell.TargetedPositions.ToHashSet();
+            }
+
         }
         return new HashSet<Vector2Int>();
     }

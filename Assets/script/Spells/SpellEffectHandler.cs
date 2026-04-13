@@ -9,7 +9,6 @@ public struct SpellEffectActivationData
 {
     public string SpellName;
     public AudioClip Sound;
-    public ParticleSystem Particles;
 }
 
 public class SpellEffectHandler : MonoBehaviour
@@ -71,8 +70,6 @@ public class SpellEffectHandler : MonoBehaviour
         if (audioSource != null && data.Sound != null)
             audioSource.PlayOneShot(data.Sound);
 
-        if (data.Particles != null)
-            data.Particles.Play();
     }
 
     private void TryFreezeEnemy(float duration = FreezeDuration)
@@ -107,7 +104,7 @@ public class SpellEffectHandler : MonoBehaviour
         while (grid.CurrentState != GridStateType.Idle)
             yield return null;
 
-        // Collect all non-blocked Yellow / Orange cells on the refreshed board
+        // Collect all non-blocked Yellow elements
         List<Vector2Int> strikePositions = new List<Vector2Int>();
         List<Element> strikeElements = new List<Element>();
 
@@ -122,7 +119,7 @@ public class SpellEffectHandler : MonoBehaviour
                 if (element == null || visual == null || visual.IsBlocked)
                     continue;
 
-                if (element.Type == ElementType.Yellow || element.Type == ElementType.Orange)
+                if (element.Type == ElementType.Yellow)
                 {
                     strikePositions.Add(pos);
                     strikeElements.Add(element);
@@ -175,9 +172,9 @@ public class SpellEffectHandler : MonoBehaviour
         spellPathAnimator.OnSpellCast(strikePositions.ToArray(), strikeElements, () =>
         {
             grid.DeleteElementsByPlayer(strikePositions);
-
+            IEnemySpell active = GameManager.Instance.CombatHandler.GetEnemyRef().ActiveSpell;
             //we only count as player move if bomb enemy
-            if (GameManager.Instance.CombatHandler.GetEnemyRef().ActiveSpell is BombSpell)
+            if (active is BombSpell || active is HiddenDestroySpell)
                 GameManager.Instance.NotifyPlayerMove();
 
             grid.ChangeState(new ValidateSpellState(grid, GameManager.Instance.PlayerStats.GetSpellBook()));

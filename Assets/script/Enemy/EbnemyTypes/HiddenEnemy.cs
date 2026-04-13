@@ -77,6 +77,7 @@ public class HiddenDestroySpell : TimedDestroySpellBase
     public override void Execute(Grid grid)
     {
         // Don't call base.Execute - we handle timer start ourselves after visibility phase
+        ResetEffectState();
         targetedPositions.Clear();
         cachedGrid = grid;
 
@@ -94,11 +95,7 @@ public class HiddenDestroySpell : TimedDestroySpellBase
         visibilityCoroutine = grid.StartCoroutine(VisibilityPhaseRoutine(grid));
     }
 
-    /// <summary>
-    /// Call this every frame to drive visual state from timer state.
-    /// Extends base to handle low-time reveal and hidden state.
-    /// </summary>
-    public new void UpdateVisuals()
+    public override void UpdateVisuals()
     {
         if (!timerStarted) return;
 

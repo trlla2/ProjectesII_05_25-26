@@ -69,7 +69,7 @@ public class PlayerStats
         spellBook = new Spell[spellBookSize];
         knownSpells = new List<Spell>();
         inventory = new List<Item>();
-        limitInventory = 3;
+        limitInventory = 16; // 3
 
         foreach (Item debugItem in GameManager.Instance._debugItemsInInventory)
         {

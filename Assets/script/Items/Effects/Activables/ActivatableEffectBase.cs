@@ -125,7 +125,7 @@ public abstract class ActivatableEffectBase : IActivatableEffect
         });
     }
 
-    protected void AttackWithElements(ItemContext context, List<Vector2Int> positions, List<Element> elements, Action onComplete)
+    protected void AttackWithElements(ItemContext context, List<Vector2Int> positions, List<Element> elements, Action onComplete, bool tickEnemyProgress = false)
     {
         Grid grid = context.Grid;
 
@@ -139,7 +139,8 @@ public abstract class ActivatableEffectBase : IActivatableEffect
             // Destroy ElementVisual objects and queue refill
             grid.DeleteElementsByPlayer(positions);
 
-            GameManager.Instance.NotifyPlayerMove();
+            if (tickEnemyProgress)
+                GameManager.Instance.NotifyPlayerMove();
 
             grid.ChangeState(new IdleState(grid));
             onComplete?.Invoke();

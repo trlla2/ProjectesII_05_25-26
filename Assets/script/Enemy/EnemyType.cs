@@ -55,6 +55,9 @@ public class EnemyType : ScriptableObject
     [SerializeField] private bool haveDrops = false;
     [SerializeField] private List<Spell> spellDrops = new List<Spell>();
 
+    [Header("Swapper Enemy Settings")]
+    [SerializeField] private float swapperSwapInterval = 2.5f;
+
 
     public float Health => health;
     public float Damage => damage;
@@ -137,6 +140,9 @@ public class EnemyType : ScriptableObject
             case EnemySpellType.BlockerAttack:
                 return new BlockerSpell(blockerCount, blockerDamagePercent, attackTimer, damagePerElement);
 
+            case EnemySpellType.SwapperAttack:
+                return new SwapperSpell( swapperSwapInterval, attackTimer, damagePerElement, lvl2BonusTimeOnClear);
+
             default:
                 return new ColumnDestroySpell(damagePerElement, moveCount);
         }
@@ -181,5 +187,6 @@ public enum EnemySpellType
     TutorialStage2FixedTargets,
     TutorialStage2TimedSpell,
     ContinuouslyTimedTarget,
-    BlockerAttack
+    BlockerAttack,
+    SwapperAttack
 }

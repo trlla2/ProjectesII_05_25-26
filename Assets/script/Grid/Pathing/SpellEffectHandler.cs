@@ -81,7 +81,7 @@ public class SpellEffectHandler : MonoBehaviour
         if (enemy == null) return;
 
         IEnemySpell activeSpell = enemy.ActiveSpell;
-        bool isTimedEnemy = activeSpell is TimedDestroySpellBase || activeSpell is MultipleTimedSpellBase || activeSpell is BlockerSpell;
+        bool isTimedEnemy = activeSpell is TimedDestroySpellBase || activeSpell is MultipleTimedSpellBase || activeSpell is BlockerSpell || activeSpell is SwapperSpell;
 
         if (isTimedEnemy)
             enemy.FreezeForDuration(FreezeDuration);
@@ -175,6 +175,7 @@ public class SpellEffectHandler : MonoBehaviour
         spellPathAnimator.OnSpellCast(strikePositions.ToArray(), strikeElements, () =>
         {
             grid.DeleteElementsByPlayer(strikePositions);
+            GameManager.Instance.NotifyPlayerMove();
             grid.ChangeState(new ValidateSpellState(grid, GameManager.Instance.PlayerStats.GetSpellBook()));
             attackDone = true;
         });

@@ -7,6 +7,7 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
     private SpellTimer spellTimer;
     protected Grid cachedGrid;
     private bool effectApplied;
+    private bool isPaused;
 
     protected float bonusTimePerClearedTarget = 0f;
     private int pendingClearedCount;
@@ -38,12 +39,13 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
         targetedPositions.Clear();
         cachedGrid = grid;
         effectApplied = false;
+        isPaused = false;
         pendingClearedCount = 0;
 
         if (grid == null) return;
 
         SelectTargets(grid);
-        StartCountdownVisuals(grid);
+        ApplyTargetingVisuals(grid);
 
         SubscribeTimerEvents();
         spellTimer.Start();
@@ -52,32 +54,109 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
     protected void SubscribeTimerEvents()
     {
         spellTimer.OnTimerExpired += OnTimerExpired;
-        spellTimer.OnTimeAdded += OnTimeAdded;
     }
 
     protected abstract void SelectTargets(Grid grid);
 
+    private void ApplyTargetingVisuals(Grid grid)
+    {
+        if (grid == null) return;
+
+        foreach (var pos in targetedPositions)
+        {
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual != null)
+            {
+                visual.SetTargetedByEnemy(true);
+                visual.StartTimedFillAnimation(spellTimer.RemainingSeconds);
+            }
+        }
+    }
+
     public void PauseTimer()
     {
         spellTimer?.Pause();
-        PauseVisuals();
+        isPaused = true;
+        if (cachedGrid == null) return;
+        foreach (var pos in targetedPositions)
+            cachedGrid.GetElementVisualAt(pos)?.PauseTimedFillAnimation();
     }
 
     public void ResumeTimer()
     {
         spellTimer?.Resume();
-        ResumeVisuals();
+        isPaused = false;
+        if (cachedGrid == null) return;
+        foreach (var pos in targetedPositions)
+            cachedGrid.GetElementVisualAt(pos)?.ResumeTimedFillAnimation();
     }
 
     public void AddTime(float seconds)
     {
         if (spellTimer == null || effectApplied) return;
         spellTimer.AddTime(seconds);
+
+        if (cachedGrid == null) return;
+
+        // Smoothly extend the fill animation to reflect the new remaining duration
+        foreach (var pos in targetedPositions)
+        {
+            ElementVisual visual = cachedGrid.GetElementVisualAt(pos);
+            if (visual == null) continue;
+            visual.ExtendTimedCountdown(spellTimer.RemainingSeconds, spellTimer.TotalSeconds);
+        }
+    }
+
+    // Call this every frame to drive visual state from timer state.
+    public void UpdateVisuals()
+    {
+        if (cachedGrid == null || effectApplied || isPaused) return;
+
+        List<Vector2Int> invalidPositions = null;
+
+        foreach (var pos in targetedPositions)
+        {
+            ElementVisual visual = cachedGrid.GetElementVisualAt(pos);
+            Element element = cachedGrid.GetElementAt(pos);
+
+            bool valid = element != null && element != cachedGrid.EmptyElement && visual != null;
+
+            if (!valid)
+            {
+                if (visual != null)
+                {
+                    visual.SetTimedCountdownProgress(0f);
+                    visual.SetTargetedByEnemy(false);
+                }
+                invalidPositions ??= new List<Vector2Int>();
+                invalidPositions.Add(pos);
+            }
+            // DOTween drives the fill — no per-frame SetTimedCountdownProgress needed
+        }
+
+        if (invalidPositions != null)
+        {
+            foreach (var pos in invalidPositions)
+            {
+                targetedPositions.Remove(pos);
+                pendingClearedCount++;
+
+                if (bonusTimePerClearedTarget > 0f)
+                    AddTime(bonusTimePerClearedTarget);
+            }
+        }
     }
 
     public bool OnTargetCleared(Grid grid, Vector2Int clearedPosition)
-    {        
+    {
         if (!targetedPositions.Contains(clearedPosition)) return false;
+
+        ElementVisual visual = grid?.GetElementVisualAt(clearedPosition);
+        if (visual != null)
+        {
+            visual.SetTimedCountdownProgress(0f);
+            visual.SetTargetedByEnemy(false);
+        }
 
         targetedPositions.Remove(clearedPosition);
 
@@ -109,7 +188,7 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
                 Element el = grid.GetElementAt(pos);
                 if (el != null && el != grid.EmptyElement)
                 {
-                    // Element survived gravity keep targeting it.
+                    // Element survived gravity — keep targeting it.
                     targetedPositions.Add(pos);
                 }
                 else
@@ -117,6 +196,7 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
                     //visual drifted to an empty slot
                     visual.ClearOverrideSprite();
                     visual.SetTargetedByEnemy(false);
+                    visual.SetTimedCountdownProgress(0f);
                 }
             }
         }
@@ -159,57 +239,6 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
         ApplyEffect(grid, onComplete);
     }
 
-    private void StartCountdownVisuals(Grid grid)
-    {
-        if (grid == null) return;
-
-        float duration = spellTimer.TotalSeconds;
-
-        foreach (var pos in targetedPositions)
-        {
-            ElementVisual visual = grid.GetElementVisualAt(pos);
-            if (visual == null || !visual.IsTargetedByEnemy) continue;
-
-            visual.StartTimedCountdown(duration);
-        }
-    }
-
-    private void OnTimeAdded(float newRemainingTime)
-    {
-        if (cachedGrid == null) return;
-
-        // Update all visuals with new remaining time
-        foreach (var pos in targetedPositions)
-        {
-            ElementVisual visual = cachedGrid.GetElementVisualAt(pos);
-            if (visual == null || !visual.IsTargetedByEnemy) continue;
-
-            visual.ExtendTimedCountdown(newRemainingTime, spellTimer.TotalSeconds);
-        }
-    }
-
-    private void PauseVisuals()
-    {
-        if (cachedGrid == null) return;
-
-        foreach (var pos in targetedPositions)
-        {
-            ElementVisual visual = cachedGrid.GetElementVisualAt(pos);
-            visual?.PauseTimedCountdownDOTween();
-        }
-    }
-
-    private void ResumeVisuals()
-    {
-        if (cachedGrid == null) return;
-
-        foreach (var pos in targetedPositions)
-        {
-            ElementVisual visual = cachedGrid.GetElementVisualAt(pos);
-            visual?.ResumeTimedCountdownDOTween();
-        }
-    }
-
     private void ClearAllVisuals(Grid grid)
     {
         if (grid == null) return;
@@ -220,7 +249,8 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
             if (visual != null)
             {
                 visual.ClearTargetVisual();
-                visual.StopTimedCountdown();
+                visual.SetTimedCountdownProgress(0f);
+                visual.SetTargetedByEnemy(false);
             }
         }
     }
@@ -235,7 +265,6 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
         if (spellTimer != null)
         {
             spellTimer.OnTimerExpired -= OnTimerExpired;
-            spellTimer.OnTimeAdded -= OnTimeAdded;
         }
     }
 
@@ -255,9 +284,9 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
             ElementVisual visual = grid.GetElementVisualAt(pos);
             if (visual != null && !visual.IsTargetedByEnemy)
             {
-                // A new element has fallen into this position, re-target it
                 visual.SetTargetedByEnemy(true);
-                visual.StartTimedCountdown(spellTimer.TotalSeconds * spellTimer.GetNormalizedRemaining());
+                // Restart the animation from the current remaining time
+                visual.StartTimedFillAnimation(spellTimer.RemainingSeconds);
             }
         }
     }

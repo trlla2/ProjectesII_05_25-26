@@ -8024,12 +8024,15 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1135501898}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5089faa8aa8f981468d790dfeaa1fece, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  items: []
+  items:
+  - {fileID: 11400000, guid: 7a2e9d56b64e7864ca1fdaeb5115c5f0, type: 2}
+  - {fileID: 11400000, guid: 1ce31f216c45c0b4f9ea35b7a04b23a5, type: 2}
+  - {fileID: 11400000, guid: 0b07743ebec0aeb4594b65ad4d5a5506, type: 2}
   ForceSpells: 0
   spells: []
   knownSpells:
@@ -11345,7 +11348,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.0011134523, y: -214655.4}
+  m_AnchoredPosition: {x: 0.0011134523, y: -226237.69}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1618195481
@@ -11531,6 +11534,10 @@ PrefabInstance:
     - target: {fileID: 4325057780644604620, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -73.57953
+      objectReference: {fileID: 0}
+    - target: {fileID: 5657956887486028897, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -12866,7 +12873,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1803586518}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0a1d05e15792c614793b128a6eb1b372, type: 3}
   m_Name: 
@@ -16538,7 +16545,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5029025146557349794, guid: f2d2d3776071b2e44a8f37a79a299353, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0.05
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 5029025146557349794, guid: f2d2d3776071b2e44a8f37a79a299353, type: 3}
       propertyPath: m_SizeDelta.x

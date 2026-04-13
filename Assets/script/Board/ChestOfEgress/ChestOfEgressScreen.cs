@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(CanvasGroup))]
 public class ChestOfEgressScreen : MonoBehaviour
@@ -28,6 +29,8 @@ public class ChestOfEgressScreen : MonoBehaviour
     private ChestOfEgressTile _openedTile;
     private TranslatorUI _translator;
     private CanvasGroup _canvasGroup;
+
+    private ItemSelectable _selectedItem;
 
     private void Awake()
     {
@@ -89,6 +92,7 @@ public class ChestOfEgressScreen : MonoBehaviour
 
     private void Refresh()
     {
+        _selectedItem = null;
         RefreshPanel(_playerItemsPanel, GameManager.Instance.PlayerStats.Inventory, false);
         RefreshPanel(_chestItemsPanel, new List<Item>(_chestInventory.Items), true);
     }
@@ -103,7 +107,15 @@ public class ChestOfEgressScreen : MonoBehaviour
             GameObject go = Instantiate(_itemSelectablePrefab, panel);
             ChestOfEgressItemSlot slot = go.AddComponent<ChestOfEgressItemSlot>();
             slot.Setup(item, isChestPanel, this);
-            go.GetComponent<ItemSelectable>().SetItem(null, item);
+            ItemSelectable iS = go.GetComponent<ItemSelectable>();
+            iS.SetItem(null, item);
+            iS.OnSelect += () =>
+            {
+                if (!isChestPanel)
+                    return;
+                _selectedItem?.UnSelect();
+                _selectedItem = iS;
+            };
         }
     }
 
@@ -113,12 +125,17 @@ public class ChestOfEgressScreen : MonoBehaviour
 
         GameManager.Instance.PlayerStats.RemoveItemFromInventory(item);
         _chestInventory.AddItem(item);
+        Debug.Log($"Moving {item.name} to chest");
+        if (_selectedItem != null)
+            MoveItemToPlayer(_selectedItem.Item);
+
         Refresh();
     }
 
     public void MoveItemToPlayer(Item item)
     {
         if (!GameManager.Instance.PlayerStats.AddItemToInventory(item)) return;
+        Debug.Log($"Moving {item.name} to player Invetory");
 
         _chestInventory.RemoveItem(item);
         Refresh();

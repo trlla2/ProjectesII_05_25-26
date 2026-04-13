@@ -216,12 +216,14 @@ public class PlayerStats
 
         OnInventoryChange?.Invoke();
 
+
         return true;// the item was added
     }
 
     public void RemoveItemFromInventory(Item item)
     {
         if (!inventory.Contains(item)) return;
+       
 
         inventory.Remove(item);
         item.RemoveEffects(this);
@@ -234,7 +236,6 @@ public class PlayerStats
         {
             item.RemoveEffects(this);
         }
-
         inventory.Clear();
 
         OnInventoryChange?.Invoke();

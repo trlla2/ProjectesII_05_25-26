@@ -90,7 +90,7 @@ public class SpellSlotBehaviour : MonoBehaviour
         for (int i = 0; i < spell.Recipe.Count; i++)
         {
             GameObject newElementSlot = Instantiate(elementSpellSlot, recipieParent.transform);
-            newElementSlot.GetComponent<Image>().sprite = spell.Recipe[i].Sprite;
+            newElementSlot.GetComponent<UIElement_Behaviour>().SetupElementUI(spell.Recipe[i]);
         }
     }
 }

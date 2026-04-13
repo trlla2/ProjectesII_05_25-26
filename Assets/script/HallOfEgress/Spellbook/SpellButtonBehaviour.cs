@@ -17,7 +17,7 @@ public class SpellButtonBehaviour : MonoBehaviour
         for (int i = 0; i < spell.Recipe.Count; i++)
         {
             GameObject temp = Instantiate(ElementPrefab, recipieParent.transform);
-            temp.GetComponent<Image>().sprite = spell.Recipe[i].Sprite;
+            temp.GetComponent<UIElement_Behaviour>().SetupElementUI(spell.Recipe[i]);
         }
     }
 }

@@ -98,7 +98,6 @@ public class SwapperSpell : EnemySpellBase
         targetedPositions.Add(info.PositionA);
         targetedPositions.Add(info.PositionB);
 
-        // Set visuals for both elements AND mark them as swap-targeted to prevent gravity
         ElementVisual visualA = grid.GetElementVisualAt(info.PositionA);
         ElementVisual visualB = grid.GetElementVisualAt(info.PositionB);
 
@@ -107,12 +106,14 @@ public class SwapperSpell : EnemySpellBase
             visualA.SetTargetedByEnemy(true);
             visualA.StartTimedCountdown(perPairCountdown);
             visualA.PlaySwapWarning(perPairCountdown);
+            visualA.SetSwapWarningProgress(1f);
         }
         if (visualB != null)
         {
             visualB.SetTargetedByEnemy(true);
             visualB.StartTimedCountdown(perPairCountdown);
             visualB.PlaySwapWarning(perPairCountdown);
+            visualB.SetSwapWarningProgress(1f);
         }
 
         int capturedId = id;
@@ -282,11 +283,16 @@ public class SwapperSpell : EnemySpellBase
             {
                 kvp.Value.Timer?.Resume();
                 kvp.Value.IsPaused = false;
-                
+
                 if (cachedGrid != null)
                 {
-                    cachedGrid.GetElementVisualAt(kvp.Value.PositionA)?.ResumeTimedCountdown();
-                    cachedGrid.GetElementVisualAt(kvp.Value.PositionB)?.ResumeTimedCountdown();
+                    float normalizedProgress = kvp.Value.Timer?.GetNormalizedRemaining() ?? 1f;
+                    ElementVisual vA = cachedGrid.GetElementVisualAt(kvp.Value.PositionA);
+                    ElementVisual vB = cachedGrid.GetElementVisualAt(kvp.Value.PositionB);
+                    vA?.ResumeTimedCountdown();
+                    vA?.SetSwapWarningProgress(normalizedProgress);
+                    vB?.ResumeTimedCountdown();
+                    vB?.SetSwapWarningProgress(normalizedProgress);
                 }
             }
         }
@@ -296,8 +302,17 @@ public class SwapperSpell : EnemySpellBase
     {
         foreach (var kvp in activePairs)
         {
-            if (!kvp.Value.Fired)
-                kvp.Value.Timer?.AddTime(seconds);
+            if (!kvp.Value.Fired && kvp.Value.Timer != null)
+            {
+                kvp.Value.Timer.AddTime(seconds);
+
+                if (cachedGrid != null)
+                {
+                    float normalizedProgress = kvp.Value.Timer.GetNormalizedRemaining();
+                    cachedGrid.GetElementVisualAt(kvp.Value.PositionA)?.SetSwapWarningProgress(normalizedProgress);
+                    cachedGrid.GetElementVisualAt(kvp.Value.PositionB)?.SetSwapWarningProgress(normalizedProgress);
+                }
+            }
         }
     }
 
@@ -503,6 +518,70 @@ public class SwapperSpell : EnemySpellBase
         onComplete?.Invoke();
     }
 
+    public void UpdateVisuals()
+    {
+        if (cachedGrid == null) return;
+
+        List<int> invalidPairs = null;
+
+        foreach (var kvp in activePairs)
+        {
+            if (kvp.Value.Fired) continue;
+
+            SwapPairInfo info = kvp.Value;
+            Element elA = cachedGrid.GetElementAt(info.PositionA);
+            Element elB = cachedGrid.GetElementAt(info.PositionB);
+            ElementVisual visualA = cachedGrid.GetElementVisualAt(info.PositionA);
+            ElementVisual visualB = cachedGrid.GetElementVisualAt(info.PositionB);
+
+            bool validA = elA != null && elA != cachedGrid.EmptyElement && visualA != null;
+            bool validB = elB != null && elB != cachedGrid.EmptyElement && visualB != null;
+
+            if (!validA || !validB)
+            {
+                if (visualA != null)
+                {
+                    visualA.StopTimedCountdown();
+                    visualA.StopSwapWarning();
+                    visualA.SetTargetedByEnemy(false);
+                }
+                if (visualB != null)
+                {
+                    visualB.StopTimedCountdown();
+                    visualB.StopSwapWarning();
+                    visualB.SetTargetedByEnemy(false);
+                }
+                invalidPairs ??= new List<int>();
+                invalidPairs.Add(kvp.Key);
+                continue;
+            }
+
+            // Drive per-frame swap warning blink/shake urgency — only when not paused
+            if (!info.IsPaused && info.Timer != null)
+            {
+                float normalizedProgress = info.Timer.GetNormalizedRemaining();
+                visualA.SetSwapWarningProgress(normalizedProgress);
+                visualB.SetSwapWarningProgress(normalizedProgress);
+            }
+        }
+
+        if (invalidPairs != null)
+        {
+            foreach (int id in invalidPairs)
+            {
+                if (activePairs.TryGetValue(id, out SwapPairInfo info))
+                {
+                    targetedPositions.Remove(info.PositionA);
+                    targetedPositions.Remove(info.PositionB);
+                }
+                CleanupPair(id);
+
+                if (bonusTimePerClearedPair > 0f)
+                    AddTimeToAll(bonusTimePerClearedPair);
+            }
+        }
+    }
+
     public override void Cleanup(Grid grid)
     {
         IsActive = false;
@@ -537,67 +616,6 @@ public class SwapperSpell : EnemySpellBase
         cachedGrid = null;
     }
 
-    public void UpdateVisuals()
-    {
-        if (!IsActive || cachedGrid == null || isProcessingEffect) return;
-
-        List<int> pairsToCancel = null;
-
-        foreach (var kvp in activePairs)
-        {
-            if (kvp.Value.Fired || kvp.Value.IsPaused) continue;
-
-            SwapPairInfo info = kvp.Value;
-
-            Element elA = cachedGrid.GetElementAt(info.PositionA);
-            Element elB = cachedGrid.GetElementAt(info.PositionB);
-            ElementVisual visualA = cachedGrid.GetElementVisualAt(info.PositionA);
-            ElementVisual visualB = cachedGrid.GetElementVisualAt(info.PositionB);
-
-            bool validA = elA != null && elA != cachedGrid.EmptyElement && visualA != null;
-            bool validB = elB != null && elB != cachedGrid.EmptyElement && visualB != null;
-
-            if (!validA || !validB)
-            {
-                if (visualA != null)
-                {
-                    visualA.StopTimedCountdown();
-                    visualA.StopSwapWarning();
-                    visualA.SetTargetedByEnemy(false);
-                }
-                if (visualB != null)
-                {
-                    visualB.StopTimedCountdown();
-                    visualB.StopSwapWarning();
-                    visualB.SetTargetedByEnemy(false);
-                }
-                pairsToCancel ??= new List<int>();
-                pairsToCancel.Add(kvp.Key);
-                continue;
-            }
-
-            float normalizedTime = info.Timer.GetNormalizedRemaining();
-            visualA.SetSwapWarningProgress(normalizedTime);
-            visualB.SetSwapWarningProgress(normalizedTime);
-            // DOTween drives the countdown fill — no per-frame update needed
-        }
-
-        if (pairsToCancel != null)
-        {
-            foreach (int id in pairsToCancel)
-            {
-                if (activePairs.TryGetValue(id, out SwapPairInfo info))
-                {
-                    targetedPositions.Remove(info.PositionA);
-                    targetedPositions.Remove(info.PositionB);
-                }
-                CleanupPair(id);
-            }
-
-            if (bonusTimePerClearedPair > 0f)
-                AddTimeToAll(bonusTimePerClearedPair * pairsToCancel.Count);
-        }
-    }
     private void CleanupPair(int id)
     {
         if (activePairs.TryGetValue(id, out SwapPairInfo info))

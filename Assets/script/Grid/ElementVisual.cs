@@ -49,6 +49,10 @@ public class ElementVisual : MonoBehaviour
     private float blockBreakProgress;
     private bool isSwapTargeted;
 
+    private float swapWarningBlinkPhase;
+    private float swapWarningShakePhase;
+    private float swapWarningSmoothedUrgency;
+
     public Vector2Int GridPosition => gridPosition;
     public bool CanSelect => canSelect;
     public bool IsTargetedByEnemy => isTargetedByEnemy;
@@ -533,39 +537,40 @@ public class ElementVisual : MonoBehaviour
 
     public void PlaySwapWarning(float duration)
     {
-        StartHoverAnimation(true);
+        swapWarningBlinkPhase = 0f;
+        swapWarningShakePhase = 0f;
+        swapWarningSmoothedUrgency = 0f;
     }
 
     public void SetSwapWarningProgress(float normalizedProgress)
     {
         if (elementRenderer == null) return;
 
-        if (normalizedProgress <= 0f)
-        {
-            StopSwapWarning();
-            return;
-        }
+        if (normalizedProgress <= 0f) return;
 
         isSwapTargeted = true;
 
-        // Urgency increases as timer runs out (progress approaches 0)
         float urgency = 1f - normalizedProgress;
+        swapWarningSmoothedUrgency = Mathf.Lerp(swapWarningSmoothedUrgency, urgency, Time.deltaTime * 5f);
 
-        // Blink faster as urgency increases
-        float blinkSpeed = 5f + urgency * 15f;
-        float blinkAlpha = 0.5f + 0.5f * Mathf.Abs(Mathf.Sin(Time.time * blinkSpeed));
+        float blinkSpeed = swapWarningSmoothedUrgency * 10f;
+        swapWarningBlinkPhase += blinkSpeed * Time.deltaTime;
+        swapWarningShakePhase += 20f * Time.deltaTime;
 
+        float blinkAlpha = 0.5f + 0.5f * Mathf.Abs(Mathf.Sin(swapWarningBlinkPhase));
         Color col = elementRenderer.color;
         col.a = blinkAlpha;
         elementRenderer.color = col;
 
-        // Shake intensity increases with urgency
-        float shake = urgency * 0.08f;
-        transform.localScale = Vector3.one * (1f + Mathf.Sin(Time.time * 20f) * shake);
+        float shake = swapWarningSmoothedUrgency * 0.08f;
+        transform.localScale = Vector3.one * (1f + Mathf.Sin(swapWarningShakePhase) * shake);
     }
 
     public void StopSwapWarning()
     {
+        swapWarningBlinkPhase = 0f;
+        swapWarningShakePhase = 0f;
+        swapWarningSmoothedUrgency = 0f;
         isSwapTargeted = false;
 
         if (elementRenderer != null)
@@ -588,41 +593,5 @@ public class ElementVisual : MonoBehaviour
         StopSwapWarning();
         StopHoverAnimation();
         ClearTargetVisual();
-    }
-
-
-    private IEnumerator FillRoutine(float targetFill, float duration, AnimationCurve curve)
-    {
-        if (targetFillImage == null)
-            yield break;
-
-        float startFill = targetFillImage.fillAmount;
-        float elapsed = 0f;
-
-        if (duration <= 0f)
-        {
-            targetFillImage.fillAmount = targetFill;
-
-            if (targetFill <= 0f && !isTargetedByEnemy)
-                targetFillImage.enabled = false;
-
-            yield break;
-        }
-
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / duration);
-            float c = curve != null ? curve.Evaluate(t) : t;
-            targetFillImage.fillAmount = Mathf.Lerp(startFill, targetFill, c);
-            yield return null;
-        }
-
-        targetFillImage.fillAmount = targetFill;
-
-        if (targetFill <= 0f && !isTargetedByEnemy)
-            targetFillImage.enabled = false;
-
-        fillCoroutine = null;
     }
 }

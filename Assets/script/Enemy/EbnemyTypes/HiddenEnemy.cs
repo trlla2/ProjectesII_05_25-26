@@ -173,13 +173,13 @@ public class HiddenDestroySpell : TimedDestroySpellBase
         Timer.Start();
         timerStarted = true;
 
-        // Apply initial targeting visuals with full progress
+        // Start the fill animation for each target now that the timer is running
         foreach (var pos in targetedPositions)
         {
             ElementVisual visual = grid.GetElementVisualAt(pos);
             if (visual == null || !visual.IsTargetedByEnemy) continue;
 
-            visual.SetTimedCountdownProgress(1f);
+            visual.StartTimedFillAnimation(Timer.RemainingSeconds);
         }
 
         visibilityCoroutine = null;

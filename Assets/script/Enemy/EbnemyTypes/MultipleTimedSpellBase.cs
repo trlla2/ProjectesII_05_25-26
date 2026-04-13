@@ -95,8 +95,8 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
         if (visual != null)
         {
             visual.SetTargetedByEnemy(true);
-            // Set initial progress to full - UpdateVisuals will drive it
-            visual.SetTimedCountdownProgress(1f);
+            // Start the DOTween countdown animation instead of snapping the fill
+            visual.StartTimedFillAnimation(perTargetCountdown);
         }
 
         int capturedId = id;
@@ -141,11 +141,7 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
                 continue;
             }
 
-            if (visual.IsTargetedByEnemy)
-            {
-                float progress = kvp.Value.Timer.GetNormalizedRemaining();
-                visual.SetTimedCountdownProgress(progress);
-            }
+            // DOTween drives the fill — no per-frame SetTimedCountdownProgress needed
         }
 
         // Handle cleared targets
@@ -240,6 +236,8 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
             if (!kvp.Value.Fired)
             {
                 kvp.Value.Timer?.Pause();
+                // Also pause the fill tween so the visual freezes
+                cachedGrid?.GetElementVisualAt(kvp.Value.Position)?.PauseTimedFillAnimation();
             }
         }
     }
@@ -252,6 +250,8 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
             if (!kvp.Value.Fired)
             {
                 kvp.Value.Timer?.Resume();
+                // Also resume the fill tween
+                cachedGrid?.GetElementVisualAt(kvp.Value.Position)?.ResumeTimedFillAnimation();
             }
         }
     }
@@ -260,8 +260,17 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
     {
         foreach (var kvp in activeTargets)
         {
-            if (!kvp.Value.Fired)
-                kvp.Value.Timer?.AddTime(seconds);
+            if (!kvp.Value.Fired && kvp.Value.Timer != null)
+            {
+                kvp.Value.Timer.AddTime(seconds);
+
+                // Resync the fill animation to reflect the extended remaining time
+                if (cachedGrid != null)
+                {
+                    ElementVisual visual = cachedGrid.GetElementVisualAt(kvp.Value.Position);
+                    visual?.ExtendTimedCountdown(kvp.Value.Timer.RemainingSeconds, perTargetCountdown);
+                }
+            }
         }
     }
 
@@ -396,7 +405,8 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
             if (visual != null && !visual.IsTargetedByEnemy)
             {
                 visual.SetTargetedByEnemy(true);
-                // Progress will be set on next UpdateVisuals() call
+                // Restart the animation from the current remaining time
+                visual.StartTimedFillAnimation(kvp.Value.Timer.RemainingSeconds);
             }
         }
     }

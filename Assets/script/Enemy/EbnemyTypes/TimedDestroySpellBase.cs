@@ -96,15 +96,14 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
         if (spellTimer == null || effectApplied) return;
         spellTimer.AddTime(seconds);
 
-        // Re-sync the fill tween to reflect the new remaining duration
         if (cachedGrid == null) return;
-        float newFill = spellTimer.GetNormalizedRemaining();
+
+        // Smoothly extend the fill animation to reflect the new remaining duration
         foreach (var pos in targetedPositions)
         {
             ElementVisual visual = cachedGrid.GetElementVisualAt(pos);
-            if (visual == null) return;
-            visual.SetTimedCountdownProgress(newFill);
-            visual.StartTimedFillAnimation(spellTimer.RemainingSeconds);
+            if (visual == null) continue;
+            visual.ExtendTimedCountdown(spellTimer.RemainingSeconds, spellTimer.TotalSeconds);
         }
     }
 
@@ -189,7 +188,7 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
                 Element el = grid.GetElementAt(pos);
                 if (el != null && el != grid.EmptyElement)
                 {
-                    // Element survived gravity keep targeting it.
+                    // Element survived gravity — keep targeting it.
                     targetedPositions.Add(pos);
                 }
                 else
@@ -286,7 +285,8 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
             if (visual != null && !visual.IsTargetedByEnemy)
             {
                 visual.SetTargetedByEnemy(true);
-                visual.SetTimedCountdownProgress(spellTimer.GetNormalizedRemaining());
+                // Restart the animation from the current remaining time
+                visual.StartTimedFillAnimation(spellTimer.RemainingSeconds);
             }
         }
     }

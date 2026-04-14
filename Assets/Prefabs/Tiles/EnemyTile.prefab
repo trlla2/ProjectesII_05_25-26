@@ -73,10 +73,10 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 27551c8f56ed7724a8d92062277b60c2, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   _renderer: {fileID: 0}
   neighbors: []
   _combatSceneName: BattlePhone
-  _postInteractionTile: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   lootRatePercentage: 33
 --- !u!33 &3803366454304776247
 MeshFilter:
@@ -142,7 +142,7 @@ GameObject:
   - component: {fileID: 3449598705729820751}
   - component: {fileID: 5241471010200411484}
   - component: {fileID: 3131962740570762373}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: rocks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -229,7 +229,7 @@ GameObject:
   - component: {fileID: 7329999857890278845}
   - component: {fileID: 1593703487490231508}
   - component: {fileID: 855467627249553919}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -354,7 +354,7 @@ GameObject:
   - component: {fileID: 6481717157149143651}
   - component: {fileID: 86110779718719481}
   - component: {fileID: 4833412449063479052}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}

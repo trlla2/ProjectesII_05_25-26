@@ -49,9 +49,9 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 5109a009fed6a2d4595e73f54ebbf5c4, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
   _renderer: {fileID: 3595446688537527092}
   neighbors: []
-  generatedBranch: []
   _sceneToLoadWhenInteract: NewBoard
   _emptySpellbookAlert: {fileID: 0}
 --- !u!65 &6420082423328345723
@@ -123,9 +123,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 179d8a2af120412499ead238c5e4e3a5, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 3eef4f3c5ef13fa40ada81feefd99e23, type: 2}
     - target: {fileID: 919132149155446097, guid: 179d8a2af120412499ead238c5e4e3a5, type: 3}
       propertyPath: m_Name
       value: stairs
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 179d8a2af120412499ead238c5e4e3a5, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

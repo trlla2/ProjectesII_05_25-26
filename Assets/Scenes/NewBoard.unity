@@ -1785,6 +1785,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1101005417}
   - component: {fileID: 1101005419}
+  - component: {fileID: 1101005420}
   m_Layer: 0
   m_Name: Board
   m_TagString: Untagged
@@ -1830,6 +1831,28 @@ MonoBehaviour:
     AllowBranchDown: 0
     AllowBranchLeft: 0
     AllowBranchRight: 1
+--- !u!114 &1101005420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1101005416}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 447dfa9d4ed173d46bc14f2a6d8a640e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _boardManager: {fileID: 1035823810}
+  _boardGenerator: {fileID: 1101005419}
+  _decorationPrefabs:
+  - {fileID: 5110594593294184157, guid: 22c5f920f4edc78459bb1469a54e33cc, type: 3}
+  - {fileID: 5110594593294184157, guid: 8251cc9ef07d5164ebd30dee0686da5e, type: 3}
+  _decorationCount: 20
+  _spawnMargin: 5
+  _spawnPadding: 3
+  _minHeight: -5
+  _maxHeight: 5
 --- !u!1 &1106537844
 GameObject:
   m_ObjectHideFlags: 0

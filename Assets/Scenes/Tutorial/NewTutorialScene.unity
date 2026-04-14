@@ -403,8 +403,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 176424200}
-  _boardManager: {fileID: 0}
-  raycastActive: 0
+  _boardManager: {fileID: 1227894764}
+  raycastActive: 1
 --- !u!114 &176424197
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2684,6 +2684,7 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
   _renderer: {fileID: 0}
   neighbors:
   - {fileID: 1443763723}
@@ -4328,7 +4329,7 @@ MonoBehaviour:
   stairsTileData: {fileID: 11400000, guid: 5109a009fed6a2d4595e73f54ebbf5c4, type: 2}
   chestOfEgressTileData: {fileID: 0}
   boardGenerator: {fileID: 0}
-  _player: {fileID: 0}
+  _player: {fileID: 1625492369}
   generatedTiles:
   - {fileID: 874324315}
   - {fileID: 1443763723}
@@ -4351,6 +4352,7 @@ MonoBehaviour:
   chestOfEgressPanel: {fileID: 0}
   branchChoicePanel: {fileID: 0}
   shopPanel: {fileID: 0}
+  slotMachinePanel: {fileID: 0}
   fogTileData: {fileID: 11400000, guid: bc970021f558bff4fbd00e2d787a944d, type: 2}
   encountersManager: {fileID: 1227894766}
   _revealedBranch: []
@@ -5420,6 +5422,7 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
   _renderer: {fileID: 0}
   neighbors:
   - {fileID: 874324315}
@@ -10748,6 +10751,7 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
   _renderer: {fileID: 0}
   neighbors:
   - {fileID: 2071652993}
@@ -11551,6 +11555,17 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 144223050}
   m_SourcePrefab: {fileID: 100100000, guid: cac8903932668f640b4fd18e2257482e, type: 3}
+--- !u!114 &1625492369 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1008090306439942913, guid: cac8903932668f640b4fd18e2257482e, type: 3}
+  m_PrefabInstance: {fileID: 1625492368}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 144223043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83817a3eb1fdff94ab90d3fc1b7f309e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1665973081
 GameObject:
   m_ObjectHideFlags: 0
@@ -12071,6 +12086,7 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 5109a009fed6a2d4595e73f54ebbf5c4, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
   _renderer: {fileID: 0}
   neighbors:
   - {fileID: 200147869}

@@ -45,6 +45,7 @@ public class DEBUG_Stats : MonoBehaviour
         foreach (Item item in items)
             GameManager.Instance.PlayerStats.AddItemToInventory(item);
 
+
     }
 
     public bool HasDebugSpells() => spells.Count > 0 && ForceSpells;

@@ -12,13 +12,14 @@ public class InventoryUIHandler : MonoBehaviour
         RefreshInventoryUI();
     }
 
-    private void OnEnable() 
-    { 
-        RefreshInventoryUI(); 
+    private void OnEnable()
+    {
+        RefreshInventoryUI();
     }
 
     private void RefreshInventoryUI()
     {
+
         // Clear existing UI elements
         foreach (Transform child in transform)
             Destroy(child.gameObject);

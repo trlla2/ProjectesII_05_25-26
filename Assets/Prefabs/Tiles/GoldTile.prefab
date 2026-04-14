@@ -120,7 +120,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5714685653561465599}
-  - {fileID: 6309402607587007703}
+  - {fileID: 4854564550076639183}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4955660994155067177
@@ -216,9 +216,9 @@ MonoBehaviour:
   _renderer: {fileID: 0}
   neighbors: []
   _maxGoldAmount: 4
-  _coinTransform: {fileID: 6309402607587007703}
+  _coinTransform: {fileID: 4854564550076639183}
   _coinClone: {fileID: 1336095724453027279, guid: 3a9d2bc6b648bf84a994eac51563bc78, type: 3}
---- !u!1001 &5766077859128474428
+--- !u!1001 &4959687777860501540
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -228,11 +228,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: fd682f26c3496034c93ab16d7fb50a0e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fd682f26c3496034c93ab16d7fb50a0e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.254
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fd682f26c3496034c93ab16d7fb50a0e, type: 3}
       propertyPath: m_LocalPosition.z
@@ -244,7 +244,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fd682f26c3496034c93ab16d7fb50a0e, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fd682f26c3496034c93ab16d7fb50a0e, type: 3}
       propertyPath: m_LocalRotation.y
@@ -280,28 +280,28 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fd682f26c3496034c93ab16d7fb50a0e, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3200549126735377109}
+      addedObject: {fileID: 7745039014301151318}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fd682f26c3496034c93ab16d7fb50a0e, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1595661670953868486}
+      addedObject: {fileID: 4165101794929771974}
   m_SourcePrefab: {fileID: 100100000, guid: fd682f26c3496034c93ab16d7fb50a0e, type: 3}
---- !u!4 &6309402607587007703 stripped
+--- !u!4 &4854564550076639183 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: fd682f26c3496034c93ab16d7fb50a0e, type: 3}
-  m_PrefabInstance: {fileID: 5766077859128474428}
+  m_PrefabInstance: {fileID: 4959687777860501540}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &6684556337748493933 stripped
+--- !u!1 &5194110591596625269 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: fd682f26c3496034c93ab16d7fb50a0e, type: 3}
-  m_PrefabInstance: {fileID: 5766077859128474428}
+  m_PrefabInstance: {fileID: 4959687777860501540}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &3200549126735377109
+--- !u!114 &7745039014301151318
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6684556337748493933}
+  m_GameObject: {fileID: 5194110591596625269}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f7c5f098b459e10429ec50f4f4f63f3b, type: 3}
@@ -339,7 +339,7 @@ MonoBehaviour:
   OnTargetReach:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3200549126735377109}
+      - m_Target: {fileID: 7745039014301151318}
         m_TargetAssemblyTypeName: Translator, Assembly-CSharp
         m_MethodName: ToOrigin
         m_Mode: 1
@@ -354,7 +354,7 @@ MonoBehaviour:
   OnOriginReach:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3200549126735377109}
+      - m_Target: {fileID: 7745039014301151318}
         m_TargetAssemblyTypeName: Translator, Assembly-CSharp
         m_MethodName: ToTarget
         m_Mode: 1
@@ -369,13 +369,13 @@ MonoBehaviour:
   OnChange:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &1595661670953868486
+--- !u!114 &4165101794929771974
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6684556337748493933}
+  m_GameObject: {fileID: 5194110591596625269}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dd9fde938b4f986468baeaec9122467f, type: 3}
@@ -386,8 +386,11 @@ MonoBehaviour:
       m_Calls: []
   onStartCall:
     m_PersistentCalls:
+      m_Calls: []
+  onEnableCall:
+    m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3200549126735377109}
+      - m_Target: {fileID: 7745039014301151318}
         m_TargetAssemblyTypeName: Translator, Assembly-CSharp
         m_MethodName: ToTarget
         m_Mode: 1
@@ -399,9 +402,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  onEnableCall:
-    m_PersistentCalls:
-      m_Calls: []
   onDisableCall:
     m_PersistentCalls:
       m_Calls: []

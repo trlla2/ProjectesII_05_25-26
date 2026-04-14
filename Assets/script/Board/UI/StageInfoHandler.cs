@@ -14,10 +14,6 @@ public class StageInfoHandler : MonoBehaviour
         info = GetComponent<TextMeshProUGUI>();
     }
 
-    private void Start()
-    {
-        SetDifficultyMessage();
-    }
 
     private void OnEnable()
     {

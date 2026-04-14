@@ -65,7 +65,7 @@ public class TileClickHandler : MonoBehaviour
     {
         if (IsPointerOverUI()) return;
 
-        _boardManager.Player.MoveUntilStop(arrivedTile =>
+        _boardManager.Player.MoveUntilStopFrom(_boardManager.Player.GetCurrentTile(), arrivedTile =>
         {
             if (arrivedTile == null) return;
 

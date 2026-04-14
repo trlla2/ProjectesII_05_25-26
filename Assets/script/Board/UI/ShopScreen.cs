@@ -93,8 +93,8 @@ public class ShopScreen : MonoBehaviour
                 break;
 
             case ShopOffer.OfferType.Heal:
-                float healAmount = (stats.MaxHp + stats.ExtraHealth) * offer.HealPercent;
-                stats.Heal(healAmount);
+                //float healAmount = (stats.MaxHp + stats.ExtraHealth) * offer.HealPercent;
+                stats.HealPercentage(offer.HealPercent);
                 ShowFeedback($"¡Curado un {offer.HealPercent * 100f:0}% de HP!");
                 break;
 
@@ -114,23 +114,23 @@ public class ShopScreen : MonoBehaviour
         switch (offer.StatType)
         {
             case StatUpgradeType.ExtraDamage:
-                int extraDmg = Mathf.RoundToInt(offer.StatAmount + stats.ExtraDamage * offer.StatPercent);
-                stats.ModifyExtraDamage(extraDmg);
+                //int extraDmg = Mathf.RoundToInt(offer.StatAmount + stats.ExtraDamage * offer.StatPercent);
+                stats.ModifyExtraDamageUpgradesLvl(1);
                 break;
 
             case StatUpgradeType.MaxHealth:
-                int extraHp = Mathf.RoundToInt(offer.StatAmount + (stats.MaxHp + stats.ExtraHealth) * offer.StatPercent);
-                stats.ModifyExtraHealth(extraHp);
+                //int extraHp = Mathf.RoundToInt(offer.StatAmount + (stats.MaxHp + stats.ExtraHealth) * offer.StatPercent);
+                stats.ModifyExtraHealthUpgradesLvl(1);
                 break;
 
             case StatUpgradeType.Evasion:
-                int extraEvasion = Mathf.RoundToInt(offer.StatAmount + stats.Evasion * offer.StatPercent);
-                stats.ModifyEvasion(extraEvasion);
+                //int extraEvasion = Mathf.RoundToInt(offer.StatAmount + stats.Evasion * offer.StatPercent);
+                stats.ModifyEvasionUpgradesLvl(1);
                 break;
 
             case StatUpgradeType.Defense:
-                float extraDef = offer.StatAmount + stats.Defense * offer.StatPercent;
-                stats.ModifyDefense(extraDef);
+                //float extraDef = offer.StatAmount + stats.Defense * offer.StatPercent;
+                stats.ModifyDefenseUpgradesLvl(1);
                 break;
         }
     }

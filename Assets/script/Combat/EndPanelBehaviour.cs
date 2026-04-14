@@ -42,7 +42,7 @@ public class EndPanelBehaviour : MonoBehaviour
 
     private void SetWinLosePanel(bool isWin, int exp, int g, Spell drop)
     {
-
+        if (winText == null || winPanel == null || losePanel == null) return;
 
         if(isWin)
         {
@@ -87,7 +87,14 @@ public class EndPanelBehaviour : MonoBehaviour
 
     private void OnDestroy()
     {
-        GameManager.Instance.EnterBoard();
-        GameManager.Instance.CombatHandler.OnEndBattle -= SetWinLosePanel;
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.EnterBoard();
+
+            if (GameManager.Instance.CombatHandler != null)
+            {
+                GameManager.Instance.CombatHandler.OnEndBattle -= SetWinLosePanel;
+            }
+        }
     }
 }

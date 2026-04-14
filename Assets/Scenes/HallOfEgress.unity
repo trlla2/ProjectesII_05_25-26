@@ -311,6 +311,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: wall-half (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -470,7 +474,7 @@ GameObject:
   - component: {fileID: 75721442}
   - component: {fileID: 75721441}
   - component: {fileID: 75721440}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: EmptyTile(Clone) (12)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -492,11 +496,9 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
   _renderer: {fileID: 0}
-  neighbors:
-  - {fileID: 1856034665}
-  - {fileID: 1108751533}
-  - {fileID: 702071340}
+  neighbors: []
 --- !u!65 &75721441
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1384,7 +1386,7 @@ GameObject:
   - component: {fileID: 178646700}
   - component: {fileID: 178646699}
   - component: {fileID: 178646698}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: EmptyTile(Clone) (14)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1423,6 +1425,7 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
   _renderer: {fileID: 0}
   neighbors:
   - {fileID: 702071340}
@@ -1514,7 +1517,7 @@ GameObject:
   - component: {fileID: 186982401}
   - component: {fileID: 186982400}
   - component: {fileID: 186982399}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: EmptyTile(Clone) (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1536,6 +1539,7 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
   _renderer: {fileID: 0}
   neighbors:
   - {fileID: 1248598934}
@@ -1695,6 +1699,10 @@ PrefabInstance:
     - target: {fileID: 2250125317099942975, guid: 37c705a23c06d4e459f4d5ba1d4f34fb, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3161029035985451493, guid: 37c705a23c06d4e459f4d5ba1d4f34fb, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3161029035985451493, guid: 37c705a23c06d4e459f4d5ba1d4f34fb, type: 3}
       propertyPath: m_IsActive
@@ -1954,6 +1962,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: floor-detail
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d636ae4ca35bdd54c8ac23b29a0bee5d, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1968,7 +1980,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 268871095}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Walls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2844,6 +2856,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: barrel
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 38e873715d8f83a42a01ddba2a362d71, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2863,7 +2879,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 390963324}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Decorations
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3016,6 +3032,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: dirt
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 5b8bdd26acd08c944ba889cd5a7ce8da, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3115,8 +3135,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 943609518}
     - target: {fileID: 7411991777755344329, guid: 652cccb596f1d7e4a85dd707f2e6e7ad, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7411991777755344329, guid: 652cccb596f1d7e4a85dd707f2e6e7ad, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8837728143678521487, guid: 652cccb596f1d7e4a85dd707f2e6e7ad, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3186,6 +3214,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
       propertyPath: m_Name
       value: wall-half (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3348,7 +3380,7 @@ GameObject:
   - component: {fileID: 433406941}
   - component: {fileID: 433406943}
   - component: {fileID: 433406942}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: rocks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3478,6 +3510,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
       propertyPath: m_Name
       value: wall-half
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3681,6 +3717,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: wall-half (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3817,6 +3857,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 5b8bdd26acd08c944ba889cd5a7ce8da, type: 3}
       propertyPath: m_Name
       value: dirt
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 5b8bdd26acd08c944ba889cd5a7ce8da, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4414,8 +4458,16 @@ PrefabInstance:
     m_TransformParent: {fileID: 1101005417}
     m_Modifications:
     - target: {fileID: 50989460375038448, guid: 412d79e281ef39e4dbf09bea9f69794e, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 50989460375038448, guid: 412d79e281ef39e4dbf09bea9f69794e, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 648287749770416923, guid: 412d79e281ef39e4dbf09bea9f69794e, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2250125317099942975, guid: 412d79e281ef39e4dbf09bea9f69794e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4489,6 +4541,10 @@ PrefabInstance:
       propertyPath: 'neighbors.Array.data[1]'
       value: 
       objectReference: {fileID: 1368102784}
+    - target: {fileID: 7174016176284844597, guid: 412d79e281ef39e4dbf09bea9f69794e, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 7549415196661192847, guid: 412d79e281ef39e4dbf09bea9f69794e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.131
@@ -4517,7 +4573,7 @@ GameObject:
   - component: {fileID: 604941632}
   - component: {fileID: 604941634}
   - component: {fileID: 604941633}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: rocks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4649,6 +4705,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: dirt
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 5b8bdd26acd08c944ba889cd5a7ce8da, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4710,6 +4770,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 5b8bdd26acd08c944ba889cd5a7ce8da, type: 3}
       propertyPath: m_Name
       value: dirt
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 5b8bdd26acd08c944ba889cd5a7ce8da, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5073,7 +5137,7 @@ GameObject:
   - component: {fileID: 681113267}
   - component: {fileID: 681113269}
   - component: {fileID: 681113268}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: rocks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5279,6 +5343,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: wall
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 7265f85064eb3304099f43ab0c45d19b, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5297,7 +5365,7 @@ GameObject:
   - component: {fileID: 702071342}
   - component: {fileID: 702071341}
   - component: {fileID: 702071340}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: EmptyTile(Clone) (13)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5319,9 +5387,9 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
   _renderer: {fileID: 0}
   neighbors:
-  - {fileID: 75721440}
   - {fileID: 1321387669}
   - {fileID: 178646698}
 --- !u!65 &702071341
@@ -5739,6 +5807,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: wood-support
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: aa73292b432e5464f9f8740a290e1b56, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5795,6 +5867,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 5b8bdd26acd08c944ba889cd5a7ce8da, type: 3}
       propertyPath: m_Name
       value: dirt
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 5b8bdd26acd08c944ba889cd5a7ce8da, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6297,7 +6373,7 @@ GameObject:
   - component: {fileID: 852814213}
   - component: {fileID: 852814215}
   - component: {fileID: 852814214}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: rocks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6423,6 +6499,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 5b8bdd26acd08c944ba889cd5a7ce8da, type: 3}
       propertyPath: m_Name
       value: dirt
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 5b8bdd26acd08c944ba889cd5a7ce8da, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6634,7 +6714,7 @@ GameObject:
   - component: {fileID: 889392829}
   - component: {fileID: 889392828}
   - component: {fileID: 889392827}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: EmptyTile(Clone) (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6656,6 +6736,7 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
   _renderer: {fileID: 0}
   neighbors:
   - {fileID: 1863937247}
@@ -6965,6 +7046,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: wall-half
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6986,7 +7071,7 @@ GameObject:
   - component: {fileID: 899503776}
   - component: {fileID: 899503778}
   - component: {fileID: 899503777}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: rocks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7074,7 +7159,7 @@ GameObject:
   - component: {fileID: 943609520}
   - component: {fileID: 943609519}
   - component: {fileID: 943609518}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: EmptyTile(Clone) (10)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7096,6 +7181,7 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
   _renderer: {fileID: 0}
   neighbors:
   - {fileID: 1321387669}
@@ -7247,6 +7333,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
       propertyPath: m_Name
       value: wall-half
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7400,6 +7490,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
       propertyPath: m_Name
       value: wall-half
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7595,6 +7689,7 @@ MonoBehaviour:
   chestOfEgressPanel: {fileID: 542902945}
   branchChoicePanel: {fileID: 0}
   shopPanel: {fileID: 0}
+  slotMachinePanel: {fileID: 0}
   fogTileData: {fileID: 0}
   encountersManager: {fileID: 0}
   _revealedBranch: []
@@ -7755,6 +7850,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
       propertyPath: m_Name
       value: wall-half
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7998,7 +8097,7 @@ GameObject:
   - component: {fileID: 1108751535}
   - component: {fileID: 1108751534}
   - component: {fileID: 1108751533}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: EmptyTile(Clone) (8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8020,12 +8119,12 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
   _renderer: {fileID: 0}
   neighbors:
   - {fileID: 186982399}
   - {fileID: 1863937247}
   - {fileID: 1321387669}
-  - {fileID: 75721440}
 --- !u!65 &1108751534
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -8168,6 +8267,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 3726dee15f9f6aa46b8944448da14631, type: 3}
       propertyPath: m_Name
       value: rocks
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 3726dee15f9f6aa46b8944448da14631, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -9210,7 +9313,7 @@ GameObject:
   - component: {fileID: 1248598936}
   - component: {fileID: 1248598935}
   - component: {fileID: 1248598934}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: EmptyTile(Clone) (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9232,6 +9335,7 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
   _renderer: {fileID: 0}
   neighbors:
   - {fileID: 195526932}
@@ -9385,6 +9489,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: floor-detail (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d636ae4ca35bdd54c8ac23b29a0bee5d, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -9403,7 +9511,7 @@ GameObject:
   - component: {fileID: 1321387671}
   - component: {fileID: 1321387670}
   - component: {fileID: 1321387669}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: EmptyTile(Clone) (9)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9425,6 +9533,7 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
   _renderer: {fileID: 0}
   neighbors:
   - {fileID: 1108751533}
@@ -9589,6 +9698,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: wall-half
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -9605,7 +9718,7 @@ GameObject:
   - component: {fileID: 1355989653}
   - component: {fileID: 1355989655}
   - component: {fileID: 1355989654}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: rocks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9693,7 +9806,7 @@ GameObject:
   - component: {fileID: 1368102786}
   - component: {fileID: 1368102785}
   - component: {fileID: 1368102784}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: EmptyTile(Clone) (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9715,6 +9828,7 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
   _renderer: {fileID: 0}
   neighbors:
   - {fileID: 1928510513}
@@ -9822,7 +9936,7 @@ GameObject:
   - component: {fileID: 1380157566}
   - component: {fileID: 1380157568}
   - component: {fileID: 1380157567}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: rocks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10227,6 +10341,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: wall-half
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -10288,6 +10406,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 5b8bdd26acd08c944ba889cd5a7ce8da, type: 3}
       propertyPath: m_Name
       value: dirt
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 5b8bdd26acd08c944ba889cd5a7ce8da, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -10354,6 +10476,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
       propertyPath: m_Name
       value: wall-half (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -10561,6 +10687,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
       propertyPath: m_Name
       value: wall-half (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -12542,6 +12672,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: dirt
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 5b8bdd26acd08c944ba889cd5a7ce8da, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -12713,7 +12847,7 @@ GameObject:
   - component: {fileID: 1725334461}
   - component: {fileID: 1725334463}
   - component: {fileID: 1725334462}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: rocks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13275,6 +13409,10 @@ PrefabInstance:
       propertyPath: _sceneToLoadWhenInteract
       value: NewBoard
       objectReference: {fileID: 0}
+    - target: {fileID: 3090995219580969697, guid: 016115c5e3fabf3499b6d8c5640a8a8c, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 3595446688537527092, guid: 016115c5e3fabf3499b6d8c5640a8a8c, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -13787,7 +13925,7 @@ GameObject:
   - component: {fileID: 1847086984}
   - component: {fileID: 1847086986}
   - component: {fileID: 1847086985}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: rocks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14087,6 +14225,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: wall-half (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -14105,6 +14247,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1101005417}
     m_Modifications:
+    - target: {fileID: 478635441069693202, guid: e263629ad25845948afb92143a534dc2, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 875411062216190520, guid: e263629ad25845948afb92143a534dc2, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1926196116204597094, guid: e263629ad25845948afb92143a534dc2, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 1926196116204597094, guid: e263629ad25845948afb92143a534dc2, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -14149,6 +14303,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2445178191980917594, guid: e263629ad25845948afb92143a534dc2, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2956552876353042831, guid: e263629ad25845948afb92143a534dc2, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 3477376746109496961, guid: e263629ad25845948afb92143a534dc2, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -14157,6 +14319,18 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: -6538903991835684241, guid: f541f814d1cc5eb4c971c0fe779574c2, type: 3}
+    - target: {fileID: 4109506759180102250, guid: e263629ad25845948afb92143a534dc2, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4444907995463251111, guid: e263629ad25845948afb92143a534dc2, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4762021663860292951, guid: e263629ad25845948afb92143a534dc2, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 4762195623410483622, guid: e263629ad25845948afb92143a534dc2, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0.219
@@ -14173,18 +14347,58 @@ PrefabInstance:
       propertyPath: m_Name
       value: ComputerTile
       objectReference: {fileID: 0}
+    - target: {fileID: 5129943307370008184, guid: e263629ad25845948afb92143a534dc2, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5262365980666746382, guid: e263629ad25845948afb92143a534dc2, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5286494910495398684, guid: e263629ad25845948afb92143a534dc2, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5941225003135180704, guid: e263629ad25845948afb92143a534dc2, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518676095554769750, guid: e263629ad25845948afb92143a534dc2, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 7836674728289867317, guid: e263629ad25845948afb92143a534dc2, type: 3}
       propertyPath: _openComputerScreen
       value: 
       objectReference: {fileID: 894973362}
     - target: {fileID: 7836674728289867317, guid: e263629ad25845948afb92143a534dc2, type: 3}
+      propertyPath: neighbors.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7836674728289867317, guid: e263629ad25845948afb92143a534dc2, type: 3}
       propertyPath: 'neighbors.Array.data[0]'
       value: 
-      objectReference: {fileID: 75721440}
+      objectReference: {fileID: 186982399}
     - target: {fileID: 7836674728289867317, guid: e263629ad25845948afb92143a534dc2, type: 3}
       propertyPath: 'neighbors.Array.data[1]'
       value: 
       objectReference: {fileID: 186982399}
+    - target: {fileID: 7995364152089703784, guid: e263629ad25845948afb92143a534dc2, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8010715031511531851, guid: e263629ad25845948afb92143a534dc2, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8585235000892431490, guid: e263629ad25845948afb92143a534dc2, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9092942066430050749, guid: e263629ad25845948afb92143a534dc2, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 5005015272902602785, guid: e263629ad25845948afb92143a534dc2, type: 3}
@@ -14223,7 +14437,7 @@ GameObject:
   - component: {fileID: 1863937249}
   - component: {fileID: 1863937248}
   - component: {fileID: 1863937247}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: EmptyTile(Clone) (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14245,6 +14459,7 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
   _renderer: {fileID: 0}
   neighbors:
   - {fileID: 1248598934}
@@ -14511,6 +14726,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: wall-half (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 994477f86660a174587486aeea175095, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -14529,7 +14748,7 @@ GameObject:
   - component: {fileID: 1928510515}
   - component: {fileID: 1928510514}
   - component: {fileID: 1928510513}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: EmptyTile(Clone)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14551,6 +14770,7 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
   _renderer: {fileID: 0}
   neighbors:
   - {fileID: 195526932}
@@ -14778,6 +14998,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: dirt
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 5b8bdd26acd08c944ba889cd5a7ce8da, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -14935,7 +15159,7 @@ GameObject:
   - component: {fileID: 1989610291}
   - component: {fileID: 1989610293}
   - component: {fileID: 1989610292}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: rocks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15330,7 +15554,7 @@ GameObject:
   - component: {fileID: 2064752235}
   - component: {fileID: 2064752234}
   - component: {fileID: 2064752233}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: EmptyTile(Clone) (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15352,6 +15576,7 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
   _renderer: {fileID: 0}
   neighbors:
   - {fileID: 1368102784}
@@ -15456,7 +15681,7 @@ GameObject:
   - component: {fileID: 2064978345}
   - component: {fileID: 2064978347}
   - component: {fileID: 2064978346}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: rocks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15542,7 +15767,7 @@ GameObject:
   - component: {fileID: 2079862416}
   - component: {fileID: 2079862418}
   - component: {fileID: 2079862417}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: rocks
   m_TagString: Untagged
   m_Icon: {fileID: 0}

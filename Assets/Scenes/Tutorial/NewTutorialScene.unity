@@ -432,17 +432,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 910372584858583252, guid: cac8903932668f640b4fd18e2257482e, type: 3}
   m_PrefabInstance: {fileID: 1625492368}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &144223046 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1008090306439942913, guid: cac8903932668f640b4fd18e2257482e, type: 3}
-  m_PrefabInstance: {fileID: 1625492368}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 144223043}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83817a3eb1fdff94ab90d3fc1b7f309e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!61 &144223050
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -636,7 +625,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 176424200}
-  player: {fileID: 144223046}
+  _boardManager: {fileID: 1227894764}
   raycastActive: 0
 --- !u!114 &176424197
 MonoBehaviour:
@@ -7895,9 +7884,10 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
+  _renderer: {fileID: 0}
   neighbors:
   - {fileID: 1443763723}
-  generatedBranch: []
 --- !u!23 &874324317
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -10153,15 +10143,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _forcedBoard: 1
   _isTutorial: 1
+  _isHallOfEgress: 0
   currentStageLevelData: {fileID: 11400000, guid: ffbf1d07f71dd274da37d2c7d1440376, type: 2}
   startingTile: {fileID: 874324315}
   emptyTileData: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
+  branchOriginTileData: {fileID: 0}
   enemyTileData: {fileID: 11400000, guid: 27551c8f56ed7724a8d92062277b60c2, type: 2}
   chestTileData: {fileID: 11400000, guid: d22ce5231cab6564988711f5ec7898de, type: 2}
   bossTileData: {fileID: 11400000, guid: bc3587d48929d3347ab647196bf11cde, type: 2}
   stairsTileData: {fileID: 11400000, guid: 5109a009fed6a2d4595e73f54ebbf5c4, type: 2}
   chestOfEgressTileData: {fileID: 0}
   boardGenerator: {fileID: 0}
+  _player: {fileID: 0}
   generatedTiles:
   - {fileID: 874324315}
   - {fileID: 1443763723}
@@ -10182,6 +10175,9 @@ MonoBehaviour:
   openChestPanel: {fileID: 1197129884}
   newSpellPanel: {fileID: 1479726534}
   chestOfEgressPanel: {fileID: 0}
+  branchChoicePanel: {fileID: 0}
+  shopPanel: {fileID: 0}
+  slotMachinePanel: {fileID: 0}
   fogTileData: {fileID: 11400000, guid: bc970021f558bff4fbd00e2d787a944d, type: 2}
   encountersManager: {fileID: 1227894766}
   _revealedBranch: []
@@ -11338,10 +11334,11 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
+  _renderer: {fileID: 0}
   neighbors:
   - {fileID: 874324315}
   - {fileID: 2071652993}
-  generatedBranch: []
 --- !u!65 &1443763724
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11590,10 +11587,11 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
+  _renderer: {fileID: 0}
   neighbors:
   - {fileID: 2071652993}
   - {fileID: 1932593060}
-  generatedBranch: []
 --- !u!65 &1470291410
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -13238,9 +13236,10 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 5109a009fed6a2d4595e73f54ebbf5c4, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
+  _renderer: {fileID: 0}
   neighbors:
   - {fileID: 200147869}
-  generatedBranch: []
   _sceneToLoadWhenInteract: HallOfEgress
   _emptySpellbookAlert: {fileID: 0}
 --- !u!65 &1748064277
@@ -13969,6 +13968,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   breathingSpeed: 0.5
+  pauseUpdates: 0
 --- !u!114 &2013667467
 MonoBehaviour:
   m_ObjectHideFlags: 0

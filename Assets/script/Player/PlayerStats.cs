@@ -13,15 +13,25 @@ public class PlayerStats
     private float hp;
     public float Hp => hp;
 
-    private int evasionPoints;
-    public int Evasion => evasionPoints;
-    private int extraHealth;
-    public int ExtraHealth => extraHealth;
-    private int extraDamage;
-    public int ExtraDamage => extraDamage;
-    private float defense;
-    public float Defense => defense;
-    private int critPercentage;
+    private int _evasionBaseUpgrades = 0;
+    private int _evasionModifier = 0;
+    private int evasionPoints => 0 + _evasionModifier + (10 * _evasionBaseUpgrades);
+
+    private int _maxHealthBaseUpgrades = 0;
+    private float _maxHealthModifier = 0;
+    private float extraHealth => 0 + _maxHealthModifier + (10 * _maxHealthBaseUpgrades);
+
+    private int _damageBaseUpgrades = 0;
+    private int _damageModifier = 0;
+    private int extraDamage => 0 + _damageModifier + (10 * _damageBaseUpgrades);
+
+    private int _defenseBaseUpgrades = 0;
+    private float _defenseModifier = 0;
+    private float defense => 0 + _defenseModifier + (10 * _defenseBaseUpgrades);
+
+    private int _critBaseUpgrades = 0;
+    private int _critPercentModifier = 0;
+    private int critPercentage => 0 + _critPercentModifier + (5 * _critBaseUpgrades);
     private const float critMultiplayer = 1.5f;
     private int spikeDamage;
     public int SpikeDamage => spikeDamage;
@@ -47,11 +57,9 @@ public class PlayerStats
     private List<Spell> knownSpells;
     public List<Spell> KnownSpells => knownSpells;
 
-
     private List<Item> inventory;
     public List<Item> Inventory => inventory;
     private int limitInventory;
-
 
     //Events
     public event System.Action OnEXPChange;
@@ -60,11 +68,13 @@ public class PlayerStats
     public event System.Action OnInventoryChange;
     public event System.Action OnSpellBookChange;
 
+
+    public event System.Action<ModificableStat, int> OnStatUpgradeLevelChanged;
+
     public PlayerStats()
     {
         ResetCombatStats();
         ResetLevelStats();
-
 
         // currency 
         money = 1000;
@@ -107,11 +117,15 @@ public class PlayerStats
         maxHp = baseMaxHP;
         hp = maxHp;
 
-        evasionPoints = 0;
-        extraHealth = 0;
-        extraDamage = 0;
-        defense = 0;
-        critPercentage = 0;
+        ModifyEvasionUpgradesLvl(-_evasionBaseUpgrades);
+        ModifyExtraHealthUpgradesLvl(-_maxHealthBaseUpgrades);
+        ModifyExtraDamageUpgradesLvl(-_damageBaseUpgrades);
+        ModifyDefenseUpgradesLvl(-_defenseBaseUpgrades);
+        _evasionModifier = 0;
+        _maxHealthModifier = 0;
+        _damageModifier = 0;
+        _defenseModifier = 0;
+        _critPercentModifier = 0;
         spikeDamage = 0;
     }
     public void ResetStatsOnDeath()
@@ -189,8 +203,6 @@ public class PlayerStats
             OnLevelUp.Invoke();
     }
 
-
-
     private void LevelUp()
     {
         level++;
@@ -227,7 +239,6 @@ public class PlayerStats
     public void RemoveItemFromInventory(Item item)
     {
         if (!inventory.Contains(item)) return;
-       
 
         inventory.Remove(item);
         item.RemoveEffects(this);
@@ -267,7 +278,6 @@ public class PlayerStats
 
         item.Activate(context, () =>
         {
-            // Remove item if consumable
             if (item.ConsumeOnUse)
             {
                 RemoveItemFromInventory(item);
@@ -278,7 +288,6 @@ public class PlayerStats
 
         return true;
     }
-
 
     public void AddSpellToSpellBook(Spell spell, int slot)
     {
@@ -339,13 +348,42 @@ public class PlayerStats
     public int GetEXPForNextLevel() { return (int)Math.Pow(4, level); }
     public bool CanLevelUp() { return experiencePoints >= GetEXPForNextLevel(); }
     public bool IsAlive() { return hp > 0; }
-    public float GetHPPercentage() => Hp / (MaxHp + ExtraHealth);
-    public void ModifyEvasion(int amount) { evasionPoints += amount; }
-    public void ModifyExtraHealth(int amount) { extraHealth += amount; }
-    public void ModifyExtraDamage(int amount) { extraDamage += amount; }
-    public void ModifyDefense(float amount) { defense += amount; }
-    public void ModifyCritPercentage(int amount) { critPercentage += amount; }
+    public float GetHPPercentage() => Hp / (MaxHp + extraHealth);
+    public void ModifyExtraHealth(float amount) { _maxHealthModifier += amount; }
+    public void ModifyEvasion(int amount) { _evasionModifier += amount; }
+    public void ModifyExtraDamage(int amount) { _damageModifier += amount; }
+    public void ModifyDefense(float amount) { _defenseModifier += amount; }
+    public void ModifyCritPercentage(int amount) { _critPercentModifier += amount; }
     public void ModifySipkeDamage(int amount) { spikeDamage += amount; }
     public int GetCurrentElementUpgrades(ElementType elementType) { return elementalUpgrades[elementType]; }
     public int GetCurrentElementLevels(ElementType elementType) { return elementalLevels[elementType]; }
+
+    public void ModifyEvasionUpgradesLvl(int amount)
+    {
+        _evasionBaseUpgrades += amount;
+        OnStatUpgradeLevelChanged?.Invoke(ModificableStat.EVASION, _evasionBaseUpgrades);
+    }
+
+    public void ModifyExtraHealthUpgradesLvl(int amount)
+    {
+        _maxHealthBaseUpgrades += amount;
+        OnStatUpgradeLevelChanged?.Invoke(ModificableStat.HEALTH, _maxHealthBaseUpgrades);
+    }
+
+    public void ModifyExtraDamageUpgradesLvl(int amount)
+    {
+        _damageBaseUpgrades += amount;
+        OnStatUpgradeLevelChanged?.Invoke(ModificableStat.DAMAGE, _damageBaseUpgrades);
+    }
+
+    public void ModifyDefenseUpgradesLvl(int amount)
+    {
+        _defenseBaseUpgrades += amount;
+        OnStatUpgradeLevelChanged?.Invoke(ModificableStat.DEFENSE, _defenseBaseUpgrades);
+    }
+
+    public void HealPercentage(float percentage)
+    {
+        Heal((maxHp + extraHealth) * percentage);
+    }
 }

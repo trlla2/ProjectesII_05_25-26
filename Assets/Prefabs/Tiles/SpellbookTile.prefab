@@ -127,9 +127,9 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: 1675d668b019eaa448c2a7d5ef13a182, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 0}
   _renderer: {fileID: 5378233687517019262}
   neighbors: []
-  generatedBranch: []
   _openSpellbookScreen: {fileID: 0}
 --- !u!1 &7411991777755344329
 GameObject:
@@ -142,7 +142,7 @@ GameObject:
   - component: {fileID: 3771055662915956204}
   - component: {fileID: 4895883428159854299}
   - component: {fileID: 5378233687517019262}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: rocks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -366,6 +366,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 0b73d8a869ea7f640a831aa2e6d9fec4, type: 3}
       propertyPath: m_Name
       value: Book_Solid
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 0b73d8a869ea7f640a831aa2e6d9fec4, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

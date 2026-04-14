@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6354121893380175492}
   - component: {fileID: 7159801366230725146}
   - component: {fileID: 2561770598115049258}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: rocks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -213,16 +213,15 @@ MonoBehaviour:
   _data: {fileID: 11400000, guid: ed969576c0b28114788ef96d425d97a6, type: 2}
   isForcedPos: 0
   forcedPos: {x: 0, y: 0}
+  _postInteractionTile: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
   _renderer: {fileID: 2561770598115049258}
   neighbors:
   - {fileID: 0}
   - {fileID: 0}
-  generatedBranch: []
   _chestColor: {r: 0.32607105, g: 0.17412782, b: 0.4056604, a: 0.6666667}
   _chestObjs:
   - {fileID: 7174016176284844597}
   - {fileID: 648287749770416923}
-  _postInteractionTile: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
 --- !u!82 &-938439195710576404
 AudioSource:
   m_ObjectHideFlags: 0
@@ -376,9 +375,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -1751480086967751553, guid: c79b10d840011b94e86601bb774183e4, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c79b10d840011b94e86601bb774183e4, type: 3}
       propertyPath: m_Name
       value: chest
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c79b10d840011b94e86601bb774183e4, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

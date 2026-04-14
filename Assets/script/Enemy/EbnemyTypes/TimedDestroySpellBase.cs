@@ -38,9 +38,7 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
         base.Execute(grid);
         targetedPositions.Clear();
         cachedGrid = grid;
-        effectApplied = false;
-        isPaused = false;
-        pendingClearedCount = 0;
+        ResetEffectState();
 
         if (grid == null) return;
 
@@ -53,6 +51,7 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
 
     protected void SubscribeTimerEvents()
     {
+        spellTimer.OnTimerExpired -= OnTimerExpired; //unsubscribe first to prevent multiple subscriptions
         spellTimer.OnTimerExpired += OnTimerExpired;
     }
 
@@ -108,7 +107,7 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
     }
 
     // Call this every frame to drive visual state from timer state.
-    public void UpdateVisuals()
+    public virtual void UpdateVisuals()
     {
         if (cachedGrid == null || effectApplied || isPaused) return;
 
@@ -235,7 +234,6 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
         }
 
         effectApplied = true;
-        ClearAllVisuals(grid);
         ApplyEffect(grid, onComplete);
     }
 
@@ -289,5 +287,12 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
                 visual.StartTimedFillAnimation(spellTimer.RemainingSeconds);
             }
         }
+    }
+
+    protected void ResetEffectState()
+    {
+        effectApplied = false;
+        isPaused = false;
+        pendingClearedCount = 0;
     }
 }

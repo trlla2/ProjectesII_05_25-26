@@ -1,4 +1,3 @@
-using Mono.Cecil;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -59,6 +58,7 @@ public class PlayerStats
     public event System.Action OnLevelUp;
     public event System.Action OnMoneyChange;
     public event System.Action OnInventoryChange;
+    public event System.Action OnSpellBookChange;
 
     public PlayerStats()
     {
@@ -73,7 +73,7 @@ public class PlayerStats
         spellBook = new Spell[spellBookSize];
         knownSpells = new List<Spell>();
         inventory = new List<Item>();
-        limitInventory = 3;
+        limitInventory = 4;
 
         foreach (Item debugItem in GameManager.Instance._debugItemsInInventory)
         {
@@ -220,12 +220,14 @@ public class PlayerStats
 
         OnInventoryChange?.Invoke();
 
+
         return true;// the item was added
     }
 
     public void RemoveItemFromInventory(Item item)
     {
         if (!inventory.Contains(item)) return;
+       
 
         inventory.Remove(item);
         item.RemoveEffects(this);
@@ -238,7 +240,6 @@ public class PlayerStats
         {
             item.RemoveEffects(this);
         }
-
         inventory.Clear();
 
         OnInventoryChange?.Invoke();
@@ -285,13 +286,15 @@ public class PlayerStats
 
         spellBook[slot] = spell;
 
-        Debug.Log("Spell Added");
+        OnSpellBookChange?.Invoke();
     }
 
     public void ClearSpellBook()
     {
         for (int i = 0; i < spellBookSize; i++)
             spellBook[i] = null;
+
+        OnSpellBookChange?.Invoke();
     }
 
     public bool ExistSpellOnSpellBook(Spell spell)

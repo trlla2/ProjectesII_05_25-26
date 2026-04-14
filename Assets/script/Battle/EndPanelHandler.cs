@@ -53,9 +53,13 @@ public class EndPanelHandler : MonoBehaviour
 
     private bool isWin;
 
+    private bool willLevelUp = false;
+
     private void Start()
     {
         GameManager.Instance.CombatHandler.OnEndBattle += SetWinLosePanel;
+
+        GameManager.Instance.PlayerStats.OnLevelUp += () => { willLevelUp = true; };
     }
     private void Update()
     {
@@ -101,25 +105,30 @@ public class EndPanelHandler : MonoBehaviour
 
     public void NextStage()
     {
-        if (continueTime < continueDuration)
+        if (continueTime < continueDuration && currentStage != EndBattleStage.STAGE3 )
             return;
 
         continueFader.ResetToOrigin();
         continueTime = 0;
-
+        Debug.Log($"Current stage: {currentStage}");
         if (!isWin)
         {
             SceneTransition.Instance.LoadScene(loseScene, false);
             return;
         }
-
         switch (currentStage)
         {
             case EndBattleStage.STAGE1:
                 OnStage2Enter?.Invoke();
+                currentStage++;
+
                 break;
             case EndBattleStage.STAGE2:
                 OnStage3Enter?.Invoke();
+                if (willLevelUp)
+                    currentStage++;
+                else
+                    SceneTransition.Instance.UnloadScene(sceneToUnload);
                 break;
             case EndBattleStage.STAGE3:
                 SceneTransition.Instance.UnloadScene(sceneToUnload);
@@ -129,7 +138,6 @@ public class EndPanelHandler : MonoBehaviour
                 break;
         }
 
-        currentStage++;
     }
 
 

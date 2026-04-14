@@ -54,49 +54,49 @@ public class PlayerMovement : MonoBehaviour
         }));
     }
 
-    //public void MoveOneStepForward(System.Action onArrive = null)
-    //{
-    //    if (isMoving) return;
-    //    if (currentTile == null) ResetCurrentTile();
+    public void MoveOneStepForward(System.Action onArrive = null)
+    {
+        if (isMoving) return;
+        if (currentTile == null) ResetCurrentTile();
 
-    //    BoardTile walkableNext = GetNextForwardTile(walkableOnly: true);
-    //    if (walkableNext != null)
-    //    {
-    //        StartCoroutine(MoveAlongPath(new List<BoardTile> { walkableNext }, () =>
-    //        {
-    //            onArrive?.Invoke();
-    //        }));
-    //        return;
-    //    }
+        BoardTile walkableNext = GetNextForwardTile(walkableOnly: true);
+        if (walkableNext != null)
+        {
+            StartCoroutine(MoveAlongPath(new List<BoardTile> { walkableNext }, () =>
+            {
+                onArrive?.Invoke();
+            }));
+            return;
+        }
 
-    //    BoardTile nonWalkableNext = GetNextForwardTile(walkableOnly: false);
-    //    if (nonWalkableNext != null)
-    //    {
-    //        nonWalkableNext.Interact();
-    //        return;
-    //    }
+        BoardTile nonWalkableNext = GetNextForwardTile(walkableOnly: false);
+        if (nonWalkableNext != null)
+        {
+            nonWalkableNext.Interact();
+            return;
+        }
 
-    //    Debug.Log("No hay forward tile disponible");
-    //}
+        Debug.Log("No hay forward tile disponible");
+    }
 
-    //public void MoveUntilStop(System.Action<BoardTile> onStop = null)
-    //{
-    //    if (isMoving) return;
-    //    if (currentTile == null) ResetCurrentTile();
+    public void MoveUntilStop(System.Action<BoardTile> onStop = null)
+    {
+        if (isMoving) return;
+        if (currentTile == null) ResetCurrentTile();
 
-    //    List<BoardTile> path = BuildAutoAdvancePath();
+        List<BoardTile> path = BuildAutoAdvancePath();
 
-    //    if (path.Count == 0)
-    //    {
-    //        onStop?.Invoke(currentTile);
-    //        return;
-    //    }
+        if (path.Count == 0)
+        {
+            onStop?.Invoke(currentTile);
+            return;
+        }
 
-    //    StartCoroutine(MoveAlongPath(path, () =>
-    //    {
-    //        onStop?.Invoke(currentTile);
-    //    }));
-    //}
+        StartCoroutine(MoveAlongPath(path, () =>
+        {
+            onStop?.Invoke(currentTile);
+        }));
+    }
 
     public void MoveUntilStopFrom(BoardTile firstTile, System.Action<BoardTile> onStop = null)
     {
@@ -128,10 +128,10 @@ public class PlayerMovement : MonoBehaviour
         }));
     }
 
-    //private List<BoardTile> BuildAutoAdvancePath()
-    //{
-    //    return BuildAutoAdvancePathFrom(currentTile);
-    //}
+    private List<BoardTile> BuildAutoAdvancePath()
+    {
+        return BuildAutoAdvancePathFrom(currentTile);
+    }
 
     private List<BoardTile> BuildAutoAdvancePathFrom(BoardTile startFrom)
     {
@@ -140,7 +140,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (startFrom != null && startFrom != currentTile)
         {
-            //path.Add(startFrom);
+            path.Add(startFrom);
             current = startFrom;
         }
 
@@ -167,10 +167,10 @@ public class PlayerMovement : MonoBehaviour
         return path;
     }
 
-    //private BoardTile GetNextForwardTile(bool walkableOnly)
-    //{
-    //    return GetNextForwardTileFrom(currentTile, walkableOnly);
-    //}
+    private BoardTile GetNextForwardTile(bool walkableOnly)
+    {
+        return GetNextForwardTileFrom(currentTile, walkableOnly);
+    }
 
     public BoardTile GetNextForwardTileFrom(BoardTile from, bool walkableOnly)
     {
@@ -205,8 +205,9 @@ public class PlayerMovement : MonoBehaviour
     {
         isMoving = true;
 
-        for (int i = 1; i < path.Count; i++) // start from 1 to skip currentTile
+        for (int i = 0; i < path.Count; i++) // start from 1 to skip currentTile
         {
+            if (path[i] == path[0] && path[0] == currentTile) continue;
             BoardTile tile = path[i];
 
             if (!tile.IsWalkable())

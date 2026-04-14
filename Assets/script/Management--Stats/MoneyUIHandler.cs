@@ -27,17 +27,21 @@ public class MoneyUIHandler : MonoBehaviour
         if(useGameManager)
             GameManager.Instance.PlayerStats.OnMoneyChange += UpdateMoneyUI;
 
-        if (showAlways)
-            UpdateMoneyUI();
-        else
+        UpdateMoneyUI();
+
+
+        if (!showAlways)
+        {
             time = duration;
+            isFading = false;
+            parentFader.ToOrigin();
+        }
+
     }
 
 
     public void UpdateMoneyUI()
     {
-        Debug.Log("Hola???");
-
         if(!showAlways)
         {
             time = 0;

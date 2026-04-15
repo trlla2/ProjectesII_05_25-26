@@ -18,6 +18,10 @@ public class MoneyUIHandler : MonoBehaviour
     private float duration = 3f;
     private float time = 0;
     private bool isFading = false;
+
+    [Header("Money Added")]
+    [SerializeField]
+    private GameObject moneyAddedGO;
    
 
 
@@ -27,24 +31,66 @@ public class MoneyUIHandler : MonoBehaviour
         if(useGameManager)
             GameManager.Instance.PlayerStats.OnMoneyChange += UpdateMoneyUI;
 
-        if (showAlways)
-            UpdateMoneyUI();
-        else
+        UpdateMoneyUI(0);
+
+
+        if (!showAlways)
+        {
             time = duration;
+            isFading = false;
+            parentFader.ResetToOrigin();
+        }
+
+    }
+
+    public void StayVisible()
+    {
+        showAlways = true;
+        isFading = false;
+        time = 0;
+        parentFader.ToTarget();
+    }
+
+    public void UnShow()
+    {
+        time = duration;
+        isFading = false;
+        parentFader.ToOrigin();
+    }
+
+    public void UpdateMoneyUI(float amount)
+    {
+        if(!showAlways && amount > 0)
+        {
+            time = 0;
+            parentFader.ToTarget();
+            isFading = true;
+            
+        }
+
+        if (moneyAddedGO != null && amount > 0)
+        {
+            Debug.Log("Se intenta");
+
+            moneyAddedGO.GetComponent<TMP_Text>().text = $"+{amount}";
+            moneyAddedGO.GetComponent<TranslatorUI>().ToTarget();
+            Debug.Log("Se Ha hecho");
+
+        }
+
+        moneyText.text = GameManager.Instance.PlayerStats.Money.ToString();
     }
 
 
     public void UpdateMoneyUI()
     {
-        Debug.Log("Hola???");
-
-        if(!showAlways)
+        if (!showAlways)
         {
             time = 0;
             parentFader.ToTarget();
             isFading = true;
-        }
 
+        }
         moneyText.text = GameManager.Instance.PlayerStats.Money.ToString();
     }
 

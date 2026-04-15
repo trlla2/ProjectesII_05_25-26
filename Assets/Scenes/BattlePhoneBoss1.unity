@@ -25509,15 +25509,15 @@ RectTransform:
   m_GameObject: {fileID: 863791062}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 14.219021}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2041891011}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.3}
   m_AnchorMax: {x: 1, y: 0.7}
-  m_AnchoredPosition: {x: -315.9557, y: -0.000061035156}
-  m_SizeDelta: {x: 1732.0002, y: 1499.2903}
+  m_AnchoredPosition: {x: -1000, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!210 &863791064
 SortingGroup:
@@ -25649,8 +25649,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 550
-  m_fontSizeBase: 550
+  m_fontSize: 200
+  m_fontSizeBase: 200
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -27764,6 +27764,7 @@ MonoBehaviour:
   showAlways: 0
   parentFader: {fileID: 1135691001}
   duration: 3
+  moneyAddedGO: {fileID: 0}
 --- !u!114 &1346123899
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56544,14 +56545,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eea307f14423df448094e8ad506a968, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nameText: {fileID: 0}
-  healthBar: {fileID: 0}
-  damageText: {fileID: 0}
-  damageTextTranslator: {fileID: 0}
-  critImage: {fileID: 0}
+  nameText: {fileID: 586235366}
+  healthBar: {fileID: 227686533}
+  damageText: {fileID: 1253413864}
+  damageTextTranslator: {fileID: 121343353}
+  critImage: {fileID: 1635813705}
   timeToChangeDmg: 0.2
-  weaknessText: {fileID: 0}
-  weaknessTextTranslator: {fileID: 0}
+  weaknessText: {fileID: 863791066}
+  weaknessTextTranslator: {fileID: 863791065}
   timeToChangeWeak: 0.3
 --- !u!1 &2059794170
 GameObject:

@@ -66,7 +66,7 @@ public class BombCableVisual : MonoBehaviour
         line.material = material;
         line.startWidth = LineWidth;
         line.endWidth = LineWidth;
-        line.useWorldSpace = true;
+        line.useWorldSpace = false;
         line.sortingOrder = -3;
 
         return line;

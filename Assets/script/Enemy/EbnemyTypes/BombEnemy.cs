@@ -233,7 +233,6 @@ public class BombSpell : EnemySpellBase
 
         if (activeCardinalOffsets.Count <= 1)
         {
-            Debug.Log("Bomb defused! 3+ cables cleared.");
             ClearBombVisual(grid);
             RemoveBombElement(grid);
             ClearCableVisual();
@@ -251,20 +250,14 @@ public class BombSpell : EnemySpellBase
 
         float animDuration = grid.EnemyTargetAnimDuration;
         AnimationCurve curve = grid.EnemyTargetFillCurve;
-        
-        foreach (var pos in cardinalPositions)
-        {
-            ElementVisual visual = grid.GetElementVisualAt(pos);
-            if (visual != null && visual.IsTargetedByEnemy)
-                visual.UpdateTargetVisual(remainingMoves, initialMoves, animDuration, curve);
-        }
+       
 
         UpdateBombVisual(grid);
 
         if (remainingMoves <= 0)
         {
             Debug.Log("Bomb exploded!");
-            grid.explosionTrigger.Explode(grid.VisualGrid.GridToWorldPosition(bombPosition - new Vector2Int(1,0)));
+            grid.explosionTrigger.Explode(grid.VisualGrid.GridToWorldPosition(bombPosition));
             Camera.main.GetComponent<CameraShake>().Shake(0.4f, 0.5f);
 
             ClearBombVisual(grid);

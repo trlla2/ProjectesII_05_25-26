@@ -235,6 +235,15 @@ public class EnemyBehaviour : MonoBehaviour
         while (grid != null && grid.CurrentState != GridStateType.Idle)
             yield return null;
 
+        // BombSpell needs to wait for secondary effect processing (e.g. thunder) to
+        // fully complete before checking the cable count / deciding to explode.
+        if (activeSpell is BombSpell)
+        {
+            yield return null;//wait one frame first to ensure no state fights
+            while (grid != null && grid.CurrentState != GridStateType.Idle)
+                yield return null;
+        }
+
         if (!inBattle || grid == null || activeSpell == null)
             yield break;
 

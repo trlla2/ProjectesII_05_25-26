@@ -172,11 +172,6 @@ public class SpellEffectHandler : MonoBehaviour
         spellPathAnimator.OnSpellCast(strikePositions.ToArray(), strikeElements, () =>
         {
             grid.DeleteElementsByPlayer(strikePositions);
-            IEnemySpell active = GameManager.Instance.CombatHandler.GetEnemyRef().ActiveSpell;
-            //we only count as player move if bomb enemy
-            if (active is BombSpell || active is HiddenDestroySpell)
-                GameManager.Instance.NotifyPlayerMove();
-
             grid.ChangeState(new ValidateSpellState(grid, GameManager.Instance.PlayerStats.GetSpellBook()));
             attackDone = true;
         });

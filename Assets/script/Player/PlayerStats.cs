@@ -64,7 +64,7 @@ public class PlayerStats
     //Events
     public event System.Action OnEXPChange;
     public event System.Action OnLevelUp;
-    public event System.Action OnMoneyChange;
+    public event System.Action<float> OnMoneyChange;
     public event System.Action OnInventoryChange;
     public event System.Action OnSpellBookChange;
 
@@ -180,14 +180,14 @@ public class PlayerStats
     public void AddMoney(int amount) 
     {
         money += amount;
-        OnMoneyChange?.Invoke();
+        OnMoneyChange?.Invoke(amount);
     }
     public bool UseMoney(int amount)
     {
         if (money >= amount)
         {
             money -= amount;
-            OnMoneyChange?.Invoke();
+            OnMoneyChange?.Invoke(amount);
             return true;
         }
         return false;

@@ -18,6 +18,10 @@ public class MoneyUIHandler : MonoBehaviour
     private float duration = 3f;
     private float time = 0;
     private bool isFading = false;
+
+    [Header("Money Added")]
+    [SerializeField]
+    private GameObject moneyAddedGO;
    
 
 
@@ -27,7 +31,7 @@ public class MoneyUIHandler : MonoBehaviour
         if(useGameManager)
             GameManager.Instance.PlayerStats.OnMoneyChange += UpdateMoneyUI;
 
-        UpdateMoneyUI();
+        UpdateMoneyUI(0);
 
 
         if (!showAlways)
@@ -40,13 +44,23 @@ public class MoneyUIHandler : MonoBehaviour
     }
 
 
-    public void UpdateMoneyUI()
+    public void UpdateMoneyUI(float amount)
     {
-        if(!showAlways)
+        if(!showAlways && amount > 0)
         {
             time = 0;
             parentFader.ToTarget();
             isFading = true;
+
+            if(moneyAddedGO != null)
+            {
+                Debug.Log("Se intenta");
+
+                moneyAddedGO.GetComponent<TMP_Text>().text = $"+{amount}";
+                moneyAddedGO.GetComponent<TranslatorUI>().ToTarget();
+                Debug.Log("Se Ha hecho");
+
+            }
         }
 
         moneyText.text = GameManager.Instance.PlayerStats.Money.ToString();

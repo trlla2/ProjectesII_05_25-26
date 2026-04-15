@@ -8,8 +8,9 @@ public class SlotMachineScreen : MonoBehaviour
 {
     [SerializeField] private TMP_Text _prizeText;
     [SerializeField] private TMP_Text _betAmountText;
-    [SerializeField] private TMP_Text _jackpotText;
     [SerializeField] private List<SlotMachineRow> _rows;
+    [SerializeField] JackPotAnimation _jackPotAnimation;
+    [SerializeField] private MoneyUIHandler moneyUI;
 
     private int _currentBet = 100;
     private int prize;
@@ -17,11 +18,11 @@ public class SlotMachineScreen : MonoBehaviour
 
     private bool _resultsChecked = false;
 
-    [SerializeField] private TranslatorUI _translator;
+    [SerializeField]private TranslatorUI _translator;
 
-    private void Awake()
+    private void Start()
     {
-        _translator = GetComponent<TranslatorUI>();
+        Open();
     }
 
     void Update()
@@ -38,7 +39,7 @@ public class SlotMachineScreen : MonoBehaviour
         {
             CheckResults();
             if (avaliablePulls < 1)
-                StartCoroutine(ClosePanel());
+                StartCoroutine(ClosePanelCoroutine());
         }
     }
 
@@ -52,7 +53,8 @@ public class SlotMachineScreen : MonoBehaviour
                 return;
             }
         }
-        _jackpotText.enabled = false;
+
+        _jackPotAnimation.UnShowText();
         _prizeText.text = "";
         avaliablePulls--;
         foreach (SlotMachineRow row in _rows)
@@ -72,7 +74,7 @@ public class SlotMachineScreen : MonoBehaviour
         {
             // 4 of the same // NEW SPELL (4-match spells)
             _prizeText.text = $"YOU WON {_currentBet * 5} GOLDS!!!";
-            _jackpotText.enabled = true;
+            _jackPotAnimation.StartAnimation();
         }
         else if (_rows[0].stoppedSlot == _rows[1].stoppedSlot && _rows[1].stoppedSlot == _rows[2].stoppedSlot ||
             _rows[1].stoppedSlot == _rows[2].stoppedSlot && _rows[2].stoppedSlot == _rows[3].stoppedSlot ||
@@ -101,16 +103,6 @@ public class SlotMachineScreen : MonoBehaviour
         _resultsChecked = true;
     }
 
-    private IEnumerator ShowJackpotText()
-    {
-        if (_jackpotText != null && !_jackpotText.enabled)
-            _jackpotText.enabled = true;
-
-        yield return new WaitForSeconds(2f);
-
-        _jackpotText.enabled = false;
-    }
-
     public void IncreaseBet()
     {
         if (_currentBet < 500)
@@ -127,15 +119,24 @@ public class SlotMachineScreen : MonoBehaviour
         Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(false);
         avaliablePulls = 1;
         _currentBet = 100;
-        _jackpotText.enabled = false;
+        _jackPotAnimation.UnShowText();
         _prizeText.text = "";
         _translator.ToTarget();
+
+        moneyUI.StayVisible();
     }
 
-    private IEnumerator ClosePanel()
+    private IEnumerator ClosePanelCoroutine()
     {
         yield return new WaitForSeconds(1f);
+        Close();
+    }
+
+    public void Close()
+    {
         Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(true);
         _translator.ToOrigin();
+        _jackPotAnimation.UnShowText();
+        moneyUI.UnShow();
     }
 }

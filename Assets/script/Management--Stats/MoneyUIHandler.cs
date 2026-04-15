@@ -38,11 +38,25 @@ public class MoneyUIHandler : MonoBehaviour
         {
             time = duration;
             isFading = false;
-            parentFader.ToOrigin();
+            parentFader.ResetToOrigin();
         }
 
     }
 
+    public void StayVisible()
+    {
+        showAlways = true;
+        isFading = false;
+        time = 0;
+        parentFader.ToTarget();
+    }
+
+    public void UnShow()
+    {
+        time = duration;
+        isFading = false;
+        parentFader.ToOrigin();
+    }
 
     public void UpdateMoneyUI(float amount)
     {

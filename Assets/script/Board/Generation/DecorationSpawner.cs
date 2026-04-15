@@ -70,12 +70,12 @@ public class DecorationSpawner : MonoBehaviour
         float y = Random.Range(_minHeight, _maxHeight);
 
         // área exterior donde spawnean
-        float outerMinX = boardBounds.min.x - _spawnPadding;
+        float outerMinX = Mathf.Max(0f, boardBounds.min.x - _spawnPadding);
         float outerMaxX = boardBounds.max.x + _spawnPadding;
-        float outerMinZ = boardBounds.min.z - _spawnPadding;
+        float outerMinZ = Mathf.Max(0f, boardBounds.min.z - _spawnPadding);
         float outerMaxZ = boardBounds.max.z + _spawnPadding;
 
-        // Área interior (board + margen) // evitar spawn here
+        // Área interior (board + margen) que evitar
         float innerMinX = boardBounds.min.x - _spawnMargin;
         float innerMaxX = boardBounds.max.x + _spawnMargin;
         float innerMinZ = boardBounds.min.z - _spawnMargin;

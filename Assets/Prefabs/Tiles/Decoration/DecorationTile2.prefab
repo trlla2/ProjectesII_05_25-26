@@ -98,7 +98,6 @@ GameObject:
   - component: {fileID: 4955660994155067177}
   - component: {fileID: 3477376746109496961}
   - component: {fileID: 8243461375327121259}
-  - component: {fileID: -8482036659503319877}
   - component: {fileID: 3728246493380245998}
   m_Layer: 3
   m_Name: DecorationTile2
@@ -117,7 +116,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 0.3, z: 1}
+  m_LocalScale: {x: 0.6, y: 0.2, z: 0.6}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4523621741058016516}
@@ -195,26 +194,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.5, y: 0.5, z: 0.5}
+  m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &-8482036659503319877
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5110594593294184157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84014feac24d4914f8e4174bb6f20cc6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _data: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
-  isForcedPos: 0
-  forcedPos: {x: 0, y: 0}
-  _postInteractionTile: {fileID: 0}
-  _renderer: {fileID: 1438056542728728785}
-  neighbors: []
 --- !u!114 &3728246493380245998
 MonoBehaviour:
   m_ObjectHideFlags: 0

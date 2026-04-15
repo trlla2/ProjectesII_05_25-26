@@ -47,17 +47,48 @@ public class ShopTile : BoardTile
     {
         _itemOffers = new List<ShopOffer>(ItemSlots);
 
+        HashSet<Item> usedItems = new HashSet<Item>();
+
         for (int i = 0; i < ItemSlots; i++)
         {
-            Item item = _boardManager.currentStageLevelData.GetShopItem();
+            Item item = GetUniqueShopItem(usedItems);
             if (item != null)
+            {
+                usedItems.Add(item);
                 _itemOffers.Add(ShopOffer.CreateItemOffer(item, item.Rarity.GetShopPrice()));
+            }
         }
 
         _healOffer = ShopOffer.CreateHealOffer(_healPercent, _healCost);
         _statOffer = CreateRandomStatUpgradeOffer();
 
         Debug.Log($"ShopTile: {_itemOffers.Count} items, 1 heal, 1 stat generados.");
+    }
+
+    private Item GetUniqueShopItem(HashSet<Item> usedItems)
+    {
+        StageLevelData stageData = _boardManager.currentStageLevelData;
+        if (stageData == null) return null;
+
+        const int maxAttempts = 10;
+        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            Item candidate = stageData.GetShopItem();
+            if (candidate != null && !usedItems.Contains(candidate))
+                return candidate;
+        }
+
+        List<Item> pool = stageData.GetShopItemPool();
+        if (pool != null)
+        {
+            foreach (Item item in pool)
+            {
+                if (item != null && !usedItems.Contains(item))
+                    return item;
+            }
+        }
+
+        return null;
     }
 
     private ShopOffer CreateRandomStatUpgradeOffer()

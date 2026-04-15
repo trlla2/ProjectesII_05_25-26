@@ -12,6 +12,7 @@ public class ShopScreen : MonoBehaviour
     [Header("Utility Slots")]
     [SerializeField] private ShopSlotUI _healSlot;
     [SerializeField] private ShopSlotUI _statSlot;
+    [SerializeField] public List<StatUpgradeData> _statUpgradeData;
 
     [Header("Feedback")]
     [SerializeField] private TMP_Text _feedbackText;
@@ -44,7 +45,13 @@ public class ShopScreen : MonoBehaviour
         _currentTile = null;
     }
 
-    private void RefreshSlots()
+    public void RerollOffers()
+    {
+        _currentTile.GenerateOffers();
+        RefreshSlots();
+    }
+
+    public void RefreshSlots(/*bool items, bool heal, bool stat*/)
     {
         if (_currentTile == null) return;
 
@@ -61,7 +68,10 @@ public class ShopScreen : MonoBehaviour
             _healSlot.Setup(_currentTile.HealOffer, this);
 
         if (_statSlot != null && _currentTile.StatOffer != null)
+        {
             _statSlot.Setup(_currentTile.StatOffer, this);
+        }
+            
     }
 
     public void TryBuy(ShopOffer offer)

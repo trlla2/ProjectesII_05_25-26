@@ -1,3 +1,4 @@
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -32,11 +33,18 @@ public class ShopSlotUI : MonoBehaviour
                 break;
 
             case ShopOffer.OfferType.Heal:
-                if (_icon != null) _icon.sprite = null;
+                //if (_icon != null) _icon.sprite = null;
                 break;
 
             case ShopOffer.OfferType.StatUpgrade:
-                if (_icon != null) _icon.sprite = null;
+                if (offer.StatType == StatUpgradeType.Defense)
+                    _icon.sprite = _shopScreen._statUpgradeData.Where(s => s.Type == StatUpgradeType.Defense).FirstOrDefault().Icon;
+                else if (offer.StatType == StatUpgradeType.Evasion)
+                    _icon.sprite = _shopScreen._statUpgradeData.Where(s => s.Type == StatUpgradeType.Evasion).FirstOrDefault().Icon;
+                else if (offer.StatType == StatUpgradeType.ExtraDamage)
+                    _icon.sprite = _shopScreen._statUpgradeData.Where(s => s.Type == StatUpgradeType.ExtraDamage).FirstOrDefault().Icon;
+                else if (offer.StatType == StatUpgradeType.MaxHealth)
+                    _icon.sprite = _shopScreen._statUpgradeData.Where(s => s.Type == StatUpgradeType.MaxHealth).FirstOrDefault().Icon;
                 break;
         }
 

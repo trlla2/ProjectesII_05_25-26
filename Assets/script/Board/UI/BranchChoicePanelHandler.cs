@@ -8,6 +8,7 @@ public class BranchChoicePanelHandler : MonoBehaviour
     [SerializeField] private Button _leftButton;
     [SerializeField] private TileClickHandler _tileClickHandler;
     [SerializeField] private PlayerMovement _player;
+    [SerializeField] private BoardCameraController _boardCameraController;
 
     private BoardTile _rightTile;
     private BoardTile _leftTile;
@@ -32,12 +33,14 @@ public class BranchChoicePanelHandler : MonoBehaviour
 
         _tileClickHandler.HandleBoardRaycast(false);
         gameObject.SetActive(true);
+        _boardCameraController?.ZoomIn();
     }
 
     private void Hide()
     {
         gameObject.SetActive(false);
         _tileClickHandler.HandleBoardRaycast(true);
+        _boardCameraController?.ZoomOut();
     }
 
     private void OnRightChosen() => Choose(_rightTile);

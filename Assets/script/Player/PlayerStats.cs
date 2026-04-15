@@ -187,10 +187,15 @@ public class PlayerStats
         if (money >= amount)
         {
             money -= amount;
-            OnMoneyChange?.Invoke(amount);
+            OnMoneyChange?.Invoke(-amount);
             return true;
         }
         return false;
+    }
+
+    public bool CanUseMoney(int amount)
+    {
+        return money >= amount;
     }
 
     public void AddExp(int amount)

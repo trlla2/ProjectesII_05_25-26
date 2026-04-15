@@ -65,18 +65,32 @@ public class MoneyUIHandler : MonoBehaviour
             time = 0;
             parentFader.ToTarget();
             isFading = true;
-
-            if(moneyAddedGO != null)
-            {
-                Debug.Log("Se intenta");
-
-                moneyAddedGO.GetComponent<TMP_Text>().text = $"+{amount}";
-                moneyAddedGO.GetComponent<TranslatorUI>().ToTarget();
-                Debug.Log("Se Ha hecho");
-
-            }
+            
         }
 
+        if (moneyAddedGO != null && amount > 0)
+        {
+            Debug.Log("Se intenta");
+
+            moneyAddedGO.GetComponent<TMP_Text>().text = $"+{amount}";
+            moneyAddedGO.GetComponent<TranslatorUI>().ToTarget();
+            Debug.Log("Se Ha hecho");
+
+        }
+
+        moneyText.text = GameManager.Instance.PlayerStats.Money.ToString();
+    }
+
+
+    public void UpdateMoneyUI()
+    {
+        if (!showAlways)
+        {
+            time = 0;
+            parentFader.ToTarget();
+            isFading = true;
+
+        }
         moneyText.text = GameManager.Instance.PlayerStats.Money.ToString();
     }
 

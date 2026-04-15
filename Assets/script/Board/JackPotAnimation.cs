@@ -1,5 +1,6 @@
 using System.Collections;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class JackPotAnimation : MonoBehaviour
@@ -8,6 +9,7 @@ public class JackPotAnimation : MonoBehaviour
     public int replays;
     public Color DeActivatedColor;
     public Color ActivatedColor;
+    public float time = 0.2f;
 
     public void OnEnable()
     {
@@ -24,9 +26,9 @@ public class JackPotAnimation : MonoBehaviour
         for (int i = 0; i < replays; i++)
         {
             jackpotText.color = DeActivatedColor;
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(time);
             jackpotText.color = ActivatedColor;
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(time);
         }
     }
 

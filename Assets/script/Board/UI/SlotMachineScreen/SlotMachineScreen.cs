@@ -29,6 +29,8 @@ public class SlotMachineScreen : MonoBehaviour
     private float _threeMult = 3f;
     private float _fullHouse = 2f;
 
+    
+
     private bool _resultsChecked = false;
 
     private SlotMachineTile _openedTile;

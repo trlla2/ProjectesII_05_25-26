@@ -11,6 +11,7 @@ public class ElementVisual : MonoBehaviour
     [SerializeField] private Image targetFillBombImage;
     [SerializeField] private GameObject breakEnemyHoverParticles;
     [SerializeField] private BlockadeVisual blockadeVisual;
+    [SerializeField] private SpriteRenderer warningSignRenderer;
 
     [HideInInspector]
     public Highlighter highlighter;
@@ -52,6 +53,8 @@ public class ElementVisual : MonoBehaviour
     private float swapWarningBlinkPhase;
     private float swapWarningShakePhase;
     private float swapWarningSmoothedUrgency;
+
+    private Tween warningSignTween;
 
     public Vector2Int GridPosition => gridPosition;
     public bool CanSelect => canSelect;
@@ -242,8 +245,18 @@ public class ElementVisual : MonoBehaviour
                 targetFillImage.fillAmount = 0f;
         }
 
-        if (!targeted)
+        if (targeted)
         {
+            PlayWarningSignIntro();
+        }
+        else
+        {
+            warningSignTween?.Kill();
+            warningSignTween = null;
+
+            if (warningSignRenderer != null)
+                warningSignRenderer.gameObject.SetActive(false);
+
             GameObject temp = Instantiate(breakEnemyHoverParticles, transform);
             temp.transform.SetParent(null);
             StopCountdown();
@@ -252,6 +265,35 @@ public class ElementVisual : MonoBehaviour
             if (isBombTarget)
                 SetBombVisual(false, 0f);
         }
+    }
+
+    private void PlayWarningSignIntro()
+    {
+        if (warningSignRenderer == null) return;
+
+        warningSignTween?.Kill();
+        warningSignTween = null;
+
+        warningSignRenderer.gameObject.SetActive(true);
+
+        Transform wt = warningSignRenderer.transform;
+        Vector3 endLocalPos   = Vector3.zero;
+        Vector3 startLocalPos = endLocalPos + Vector3.up * 0.5f;
+
+        wt.localPosition = startLocalPos;
+        wt.localScale    = Vector3.one * 0.7f;
+
+        Sequence seq = DOTween.Sequence();
+        seq.Join(wt.DOLocalMove(endLocalPos, 0.5f).SetEase(Ease.OutCubic));
+        seq.Join(wt.DOScale(0.15f, 0.5f).SetEase(Ease.OutCubic));
+        seq.Join(warningSignRenderer.DOFade(0.2f, 0.5f).SetEase(Ease.OutCubic));
+        seq.OnKill(() => warningSignTween = null);
+        seq.OnComplete(() =>
+        {
+                warningSignRenderer.gameObject.SetActive(false);
+        });
+
+        warningSignTween = seq;
     }
 
     public void UpdateTargetVisual(int remainingMoves, int totalMoves, float animDuration, AnimationCurve fillCurve)

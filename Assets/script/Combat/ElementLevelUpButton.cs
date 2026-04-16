@@ -31,14 +31,23 @@ public class ElementLevelUpButton : MonoBehaviour
     [SerializeField]
     private Element currentElement;
 
+    [Header("VFX")]
+    [SerializeField]
+    private ParticleSystem levelUpParticlePrefab;
+    private Camera worldCamera;
+
     public UnityEvent OnBarReach;
     public UnityEvent OnElementLevelUp;
 
     private int oldLevel;
+    private Vector3 lastClickWorldPosition;
 
     private void Start()
     {
         UpdateVisuals(true);
+
+        if (worldCamera == null)
+            worldCamera = Camera.main;
     }
 
     private void OnEnable()
@@ -51,6 +60,25 @@ public class ElementLevelUpButton : MonoBehaviour
     private void Update()
     {
         UpdateBar();
+    }
+
+    public void RegisterClick()
+    {
+        if (worldCamera == null) return;
+
+        Vector3 screenPos = Input.mousePosition;
+        screenPos.z = worldCamera.nearClipPlane;
+        lastClickWorldPosition = worldCamera.ScreenToWorldPoint(screenPos);
+    }
+
+    private void SpawnLevelUpParticles(Vector3 worldPosition)
+    {
+        if (levelUpParticlePrefab == null) return;
+
+        ParticleSystem vfx = Instantiate(levelUpParticlePrefab, worldPosition, Quaternion.identity);
+        vfx.Play();
+
+        Destroy(vfx.gameObject, vfx.main.duration + vfx.main.startLifetime.constantMax);
     }
 
     public void UpdateVisuals(bool instant = false)
@@ -99,8 +127,11 @@ public class ElementLevelUpButton : MonoBehaviour
             upgradesBar.transform.localScale = new Vector3(targetScaleX, 1, 1);
             OnBarReach.Invoke();
 
-            if(oldLevel != GameManager.Instance.PlayerStats.GetElementLevel(currentElement.Type))
+            if (oldLevel != GameManager.Instance.PlayerStats.GetElementLevel(currentElement.Type))
+            {
+                SpawnLevelUpParticles(lastClickWorldPosition);
                 OnElementLevelUp.Invoke();
+            }
         }
     }
 }

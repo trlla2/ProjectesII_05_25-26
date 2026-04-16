@@ -9,6 +9,7 @@ public struct SpellEffectActivationData
 {
     public string SpellName;
     public AudioClip Sound;
+    public ParticleSystem[] VFXPrefab;
 }
 
 public class SpellEffectHandler : MonoBehaviour
@@ -26,6 +27,7 @@ public class SpellEffectHandler : MonoBehaviour
     [Header("Thunder Settings")]
     [SerializeField] private Sprite thunderMarkerSprite;
     [SerializeField] private float thunderDelayBetweenElements = 0.15f;
+    [SerializeField] private LigthningPanel panel;
 
     private TutorialManager tutorialManager;
 
@@ -70,6 +72,17 @@ public class SpellEffectHandler : MonoBehaviour
         if (audioSource != null && data.Sound != null)
             audioSource.PlayOneShot(data.Sound);
 
+        if (data.VFXPrefab != null)
+        {
+            foreach (ParticleSystem ps in data.VFXPrefab)
+            {
+                ps.Play();
+            }
+        }
+        if(data.SpellName == "THUNDER")
+        {
+            panel.PlayAnimation();
+        }
     }
 
     private void TryFreezeEnemy(float duration = FreezeDuration)
@@ -90,13 +103,11 @@ public class SpellEffectHandler : MonoBehaviour
     {
         if (grid == null)
         {
-            Debug.LogWarning("THUNDER: Grid reference is missing on SpellEffectHandler.");
             yield break;
         }
 
         if (spellPathAnimator == null)
         {
-            Debug.LogWarning("THUNDER: SpellPathAnimator reference is missing on SpellEffectHandler.");
             yield break;
         }
 
@@ -129,7 +140,6 @@ public class SpellEffectHandler : MonoBehaviour
 
         if (strikePositions.Count == 0)
         {
-            Debug.Log("THUNDER: No Yellow or Orange elements found – no bonus hits.");
             yield break;
         }
 
@@ -172,11 +182,6 @@ public class SpellEffectHandler : MonoBehaviour
         spellPathAnimator.OnSpellCast(strikePositions.ToArray(), strikeElements, () =>
         {
             grid.DeleteElementsByPlayer(strikePositions);
-            IEnemySpell active = GameManager.Instance.CombatHandler.GetEnemyRef().ActiveSpell;
-            //we only count as player move if bomb enemy
-            if (active is BombSpell || active is HiddenDestroySpell)
-                GameManager.Instance.NotifyPlayerMove();
-
             grid.ChangeState(new ValidateSpellState(grid, GameManager.Instance.PlayerStats.GetSpellBook()));
             attackDone = true;
         });

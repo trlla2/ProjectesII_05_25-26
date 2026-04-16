@@ -78,7 +78,7 @@ public class BombSpell : EnemySpellBase
                 if (visual != null)
                 {
                     visual.SetTargetedByEnemy(true);
-                    visual.UpdateTargetVisual(remainingMoves, initialMoves,
+                    visual.UpdateTargetVisual(initialMoves, initialMoves,
                         grid.EnemyTargetAnimDuration, grid.EnemyTargetFillCurve);
                     
                     targetedVisualsByOffset[offset] = visual;
@@ -203,7 +203,7 @@ public class BombSpell : EnemySpellBase
                 if (visual != null)
                 {
                     visual.SetTargetedByEnemy(true);
-                    visual.UpdateTargetVisual(remainingMoves, initialMoves,
+                    visual.UpdateTargetVisual(initialMoves, initialMoves,
                         grid.EnemyTargetAnimDuration, grid.EnemyTargetFillCurve);
                     
                     // Update tracked visual for this offset
@@ -233,7 +233,6 @@ public class BombSpell : EnemySpellBase
 
         if (activeCardinalOffsets.Count <= 1)
         {
-            Debug.Log("Bomb defused! 3+ cables cleared.");
             ClearBombVisual(grid);
             RemoveBombElement(grid);
             ClearCableVisual();
@@ -249,14 +248,16 @@ public class BombSpell : EnemySpellBase
         remainingMoves--;
         remainingMoves = Mathf.Max(0, remainingMoves);
 
-        float animDuration = grid.EnemyTargetAnimDuration;
-        AnimationCurve curve = grid.EnemyTargetFillCurve;
-        
-        foreach (var pos in cardinalPositions)
+        foreach (var offset in activeCardinalOffsets)
         {
+            Vector2Int pos = bombPosition + offset;
+            if (!grid.IsPositionValid(pos)) continue;
             ElementVisual visual = grid.GetElementVisualAt(pos);
             if (visual != null && visual.IsTargetedByEnemy)
-                visual.UpdateTargetVisual(remainingMoves, initialMoves, animDuration, curve);
+            {
+                visual.UpdateTargetVisual(initialMoves, initialMoves,
+                    grid.EnemyTargetAnimDuration, grid.EnemyTargetFillCurve);
+            }
         }
 
         UpdateBombVisual(grid);
@@ -264,7 +265,7 @@ public class BombSpell : EnemySpellBase
         if (remainingMoves <= 0)
         {
             Debug.Log("Bomb exploded!");
-            grid.explosionTrigger.Explode(grid.VisualGrid.GridToWorldPosition(bombPosition - new Vector2Int(1,0)));
+            grid.explosionTrigger.Explode(grid.VisualGrid.GridToWorldPosition(bombPosition));
             Camera.main.GetComponent<CameraShake>().Shake(0.4f, 0.5f);
 
             ClearBombVisual(grid);

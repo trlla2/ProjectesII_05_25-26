@@ -37,6 +37,11 @@ public class ShopSlotUI : MonoBehaviour
     [SerializeField]
     private Sprite legendaryBG;
 
+    [Header("HealthBarStuff")]
+
+    [SerializeField]
+    private PlayerHealthBar healthBar;
+
     private ShopOffer _offer;
     private ShopScreen _shopScreen;
 
@@ -106,6 +111,7 @@ public class ShopSlotUI : MonoBehaviour
     private void OnBuyClicked()
     {
         _shopScreen.TryBuy(_offer);
+        healthBar.UpdateHealthBar();
     }
 
     private string GetStatLabel(StatUpgradeType stat)

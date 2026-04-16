@@ -263,6 +263,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4580768473457997496}
     m_Modifications:
+    - target: {fileID: 2773851918949307100, guid: 7c5028ecb144e154e9909a126879d2d0, type: 3}
+      propertyPath: moneyUI
+      value: 
+      objectReference: {fileID: 2101949641}
     - target: {fileID: 5628071095851846715, guid: 7c5028ecb144e154e9909a126879d2d0, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3623,6 +3627,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 2033243888}
+--- !u!114 &2101949641 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8025083228379712745, guid: 1f7005cc95364584bb89f824a18402db, type: 3}
+  m_PrefabInstance: {fileID: 4580768473457997493}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c90420fc7935cc48b36884d8db1495d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4580768473457997493
 PrefabInstance:
   m_ObjectHideFlags: 0

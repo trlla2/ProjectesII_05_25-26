@@ -342,7 +342,7 @@ public class BoardManager : MonoBehaviour
     public void OpenSlotMachineScreen(SlotMachineTile tile)
     {
         if (slotMachinePanel != null)
-            slotMachinePanel.Open();
+            slotMachinePanel.Open(tile);
     }
 
     public void HandleBoardCamera(bool enable)

@@ -60,7 +60,7 @@ public abstract class BoardTile : MonoBehaviour
         }
     }
 
-    protected void ReplaceWithPostInteraction()
+    public void ReplaceWithPostInteraction()
     {
         if (_postInteractionTile != null)
             _boardManager.ReplaceTileType(this, _postInteractionTile);

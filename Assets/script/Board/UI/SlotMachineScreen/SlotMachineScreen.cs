@@ -31,6 +31,8 @@ public class SlotMachineScreen : MonoBehaviour
 
     private bool _resultsChecked = false;
 
+    private SlotMachineTile _openedTile;
+
     [SerializeField]private TranslatorUI _translator;
 
     void Update()
@@ -139,8 +141,11 @@ public class SlotMachineScreen : MonoBehaviour
             _currentBet -= _bet;
     }
 
-    public void Open()
+    public void Open(SlotMachineTile current)
     {
+        if (current == null || _openedTile != null) return;
+        _openedTile = current;
+
         Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(false);
         _avaliablePulls = _basePulls;
         _currentBet = _baseBet;
@@ -167,5 +172,8 @@ public class SlotMachineScreen : MonoBehaviour
         _translator.ToOrigin();
         _jackPotAnimation.UnShowText();
         moneyUI.UnShow();
+
+        _openedTile.ReplaceWithPostInteraction();
+        _openedTile = null;
     }
 }

@@ -19,6 +19,9 @@ public class EnemyBehaviour : MonoBehaviour
     [Header("Tutorial")]
     [SerializeField] private TutorialManager tutorialManager;
 
+    [Header("VFX")]
+    [SerializeField] private ParticleSystem hiddenEnemyAttackSelect;
+
     private SpriteRenderer spriteRenderer;
     private Animator animator;
 
@@ -172,6 +175,8 @@ public class EnemyBehaviour : MonoBehaviour
         // Same in swapper spell
         if (activeSpell is SwapperSpell existingSwapper && existingSwapper.IsActive)
             return;
+
+        HandleTargetVFX();
 
         activeSpell = enemyType.CreateSpell();
         if (activeSpell != null)
@@ -379,6 +384,18 @@ public class EnemyBehaviour : MonoBehaviour
         }
 
         swapperSpell.ReapplyTargetingVisuals(grid);
+    }
+
+    private void HandleTargetVFX()
+    {
+        if (activeSpell == null || grid == null) return;
+        if (activeSpell is HiddenDestroySpell)
+        {
+            if (hiddenEnemyAttackSelect != null)
+            {
+                hiddenEnemyAttackSelect.Play();
+            }
+        }
     }
 
     private IEnumerator MonitorTimedSpell()

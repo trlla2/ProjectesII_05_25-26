@@ -18,6 +18,12 @@ public class SpellPathAnimator : MonoBehaviour
     [Header("Animator Type")]
     [SerializeField] private bool isPlayerAnimator = true;
 
+    [Header("Hit Particle Systems")]
+    [SerializeField] private ParticleSystem redHitParticle;
+    [SerializeField] private ParticleSystem blueHitParticle;
+    [SerializeField] private ParticleSystem greenHitParticle;
+    [SerializeField] private ParticleSystem yellowHitParticle;
+
     private float damagePerElement = 4f;
 
     private CameraShake cameraShake;
@@ -224,6 +230,7 @@ public class SpellPathAnimator : MonoBehaviour
             
             if (isPlayerAnimator)
             {
+                PlayHitParticle(element.Type, clone.transform.position);
                 GameManager.Instance.CombatHandler.AttackEnemy(element.Type);
             }
             else
@@ -258,6 +265,23 @@ public class SpellPathAnimator : MonoBehaviour
                 Destroy(clone);
             }
         }
+    }
+
+    private void PlayHitParticle(ElementType elementType, Vector3 position)
+    {
+        ParticleSystem ps = elementType switch
+        {
+            ElementType.Red    => redHitParticle,
+            ElementType.Blue   => blueHitParticle,
+            ElementType.Green  => greenHitParticle,
+            ElementType.Yellow => yellowHitParticle,
+            _                  => null
+        };
+
+        if (ps == null) return;
+
+        ps.transform.position = position;
+        ps.Play();
     }
 
     private List<GameObject> CreateClones(Vector2Int[] pathPositions, List<Element> providedElements = null)

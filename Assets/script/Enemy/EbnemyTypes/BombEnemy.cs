@@ -78,7 +78,7 @@ public class BombSpell : EnemySpellBase
                 if (visual != null)
                 {
                     visual.SetTargetedByEnemy(true);
-                    visual.UpdateTargetVisual(remainingMoves, initialMoves,
+                    visual.UpdateTargetVisual(initialMoves, initialMoves,
                         grid.EnemyTargetAnimDuration, grid.EnemyTargetFillCurve);
                     
                     targetedVisualsByOffset[offset] = visual;
@@ -203,7 +203,7 @@ public class BombSpell : EnemySpellBase
                 if (visual != null)
                 {
                     visual.SetTargetedByEnemy(true);
-                    visual.UpdateTargetVisual(remainingMoves, initialMoves,
+                    visual.UpdateTargetVisual(initialMoves, initialMoves,
                         grid.EnemyTargetAnimDuration, grid.EnemyTargetFillCurve);
                     
                     // Update tracked visual for this offset
@@ -248,9 +248,17 @@ public class BombSpell : EnemySpellBase
         remainingMoves--;
         remainingMoves = Mathf.Max(0, remainingMoves);
 
-        float animDuration = grid.EnemyTargetAnimDuration;
-        AnimationCurve curve = grid.EnemyTargetFillCurve;
-       
+        foreach (var offset in activeCardinalOffsets)
+        {
+            Vector2Int pos = bombPosition + offset;
+            if (!grid.IsPositionValid(pos)) continue;
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual != null && visual.IsTargetedByEnemy)
+            {
+                visual.UpdateTargetVisual(initialMoves, initialMoves,
+                    grid.EnemyTargetAnimDuration, grid.EnemyTargetFillCurve);
+            }
+        }
 
         UpdateBombVisual(grid);
 

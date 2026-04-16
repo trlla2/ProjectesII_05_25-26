@@ -10,6 +10,7 @@ public class ItemUIButton : MonoBehaviour
     private Item item;
     private Button button;
     private CanvasGroup canvasGroup;
+    private ParticleSystem glow;
 
     [Header("UI")]
     [SerializeField] private Color backgroundActiveColor = Color.white;
@@ -41,6 +42,7 @@ public class ItemUIButton : MonoBehaviour
         playerRef = FindFirstObjectByType<PlayerPathing>();
         button = GetComponent<Button>();
         canvasGroup = GetComponent<CanvasGroup>();
+        glow = GetComponentInChildren<ParticleSystem>();
         currentScene = SceneManager.GetActiveScene();
     }
 
@@ -109,15 +111,19 @@ public class ItemUIButton : MonoBehaviour
         {
             canvasGroup.alpha = 0.5f;
             bg.color = backgroundCooldownColor;
+            glow.Stop();
         }
         if (canActivate)
         {
             canvasGroup.alpha = 1f;
+            glow.Play();
             bg.color = backgroundActiveColor;
         }
         else
         {
             canvasGroup.alpha = 0.7f;
+            glow.Stop();
+            glow.Clear();
             bg.color = backgroundInactiveColor;
             itemImage.color = inactiveColor;
         }

@@ -36,7 +36,6 @@ public class MoneyUIHandler : MonoBehaviour
 
     public void UpdateMoneyUI()
     {
-        Debug.Log("Hola???");
 
         if(!showAlways)
         {

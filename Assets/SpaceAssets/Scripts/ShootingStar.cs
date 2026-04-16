@@ -9,7 +9,6 @@ public class ShootingStar : MonoBehaviour {
     float currentSpawnTime;
 
     //This speed value to move the shooting star
-    [Range(0.3f, 10.0f)]
     public float speed = 1f;
     float currentSpeed;
 
@@ -52,8 +51,8 @@ public class ShootingStar : MonoBehaviour {
         //Randomize spawn time and speed
         if (randomize)
         {
-            currentSpawnTime = Random.Range(0.3f, spawnTime);
-            currentSpeed = Random.Range(0.3f, speed);
+            currentSpawnTime = Random.Range(15.0f, spawnTime);
+            currentSpeed = Random.Range(0.0001f, speed);
         }
         //Wait for currentSpawnTime to reactivate the shooting star
         StartCoroutine(waitToActivate(currentSpawnTime));

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ public class ShopTile : BoardTile
     [SerializeField] private float _evasionUpgradeAmount = 5f;
     [SerializeField] private float _defenseUpgradeAmount = 3f;
 
-    private List<ShopOffer> _itemOffers = new List<ShopOffer>();
+    private List<ShopOffer> _itemOffers = new List<ShopOffer>(); 
     private ShopOffer _healOffer;
     private ShopOffer _statOffer;
 
@@ -94,7 +95,7 @@ public class ShopTile : BoardTile
     private ShopOffer CreateRandomStatUpgradeOffer()
     {
         StatUpgradeType[] stats = (StatUpgradeType[])System.Enum.GetValues(typeof(StatUpgradeType));
-        StatUpgradeType chosen = stats[Random.Range(0, stats.Length)];
+        StatUpgradeType chosen = stats[UnityEngine.Random.Range(0, stats.Length)];
 
         float amount = chosen switch
         {

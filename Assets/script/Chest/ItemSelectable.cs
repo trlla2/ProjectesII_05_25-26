@@ -15,6 +15,9 @@ public class ItemSelectable : MonoBehaviour
 
     private RemoveItemPanelHandler panelRef;
     private TranslatorUI translator;
+
+    public bool CanBeSelected = true;
+    
     public System.Action OnSelect;
 
     private void Awake()
@@ -34,6 +37,9 @@ public class ItemSelectable : MonoBehaviour
 
     public void Select()
     {
+        if (!CanBeSelected)
+            return;
+
         selectImage.SetActive(true);
         translator.ToTarget();
 

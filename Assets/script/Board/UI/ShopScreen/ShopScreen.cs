@@ -1,8 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 public class ShopScreen : MonoBehaviour
 {
@@ -14,31 +17,50 @@ public class ShopScreen : MonoBehaviour
     [SerializeField] private ShopSlotUI _statSlot;
     [SerializeField] public List<StatUpgradeData> _statUpgradeData;
 
-    [Header("Feedback")]
-    [SerializeField] private TMP_Text _feedbackText;
+    [Header("Reroll")]
+    [SerializeField]
+    private TMP_Text _rerollText;
+    [SerializeField]
+    private Button _rerollButton;
 
-    [Header("Player Gold Display")]
-    [SerializeField] private TMP_Text _goldText;
+    [Header("Feedback")]
+    [SerializeField] private SellerBehaviour _seller;
+
+    [Header("Utility")]
+    [SerializeField] private RemoveItemPanelHandler removePanel;
 
     private ShopTile _currentTile;
     private TranslatorUI _translator;
+
+    [SerializeField] private MoneyUIHandler moneyUI;
+
+    private int _maxRerolls = 3;
+    private int _currentRerolls = 0;
+    private int _costReroll = 50;
 
     private void Awake()
     {
         _translator = GetComponent<TranslatorUI>();
     }
 
+   
+
     public void Open(ShopTile tile)
     {
+        _rerollText.text = $"{_costReroll}";
+        _currentRerolls = 0;
         _currentTile = tile;
         Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(false);
-        RefreshGold();
         RefreshSlots();
+        _seller.EnterShopReacion();
         _translator.ToTarget();
+        moneyUI.StayVisible();
     }
 
     public void Close()
     {
+        moneyUI.UnShow();
+        _seller.CloseShopReaction();
         _translator.ToOrigin();
         Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(true);
         _currentTile.Replace();
@@ -47,6 +69,20 @@ public class ShopScreen : MonoBehaviour
 
     public void RerollOffers()
     {
+        _rerollText.text = $"{_costReroll}";
+
+        if (_currentRerolls >= _maxRerolls)
+        {
+            _rerollButton.interactable = false;
+            _rerollText.text = $"SoldOut";
+            return;
+        }
+
+        if (!GameManager.Instance.PlayerStats.UseMoney(_costReroll))
+            return;
+
+
+        _currentRerolls++;
         _currentTile.GenerateOffers();
         RefreshSlots();
     }
@@ -78,7 +114,7 @@ public class ShopScreen : MonoBehaviour
     {
         if (offer.IsPurchased)
         {
-            ShowFeedback("¡Ya comprado!");
+            _seller.OutOfStockReaction();
             return;
         }
 
@@ -86,7 +122,7 @@ public class ShopScreen : MonoBehaviour
 
         if (!stats.UseMoney(offer.Cost))
         {
-            ShowFeedback("¡Oro insuficiente!");
+            _seller.NotEnoughMoneyReaction();
             return;
         }
 
@@ -95,27 +131,26 @@ public class ShopScreen : MonoBehaviour
             case ShopOffer.OfferType.Item:
                 if (!stats.AddItemToInventory(offer.Item))
                 {
-                    stats.AddMoney(offer.Cost);
-                    ShowFeedback("¡Inventario lleno!");
-                    return;
+                    removePanel.ShowPanel(offer.Item, true);
+                    _seller.InventoryFullReaction();
                 }
-                ShowFeedback($"¡{offer.Item.NameItem} comprado!");
+                else
+                    _seller.PurchasedItemReaction();
                 break;
 
             case ShopOffer.OfferType.Heal:
                 //float healAmount = (stats.MaxHp + stats.ExtraHealth) * offer.HealPercent;
                 stats.HealPercentage(offer.HealPercent);
-                ShowFeedback($"¡Curado un {offer.HealPercent * 100f:0}% de HP!");
+                _seller.PurchasedHealReaction();
                 break;
 
             case ShopOffer.OfferType.StatUpgrade:
                 ApplyStatUpgrade(stats, offer);
-                ShowFeedback($"¡{offer.StatType} mejorado!");
+                _seller.PurchasedItemReaction();
                 break;
         }
 
         offer.MarkAsPurchased();
-        RefreshGold();
         RefreshSlots();
     }
 
@@ -145,24 +180,4 @@ public class ShopScreen : MonoBehaviour
         }
     }
 
-    private void RefreshGold()
-    {
-        if (_goldText != null)
-            _goldText.text = $"Oro: {GameManager.Instance.PlayerStats.Money}";
-    }
-
-    private void ShowFeedback(string message)
-    {
-        if (_feedbackText != null)
-        {
-            _feedbackText.text = message;
-            StartCoroutine(ClearFeedbackText());
-        }
-    }
-
-    private IEnumerator ClearFeedbackText()
-    {
-        yield return new WaitForSeconds(1f);
-        _feedbackText.text = "";
-    }
 }

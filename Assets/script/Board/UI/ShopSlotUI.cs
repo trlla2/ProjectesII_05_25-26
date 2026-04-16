@@ -11,6 +11,32 @@ public class ShopSlotUI : MonoBehaviour
     [SerializeField] private TMP_Text _costText;
     [SerializeField] private Button _buyButton;
 
+    [Header("ItemStuff")]
+    [SerializeField]
+    private Image itemBaner = null;
+    [SerializeField]
+    private Image itemBG = null;
+
+    [Header("ItemRarity Header")]
+    [SerializeField]
+    private Sprite commonHeader;
+    [SerializeField]
+    private Sprite rareHeader;
+    [SerializeField]
+    private Sprite epicHeader;
+    [SerializeField]
+    private Sprite legendaryHeader;
+
+    [Header("ItemRarity BG")]
+    [SerializeField]
+    private Sprite commonBG;
+    [SerializeField]
+    private Sprite rareBG;
+    [SerializeField]
+    private Sprite epicBG;
+    [SerializeField]
+    private Sprite legendaryBG;
+
     private ShopOffer _offer;
     private ShopScreen _shopScreen;
 
@@ -30,6 +56,30 @@ public class ShopSlotUI : MonoBehaviour
                 _descriptionText.text = offer.Item.Description;
                 if (_icon != null && offer.Item.Sprite != null)
                     _icon.sprite = offer.Item.Sprite;
+
+                if(itemBaner != null && itemBG != null)
+                {
+                    switch (offer.Item.Rarity)
+                    {
+                        case ItemRarity.COMMON:
+                            itemBaner.sprite = commonHeader;
+                            itemBG.sprite = commonBG;
+                            break;
+                        case ItemRarity.RARE:
+                            itemBaner.sprite = rareHeader;
+                            itemBG.sprite = rareBG;
+                            break;
+                        case ItemRarity.EPIC:
+                            itemBaner.sprite = epicHeader;
+                            itemBG.sprite = epicBG;
+                            break;
+                        case ItemRarity.LEGENDARY:
+                            itemBaner.sprite = legendaryHeader;
+                            itemBG.sprite = legendaryBG;
+                            break;
+                    }
+                }
+
                 break;
 
             case ShopOffer.OfferType.Heal:
@@ -50,7 +100,7 @@ public class ShopSlotUI : MonoBehaviour
 
         bool purchased = offer.IsPurchased;
         _buyButton.interactable = !purchased;
-        _costText.text = purchased ? "Agotado" : $"{offer.Cost} oro";
+        _costText.text = purchased ? "SoldOut" : $"{offer.Cost}";
     }
 
     private void OnBuyClicked()

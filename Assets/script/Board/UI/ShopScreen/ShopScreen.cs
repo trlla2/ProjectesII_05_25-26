@@ -71,12 +71,6 @@ public class ShopScreen : MonoBehaviour
     {
         _rerollText.text = $"{_costReroll}";
 
-        if (_currentRerolls >= _maxRerolls)
-        {
-            _rerollButton.interactable = false;
-            _rerollText.text = $"SoldOut";
-            return;
-        }
 
         if (!GameManager.Instance.PlayerStats.UseMoney(_costReroll))
             return;
@@ -85,6 +79,13 @@ public class ShopScreen : MonoBehaviour
         _currentRerolls++;
         _currentTile.GenerateOffers();
         RefreshSlots();
+
+        if (_currentRerolls >= _maxRerolls)
+        {
+            _rerollButton.interactable = false;
+            _rerollText.text = $"SoldOut";
+            return;
+        }
     }
 
     public void RefreshSlots(/*bool items, bool heal, bool stat*/)

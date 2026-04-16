@@ -9,7 +9,7 @@ public struct SpellEffectActivationData
 {
     public string SpellName;
     public AudioClip Sound;
-    public ParticleSystem VFXPrefab;
+    public ParticleSystem[] VFXPrefab;
 }
 
 public class SpellEffectHandler : MonoBehaviour
@@ -74,7 +74,10 @@ public class SpellEffectHandler : MonoBehaviour
 
         if (data.VFXPrefab != null)
         {
-            data.VFXPrefab.Play();
+            foreach (ParticleSystem ps in data.VFXPrefab)
+            {
+                ps.Play();
+            }
         }
         if(data.SpellName == "THUNDER")
         {

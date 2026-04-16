@@ -29,6 +29,9 @@ public class SpellEffectHandler : MonoBehaviour
     [SerializeField] private float thunderDelayBetweenElements = 0.15f;
     [SerializeField] private LigthningPanel panel;
 
+    [Header("Freeze Settings")]
+    [SerializeField] private FreezeVignette feezeVignette;
+
     private TutorialManager tutorialManager;
 
     private const float FreezeDuration = 3f;
@@ -79,9 +82,13 @@ public class SpellEffectHandler : MonoBehaviour
                 ps.Play();
             }
         }
-        if(data.SpellName == "THUNDER")
+        if(data.SpellName == "THUNDER" && panel != null)
         {
             panel.PlayAnimation();
+        }
+        if(data.SpellName == "FREEZE" && feezeVignette != null)
+        {
+            feezeVignette.PerformFreezePaneleffect(FreezeDuration);
         }
     }
 
@@ -182,7 +189,7 @@ public class SpellEffectHandler : MonoBehaviour
         spellPathAnimator.OnSpellCast(strikePositions.ToArray(), strikeElements, () =>
         {
             grid.DeleteElementsByPlayer(strikePositions);
-            grid.ChangeState(new ValidateSpellState(grid, GameManager.Instance.PlayerStats.GetSpellBook()));
+            grid.ChangeState(new RefillState(grid, grid.VisualGrid));
             attackDone = true;
         });
 

@@ -17,7 +17,6 @@ public class FreezeEffect : ActivatableEffectBase
 
     public override void Activate(ItemLevel level, ItemContext context, Action onComplete)
     {
-        context.Player.GetComponentInParent<SpellEffectHandler>().PlayEffectsForSpell("FREEZE");
         context.Enemy.FreezeForDuration(freezeDuration);
         onComplete?.Invoke();
     }

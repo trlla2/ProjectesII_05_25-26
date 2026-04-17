@@ -15,23 +15,23 @@ public class PlayerStats
 
     private int _evasionBaseUpgrades = 0;
     private int _evasionModifier = 0;
-    private int evasionPoints => 0 + _evasionModifier + (10 * _evasionBaseUpgrades);
+    private int evasionPoints => 0 + _evasionModifier + (1 * _evasionBaseUpgrades);
 
     private int _maxHealthBaseUpgrades = 0;
     private float _maxHealthModifier = 0;
-    private float extraHealth => 0 + _maxHealthModifier + (10 * _maxHealthBaseUpgrades);
+    private float extraHealth => 0 + _maxHealthModifier + (2 * _maxHealthBaseUpgrades);
 
     private int _damageBaseUpgrades = 0;
     private int _damageModifier = 0;
-    private int extraDamage => 0 + _damageModifier + (10 * _damageBaseUpgrades);
+    private int extraDamage => 0 + _damageModifier + (1 * _damageBaseUpgrades);
 
     private int _defenseBaseUpgrades = 0;
     private float _defenseModifier = 0;
-    private float defense => 0 + _defenseModifier + (10 * _defenseBaseUpgrades);
+    private float defense => 0 + _defenseModifier + (1 * _defenseBaseUpgrades);
 
     private int _critBaseUpgrades = 0;
     private int _critPercentModifier = 0;
-    private int critPercentage => 0 + _critPercentModifier + (5 * _critBaseUpgrades);
+    private int critPercentage => 0 + _critPercentModifier + (1 * _critBaseUpgrades);
     private const float critMultiplayer = 1.5f;
     private int spikeDamage;
     public int SpikeDamage => spikeDamage;

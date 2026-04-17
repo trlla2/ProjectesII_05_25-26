@@ -16,6 +16,8 @@ public class EnemyTile : BoardTile
     {
         Debug.Log("starting combat...");
 
+        
+
         if (!_boardManager.EncountersManager.IsForced())
         {
             EnemyType enemyToFight = ResolveEnemy();

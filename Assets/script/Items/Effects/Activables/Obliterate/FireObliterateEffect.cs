@@ -6,7 +6,6 @@ using DG.Tweening;
 [System.Serializable]
 public class FireObliterateEffect : ActivatableEffectBase
 {
-    [SerializeField] private ElementType fireElementType = ElementType.Red;
     [SerializeField] private float delayBetweenElements = 0.15f;
 
     public override bool CanActivate(ItemContext context)
@@ -60,7 +59,7 @@ public class FireObliterateEffect : ActivatableEffectBase
             foreach (var marker in xMarkers)
                 GameObject.Destroy(marker);
 
-            AttackWithElements(context, positions, fireElements, onComplete);
+            AttackWithElements(context, positions, fireElements, onComplete, chargeOrb: true);
         });
     }
 
@@ -76,7 +75,7 @@ public class FireObliterateEffect : ActivatableEffectBase
                 ElementVisual visual = grid.GetElementVisualAt(pos);
 
                 if (element != null &&
-                    element.Type == fireElementType &&
+                    (element.Type == ElementType.Red ||element.Type == ElementType.Orange)&&
                     visual != null &&
                     !visual.IsBlocked)
                 {

@@ -135,14 +135,15 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
 
         if (invalidPositions != null)
         {
+            // Remove ALL invalid positions first, before adding bonus time,
             foreach (var pos in invalidPositions)
             {
                 targetedPositions.Remove(pos);
                 pendingClearedCount++;
-
-                if (bonusTimePerClearedTarget > 0f)
-                    AddTime(bonusTimePerClearedTarget);
             }
+
+            if (bonusTimePerClearedTarget > 0f)
+                AddTime(bonusTimePerClearedTarget * invalidPositions.Count);
         }
     }
 

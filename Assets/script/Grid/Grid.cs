@@ -132,15 +132,6 @@ public class Grid : MonoBehaviour
         bool success = spellInserter.TryInsertSpell(gridData, spellRecipe);
     }
 
-    public void SwapElements(Vector2Int posA, Vector2Int posB)
-    {
-        if (CurrentState != GridStateType.Idle)
-            return;
-
-
-        gridData.SwapElements(posA, posB);
-        visualGrid.Swap(posA, posB, 0.3f);
-    }
 
     public void InstantVisualEmpty(List<Vector2Int> positions, bool chargeOrb = false)
     {
@@ -402,7 +393,7 @@ public class Grid : MonoBehaviour
 
     }
 
-    private void CollectAndChargeWeakElements(List<Vector2Int> positions)
+    public void CollectAndChargeWeakElements(List<Vector2Int> positions)
     {
         BossManager bossManager = GameManager.Instance.CombatHandler.bossManager;
         if (bossManager == null)

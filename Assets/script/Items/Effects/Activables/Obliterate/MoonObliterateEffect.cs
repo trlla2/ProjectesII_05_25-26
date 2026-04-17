@@ -6,7 +6,6 @@ using DG.Tweening;
 [System.Serializable]
 public class MoonObliterateEffect : ActivatableEffectBase
 {
-    [SerializeField] private ElementType moonElementType = ElementType.Blue;
     [SerializeField] private float delayBetweenElements = 0.15f;
 
     public override bool CanActivate(ItemContext context)
@@ -75,7 +74,7 @@ public class MoonObliterateEffect : ActivatableEffectBase
                 ElementVisual visual = grid.GetElementVisualAt(pos);
 
                 if (element != null &&
-                    element.Type == moonElementType &&
+                    (element.Type == ElementType.Blue ||element.Type == ElementType.Melon)&&
                     visual != null &&
                     !visual.IsBlocked)
                 {

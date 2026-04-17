@@ -69,6 +69,13 @@ public class SpellPathAnimator : MonoBehaviour
 
     public void OnSpellCast(Vector2Int[] pathPositions, List<Element> elements, System.Action onComplete = null)
     {
+        if (!isPlayerAnimator)
+        {
+            onComplete += (() =>
+            {
+                GameManager.Instance?.CombatHandler.GetEnemyRef().animator.SetTrigger("Attack");
+            });
+        }
         if (pathPositions == null || pathPositions.Length == 0)
         {
             onComplete?.Invoke();

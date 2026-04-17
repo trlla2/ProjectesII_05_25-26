@@ -44,17 +44,17 @@ public class SpellEffectHandler : MonoBehaviour
 
     public void HandleSpellEffects(Spell spell)
     {
-        GameManager.Instance.NotifyPlayerMove();
-
         PlayEffectsForSpell(spell.Name);
 
         switch (spell.Name)
         {
             case "HEAL":
+                GameManager.Instance.NotifyPlayerMove();
                 GameManager.Instance.CombatHandler.HealPlayer(HealAmount);
                 break;
 
             case "FREEZE":
+                GameManager.Instance.NotifyPlayerMove();
                 TryFreezeEnemy();
                 break;
 
@@ -110,11 +110,14 @@ public class SpellEffectHandler : MonoBehaviour
     {
         if (grid == null)
         {
+            // guard: still notify so the enemy doesn't stall
+            GameManager.Instance.NotifyPlayerMove();
             yield break;
         }
 
         if (spellPathAnimator == null)
         {
+            GameManager.Instance.NotifyPlayerMove();
             yield break;
         }
 
@@ -137,7 +140,7 @@ public class SpellEffectHandler : MonoBehaviour
                 if (element == null || visual == null || visual.IsBlocked)
                     continue;
 
-                if (element.Type == ElementType.Yellow)
+                if (element.Type == ElementType.Yellow || element.Type == ElementType.Orange)
                 {
                     strikePositions.Add(pos);
                     strikeElements.Add(element);
@@ -147,12 +150,14 @@ public class SpellEffectHandler : MonoBehaviour
 
         if (strikePositions.Count == 0)
         {
+            // No valid targets — still notify the enemy so it can take its turn
+            GameManager.Instance.NotifyPlayerMove();
             yield break;
         }
-
-        //Not an item but same concept
+        print($"Thunder Strike: Found {strikePositions.Count} targets.");
         grid.ChangeState(new ItemProcessingState(grid));
 
+        print("Thunder Strike: Starting selection animation.");
         //Selection animation
         List<GameObject> markers = new List<GameObject>();
         Sequence selectSequence = DOTween.Sequence();
@@ -180,8 +185,6 @@ public class SpellEffectHandler : MonoBehaviour
         foreach (GameObject marker in markers)
             Destroy(marker);
 
-        // Visually clear struck cells and let SpellPathAnimator fire one hit per clone
-        //each clone calls CombatHandler.AttackEnemy on landing
         NotifyBlockerEnemyOfUsedPositions(strikePositions);
         grid.InstantVisualEmpty(strikePositions);
 
@@ -194,6 +197,8 @@ public class SpellEffectHandler : MonoBehaviour
         });
 
         yield return new WaitUntil(() => attackDone);
+
+        GameManager.Instance.NotifyPlayerMove();
     }
 
     private GameObject SpawnThunderMarker(Vector3 worldPos)

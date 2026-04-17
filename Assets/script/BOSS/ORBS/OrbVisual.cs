@@ -11,7 +11,7 @@ public class OrbVisual : MonoBehaviour
     public Transform ChargeElementTargetPos;
     [SerializeField] private Image orbImage;
     [SerializeField] private ParticleSystem chargeParticles;
-    [SerializeField] private ParticleSystem fullChargeParticles;
+    [SerializeField] public ParticleSystem fullChargeParticles;
 
     [Header("Sprites")]
     [SerializeField] private Sprite inactive;
@@ -116,9 +116,6 @@ public class OrbVisual : MonoBehaviour
         }
 
         orbImage.color = targetColor;
-
-        if (state == OrbState.Charged && fullChargeParticles != null)
-            fullChargeParticles.Play();
     }
 
     public void PlayChargeEffect(int chargeAmount)
@@ -136,8 +133,7 @@ public class OrbVisual : MonoBehaviour
 
     public void PlayFullChargeEffect()
     {
-        if (fullChargeParticles != null)
-            fullChargeParticles.Play();
+        if (fullChargeParticles != null) { fullChargeParticles.Play();}
 
         if (animationEffects != null)
         {

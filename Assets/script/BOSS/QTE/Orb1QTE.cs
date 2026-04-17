@@ -207,6 +207,7 @@ public class Orb1QTE : MonoBehaviour, IQTE
         OrbVisual currentOrbVisual = GameManager.Instance.CombatHandler.bossManager.GetCurrentOrbVisual();
         if (currentOrbVisual != null)
         {
+            currentOrbVisual.fullChargeParticles.Stop();
             OrbAnimationEffects effects = currentOrbVisual.GetComponent<OrbAnimationEffects>();
             if (effects != null)
             {

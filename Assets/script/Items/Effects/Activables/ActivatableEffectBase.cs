@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using Unity.VisualScripting.FullSerializer;
 
 [System.Serializable]
 public abstract class ActivatableEffectBase : IActivatableEffect
@@ -93,6 +94,7 @@ public abstract class ActivatableEffectBase : IActivatableEffect
         tempVisual.transform.position = startPos;
         tempVisual.transform.localScale = Vector3.one * 0.2f;
 
+  
         Tween moveTween;
         if (curveDirection == 0)
         {

@@ -41,7 +41,6 @@ public class BossManager : MonoBehaviour
 
     public void TryChargeOrb(List<Vector3> elementStartPositions, List<Element> matchingElements)
     {
-        print("Trying to charge orb with " + matchingElements.Count + " elements.");
         if (currentOrb == null || matchingElements == null || matchingElements.Count == 0)
             return;
         if (currentOrb.State == OrbState.Activated || currentOrb.State == OrbState.Charged)

@@ -23,7 +23,8 @@ public class EnemyBehaviour : MonoBehaviour
     [SerializeField] private ParticleSystem hiddenEnemyAttackSelect;
 
     private SpriteRenderer spriteRenderer;
-    private Animator animator;
+    [HideInInspector]
+    public Animator animator;
 
     private float currentHealth;
     private bool inBattle = false;
@@ -156,6 +157,7 @@ public class EnemyBehaviour : MonoBehaviour
     {
         if (enemyType == null || grid == null)
             return;
+
 
         if (activeSpell is TutorialStage2TimedSpell)
         {

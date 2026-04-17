@@ -30,7 +30,7 @@ public class OrbAnimationEffects : MonoBehaviour
     private Tween _postBlinkColorTween;
     private Tween _postBlinkScaleTween;
 
-    private readonly WaitForSeconds startdelay = new WaitForSeconds(0.25f);
+    private WaitForSeconds startdelay = new WaitForSeconds(0.25f);
 
     void Start()
     {
@@ -92,8 +92,8 @@ public class OrbAnimationEffects : MonoBehaviour
         {
             HandIndicator.SetActive(true);
 
-            Vector3 startPos = transform.position + new Vector3(-0.2f,-0.3f,0);
-            Vector2 endPos = startPos + new Vector3(-0.5f, 0, 0);
+            Vector3 startPos = transform.position + new Vector3(-0.4f,-1.4f,0);
+            Vector2 endPos = transform.position + new Vector3(0.0f, 0, 0);
             HandIndicator.transform.position = startPos;
 
             HandIndicator.transform.DOMove(endPos, 1.5f).SetEase(Ease.InBounce).SetLoops(-1, LoopType.Yoyo);

@@ -15,7 +15,7 @@ MonoBehaviour:
   nameItem: Melon Pile
   description: adds chance to spawn Melons in grid
   rarity: 2
-  sprite: {fileID: -722655443, guid: 71176c8eaa438204183310174053306d, type: 3}
+  sprite: {fileID: -460472466, guid: 71176c8eaa438204183310174053306d, type: 3}
   TargetSprite: {fileID: 0}
   effectType: 17
   extraDamageEffect:
@@ -118,6 +118,11 @@ MonoBehaviour:
     xSprite: {fileID: 0}
     moonElementType: 1
     delayBetweenElements: 0.15
+  freezeEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    freezeDuration: 4
   activationType: 0
   consumeOnUse: 0
   cooldown: 0

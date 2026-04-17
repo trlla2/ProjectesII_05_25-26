@@ -51,7 +51,7 @@ public class ShootingStar : MonoBehaviour {
         //Randomize spawn time and speed
         if (randomize)
         {
-            currentSpawnTime = Random.Range(15.0f, spawnTime);
+            currentSpawnTime = Random.Range(15.0f   , spawnTime);
             currentSpeed = Random.Range(0.0001f, speed);
         }
         //Wait for currentSpawnTime to reactivate the shooting star

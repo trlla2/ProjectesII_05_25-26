@@ -16,7 +16,7 @@ MonoBehaviour:
   description: Select all Shamrock  elements in the grid and attack the enemy with
     them
   rarity: 2
-  sprite: {fileID: -4919853489915481658, guid: c18ae974ec402414a904e36615c02780, type: 3}
+  sprite: {fileID: 94132335132132229, guid: 62c9eba39f976814da3878552b87f6ef, type: 3}
   TargetSprite: {fileID: 21300000, guid: 9855830ce6184084b8a49a66bd923a4b, type: 3}
   effectType: 12
   extraDamageEffect:
@@ -77,6 +77,24 @@ MonoBehaviour:
     selectCount: 1
     shamrockElementType: 2
     delayBetweenElements: 0.2
+  orangeInstanceEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    selectCount: 1
+    orangeElementType: 7
+    delayBetweenElements: 0.2
+  melonInstanceEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    selectCount: 1
+    melonElementType: 8
+    delayBetweenElements: 0.2
+  orangePileEffect:
+    orangeSpawnWeight: 0.6
+  melonPileEffect:
+    melonSpawnWeight: 0.6
   fireObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
@@ -101,6 +119,11 @@ MonoBehaviour:
     xSprite: {fileID: 0}
     moonElementType: 1
     delayBetweenElements: 0.15
+  freezeEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    freezeDuration: 4
   activationType: 1
   consumeOnUse: 1
   cooldown: 0

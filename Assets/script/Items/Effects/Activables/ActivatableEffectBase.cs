@@ -127,11 +127,14 @@ public abstract class ActivatableEffectBase : IActivatableEffect
         });
     }
 
-    protected void AttackWithElements(ItemContext context, List<Vector2Int> positions, List<Element> elements, Action onComplete, bool tickEnemyProgress = false)
+    protected void AttackWithElements(ItemContext context, List<Vector2Int> positions, List<Element> elements, Action onComplete, bool tickEnemyProgress = false, bool chargeOrb = false)
     {
         Grid grid = context.Grid;
 
         NotifyBlockerEnemyOfUsedPositions(positions);
+
+        if (chargeOrb && GameManager.Instance.CombatHandler.isBossBattle)
+            grid.CollectAndChargeWeakElements(positions);
 
         grid.InstantVisualEmpty(positions);
 
@@ -141,7 +144,7 @@ public abstract class ActivatableEffectBase : IActivatableEffect
             // Destroy ElementVisual objects and queue refill
             grid.DeleteElementsByPlayer(positions);
             IEnemySpell enemySpell = GameManager.Instance.CombatHandler.GetEnemyRef().ActiveSpell;
-            if (tickEnemyProgress || enemySpell is BombSpell ||enemySpell is HiddenDestroySpell)
+            if (tickEnemyProgress || enemySpell is BombSpell || enemySpell is HiddenDestroySpell)
                 GameManager.Instance.NotifyPlayerMove();
 
             grid.ChangeState(new IdleState(grid));

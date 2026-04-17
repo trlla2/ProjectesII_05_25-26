@@ -15,7 +15,7 @@ MonoBehaviour:
   nameItem: Moon Obliterate
   description: Select all Moon elements in the grid and attack the enemy with them
   rarity: 2
-  sprite: {fileID: -4571828015118065507, guid: d14073b68000e794d96d4b5e55eb8c5e, type: 3}
+  sprite: {fileID: 3026461511891213909, guid: 1421732ad68016040b648d8e9882c8a8, type: 3}
   TargetSprite: {fileID: 21300000, guid: 9855830ce6184084b8a49a66bd923a4b, type: 3}
   effectType: 13
   extraDamageEffect:
@@ -76,6 +76,24 @@ MonoBehaviour:
     selectCount: 1
     shamrockElementType: 2
     delayBetweenElements: 0.2
+  orangeInstanceEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    selectCount: 1
+    orangeElementType: 7
+    delayBetweenElements: 0.2
+  melonInstanceEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    selectCount: 1
+    melonElementType: 8
+    delayBetweenElements: 0.2
+  orangePileEffect:
+    orangeSpawnWeight: 0.6
+  melonPileEffect:
+    melonSpawnWeight: 0.6
   fireObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
@@ -100,6 +118,11 @@ MonoBehaviour:
     xSprite: {fileID: 0}
     moonElementType: 1
     delayBetweenElements: 0.15
+  freezeEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    freezeDuration: 4
   activationType: 1
   consumeOnUse: 1
   cooldown: 0

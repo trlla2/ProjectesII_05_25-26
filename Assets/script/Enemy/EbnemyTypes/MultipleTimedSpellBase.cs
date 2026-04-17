@@ -144,7 +144,7 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
             // DOTween drives the fill — no per-frame SetTimedCountdownProgress needed
         }
 
-        // Handle cleared targets
+        // Handle cleared targets — remove all first, then apply bonus time
         if (invalidTargets != null)
         {
             foreach (int id in invalidTargets)
@@ -152,10 +152,10 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
                 var info = activeTargets[id];
                 targetedPositions.Remove(info.Position);
                 CleanupTarget(id);
-
-                if (bonusTimePerClearedTarget > 0f)
-                    AddTimeToAll(bonusTimePerClearedTarget);
             }
+
+            if (bonusTimePerClearedTarget > 0f)
+                AddTimeToAll(bonusTimePerClearedTarget * invalidTargets.Count);
         }
     }
 

@@ -6,7 +6,6 @@ using DG.Tweening;
 [System.Serializable]
 public class LightningObliterateEffect : ActivatableEffectBase
 {
-    [SerializeField] private ElementType lightningElementType = ElementType.Yellow;
     [SerializeField] private float delayBetweenElements = 0.15f;
 
     public override bool CanActivate(ItemContext context)
@@ -75,7 +74,7 @@ public class LightningObliterateEffect : ActivatableEffectBase
                 ElementVisual visual = grid.GetElementVisualAt(pos);
 
                 if (element != null &&
-                    element.Type == lightningElementType &&
+                    (element.Type == ElementType.Yellow ||element.Type == ElementType.Orange) &&
                     visual != null &&
                     !visual.IsBlocked)
                 {

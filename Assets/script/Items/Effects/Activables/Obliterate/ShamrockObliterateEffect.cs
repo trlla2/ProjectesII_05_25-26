@@ -6,7 +6,6 @@ using DG.Tweening;
 [System.Serializable]
 public class ShamrockObliterateEffect : ActivatableEffectBase
 {
-    [SerializeField] private ElementType shamrockElementType = ElementType.Green;
     [SerializeField] private float delayBetweenElements = 0.15f;
 
     public override bool CanActivate(ItemContext context)
@@ -75,7 +74,7 @@ public class ShamrockObliterateEffect : ActivatableEffectBase
                 ElementVisual visual = grid.GetElementVisualAt(pos);
 
                 if (element != null &&
-                    element.Type == shamrockElementType &&
+                    (element.Type == ElementType.Green || element.Type == ElementType.Melon)&&
                     visual != null &&
                     !visual.IsBlocked)
                 {

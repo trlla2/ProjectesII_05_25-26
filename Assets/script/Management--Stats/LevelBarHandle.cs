@@ -45,6 +45,8 @@ public class LevelBarHandle : MonoBehaviour
         }
     }
 
+    private bool updateOnStart = false;
+
     private void Start()
     {
         if (expSlider.fillRect != null)
@@ -140,12 +142,14 @@ public class LevelBarHandle : MonoBehaviour
 
     private void UpdateEXPBar()
     {
-        if (pauseUpdates) return;
+        if (pauseUpdates && updateOnStart) return;
 
         lvlText.text = GameManager.Instance.PlayerStats.Level + "lvl";
 
         interpolationTime = 0.0f;
         isInterpolating = true;
+
+        updateOnStart = true;
     }
 
     public void StopLevelUpAnimation()

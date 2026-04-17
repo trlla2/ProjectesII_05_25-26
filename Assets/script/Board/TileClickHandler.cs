@@ -18,7 +18,8 @@ public class TileClickHandler : MonoBehaviour
 
     void Update()
     {
-        mouseRay = cam.ScreenPointToRay(Input.mousePosition);
+        if (_boardManager.IsHallOfEgress)
+            mouseRay = cam.ScreenPointToRay(Input.mousePosition);
 
         if (!_boardManager.Player.isMoving && raycastActive)
         {

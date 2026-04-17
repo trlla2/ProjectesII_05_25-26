@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class EnemyTutorialTile : BoardTile
 {
-    [SerializeField] private BoardTileData _postInteractionTile;
+    [SerializeField] private BoardTileData _postInteracTile;
 
     [SerializeField] private int lootRatePercentage;
 
@@ -29,7 +29,7 @@ public class EnemyTutorialTile : BoardTile
     {
         _boardRaycast.HandleBoardRaycast(true);
         if (win)
-            _boardManager.ReplaceTileType(this, _postInteractionTile);
+            _boardManager.ReplaceTileType(this, _postInteracTile);
     }
 
     private void OnDestroy()

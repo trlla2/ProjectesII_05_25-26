@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2de90ffb221997447a171e015eca53c6, type: 3}
-  m_Name: MelonPile
+  m_Name: FireStarPile
   m_EditorClassIdentifier: 
-  nameItem: Melon Pile
-  description: adds chance to spawn Melons in grid
+  nameItem: FireStar Pile
+  description: adds chance to spawn FireStar elements in grid
   rarity: 2
-  sprite: {fileID: -460472466, guid: 71176c8eaa438204183310174053306d, type: 3}
+  sprite: {fileID: 21300000, guid: 55d2ef13c044d284da59563a902ed0ad, type: 3}
   TargetSprite: {fileID: 0}
-  effectType: 17
+  effectType: 16
   extraDamageEffect:
     inspectorAmount: []
   fireRingEffect:
@@ -98,25 +98,21 @@ MonoBehaviour:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    fireElementType: 0
     delayBetweenElements: 0.15
   lightningObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    lightningElementType: 3
     delayBetweenElements: 0.15
   shamrockObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    shamrockElementType: 2
     delayBetweenElements: 0.15
   moonObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    moonElementType: 1
     delayBetweenElements: 0.15
   freezeEffect:
     animationDuration: 0.6

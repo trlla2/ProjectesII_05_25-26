@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2de90ffb221997447a171e015eca53c6, type: 3}
-  m_Name: OrangePile
+  m_Name: MelonSHamrlockPile
   m_EditorClassIdentifier: 
-  nameItem: Orange Pile
-  description: adds chance to spawn oranges in grid
+  nameItem: MoonShamPile
+  description: adds chance to spawn MoonShamrlock elements  in grid
   rarity: 2
-  sprite: {fileID: 21300000, guid: 5e006d0c86032654585010165bd65c30, type: 3}
+  sprite: {fileID: 6813314606794785409, guid: 88b969afdb1bfb94a88429a9751e7818, type: 3}
   TargetSprite: {fileID: 0}
-  effectType: 16
+  effectType: 17
   extraDamageEffect:
     inspectorAmount: []
   fireRingEffect:
@@ -92,30 +92,33 @@ MonoBehaviour:
     delayBetweenElements: 0.2
   orangePileEffect:
     orangeSpawnWeight: 1
+  melonPileEffect:
+    melonSpawnWeight: 0.6
   fireObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    fireElementType: 0
     delayBetweenElements: 0.15
   lightningObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    lightningElementType: 3
     delayBetweenElements: 0.15
   shamrockObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    shamrockElementType: 2
     delayBetweenElements: 0.15
   moonObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    moonElementType: 1
     delayBetweenElements: 0.15
+  freezeEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    freezeDuration: 4
   activationType: 0
   consumeOnUse: 0
   cooldown: 0

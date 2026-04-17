@@ -45,6 +45,7 @@ public class ShopScreen : MonoBehaviour
     {
         _rerollText.text = $"{_costReroll}";
         _currentRerolls = 0;
+        _rerollButton.interactable = true;
         _currentTile = tile;
         Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(false);
         RefreshSlots();

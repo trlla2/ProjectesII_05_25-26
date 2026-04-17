@@ -420,7 +420,11 @@ public class Grid : MonoBehaviour
 
             Element element = gridData.GetElementAt(pos);
 
-            if (element != null && element != emptyElement && element.Type == weakElement)
+            bool isWeak = element != null && element.Type == weakElement;
+            if(element.Type == ElementType.Orange) {if (weakElement == ElementType.Red || weakElement == ElementType.Yellow) isWeak = true;}
+            if(element.Type == ElementType.Melon) {if (weakElement == ElementType.Blue|| weakElement == ElementType.Green) isWeak = true;}
+
+            if (isWeak)
             {
                 ElementVisual visual = gridData.GetVisualAt(pos);
                 if (visual != null)

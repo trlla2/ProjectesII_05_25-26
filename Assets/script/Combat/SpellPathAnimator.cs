@@ -346,6 +346,8 @@ public class SpellPathAnimator : MonoBehaviour
             ElementType.Blue   => blueHitParticle,
             ElementType.Green  => greenHitParticle,
             ElementType.Yellow => yellowHitParticle,
+            ElementType.Orange => redHitParticle,
+            ElementType.Melon  => greenHitParticle,
             _                  => null
         };
 

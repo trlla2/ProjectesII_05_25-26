@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2de90ffb221997447a171e015eca53c6, type: 3}
   m_Name: LigthiningInstance
   m_EditorClassIdentifier: 
-  nameItem: ligthning Insence
-  description: Insert 1 ligthning elment to the desired position
+  nameItem: Star Instance
+  description: Insert 1 star elment to the desired position
   rarity: 1
-  sprite: {fileID: 9442956202113197, guid: e60773e7dc0208f4e9d3474222689638, type: 3}
+  sprite: {fileID: 2915761179340994611, guid: 541b9c6b30766a846941398a30f5cf8f, type: 3}
   TargetSprite: {fileID: 21300000, guid: 9855830ce6184084b8a49a66bd923a4b, type: 3}
   effectType: 8
   extraDamageEffect:
@@ -76,6 +76,49 @@ MonoBehaviour:
     selectCount: 1
     shamrockElementType: 2
     delayBetweenElements: 0.2
+  orangeInstanceEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    selectCount: 1
+    orangeElementType: 7
+    delayBetweenElements: 0.2
+  melonInstanceEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    selectCount: 1
+    melonElementType: 8
+    delayBetweenElements: 0.2
+  orangePileEffect:
+    orangeSpawnWeight: 0.6
+  melonPileEffect:
+    melonSpawnWeight: 0.6
+  fireObliterateEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    delayBetweenElements: 0.15
+  lightningObliterateEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    delayBetweenElements: 0.15
+  shamrockObliterateEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    delayBetweenElements: 0.15
+  moonObliterateEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    delayBetweenElements: 0.15
+  freezeEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    freezeDuration: 4
   activationType: 2
   consumeOnUse: 1
   cooldown: 0

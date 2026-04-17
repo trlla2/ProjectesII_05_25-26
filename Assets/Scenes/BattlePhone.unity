@@ -15158,8 +15158,13 @@ MonoBehaviour:
   bossManager: {fileID: 0}
   isBossBattle: 0
   BossWeakElement: 0
+<<<<<<< HEAD
   isEnemyTypeForced: 1
   forcedEnemyType: {fileID: 11400000, guid: cc4883347e375764181a8b09e275d883, type: 2}
+=======
+  isEnemyTypeForced: 0
+  forcedEnemyType: {fileID: 11400000, guid: 180abdd2e6772184ea34564cdd50fd5a, type: 2}
+>>>>>>> 91a7c9fb3d662ca4eaa117263ec89adb64bb1ab6
 --- !u!4 &733892386
 Transform:
   m_ObjectHideFlags: 0
@@ -23951,6 +23956,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 121224892549529183, guid: a16780d45d1675a43b63990c52ae8504, type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 787570488978943053, guid: a16780d45d1675a43b63990c52ae8504, type: 3}
       propertyPath: m_LocalPosition.x
       value: -11.03
@@ -24023,9 +24032,21 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0.57
       objectReference: {fileID: 0}
+    - target: {fileID: 2538579566416023413, guid: a16780d45d1675a43b63990c52ae8504, type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2538579566416023413, guid: a16780d45d1675a43b63990c52ae8504, type: 3}
+      propertyPath: BypassReverbZones
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3101574096385482527, guid: a16780d45d1675a43b63990c52ae8504, type: 3}
       propertyPath: m_Name
       value: VFX
+      objectReference: {fileID: 0}
+    - target: {fileID: 3504850540515462045, guid: a16780d45d1675a43b63990c52ae8504, type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4109962275573140333, guid: a16780d45d1675a43b63990c52ae8504, type: 3}
       propertyPath: m_LocalPosition.x
@@ -24107,6 +24128,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5939422305884483225, guid: a16780d45d1675a43b63990c52ae8504, type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5941469243890602690, guid: a16780d45d1675a43b63990c52ae8504, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.5
@@ -24157,6 +24182,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6300647888817113085, guid: a16780d45d1675a43b63990c52ae8504, type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7231513490074498778, guid: a16780d45d1675a43b63990c52ae8504, type: 3}
+      propertyPath: m_PlayOnAwake
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:

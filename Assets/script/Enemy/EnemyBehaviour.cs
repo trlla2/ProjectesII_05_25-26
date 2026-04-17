@@ -319,8 +319,10 @@ public class EnemyBehaviour : MonoBehaviour
              
             if (visual == null || !visual.IsTargetedByEnemy)
             {
-                bool allCleared = timedSpell.OnTargetCleared(grid, pos);
+                timedSpell.OnTargetCleared(grid, pos);
                 anyCleared = true;
+
+                bool allCleared = timedSpell.TargetedPositions.Count == 0;
 
                 if (allCleared)
                 {

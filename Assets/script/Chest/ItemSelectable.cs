@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 
 [RequireComponent(typeof(EventTrigger), typeof(TranslatorUI))]
 public class ItemSelectable : MonoBehaviour

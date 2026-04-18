@@ -7165,7 +7165,19 @@ MonoBehaviour:
   rotation: {x: 0, y: 0, z: 0}
   OnTargetReach:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1790946516}
+        m_TargetAssemblyTypeName: OnBoardingTrigger_Enemies, Assembly-CSharp
+        m_MethodName: TriggerLevelUpWithDelay
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnOriginReach:
     m_PersistentCalls:
       m_Calls: []
@@ -15159,7 +15171,7 @@ MonoBehaviour:
   isBossBattle: 0
   BossWeakElement: 0
   isEnemyTypeForced: 0
-  forcedEnemyType: {fileID: 11400000, guid: 180abdd2e6772184ea34564cdd50fd5a, type: 2}
+  forcedEnemyType: {fileID: 11400000, guid: a0254dff86a5a8f4a8554eb97930585b, type: 2}
 --- !u!4 &733892386
 Transform:
   m_ObjectHideFlags: 0
@@ -15873,7 +15885,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -4.67395, y: 0.044189453}
+  m_AnchoredPosition: {x: -4.673828, y: 0.043945312}
   m_SizeDelta: {x: -1913.8, y: -4146.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &824582320
@@ -24680,7 +24692,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1336190212
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28038,6 +28050,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1790946513
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1790946515}
+  - component: {fileID: 1790946516}
+  m_Layer: 0
+  m_Name: OnBoardingTrigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1790946515
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1790946513}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 471.99203, y: 1443.6755, z: -1031.6724}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1790946516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1790946513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2be6915a2f5cec4cae598ae7191e213, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activeEnemy: {fileID: 1982195253204217191}
 --- !u!1001 &1800775881
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -31024,6 +31081,17 @@ PrefabInstance:
       addedObject: {fileID: 1075620408}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
+--- !u!114 &1982195253204217191 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8116796911541987023, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
+  m_PrefabInstance: {fileID: 1982195253204217190}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8652f8455756c174681fb2ba025c58c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4254552770659538339
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -31347,3 +31415,4 @@ SceneRoots:
   - {fileID: 1182347586}
   - {fileID: 1034271104}
   - {fileID: 2002981350}
+  - {fileID: 1790946515}

@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections;
 
 [RequireComponent(typeof(CanvasGroup))]
 public class ChestOfEgressScreen : MonoBehaviour
@@ -67,6 +68,7 @@ public class ChestOfEgressScreen : MonoBehaviour
         Refresh();
         _translator.ToTarget();
         Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(false);
+        StartCoroutine(ShowOnBoardingIfFirstTime());
     }
 
     public void Close()
@@ -171,5 +173,11 @@ public class ChestOfEgressScreen : MonoBehaviour
 
         itemName.text = $"<color=#{hexColor}>{i.NameItem}</color>:";
         itemInfo.text = i.Description;
+    }
+
+    public IEnumerator ShowOnBoardingIfFirstTime()
+    {
+        yield return new WaitForSeconds(1f);
+        OnBoardingManager.Instance.TriggerIfNew(OnBoardingKey.CHEST_OF_EGRESS);
     }
 }

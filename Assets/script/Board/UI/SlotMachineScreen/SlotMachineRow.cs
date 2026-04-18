@@ -17,6 +17,12 @@ public class SlotMachineRow : MonoBehaviour
     private const float WrapJump = 1850f;   // de -700 salta a 1150 (simula spin infinito)
     [SerializeField] private float StepDuration = 0.025f;
 
+    [SerializeField]
+    private SFXController stepSFX;
+
+    private float minSFXDelay = 0.01f;
+    private float sFXDelayTimer;
+
     void Start()
     {
         rowStopped = true;
@@ -62,7 +68,18 @@ public class SlotMachineRow : MonoBehaviour
 
     private IEnumerator AnimateStep(float duration)
     {
-        float startY = transform.localPosition.y;
+
+        if(sFXDelayTimer > minSFXDelay)
+        {
+            stepSFX?.PlayRandomSFX();
+            sFXDelayTimer = 0;
+        }
+        else 
+        {
+            sFXDelayTimer += Time.deltaTime;
+        }
+
+            float startY = transform.localPosition.y;
         float endY   = startY - StepSize;
 
         // simular spin infinito

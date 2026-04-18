@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class SlotMachineScreen : MonoBehaviour
 {
@@ -36,6 +37,10 @@ public class SlotMachineScreen : MonoBehaviour
     private SlotMachineTile _openedTile;
 
     [SerializeField]private TranslatorUI _translator;
+
+    public UnityEvent OnWin;
+    public UnityEvent OnJackpot;
+
 
     void Update()
     {
@@ -96,6 +101,7 @@ public class SlotMachineScreen : MonoBehaviour
             _jackPotAnimation.StartAnimation();
             GameManager.Instance.PlayerStats.AddMoney(Mathf.RoundToInt(_currentBet * _jackpotMult));
             _isJackpot = true;
+            OnJackpot.Invoke();
         }
         else if (_rows[0].stoppedSlot == _rows[1].stoppedSlot && _rows[1].stoppedSlot == _rows[2].stoppedSlot ||
             _rows[1].stoppedSlot == _rows[2].stoppedSlot && _rows[2].stoppedSlot == _rows[3].stoppedSlot ||
@@ -106,6 +112,7 @@ public class SlotMachineScreen : MonoBehaviour
             _prizeText.text = $"YOU WON {_currentBet * _threeMult} GOLDS!!!";
             GameManager.Instance.PlayerStats.AddMoney(Mathf.RoundToInt(_currentBet * _threeMult));
             _isJackpot = false;
+            OnWin.Invoke();
         }
         else if (_rows[0].stoppedSlot != _rows[1].stoppedSlot && 
                  _rows[1].stoppedSlot != _rows[2].stoppedSlot &&
@@ -118,6 +125,7 @@ public class SlotMachineScreen : MonoBehaviour
             GameManager.Instance.PlayerStats.AddMoney(Mathf.RoundToInt(_currentBet * _fullHouse));
             _avaliablePulls++;
             _isJackpot = false;
+            OnWin.Invoke();
         }
         else
         {

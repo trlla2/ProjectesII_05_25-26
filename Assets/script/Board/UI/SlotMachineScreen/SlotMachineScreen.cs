@@ -130,7 +130,7 @@ public class SlotMachineScreen : MonoBehaviour
 
     public void IncreaseBet()
     {
-        if (!GameManager.Instance.PlayerStats.CanUseMoney(_currentBet))
+        if (!GameManager.Instance.PlayerStats.CanUseMoney(_currentBet + _bet))
             return;
 
         _currentBet += _bet;

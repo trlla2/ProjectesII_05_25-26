@@ -40,7 +40,7 @@ public class OpenChestScreen : MonoBehaviour
                 candidates.Add(item);
         }
 
-        _selectedItem = candidates[Random.Range(0, candidates.Count - 1)];
+        _selectedItem = candidates[Random.Range(0, candidates.Count)];
 
         
 

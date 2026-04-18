@@ -37052,7 +37052,6 @@ GameObject:
   - component: {fileID: 1507392191}
   - component: {fileID: 1507392190}
   - component: {fileID: 1507392189}
-  - component: {fileID: 1507392188}
   - component: {fileID: 1507392187}
   - component: {fileID: 1507392193}
   m_Layer: 5
@@ -37074,28 +37073,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79341727b23fdbd4fa90c9dd4761882b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1507392188
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1507392186}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51a293e6c8af68746b9f7f68f4f1ee43, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  winPanel: {fileID: 0}
-  losePanel: {fileID: 0}
-  winText: {fileID: 0}
-  spellDropTextColor: {r: 0, g: 1, b: 0, a: 1}
-  expTextColor: {r: 0, g: 0.5827391, b: 1, a: 1}
-  winTranslator: {fileID: 0}
-  loseTranslator: {fileID: 0}
-  loseScene: HallOfEgress
-  sceneToUnload: BattlePhoneBoss1
-  goToHallOfEgress: 0
 --- !u!114 &1507392189
 MonoBehaviour:
   m_ObjectHideFlags: 0

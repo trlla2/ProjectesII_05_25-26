@@ -28,22 +28,27 @@ public class OnboardingPanel : MonoBehaviour
             OnBoardingManager.Instance.RegisterPanel(this);
     }
 
+    private void Update()
+    {
+        if (textBox == null)
+            if (Input.GetMouseButtonDown(0))
+            {
+                _fullExplanationCompleted = true;
+                Dismiss();
+            }
+    }
+
     public void Initialize(OnBoardingKey key)
     {
         _key = key;
-    }
-
-    private void OnEnable()
-    {
-        //if (OnBoardingManager.Instance != null)
-        //    OnBoardingManager.Instance.RegisterPanel(this);
     }
 
     public void Show(Action onDismiss)
     {
         _onDismiss = onDismiss;
         gameObject.SetActive(true);
-        StartCoroutine(ShowTextCharByChar());
+        if (textBox != null)
+            StartCoroutine(ShowTextCharByChar());
     }
 
     public void Dismiss()
@@ -56,9 +61,19 @@ public class OnboardingPanel : MonoBehaviour
             _fullExplanationCompleted = false;
         }
         else if (_isWaitingForDismiss)
+        {
             _isWaitingForDismiss = false;
+            Dismiss();
+        }
         else
             ForceCompleteText();
+        //{
+        //    if (textBox != null) ForceCompleteText();
+        //    else {
+        //        _fullExplanationCompleted = true;
+        //        Dismiss();
+        //    }
+        //}
     }
 
     private IEnumerator ShowTextCharByChar()
@@ -84,11 +99,25 @@ public class OnboardingPanel : MonoBehaviour
         _fullExplanationCompleted = true;
     }
 
+    private void OnMouseDown()
+    {
+        if (textBox == null)
+        {
+            _fullExplanationCompleted = true;
+            Dismiss();
+        }
+    }
+
     private void ForceCompleteText()
     {
         //StopCoroutine(ShowTextCharByChar());
         //StopAllCoroutines();
         textBox.maxVisibleCharacters = textBox.text.Length;
         _activeTextisFullyDisplayed = true;
+        //if (textBox.text == messages[messages.Count - 1])
+        //{
+        //    _fullExplanationCompleted = true;
+        //    _isWaitingForDismiss = false;
+        //}
     }
 }

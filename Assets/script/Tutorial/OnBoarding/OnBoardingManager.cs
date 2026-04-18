@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -53,4 +54,14 @@ public class OnBoardingManager : MonoBehaviour
         panelList.ResetAllSavedData();
     }
 
+    public void TriggerIfNewWithDelay(OnBoardingKey key)
+    {
+        StartCoroutine(ShowOnBoardingWithKey(key));
+    }
+
+    private IEnumerator ShowOnBoardingWithKey(OnBoardingKey key)
+    {
+        yield return new WaitForSecondsRealtime(0.5f);
+        OnBoardingManager.Instance.TriggerIfNew(key);
+    }
 }

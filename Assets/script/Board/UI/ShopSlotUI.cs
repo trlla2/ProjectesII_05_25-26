@@ -111,7 +111,7 @@ public class ShopSlotUI : MonoBehaviour
     private void OnBuyClicked()
     {
         _shopScreen.TryBuy(_offer);
-        healthBar.UpdateHealthBar();
+        healthBar?.UpdateHealthBar();
     }
 
     private string GetStatLabel(StatUpgradeType stat)

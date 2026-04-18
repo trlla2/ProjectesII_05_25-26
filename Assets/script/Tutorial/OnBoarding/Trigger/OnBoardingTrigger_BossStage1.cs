@@ -10,23 +10,23 @@ public class OnBoardingTrigger_BossStage1 : MonoBehaviour
         TriggerStartOnBoardingWithDelay();
     }
 
-    //private void Update()
-    //{
-    //    if (_bossOrb1.State == OrbState.Charged)
-    //    {
-    //        TriggerOrbChargedOnBoardingWithDelay();
-    //    }
-    //}
+    private void Update()
+    {
+        if (_bossOrb1.State == OrbState.Charged)
+        {
+            TriggerOrbChargedOnBoardingWithDelay();
+        }
+    }
 
     private IEnumerator TriggerStartOnBoardingWithDelay()
     {
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSecondsRealtime(0.5f);
         OnBoardingManager.Instance.TriggerIfNew(OnBoardingKey.BOSS_STAGE1_START);
     }
 
     private IEnumerator TriggerOrbChargedOnBoardingWithDelay()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSecondsRealtime(10f);
         if (_bossOrb1.State == OrbState.Charged)
             OnBoardingManager.Instance.TriggerIfNew(OnBoardingKey.BOSS_STAGE1_ORBCHARGED);
     }

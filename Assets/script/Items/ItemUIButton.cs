@@ -31,6 +31,9 @@ public class ItemUIButton : MonoBehaviour
     [SerializeField] private float shakeStepDuration = 0.075f;
     [SerializeField] private float impactDuration = 0.2f;
 
+    [Header("SFX")]
+    [SerializeField]
+    private AudioSource activateItem;
     PlayerPathing playerRef;
 
     private static Vector2 centerOffset = new Vector2(900, 2000); //we need it be the ItemUi is in the inventorycanvas  
@@ -146,6 +149,8 @@ public class ItemUIButton : MonoBehaviour
             Debug.Log($"Cannot activate {item.NameItem} right now!");
             return;
         }
+        
+        activateItem.Play();
 
         if (item.Effect is GridModifierEffectBase gridModifierEffect)
         {

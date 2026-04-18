@@ -302,16 +302,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spellEffects:
   - SpellName: HEAL
-    Sound: {fileID: 0}
-    Particles: {fileID: 0}
+    Sound: {fileID: 8300000, guid: 8113f027a1c74c043b78b508131f9812, type: 3}
+    VFXPrefab:
+    - {fileID: 0}
   - SpellName: FREEZE
-    Sound: {fileID: 0}
-    Particles: {fileID: 0}
+    Sound: {fileID: 8300000, guid: e57f0298cfa0c8d4dba5d776d991e320, type: 3}
+    VFXPrefab:
+    - {fileID: 0}
+    - {fileID: 0}
+  - SpellName: THUNDER
+    Sound: {fileID: 8300000, guid: 929adb1e3d67c864f8396cd0b8d88707, type: 3}
+    VFXPrefab:
+    - {fileID: 0}
   audioSource: {fileID: 7577674364888054274}
   grid: {fileID: 0}
   spellPathAnimator: {fileID: 0}
   thunderMarkerSprite: {fileID: 0}
   thunderDelayBetweenElements: 0.15
+  panel: {fileID: 0}
+  feezeVignette: {fileID: 0}
 --- !u!82 &7577674364888054274
 AudioSource:
   m_ObjectHideFlags: 0
@@ -321,7 +330,7 @@ AudioSource:
   m_GameObject: {fileID: 4902791056421607132}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -3809610640293120454, guid: 9c3ac6dcfee1a214fbdd10fa0c57770a, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0

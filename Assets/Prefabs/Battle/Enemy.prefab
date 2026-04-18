@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 4298844807172937086}
   - component: {fileID: 4766559138943698823}
   - component: {fileID: 4186448766645446456}
+  - component: {fileID: 6048942337746639974}
+  - component: {fileID: 4864295706190105854}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -111,6 +113,8 @@ MonoBehaviour:
   deathParticles: {fileID: 8346404517518963204}
   rerollScrollTimes: 3
   tutorialManager: {fileID: 0}
+  hiddenEnemyAttackSelect: {fileID: 0}
+  animator: {fileID: 0}
 --- !u!95 &4298844807172937086
 Animator:
   serializedVersion: 7
@@ -157,6 +161,120 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5500f845cac18c1478aaaf47ec8e8b23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6048942337746639974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 739332830441348435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 992f2e0fb428a29468b6a1658885c5c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hit: {fileID: 8300000, guid: e3a110d776f11054e93e41a0eb64d00c, type: 3}
+  fireHit: {fileID: 8300000, guid: 8def490fcb3e6094da5b227cf827d4ec, type: 3}
+  waterHit: {fileID: 8300000, guid: 8dfa57f5ea9832a4a86217621fb2177f, type: 3}
+  electricHit: {fileID: 8300000, guid: 3ea04469b81938148a53a7cbdcf99167, type: 3}
+  plantHit: {fileID: 8300000, guid: 1c4dfa48fcb0cb849a487a470fde7d22, type: 3}
+--- !u!82 &4864295706190105854
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 739332830441348435}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &781526399492382718
 GameObject:
   m_ObjectHideFlags: 0
@@ -284,6 +402,13 @@ MonoBehaviour:
       m_RotationOrder: 4
     waypoints:
     - {fileID: 0}
+    isRandPos: 0
+    randomRange: 1
+    StartPos: {x: 0, y: 0}
+    minRadius: 0.5
+    maxRadius: 2
+    finalRadius: 1.2
+    finalClockwise: 0
   - mode: 0
     duration: 0.1
     animCurve:
@@ -312,6 +437,13 @@ MonoBehaviour:
       m_RotationOrder: 4
     waypoints:
     - {fileID: 0}
+    isRandPos: 0
+    randomRange: 1
+    StartPos: {x: 0, y: 0}
+    minRadius: 0.5
+    maxRadius: 2
+    finalRadius: 1.2
+    finalClockwise: 0
 --- !u!114 &1962051778522627049
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -330,6 +462,14 @@ MonoBehaviour:
   spellPathData: {fileID: 5489592239911627731}
   grid: {fileID: 0}
   isPlayerAnimator: 1
+  redHitParticle: {fileID: 0}
+  blueHitParticle: {fileID: 0}
+  greenHitParticle: {fileID: 0}
+  yellowHitParticle: {fileID: 0}
+  redTrail: {fileID: 0}
+  blueTrail: {fileID: 0}
+  greenTrail: {fileID: 0}
+  yellowTrail: {fileID: 0}
 --- !u!1 &4093081549351310330
 GameObject:
   m_ObjectHideFlags: 0

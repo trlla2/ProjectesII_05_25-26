@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
-public class SFXManager : MonoBehaviour
+public class SFXManager : MonoBehaviour 
 {
     [Header("precharged SFX")]
     [SerializeField] private List<AudioClip> prechargedSFX;

@@ -40,6 +40,10 @@ public class OpenChestScreen : MonoBehaviour
                 candidates.Add(item);
         }
 
+        if (candidates.Count <= 0)
+        {
+            Debug.Log($"NO HAY ITEMS curretnItemList:{candidates.Count}");
+        }
         _selectedItem = candidates[Random.Range(0, candidates.Count)];
 
         

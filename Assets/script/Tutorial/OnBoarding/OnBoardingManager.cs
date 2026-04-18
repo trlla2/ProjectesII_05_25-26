@@ -33,13 +33,14 @@ public class OnBoardingManager : MonoBehaviour
         if (panelList.IsPanelExplained(key)) return;
         if (currentPanel == null) return;
 
-        panelList.MarkPanelAsExplained(key);
+        
         Time.timeScale = 0f;
 
         OnboardingPanel panelToOpen = GetPanelWithKey(key);
         panelToOpen.Show(() =>
         {
             Time.timeScale = 1f;
+            panelList.MarkPanelAsExplained(key);
         });
     }
 
@@ -63,5 +64,10 @@ public class OnBoardingManager : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(0.5f);
         OnBoardingManager.Instance.TriggerIfNew(key);
+    }
+
+    public bool IsPanelExplainedWithKey(OnBoardingKey key)
+    {
+        return panelList.IsPanelExplained(key);
     }
 }

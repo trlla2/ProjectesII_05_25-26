@@ -5,10 +5,10 @@ public enum OnBoardingKey
 {
     DEBUG,
     USABLE_ITEMS, //
-    ITEMS_COMBINATION,
+    ITEMS_COMBINATION, // elementos dobles
     CHEST_OF_EGRESS, //
     SPELLBOOK, //
-    SLOT_MACHINE, //
+    SPELLBOOK_DEDICO,
     SHOP, // 
     BOMB_ENEMY, // 
     HIDDEN_ENEMY, //
@@ -16,6 +16,9 @@ public enum OnBoardingKey
     BOSS_STAGE1_ORBCHARGED, //
     BUFFS_N_DEBUFFS, //
     LVL_UP_ELEMENTS, // falta integrarlo
+    HALL_OF_EGRESS_INTRO,
+    HALL_OF_EGRESS_GOTOSPELLBOOK,
+    HALL_OF_EGRESS_GOTOSPELLBOOK_DEDICO
 
 
 }

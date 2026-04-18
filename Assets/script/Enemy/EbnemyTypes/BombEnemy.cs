@@ -282,9 +282,9 @@ public class BombSpell : EnemySpellBase
         Element bombEl = grid.BombElement;
         if (bombEl == null) return new Vector2Int(-1, -1);
 
-        for (int x = 0; x < Grid.GridSize; x++)
+        for (int x = 0; x < grid.GridSize; x++)
         {
-            for (int y = 0; y < Grid.GridSize; y++)
+            for (int y = 0; y < grid.GridSize; y++)
             {
                 Vector2Int pos = new Vector2Int(x, y);
                 if (grid.GetElementAt(pos) == bombEl)
@@ -296,9 +296,9 @@ public class BombSpell : EnemySpellBase
 
     private void ClearAllCurrentTargeting(Grid grid)
     {
-        for (int x = 0; x < Grid.GridSize; x++)
+        for (int x = 0; x < grid.GridSize; x++)
         {
-            for (int y = 0; y < Grid.GridSize; y++)
+            for (int y = 0; y < grid.GridSize; y++)
             {
                 Vector2Int pos = new Vector2Int(x, y);
                 ElementVisual visual = grid.GetElementVisualAt(pos);
@@ -403,8 +403,8 @@ public class BombSpell : EnemySpellBase
     private Vector2Int PickRandomInnerPosition(Grid grid)
     {
         List<Vector2Int> inner = new List<Vector2Int>();
-        for (int x = 1; x < Grid.GridSize - 1; x++)
-            for (int y = 1; y < Grid.GridSize - 1; y++)
+        for (int x = 1; x < grid.GridSize - 1; x++)
+            for (int y = 1; y < grid.GridSize - 1; y++)
             {
                 Vector2Int pos = new Vector2Int(x, y);
                 if (grid.IsPositionValid(pos))

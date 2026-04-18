@@ -25,7 +25,7 @@ public class DiagonalDestroySpell : EnemySpellBase
 
         useMainDiagonal = Random.value > 0.5f;
 
-        int size = Grid.GridSize;
+        int size = grid.GridSize;
         for (int i = 0; i < size; i++)
         {
             Vector2Int pos = useMainDiagonal ? new Vector2Int(i, i) : new Vector2Int(i, size - 1 - i);

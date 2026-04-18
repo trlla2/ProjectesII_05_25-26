@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ff4ffb8c067f90b4dbbb475477e5e489, type: 3}
-  m_Name: FirstEncounterSeq
+  m_Name: 1.5EncounterSeq
   m_EditorClassIdentifier: 
   steps:
   - type: 0
-    text: Welcome! Drag across adjacent tiles to cast a spell.
+    text: Drag across adjacent tiles to cast a spell.
     autoDismissTime: 0
     highlightPositions: []
     allowedPath: []
@@ -31,18 +31,21 @@ MonoBehaviour:
     - {x: 0, y: 3}
     - {x: 1, y: 3}
     - {x: 2, y: 3}
-    allowedPath: []
+    allowedPath:
+    - {x: 0, y: 3}
+    - {x: 1, y: 3}
+    - {x: 2, y: 3}
     showHand: 0
     handPath:
     - {x: 0, y: 3}
     - {x: 1, y: 3}
     - {x: 2, y: 3}
     - {x: 0, y: 3}
-    - {x: 3, y: 3}
+    - {x: 2, y: 3}
     handDuration: 3
-    advanceCondition: 1
+    advanceCondition: 2
     pauseEnemyTimers: 1
-    lockInput: 1
+    lockInput: 0
   - type: 4
     text: 
     autoDismissTime: 0
@@ -60,15 +63,15 @@ MonoBehaviour:
     advanceCondition: 2
     pauseEnemyTimers: 1
     lockInput: 0
-  - type: 1
+  - type: 0
     text: Great! You casted your first spell.
     autoDismissTime: 3
     highlightPositions: []
     allowedPath: []
     showHand: 0
     handPath: []
-    handDuration: 3
-    advanceCondition: 1
+    handDuration: 0
+    advanceCondition: 0
     pauseEnemyTimers: 1
     lockInput: 1
   - type: 2
@@ -77,7 +80,9 @@ MonoBehaviour:
     highlightPositions:
     - {x: 1, y: 0}
     - {x: 2, y: 0}
-    allowedPath: []
+    allowedPath:
+    - {x: 1, y: 0}
+    - {x: 2, y: 0}
     showHand: 1
     handPath:
     - {x: 1, y: 0}
@@ -85,9 +90,9 @@ MonoBehaviour:
     - {x: 1, y: 0}
     - {x: 2, y: 0}
     handDuration: 3
-    advanceCondition: 1
+    advanceCondition: 2
     pauseEnemyTimers: 1
-    lockInput: 1
+    lockInput: 0
   - type: 4
     text: 
     autoDismissTime: 0

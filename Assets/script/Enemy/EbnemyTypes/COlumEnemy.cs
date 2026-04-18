@@ -23,9 +23,9 @@ public class ColumnDestroySpell : EnemySpellBase
             return;
 
         int targetColumn;
-        targetColumn = columnIndex >= 0 ? columnIndex : Random.Range(0, Grid.GridSize);
+        targetColumn = columnIndex >= 0 ? columnIndex : Random.Range(0, grid.GridSize);
 
-        for (int row = 0; row < Grid.GridSize; row++)
+        for (int row = 0; row < grid.GridSize; row++)
         {
             Vector2Int pos = new Vector2Int(targetColumn, row);
             if (grid.IsPositionValid(pos))

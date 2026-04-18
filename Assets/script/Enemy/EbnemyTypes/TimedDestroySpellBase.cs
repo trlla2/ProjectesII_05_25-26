@@ -175,7 +175,7 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
 
         int previousCount = targetedPositions.Count;
         targetedPositions.Clear();
-        int size = Grid.GridSize;
+        int size = grid.GridSize;
 
         for (int x = 0; x < size; x++)
         {

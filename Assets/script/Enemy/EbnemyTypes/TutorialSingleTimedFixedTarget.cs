@@ -38,9 +38,9 @@ public class TutorialStage2TimedSpell : TimedDestroySpellBase
     {
         List<Vector2Int> candidates = new List<Vector2Int>();
 
-        for (int x = 0; x < Grid.GridSize; x++)
+        for (int x = 0; x < grid.GridSize; x++)
         {
-            for (int y = 0; y < Grid.GridSize; y++)
+            for (int y = 0; y < grid.GridSize; y++)
             {
                 Vector2Int pos = new Vector2Int(x, y);
                 if (!grid.IsPositionValid(pos))

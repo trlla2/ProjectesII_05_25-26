@@ -116,8 +116,8 @@ public class EnemyBehaviour : MonoBehaviour
 
         if (activeSpell != null && grid != null)
         {
-            for (int x = 0; x < Grid.GridSize; x++)
-                for (int y = 0; y < Grid.GridSize; y++)
+            for (int x = 0; x < grid.GridSize; x++)
+                for (int y = 0; y < grid.GridSize; y++)
                 {
                     var pos = new Vector2Int(x, y);
                     var visual = grid.GetElementVisualAt(pos);

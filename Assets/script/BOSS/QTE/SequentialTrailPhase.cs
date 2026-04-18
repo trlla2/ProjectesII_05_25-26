@@ -87,8 +87,8 @@ public class SequentialTracePhase : IQTEPhase
         tracePoints = new List<Vector2Int>();
         var available = new List<Vector2Int>();
 
-        for (int x = 0; x < Grid.GridSize; x++)
-            for (int y = 0; y < Grid.GridSize; y++)
+        for (int x = 0; x < grid.GridSize; x++)
+            for (int y = 0; y < grid.GridSize; y++)
                 available.Add(new Vector2Int(x, y));
 
         for (int i = 0; i < pointCount && available.Count > 0; i++)

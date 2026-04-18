@@ -24,9 +24,7 @@ public class HiddenDestroySpell : TimedDestroySpellBase
     public bool ElementsHidden => elementsHidden;
     public bool TimerStarted => timerStarted;
 
-    public HiddenDestroySpell(int count = 3, float damage = 4f, float attackTimer = 6f,
-                               float visibilityDuration = 2.5f,
-                               Sprite hiddenSprite = null, float bonusTimeOnClear = 1.5f)
+    public HiddenDestroySpell(int count = 3, float damage = 4f, float attackTimer = 6f, float visibilityDuration = 2.5f,Sprite hiddenSprite = null, float bonusTimeOnClear = 1.5f)
         : base(attackTimer, damage)
     {
         elementCount = count;
@@ -41,9 +39,9 @@ public class HiddenDestroySpell : TimedDestroySpellBase
     {
         List<Vector2Int> allPositions = new List<Vector2Int>();
 
-        for (int x = 0; x < Grid.GridSize; x++)
+        for (int x = 0; x < grid.GridSize; x++)
         {
-            for (int y = 0; y < Grid.GridSize; y++)
+            for (int y = 0; y < grid.GridSize; y++)
             {
                 Vector2Int pos = new Vector2Int(x, y);
                 Element element = grid.GetElementAt(pos);

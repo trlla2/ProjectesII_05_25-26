@@ -18,7 +18,7 @@ public class BossStage1Spell : EnemySpellBase
         targetedPositions.Clear();
         if (grid == null) return;
 
-        int size = Grid.GridSize;
+        int size = grid.GridSize;
         bool performColumnsAttack = Random.value > 0.5f;
 
         if (performColumnsAttack)

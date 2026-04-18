@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2de90ffb221997447a171e015eca53c6, type: 3}
   m_Name: Orangeinstance
   m_EditorClassIdentifier: 
-  nameItem: Orange Instance
-  description: Instanciate an Orange element in the grid pos
+  nameItem: FireStar Instance
+  description: Insert a FireStart element in the grid position of your choosiong
   rarity: 1
-  sprite: {fileID: -2105010460636486780, guid: 85f111d44d450624b9693a5c81899371, type: 3}
+  sprite: {fileID: -4829239793152929240, guid: 6b42d9acc7554b141955bf95648603ff, type: 3}
   TargetSprite: {fileID: 21300000, guid: 9855830ce6184084b8a49a66bd923a4b, type: 3}
   effectType: 14
   extraDamageEffect:
@@ -83,30 +83,42 @@ MonoBehaviour:
     selectCount: 1
     orangeElementType: 7
     delayBetweenElements: 0.2
+  melonInstanceEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    selectCount: 1
+    melonElementType: 8
+    delayBetweenElements: 0.2
+  orangePileEffect:
+    orangeSpawnWeight: 0.6
+  melonPileEffect:
+    melonSpawnWeight: 0.6
   fireObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    fireElementType: 0
     delayBetweenElements: 0.15
   lightningObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    lightningElementType: 3
     delayBetweenElements: 0.15
   shamrockObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    shamrockElementType: 2
     delayBetweenElements: 0.15
   moonObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    moonElementType: 1
     delayBetweenElements: 0.15
+  freezeEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    freezeDuration: 4
   activationType: 2
   consumeOnUse: 1
   cooldown: 1

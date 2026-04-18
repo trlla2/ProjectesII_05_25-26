@@ -15,7 +15,7 @@ MonoBehaviour:
   nameItem: Shamrock Insence
   description: Insert 1 Shamrock elment to the desired position
   rarity: 1
-  sprite: {fileID: -2321948303306515875, guid: 8b9c83d64c048c741b0bd7bd86479ecf, type: 3}
+  sprite: {fileID: 5480301066463451846, guid: 8ec99aa09f2651d4d8c7e1239a45961d, type: 3}
   TargetSprite: {fileID: 21300000, guid: 9855830ce6184084b8a49a66bd923a4b, type: 3}
   effectType: 9
   extraDamageEffect:
@@ -76,6 +76,49 @@ MonoBehaviour:
     selectCount: 1
     shamrockElementType: 2
     delayBetweenElements: 0.2
+  orangeInstanceEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    selectCount: 1
+    orangeElementType: 7
+    delayBetweenElements: 0.2
+  melonInstanceEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    selectCount: 1
+    melonElementType: 8
+    delayBetweenElements: 0.2
+  orangePileEffect:
+    orangeSpawnWeight: 0.6
+  melonPileEffect:
+    melonSpawnWeight: 0.6
+  fireObliterateEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    delayBetweenElements: 0.15
+  lightningObliterateEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    delayBetweenElements: 0.15
+  shamrockObliterateEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    delayBetweenElements: 0.15
+  moonObliterateEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    delayBetweenElements: 0.15
+  freezeEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    freezeDuration: 4
   activationType: 2
   consumeOnUse: 1
   cooldown: 0

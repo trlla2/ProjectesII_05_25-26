@@ -15,7 +15,7 @@ MonoBehaviour:
   nameItem: MoonRing
   description: Insert 3 Moon elmenets in the grid
   rarity: 2
-  sprite: {fileID: -2690792559708188323, guid: 21df9bc92e6bb86429478a3d66b598c7, type: 3}
+  sprite: {fileID: 21300000, guid: fd5fb2ecb29446a4db8fa9127444170c, type: 3}
   TargetSprite: {fileID: 21300000, guid: 9855830ce6184084b8a49a66bd923a4b, type: 3}
   effectType: 4
   extraDamageEffect:
@@ -37,7 +37,7 @@ MonoBehaviour:
   moonRingEffect:
     animationDuration: 0.6
     curveStrength: 1.5
-    xSprite: {fileID: 0}
+    xSprite: {fileID: 21300000, guid: 9855830ce6184084b8a49a66bd923a4b, type: 3}
     blueElementType: 1
     elementCount: 3
     delayBetweenElements: 0.2
@@ -98,26 +98,27 @@ MonoBehaviour:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    fireElementType: 0
     delayBetweenElements: 0.15
   lightningObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    lightningElementType: 3
     delayBetweenElements: 0.15
   shamrockObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    shamrockElementType: 2
     delayBetweenElements: 0.15
   moonObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    moonElementType: 1
     delayBetweenElements: 0.15
+  freezeEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    freezeDuration: 4
   activationType: 1
   consumeOnUse: 1
   cooldown: 1

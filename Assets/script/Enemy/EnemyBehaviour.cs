@@ -225,6 +225,10 @@ public class EnemyBehaviour : MonoBehaviour
                     timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
                 }
             }
+
+            //If a freeze is still active when a new spell is spawned, pause 
+            if (isFrozen)
+                PauseActiveTimedSpell();
         }
     }
 

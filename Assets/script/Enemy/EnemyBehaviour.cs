@@ -153,18 +153,10 @@ public class EnemyBehaviour : MonoBehaviour
         StopAllCoroutines();
     }
 
-    private void CreateAndExecuteSpell()
+    private void CreateAndExecuteSpell(bool IsFirstExecute = false)
     {
         if (enemyType == null || grid == null)
             return;
-
-
-        if (activeSpell is TutorialStage2TimedSpell)
-        {
-            activeSpell.Execute(grid);
-            timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
-            return;
-        }
 
         // Don't recreate if it's an active MultipleTimedSpellBase
         if (activeSpell is MultipleTimedSpellBase existingMulti && existingMulti.IsActive)
@@ -179,7 +171,11 @@ public class EnemyBehaviour : MonoBehaviour
             return;
 
         HandleTargetVFX();
-
+        int executeCountForTutorialTimedEnemy = 0;
+        if (activeSpell is TutorialStage2TimedSpell && != IsFirstExecute)
+        {
+            executeCountForTutorialTimedEnemy = 2;
+        }
         activeSpell = enemyType.CreateSpell();
         if (activeSpell != null)
         {
@@ -218,10 +214,17 @@ public class EnemyBehaviour : MonoBehaviour
             }
             else
             {
-                activeSpell.Execute(grid);
+
+                if (activeSpell is TutorialStage2TimedSpell tutorialTimedSpell)
+                {
+                    tutorialTimedSpell.executeCount = executeCountForTutorialTimedEnemy;
+                    activeSpell.Execute(grid);
+                    timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
+                }
 
                 if (activeSpell is TimedDestroySpellBase)
                 {
+                    activeSpell.Execute(grid);
                     timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
                 }
             }
@@ -286,6 +289,10 @@ public class EnemyBehaviour : MonoBehaviour
         activeSpell.Tick(grid, () =>
         {
             StartCoroutine(RerollAndRetarget());
+            if(activeSpell is BombSpell)
+            {
+                
+            }
         });
     }
 

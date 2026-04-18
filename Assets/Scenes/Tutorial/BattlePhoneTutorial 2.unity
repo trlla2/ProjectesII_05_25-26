@@ -6055,6 +6055,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 751e908ea896db843878f3ce3c8d76bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GridSize: 4
   availableElements:
   - {fileID: 11400000, guid: 8fd29fd89e0e2fc418ab8a117cefbbd4, type: 2}
   - {fileID: 11400000, guid: 4be4989cbc43a4648915c11c96e324e5, type: 2}
@@ -6096,7 +6097,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   enemyDeletionDuration: 1
   blockDuration: 1
-  tutorialManager: {fileID: 0}
+  tutorialManager: {fileID: 819166028}
 --- !u!224 &190367787
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6700,6 +6701,14 @@ MonoBehaviour:
   spellPathData: {fileID: 244508974}
   grid: {fileID: 190367786}
   isPlayerAnimator: 1
+  redHitParticle: {fileID: 0}
+  blueHitParticle: {fileID: 0}
+  greenHitParticle: {fileID: 0}
+  yellowHitParticle: {fileID: 0}
+  redTrail: {fileID: 0}
+  blueTrail: {fileID: 0}
+  greenTrail: {fileID: 0}
+  yellowTrail: {fileID: 0}
 --- !u!114 &244508974
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6741,6 +6750,13 @@ MonoBehaviour:
       m_RotationOrder: 4
     waypoints:
     - {fileID: 718497210}
+    isRandPos: 0
+    randomRange: 1
+    StartPos: {x: 0, y: 0}
+    minRadius: 0.5
+    maxRadius: 2
+    finalRadius: 1.2
+    finalClockwise: 0
   - mode: 0
     duration: 0.1
     animCurve:
@@ -6769,6 +6785,13 @@ MonoBehaviour:
       m_RotationOrder: 4
     waypoints:
     - {fileID: 1607689154}
+    isRandPos: 0
+    randomRange: 1
+    StartPos: {x: 0, y: 0}
+    minRadius: 0.5
+    maxRadius: 2
+    finalRadius: 1.2
+    finalClockwise: 0
 --- !u!4 &244508975
 Transform:
   m_ObjectHideFlags: 0
@@ -7083,6 +7106,7 @@ MonoBehaviour:
   showAlways: 0
   parentFader: {fileID: 1150147351}
   duration: 3
+  moneyAddedGO: {fileID: 0}
 --- !u!114 &270168145
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16474,6 +16498,14 @@ MonoBehaviour:
   spellPathData: {fileID: 964765497}
   grid: {fileID: 190367786}
   isPlayerAnimator: 0
+  redHitParticle: {fileID: 0}
+  blueHitParticle: {fileID: 0}
+  greenHitParticle: {fileID: 0}
+  yellowHitParticle: {fileID: 0}
+  redTrail: {fileID: 0}
+  blueTrail: {fileID: 0}
+  greenTrail: {fileID: 0}
+  yellowTrail: {fileID: 0}
 --- !u!114 &964765497
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16515,6 +16547,13 @@ MonoBehaviour:
       m_RotationOrder: 4
     waypoints:
     - {fileID: 191384468}
+    isRandPos: 0
+    randomRange: 1
+    StartPos: {x: 0, y: 0}
+    minRadius: 0.5
+    maxRadius: 2
+    finalRadius: 1.2
+    finalClockwise: 0
   - mode: 0
     duration: 0.1
     animCurve:
@@ -16543,6 +16582,13 @@ MonoBehaviour:
       m_RotationOrder: 4
     waypoints:
     - {fileID: 1452289981}
+    isRandPos: 0
+    randomRange: 1
+    StartPos: {x: 0, y: 0}
+    minRadius: 0.5
+    maxRadius: 2
+    finalRadius: 1.2
+    finalClockwise: 0
 --- !u!4 &964765498
 Transform:
   m_ObjectHideFlags: 0
@@ -18279,6 +18325,10 @@ PrefabInstance:
       propertyPath: forcedEnemyType
       value: 
       objectReference: {fileID: 11400000, guid: 707839098280ab841b2ce35adc5e83de, type: 2}
+    - target: {fileID: 6537319169006765825, guid: 343a187672d40db46b4b8aa0c0145041, type: 3}
+      propertyPath: isEnemyTypeForced
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -18360,37 +18410,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1282062120}
   m_CullTransparentMesh: 1
---- !u!1 &1311944229
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1311944232}
-  m_Layer: 0
-  m_Name: ------------- TUTORIAL MANAGER
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1311944232
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1311944229}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1318861768
 GameObject:
   m_ObjectHideFlags: 0
@@ -18484,7 +18503,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1336190212
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27855,6 +27874,10 @@ PrefabInstance:
       propertyPath: deathParticles
       value: 
       objectReference: {fileID: 945904135}
+    - target: {fileID: 8116796911541987023, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
+      propertyPath: tutorialManager
+      value: 
+      objectReference: {fileID: 819166028}
     - target: {fileID: 8657585950942379864, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: m_Camera
       value: 
@@ -27910,7 +27933,6 @@ SceneRoots:
   - {fileID: 2040530736}
   - {fileID: 1078555492}
   - {fileID: 1812663563}
-  - {fileID: 1311944232}
   - {fileID: 327775794}
   - {fileID: 1276368603}
   - {fileID: 889931752}

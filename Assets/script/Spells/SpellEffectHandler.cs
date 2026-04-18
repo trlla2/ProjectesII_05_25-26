@@ -61,6 +61,10 @@ public class SpellEffectHandler : MonoBehaviour
             case "THUNDER":
                 StartCoroutine(TryThunderStrikeCoroutine());
                 break;
+
+            default:
+                GameManager.Instance.NotifyPlayerMove();
+                break;
         }
 
         if (tutorialManager != null)

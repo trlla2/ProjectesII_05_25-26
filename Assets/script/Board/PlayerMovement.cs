@@ -21,8 +21,10 @@ public class PlayerMovement : MonoBehaviour
     private BoardTile currentTile;
 
     public UnityEvent OnStartingTileTouchedWhileFalling;
+    public UnityEvent OnStep;
 
     public bool isMoving { get; private set; } = false;
+
 
     void Start()
     {
@@ -216,8 +218,8 @@ public class PlayerMovement : MonoBehaviour
             yield return StartCoroutine(JumpToTile(tile.transform.position));
 
             currentTile = tile;
+            OnStep.Invoke();
             currentTile.Interact();
-
             GameObject newParticles = Instantiate(
                 jumpParticles.gameObject,
                 tile.transform.position,

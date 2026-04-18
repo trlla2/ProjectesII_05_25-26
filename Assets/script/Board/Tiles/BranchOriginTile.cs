@@ -1,16 +1,19 @@
-using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class BranchOriginTile : BoardTile
 {
     private List<BoardTile> generatedBranch;
     public List<BoardTile> GeneratedBranch => generatedBranch;
 
+    public UnityEvent OnInteract;
+
     public override void Interact()
     {
         Debug.Log($"BranchOriginTile arrived at {this.GetGridPosition()}...");
         _boardManager.ShowBranchChoice(this);
+        OnInteract?.Invoke();
     }
 
     public void TryToRevealGeneratedBranch()

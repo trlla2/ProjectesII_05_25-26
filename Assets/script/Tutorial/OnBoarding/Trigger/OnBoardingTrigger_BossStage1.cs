@@ -7,14 +7,14 @@ public class OnBoardingTrigger_BossStage1 : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        TriggerStartOnBoardingWithDelay();
+        StartCoroutine(TriggerStartOnBoardingWithDelay());
     }
 
     private void Update()
     {
         if (_bossOrb1.State == OrbState.Charged)
         {
-            TriggerOrbChargedOnBoardingWithDelay();
+            StartCoroutine(TriggerOrbChargedOnBoardingWithDelay());
         }
     }
 

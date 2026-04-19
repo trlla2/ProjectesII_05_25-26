@@ -42,7 +42,7 @@ public class EnemyUIHandler : MonoBehaviour
 
     private EnemyBehaviour enemyBehaviour;
 
-    private void Start()
+    private void Awake()
     {
         GameManager.Instance.CombatHandler.OnSetEnemyReference += SetEnemyRef;
 
@@ -51,6 +51,13 @@ public class EnemyUIHandler : MonoBehaviour
 
     private void SetEnemyRef(EnemyBehaviour reference)
     {
+        if (enemyBehaviour != null)
+        {
+            enemyBehaviour.OnHitRecived -= ChangeHealthBar;
+            enemyBehaviour.OnGetDamage -= AddDamageToQueue;
+        }
+
+        Debug.Log($"Enemy reference set to {reference.name}");
         enemyBehaviour = reference;
         enemyBehaviour.OnHitRecived += ChangeHealthBar;
         enemyBehaviour.OnGetDamage += AddDamageToQueue;
@@ -66,6 +73,7 @@ public class EnemyUIHandler : MonoBehaviour
 
     private void ChangeHealthBar(float health)
     {
+        if (enemyBehaviour == null || healthBar == null) return;
         healthBar.value = health / enemyBehaviour.GetMaxHP();
     }
 
@@ -177,6 +185,10 @@ public class EnemyUIHandler : MonoBehaviour
         {
             enemyBehaviour.OnHitRecived -= ChangeHealthBar;
             enemyBehaviour.OnGetDamage -= AddDamageToQueue;
+        }
+        if (GameManager.Instance != null && GameManager.Instance.CombatHandler != null)
+        {
+            GameManager.Instance.CombatHandler.OnSetEnemyReference -= SetEnemyRef;
         }
     }
 }

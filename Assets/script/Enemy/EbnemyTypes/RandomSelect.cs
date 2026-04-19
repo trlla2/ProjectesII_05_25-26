@@ -6,18 +6,18 @@ public class RandomDestroySpell : EnemySpellBase
 {
     private int elementCount;
 
-    public RandomDestroySpell(int count = 3, float damage = 4f, int moves = 2, bool excludeBelowTargets = true)
+    public RandomDestroySpell(int count = 3, float damage = 4f, int moves = 2)
     {
         elementCount = count;
         damagePerElement = damage;
         remainingMoves = moves;
         initialMoves = moves;
         spellName = "Random Destroy";
-        this.excludeBelowTargets = excludeBelowTargets;
     }
 
     public override void Execute(Grid grid)
     {
+        base.Execute(grid);
         targetedPositions.Clear();
 
         if (grid == null)
@@ -25,9 +25,9 @@ public class RandomDestroySpell : EnemySpellBase
 
         List<Vector2Int> allPositions = new List<Vector2Int>();
 
-        for (int x = 0; x < Grid.GridSize; x++)
+        for (int x = 0; x < grid.GridSize; x++)
         {
-            for (int y = 0; y < Grid.GridSize; y++)
+            for (int y = 0; y < grid.GridSize; y++)
             {
                 Vector2Int pos = new Vector2Int(x, y);
                 Element element = grid.GetElementAt(pos);

@@ -88,9 +88,14 @@ public class PathVisualizer : MonoBehaviour
         ElementVisual visual = grid.GetElementVisualAt(position);
         if (visual != null)
         {
-            HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.RigidImpact);
+            // Only trigger feedback when actually selecting, not on backtrack
+            if (highlight)
+            {
+                HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.RigidImpact);
+                visual.GetComponent<ScaleAnimator>().PlayScale(0.5f, 0.15f);
+            }
             visual.highlighter.SetHighlight(highlight);
-            visual.GetComponent<ScaleAnimator>().PlayScale(0.5f, 0.15f);
+            visual.StartHoverAnimation(highlight);
         }
     }
 
@@ -98,7 +103,15 @@ public class PathVisualizer : MonoBehaviour
     {
         if (lineRenderer != null)
             lineRenderer.positionCount = 0;
-
+        foreach (Vector2Int pos in pathData.Positions)
+        {
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual != null)
+            {
+                visual.highlighter.SetHighlight(false);
+                visual.StopHoverAnimation();
+            }
+        }
         ShowCursor(false);
     }
 }

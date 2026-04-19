@@ -22,26 +22,6 @@ public class QTETrailRenderer : MonoBehaviour
     private Vector3 currentPreviewPosition;
     private bool hasPreview = false;
 
-
-    public void Initialize(LineRenderer renderer, float width, Color color, Material material, GameObject particlesPrefab)
-    {
-        lineRenderer = renderer;
-        trailWidth = width;
-        trailColor = color;
-        trailMaterial = material;
-        trailParticlesPrefab = particlesPrefab;
-
-        if (lineRenderer != null)
-        {
-            lineRenderer.positionCount = 0;
-            lineRenderer.startWidth = trailWidth;
-            lineRenderer.endWidth = trailWidth;
-            lineRenderer.startColor = trailColor;
-            lineRenderer.endColor = trailColor;
-            if (trailMaterial != null)
-                lineRenderer.material = trailMaterial;
-        }
-    }
     private void Start()
     {
         initialColor = trailColor;
@@ -194,27 +174,5 @@ public class QTETrailRenderer : MonoBehaviour
         }
     }
 
-    public IEnumerator FadeOut(float duration)
-    {
-        if (lineRenderer == null) yield break;
 
-        float elapsed = 0f;
-        Color startColor = lineRenderer.startColor;
-        float startWidth = lineRenderer.widthMultiplier;
-
-        while (elapsed < duration)
-        {
-            elapsed += Time.unscaledDeltaTime;
-            float t = elapsed / duration;
-            
-            float alpha = Mathf.Lerp(startColor.a, 0f, t);
-            lineRenderer.startColor = new Color(startColor.r, startColor.g, startColor.b, alpha);
-            lineRenderer.endColor = new Color(startColor.r, startColor.g, startColor.b, alpha);
-            lineRenderer.widthMultiplier = Mathf.Lerp(startWidth, 0f, t);
-            
-            yield return null;
-        }
-
-        Clear();
-    }
 }

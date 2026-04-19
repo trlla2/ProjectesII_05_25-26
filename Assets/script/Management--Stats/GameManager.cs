@@ -19,10 +19,9 @@ public class GameManager : MonoBehaviour
     private EnemyType _pendingEnemy;
     public EnemyType PendingEnemy => _pendingEnemy;
 
-    [Header("Debug")] // DELETE!!!!
+    [Header("Debug")] 
     public List<Item> _debugItemsInInventory;
 
-    //Events
     public event System.Action OnEnterBoard;
     public event System.Action OnEnterBattle;
     public event System.Action OnPlayerMove;
@@ -34,7 +33,7 @@ public class GameManager : MonoBehaviour
         if (Instance != null)
         {
             DEBUG_Stats thisDebugStats = this.gameObject.GetComponent<DEBUG_Stats>();
-            if (thisDebugStats.HasDebugSpells())
+            if (thisDebugStats != null && thisDebugStats.HasDebugSpells())
             {
                 GameManager.Instance.PlayerStats.ClearSpellBook();
                 for (int i = 0; i < GameManager.Instance.PlayerStats.SpellBookSize; i++)

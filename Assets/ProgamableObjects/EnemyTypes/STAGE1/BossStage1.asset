@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ab529a0c12673a408eb38b86a880060, type: 3}
   m_Name: BossStage1
   m_EditorClassIdentifier: 
-  name: Demon
+  name: Forest Golem
   health: 1000
   damage: 10
   elementCount: 0
@@ -22,18 +22,22 @@ MonoBehaviour:
   weaknessMultiplier: 2
   resistances: 02000000
   resistanceMultiplier: 0.5
-  enemySprite: {fileID: 6335680934792989802, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
-  animatorController: {fileID: 9100000, guid: 9a618035c7b44fc40ad4c4774f6a312f, type: 2}
+  enemySprite: {fileID: 21300000, guid: 6e73faeff3d53ef4ab9e1d76b914bda2, type: 3}
+  animatorController: {fileID: 9100000, guid: 5f84ae3019d816b499709a29ed4ee5aa, type: 2}
   spellType: 4
   damagePerElement: 4
   moveCount: 5
-  AtackTimer: 4
-  lvl2Delay: 5
+  goldReward: 500
+  attackTimer: 6
   lvl2Countdown: 15
+  lvl2BonusTimeOnClear: 2
+  continuousSelectionInterval: 2.5
   visibilityDuration: 2.5
   hiddenSprite: {fileID: 0}
-  excludeBelowTargets: 0
+  blockerCount: 2
+  blockerDamagePercent: 0.25
   haveDrops: 1
   spellDrops:
-  - {fileID: 11400000, guid: e02a4c0454b986845a065ad209d800cd, type: 2}
+  - {fileID: 11400000, guid: d65283c45b7504446948b1b821bc9cb0, type: 2}
   - {fileID: 11400000, guid: e8ecfab035326b84386fbbcadbfc34ff, type: 2}
+  swapperSwapInterval: 2.5

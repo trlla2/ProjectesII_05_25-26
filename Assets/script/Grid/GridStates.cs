@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
+using DG.Tweening;
 
 public enum GridStateType
 {
@@ -10,9 +11,11 @@ public enum GridStateType
     Reroll,
     Processing,
     ValidateSpell,
-    EnemySpell
+    Swap,
 }
 
+//cada state es porta la seva condició de transició que comprova al Update. No obstant la grid té una funció
+//ChangeState que canvia d'estat i crida les funcions Enter i Exit corresponents.
 public interface IGridState
 {
     void Enter();
@@ -24,27 +27,136 @@ public interface IGridState
 public class IdleState : IGridState
 {
     private Grid grid;
+    private SpellValidator spellValidator;
+
+    private float idleTimer;
+    private float hintDelay = 3f;
+    private bool hintPlaying;
+    private List<Vector2Int> currentHintPath;
+    private List<ElementVisual> hintedVisuals;
+    private Sequence hintSequence;
+
+    private float bopScaleStrength = 0.2f;
+    private float bopMoveUpStrength = 0.15f;
+    private float bopDuration = 0.25f;
 
     public IdleState(Grid gridController)
     {
         grid = gridController;
+        spellValidator = new SpellValidator();
     }
 
     public void Enter()
     {
+        idleTimer = 0f;
+        hintPlaying = false;
+        currentHintPath = null;
+        hintedVisuals = null;
+        hintSequence = null;
     }
 
     public void Update()
     {
+        if (hintPlaying)
+            return;
+
+        idleTimer += Time.deltaTime;
+
+        if (idleTimer >= hintDelay)
+        {
+            TryShowHint();
+        }
     }
 
     public void Exit()
     {
+        StopHint();
     }
 
     public GridStateType GetStateType()
     {
         return GridStateType.Idle;
+    }
+
+    private void TryShowHint()
+    {
+        List<Spell> spells = null;
+        if (GameManager.Instance != null && GameManager.Instance.PlayerStats != null)
+            spells = GameManager.Instance.PlayerStats.GetSpellBook();
+
+        HashSet<Vector2Int> blockedPositions = GetBlockedPositions();
+        spellValidator.SetBlockedPositions(blockedPositions);
+
+        List<Vector2Int> hintPath = spellValidator.FindFirstValidSpellPath(grid.GridData, spells);
+        if (hintPath != null && hintPath.Count > 0)
+        {
+            currentHintPath = hintPath;
+            PlayHintAnimation(hintPath);
+        }
+        else
+        {
+            idleTimer = 0f;
+        }
+    }
+
+    private HashSet<Vector2Int> GetBlockedPositions()
+    {
+        if (GameManager.Instance == null || GameManager.Instance.CombatHandler == null)
+            return new HashSet<Vector2Int>();
+
+        EnemyBehaviour enemy = GameManager.Instance.CombatHandler.GetEnemyRef();
+        if (enemy == null)
+            return new HashSet<Vector2Int>();
+
+        return enemy.GetBlockedPositions();
+    }
+
+    private void PlayHintAnimation(List<Vector2Int> path)
+    {
+        // Always stop any running hint before starting a new one
+        StopHint();
+
+        hintedVisuals = new List<ElementVisual>();
+        Sequence bop = DOTween.Sequence();
+
+        for (int i = 0; i < path.Count; i++)
+        {
+            ElementVisual visual = grid.GridData.GetVisualAt(path[i]);
+            if (visual == null)
+                continue;
+
+            hintedVisuals.Add(visual);
+            bop.Append(visual.transform.DOPunchScale(Vector3.one * bopScaleStrength, bopDuration, 1, 0.5f));
+            bop.Join(visual.transform.DOPunchPosition(new Vector3(0f, bopMoveUpStrength, 0f), bopDuration, 1, 0.5f));
+        }
+
+        hintSequence = bop.SetLoops(-1).SetEase(Ease.InOutSine).SetDelay(0.25f);
+        hintPlaying = true;
+        idleTimer = 0f;
+    }
+
+    private void StopHint()
+    {
+        hintSequence?.Kill();
+        hintSequence = null;
+
+        if (hintedVisuals != null)
+        {
+            foreach (ElementVisual visual in hintedVisuals)
+            {
+                if (visual == null)
+                    continue;
+
+                visual.transform.DOKill();
+                visual.transform.localScale = Vector3.one;
+                visual.transform.position = grid.VisualGrid.GridToWorldPosition(visual.GridPosition);
+            }
+            hintedVisuals = null;
+        }
+
+        currentHintPath = null;
+        hintPlaying = false;
+        idleTimer = 0f;
     }
 }
 
@@ -81,7 +193,6 @@ public class RefillState : IGridState
             }
             else
             {
-                //if not specifies, go to validatoipon
                 grid.ChangeState(new ValidateSpellState(grid, GameManager.Instance.PlayerStats.GetSpellBook()));
             }
         }
@@ -96,6 +207,7 @@ public class RefillState : IGridState
 
     private void PerformRefill()
     {
+        //pass through the slots that were emptied by gravity
         List<Vector2Int> movedPositions = grid.GravityHandler.ApplyGravity();
         grid.StartCoroutine(RefillSequence(movedPositions, refillDuration));
     }
@@ -107,11 +219,13 @@ public class RefillState : IGridState
             yield return grid.StartCoroutine(visualGrid.AnimateGravity(movedPositions, gravityDuration));
         }
 
+        grid.RetargetActiveSpell();
+
         List<Vector2Int> emptyPositions = GetEmptyPositions();
 
         if (emptyPositions.Count > 0)
         {
-            grid.FillEmptySlots(grid.AvailableElements, emptyPositions);
+            grid.FillEmptySlots(grid.SpawnableElements, emptyPositions);
 
             foreach (var pos in emptyPositions)
             {
@@ -275,7 +389,7 @@ public class RerollState : IGridState
                 if (bombEl != null && current == bombEl)
                     result[x, y] = bombEl;
                 else
-                    result[x, y] = availableElements[Random.Range(0, availableElements.Count)];
+                    result[x, y] = grid.PickWeightedRandom(availableElements);
             }
         }
 
@@ -398,6 +512,10 @@ public class RerollState : IGridState
                     visual.SetWorldPosition(visualGrid.GridToWorldPosition(pos));
                     visual.SetSelectable(true);
                 }
+                else if (element != null)
+                {
+                    visualGrid.EnsureVisualAt(pos, element);
+                }
             }
         }
     }
@@ -412,17 +530,15 @@ public class EnemySpellState : IGridState
     private bool isProcessing;
     private float refillDuration = 0.15f;
 
-    private bool excludeBelowTargets = true;
     private bool rerollAfterProcess = false;
 
     public EnemySpellState(Grid gridController, VisualGrid visual, List<Vector2Int> positionsToProcess, 
-                           System.Action onCompleteCallback, bool excludeBelowTargets = true, bool rerollAfter = false)
+                           System.Action onCompleteCallback, bool rerollAfter = false)
     {
         grid = gridController;
         visualGrid = visual;
-        positions = positionsToProcess ?? new List<Vector2Int>(); //if null, create empty list
+        positions = positionsToProcess ?? new List<Vector2Int>();
         onComplete = onCompleteCallback;
-        this.excludeBelowTargets = excludeBelowTargets;
         this.rerollAfterProcess = rerollAfter;
     }
 
@@ -436,9 +552,10 @@ public class EnemySpellState : IGridState
     {
         if (!isProcessing)
         {
+
             if (rerollAfterProcess)
             {
-                grid.ChangeState(new RerollState(grid, visualGrid, grid.AvailableElements,
+                grid.ChangeState(new RerollState(grid, visualGrid, grid.SpawnableElements,
                     GameManager.Instance.PlayerStats.GetSpellBook(), 3));
             }
             else
@@ -476,16 +593,11 @@ public class EnemySpellState : IGridState
             yield return grid.StartCoroutine(visualGrid.AnimateGravity(movedPositions, refillDuration));
         }
 
-        List<Vector2Int> emptyPositions;
-
-        if (excludeBelowTargets)
-            emptyPositions = GetEmptyPositionsExcludingBelowTargets();
-        else
-            emptyPositions = GetEmptyPositions();
+        List<Vector2Int> emptyPositions = GetEmptyPositions();
 
         if (emptyPositions.Count > 0)
         {
-            grid.FillEmptySlots(grid.AvailableElements, emptyPositions);
+            grid.FillEmptySlots(grid.SpawnableElements, emptyPositions);
 
             foreach (var pos in emptyPositions)
             {
@@ -539,44 +651,6 @@ public class EnemySpellState : IGridState
         return emptyPositions;
     }
 
-    private List<Vector2Int> GetEmptyPositionsExcludingBelowTargets()
-    {
-        List<Vector2Int> emptyPositions = new List<Vector2Int>();
-        int size = grid.GridData.GridSize;
-
-        for (int x = 0; x < size; x++)
-        {
-            for (int y = 0; y < size; y++)
-            {
-                Vector2Int pos = new Vector2Int(x, y);
-                Element element = grid.GridData.GetElementAt(pos);
-
-                if (element == grid.EmptyElement || element == null)
-                {
-                    bool isBelowTargeted = false;
-                    for (int yAbove = y + 1; yAbove < size; yAbove++)
-                    {
-                        Vector2Int abovePos = new Vector2Int(x, yAbove);
-                        ElementVisual aboveVisual = grid.GridData.GetVisualAt(abovePos);
-                        Element aboveElement = grid.GridData.GetElementAt(abovePos);
-
-                        if (aboveVisual != null && aboveVisual.IsTargetedByEnemy
-                            && aboveElement != null && aboveElement != grid.EmptyElement)
-                        {
-                            isBelowTargeted = true;
-                            break;
-                        }
-                    }
-
-                    if (!isBelowTargeted)
-                        emptyPositions.Add(pos);
-                }
-            }
-        }
-
-        return emptyPositions;
-    }
-
     private IEnumerator CompleteRefillAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -610,7 +684,7 @@ public class EnemySpellState : IGridState
 public class ValidateSpellState : IGridState
 {
     private Grid grid;
-    private ISpellValidator spellValidator;
+    private SpellValidator spellValidator;
     private List<Spell> availableSpells;
     private bool isValidating;
 
@@ -647,6 +721,9 @@ public class ValidateSpellState : IGridState
 
     private void ValidateGrid()
     {
+        HashSet<Vector2Int> blockedPositions = GetBlockedPositions();
+        spellValidator.SetBlockedPositions(blockedPositions);
+
         bool hasValidSpell = spellValidator.HasValidSpell(grid.GridData, availableSpells);
 
         if (!hasValidSpell)
@@ -664,5 +741,78 @@ public class ValidateSpellState : IGridState
         }
 
         isValidating = false;
+    }
+
+    private HashSet<Vector2Int> GetBlockedPositions()
+    {
+        if (GameManager.Instance == null || GameManager.Instance.CombatHandler == null)
+            return new HashSet<Vector2Int>();
+
+        EnemyBehaviour enemy = GameManager.Instance.CombatHandler.GetEnemyRef();
+        if (enemy == null)
+            return new HashSet<Vector2Int>();
+
+        return enemy.GetBlockedPositions();
+    }
+}
+
+public class ItemProcessingState : IGridState
+{
+    private Grid grid;
+
+    public ItemProcessingState(Grid gridController)
+    {
+        grid = gridController;
+    }
+
+    public void Enter() { }
+    public void Update() { }
+    public void Exit() { }
+    public GridStateType GetStateType() => GridStateType.Processing;
+}
+
+public class SwapState : IGridState
+{
+    private Grid grid;
+    private VisualGrid visualGrid;
+    private List<(Vector2Int, Vector2Int)> swapPairs;
+    private float swapDuration;
+    private bool isSwapping;
+
+    public SwapState(Grid gridController, VisualGrid visual, List<(Vector2Int, Vector2Int)> pairs, float swapDuration)
+    {
+        grid = gridController;
+        visualGrid = visual;
+        swapPairs = pairs;
+        this.swapDuration = swapDuration;
+    }
+
+    public void Enter()
+    {
+        isSwapping = true;
+        grid.StartCoroutine(PerformSwap());
+    }
+
+    public void Update()
+    {
+        if (!isSwapping)
+            grid.ChangeState(new ValidateSpellState(grid, GameManager.Instance.PlayerStats.GetSpellBook()));
+    }
+
+    public void Exit()
+    {
+        isSwapping = false;
+    }
+
+    public GridStateType GetStateType() => GridStateType.Swap;
+
+    private IEnumerator PerformSwap()
+    {
+        foreach (var pair in swapPairs)
+            grid.GridData.SwapElements(pair.Item1, pair.Item2);
+
+        yield return grid.StartCoroutine(visualGrid.AnimateEnemySwap(swapPairs, swapDuration));
+
+        isSwapping = false;
     }
 }

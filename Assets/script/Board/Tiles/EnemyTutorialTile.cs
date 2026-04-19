@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class EnemyTutorialTile : BoardTile
 {
-    [SerializeField] private BoardTileData _postInteractionTile;
+    [SerializeField] private BoardTileData _postInteracTile;
 
     [SerializeField] private int lootRatePercentage;
 
@@ -25,11 +25,11 @@ public class EnemyTutorialTile : BoardTile
         GameManager.Instance.CombatHandler.OnEndBattle += Replace;
     }
 
-    public void Replace(bool win, int xp, Spell drop)
+    public void Replace(bool win, int xp, int g, Spell drop)
     {
         _boardRaycast.HandleBoardRaycast(true);
         if (win)
-            _boardManager.ReplaceTileType(this, _postInteractionTile);
+            _boardManager.ReplaceTileType(this, _postInteracTile);
     }
 
     private void OnDestroy()

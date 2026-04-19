@@ -16,6 +16,8 @@ public class EnemyAnimationHandler : MonoBehaviour
         animator = GetComponent<Animator>();
 
         behaviour.OnHitRecived += HitAnimation;
+        behaviour.OnEnemyDeath += () => animator.SetBool("Dead", true);
+        behaviour.ActiveSpell.OnExecute += () => animator.SetTrigger("Attack");
     }
 
     private void HitAnimation(float hp)
@@ -26,5 +28,7 @@ public class EnemyAnimationHandler : MonoBehaviour
     private void OnDestroy()
     {
         behaviour.OnHitRecived -= HitAnimation;
+        behaviour.OnEnemyDeath -= () => animator.SetBool("Dead", true);
+        behaviour.ActiveSpell.OnExecute -= () => animator.SetTrigger("Attack");
     }
 }

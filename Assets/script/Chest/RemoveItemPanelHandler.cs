@@ -12,7 +12,7 @@ public class RemoveItemPanelHandler : MonoBehaviour
     [SerializeField]
     private GameObject itemSelectablePrefab;
     [SerializeField]
-    private OpenChestScreen chestScreenRef;
+    private OpenChestScreen chestScreenRef = null;
     [SerializeField]
     private TMP_Text selectedItemDescription;
     [SerializeField]
@@ -27,27 +27,34 @@ public class RemoveItemPanelHandler : MonoBehaviour
         translatorUI = GetComponent<TranslatorUI>();
     }
 
-    private void ShowRemoveItems(Item newItem)
+    private void ShowRemoveItems(Item newItem, bool mustBeEquiped)
     {
         foreach (Transform child in itemsPanel)
         {
             Destroy(child.gameObject);
         }
-
+        ItemSelectable i = null;
         foreach (Item item in GameManager.Instance.PlayerStats.Inventory)
         {
             GameObject itemUI = Instantiate(itemSelectablePrefab, itemsPanel);
             itemUI.GetComponent<ItemSelectable>().SetItem(this,item);
+            i = itemUI.GetComponent<ItemSelectable>();
         }
 
         newItemSelectable.SetItem(this,newItem);
 
-        newItemSelectable.Select();
+
+        if(mustBeEquiped)
+        {
+            i.Select();
+            newItemSelectable.CanBeSelected = false;
+
+        }
     }
 
-    public void ShowPanel(Item newItem)
+    public void ShowPanel(Item newItem, bool mustBeEquiped = false)
     {
-        ShowRemoveItems(newItem);
+        ShowRemoveItems(newItem, mustBeEquiped);
         translatorUI.ToTarget();
     }
 
@@ -62,7 +69,13 @@ public class RemoveItemPanelHandler : MonoBehaviour
             else
             {
                 GameManager.Instance.PlayerStats.RemoveItemFromInventory(currentSelectedItem.Item);
-                chestScreenRef.KeepItem();
+                if (chestScreenRef != null)
+                    chestScreenRef.KeepItem();
+                else
+                {
+                    GameManager.Instance.PlayerStats.AddItemToInventory(newItemSelectable.Item);
+                    translatorUI.ToOrigin();
+                }
             }
         }
     }

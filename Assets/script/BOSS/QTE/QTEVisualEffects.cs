@@ -9,11 +9,21 @@ public class QTEVisualEffects : MonoBehaviour
     [SerializeField] private CanvasGroup darkOverlay;
     [SerializeField] private float overlayFadeDuration = 0.3f;
     [SerializeField] private float overlayTargetAlpha = 0.7f;
-    
+
     [Header("Screen Flash")]
     [SerializeField] private Image flashImage;
     [SerializeField] private Color flashColor = Color.white;
     [SerializeField] private float flashDuration = 0.2f;
+
+    [Header("Particles")]
+    [SerializeField] private ParticleSystem[] successParticles;
+    [SerializeField] private ParticleSystem chargeAtatckParticles;
+
+    [SerializeField] private float particleSequenceInterval = 0.15f;
+
+    [Header("Audio")]
+    [SerializeField]
+    private AudioSource aS;
 
     CameraShake cameraShake;
 
@@ -106,9 +116,53 @@ public class QTEVisualEffects : MonoBehaviour
 
         ShakeCamera(0.5f, 0.3f);
 
-        if (HapticsManager.Instance != null)
+        aS.Play();
+
+        if (successParticles != null && successParticles.Length > 0)
+        {
+            float totalDuration = successParticles.Length * particleSequenceInterval;
+            StartCoroutine(SuccessParticleSequence());
+
+            if (HapticsManager.Instance != null)
+                StartCoroutine(SustainedHapticRoutine(HapticsManager.HapticTypes.HeavyImpact, totalDuration, particleSequenceInterval));
+        }
+        else if (HapticsManager.Instance != null)
         {
             HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.HeavyImpact);
+        }
+    }
+
+    private IEnumerator SuccessParticleSequence()
+    {
+        foreach (ParticleSystem ps in successParticles)
+        {
+            if (ps != null)
+                ps.Play();
+
+            yield return new WaitForSeconds(particleSequenceInterval);
+        }
+    }
+
+    private IEnumerator SustainedHapticRoutine(HapticsManager.HapticTypes hapticType, float totalDuration, float interval)
+    {
+        float elapsed = 0f;
+        while (elapsed < totalDuration)
+        {
+            HapticsManager.Instance.GenerateHapticFeedback(hapticType);
+            yield return new WaitForSeconds(interval);
+            elapsed += interval;
+        }
+    }
+
+    public void PlayChargeAttackEffect()
+    {
+        if (chargeAtatckParticles != null)
+        {
+            chargeAtatckParticles.Play();
+        }
+        if (HapticsManager.Instance != null)
+        {
+            HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.MediumImpact);
         }
     }
 

@@ -37,6 +37,17 @@ public class ChestAnimationHandler : MonoBehaviour
     [SerializeField]
     public UnityEvent OnRarityChange;
 
+    [SerializeField]
+    private AudioSource aS;
+    [SerializeField]
+    private AudioClip commonClip;
+    [SerializeField]
+    private AudioClip rareClip;
+    [SerializeField]
+    private AudioClip epicClip;
+    [SerializeField]
+    private AudioClip legendClip;
+
     private Item item;
     private Animator animator;
 
@@ -114,6 +125,22 @@ public class ChestAnimationHandler : MonoBehaviour
         closeParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         closeParticles.Play(true);
         HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.LightImpact);
+
+        switch (stageIndex)
+        {
+            case ItemRarity.COMMON:
+                aS.PlayOneShot(commonClip);
+                break;
+            case ItemRarity.RARE:
+                aS.PlayOneShot(rareClip);
+                break;
+            case ItemRarity.EPIC:
+                aS.PlayOneShot(epicClip);
+                break;
+            case ItemRarity.LEGENDARY:
+                aS.PlayOneShot(legendClip);
+                break;
+        }
     }
 
     public void ResetAnimation()

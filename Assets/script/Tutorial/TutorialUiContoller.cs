@@ -35,7 +35,7 @@ public class TutorialUIController : MonoBehaviour
     private RectTransform handRect;
     private RectTransform arrowRect;
 
-    private void Awake()
+    private void Start()
     {
         popupDismissButton.onClick.AddListener(OnPopupTap);
         handRect = handIcon != null ? handIcon.GetComponent<RectTransform>() : null;
@@ -196,46 +196,5 @@ public class TutorialUIController : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         target.SetActive(false);
-    }
-
-    private bool TryGetArrowTargetPoint(TutorialArrowTarget target, Grid grid, out Vector2 point)
-    {
-        point = default;
-
-        switch (target)
-        {
-            case TutorialArrowTarget.PlayerHPBar:
-                return TryGetRectCanvasPoint(playerHPBarAnchor, out point);
-
-            case TutorialArrowTarget.EnemyHPBar:
-                return TryGetRectCanvasPoint(enemyHPBarAnchor, out point);
-
-            case TutorialArrowTarget.SpellHUD:
-                return TryGetRectCanvasPoint(spellHUDAnchor, out point);
-
-            case TutorialArrowTarget.GridPosition:
-                if (grid == null || grid.VisualGrid == null) return false;
-                Vector2Int center = new Vector2Int(Grid.GridSize / 2, Grid.GridSize / 2);
-                Vector3 worldPos = grid.VisualGrid.GridToWorldPosition(center);
-                point = WorldToCanvasPoint(worldPos);
-                return true;
-
-            default:
-                return false;
-        }
-    }
-
-    private bool TryGetRectCanvasPoint(RectTransform source, out Vector2 point)
-    {
-        point = default;
-        if (source == null || handCanvasRoot == null) return false;
-
-        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(null, source.position);
-        return RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            handCanvasRoot,
-            screenPoint,
-            null,
-            out point
-        );
     }
 }

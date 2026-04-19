@@ -4,9 +4,14 @@ using UnityEngine;
 public class BombSpell : EnemySpellBase
 {
     private Vector2Int bombPosition = new Vector2Int(-1, -1);
+    
+    private List<Vector2Int> activeCardinalOffsets = new List<Vector2Int>();
+    private List<Vector2Int> clearedCardinalOffsets = new List<Vector2Int>();
     private List<Vector2Int> cardinalPositions = new List<Vector2Int>();
-    private List<Vector2Int> clearedPositions = new List<Vector2Int>();
     private BombCableVisual cableVisual;
+
+    //This became more complicated than it should, but with the gravity now moving verything around we have to track which visuals correspond to which offsets in order to determine if the player cleared them or if they just moved due to gravity. This dictionary allows us to check if the visual we originally targeted for a given offset still exists after gravity.
+    private Dictionary<Vector2Int, ElementVisual> targetedVisualsByOffset = new Dictionary<Vector2Int, ElementVisual>();
 
     private Vector2Int[] CardinalOffsets = new Vector2Int[]
     {
@@ -28,23 +33,25 @@ public class BombSpell : EnemySpellBase
         new Vector2Int(-1, -1)
     };
 
-    public BombSpell(float damagePerElement, int moveCount = 4, bool excludeBelow = false)
+    public BombSpell(float damagePerElement, int moveCount = 4)
     {
         this.damagePerElement = damagePerElement;
         this.remainingMoves = moveCount;
         this.initialMoves = moveCount;
         this.spellName = "Bomb";
-        this.excludeBelowTargets = excludeBelow;
         this.shouldRerollAfterAttack = true;
     }
 
     public override void Execute(Grid grid)
     {
+        base.Execute(grid);
         if (grid == null) return;
 
         targetedPositions.Clear();
         cardinalPositions.Clear();
-        clearedPositions.Clear();
+        activeCardinalOffsets = new List<Vector2Int>(CardinalOffsets);
+        clearedCardinalOffsets.Clear();
+        targetedVisualsByOffset.Clear();
 
         bombPosition = PickRandomInnerPosition(grid);
         if (bombPosition.x == -1) return;
@@ -55,7 +62,9 @@ public class BombSpell : EnemySpellBase
         if (bombVisual != null)
             bombVisual.SetTargetedByEnemy(true);
 
-        foreach (var offset in CardinalOffsets)
+        targetedPositions.Add(bombPosition);
+
+        foreach (var offset in activeCardinalOffsets)
         {
             Vector2Int pos = bombPosition + offset;
             if (!grid.IsPositionValid(pos)) continue;
@@ -64,15 +73,156 @@ public class BombSpell : EnemySpellBase
             if (element != null && element != grid.EmptyElement)
             {
                 cardinalPositions.Add(pos);
+                targetedPositions.Add(pos);
                 ElementVisual visual = grid.GetElementVisualAt(pos);
                 if (visual != null)
                 {
                     visual.SetTargetedByEnemy(true);
-                    visual.UpdateTargetVisual(remainingMoves, initialMoves,
+                    visual.UpdateTargetVisual(initialMoves, initialMoves,
                         grid.EnemyTargetAnimDuration, grid.EnemyTargetFillCurve);
+                    
+                    targetedVisualsByOffset[offset] = visual;
                 }
             }
         }
+        UpdateBombVisual(grid);
+        InitializeCableVisual(grid);
+    }
+
+    public override void RetargetAfterGravity(Grid grid)
+    {
+        if (grid == null) return;
+
+        Vector2Int newBombPos = FindBombPosition(grid);
+        if (newBombPos.x == -1) return;
+
+        // Check which offsets had their elements ACTUALLY cleared by the player
+        List<Vector2Int> newlyCleared = new List<Vector2Int>();
+        List<Vector2Int> activeOffsetsCopy = new List<Vector2Int>(activeCardinalOffsets);
+
+        foreach (var offset in activeOffsetsCopy)
+        {
+            if (targetedVisualsByOffset.TryGetValue(offset, out ElementVisual originalVisual))
+            {
+                // Check if the original visual still exists and is valid
+                if (originalVisual == null || originalVisual.gameObject == null)
+                {
+                    // Visual was destroyed; player cleared it
+                    newlyCleared.Add(offset);
+                    continue;
+                }
+
+                // Check if the visual still exists and is still targeted
+                // If it's still targeted by enemy, it means it just moved due to gravity, not cleared
+                if (originalVisual.IsTargetedByEnemy)
+                {
+                    // Visual still exists and is targeted
+                    continue;
+                }
+                else
+                {
+                    //Playher clear
+                    newlyCleared.Add(offset);
+                }
+            }
+            else
+            {
+                // No tracked visual for this offset (shouldn't happen, but handle it)
+                Vector2Int pos = bombPosition + offset;
+                if (!grid.IsPositionValid(pos))
+                {
+                    newlyCleared.Add(offset);
+                    continue;
+                }
+
+                ElementVisual visual = grid.GetElementVisualAt(pos);
+                if (visual == null || !visual.IsTargetedByEnemy)
+                {
+                    newlyCleared.Add(offset);
+                }
+            }
+        }
+
+        // Move newly cleared offsets to cleared list BEFORE retargeting
+        foreach (var offset in newlyCleared)
+        {
+            activeCardinalOffsets.Remove(offset);
+            if (!clearedCardinalOffsets.Contains(offset))
+            {
+                clearedCardinalOffsets.Add(offset);
+            }
+            
+            targetedVisualsByOffset.Remove(offset);
+
+            if (cableVisual != null)
+            {
+                cableVisual.RemoveCable(offset);
+            }
+        }
+
+        ClearAllCurrentTargeting(grid);
+        ClearCableVisual();
+        
+        bombPosition = newBombPos;
+        targetedPositions.Clear();
+        cardinalPositions.Clear();
+
+        ElementVisual bombVisual = grid.GetElementVisualAt(bombPosition);
+        if (bombVisual != null)
+        {
+            bombVisual.SetTargetedByEnemy(true);
+            bombVisual.SetSelectable(false);
+            targetedPositions.Add(bombPosition);
+        }
+
+        List<Vector2Int> additionalCleared = new List<Vector2Int>();
+        
+        foreach (var offset in activeCardinalOffsets)
+        {
+            Vector2Int pos = bombPosition + offset;
+            bool validTarget = false;
+            
+            if (grid.IsPositionValid(pos))
+            {
+                Element element = grid.GetElementAt(pos);
+                if (element != null && element != grid.EmptyElement)
+                    validTarget = true;
+            }
+
+            if (!validTarget)
+            {
+                // Position became invalid after bomb moved
+                additionalCleared.Add(offset);
+            }
+            else
+            {
+                // Valid element found - retarget it
+                cardinalPositions.Add(pos);
+                targetedPositions.Add(pos);
+                ElementVisual visual = grid.GetElementVisualAt(pos);
+                if (visual != null)
+                {
+                    visual.SetTargetedByEnemy(true);
+                    visual.UpdateTargetVisual(initialMoves, initialMoves,
+                        grid.EnemyTargetAnimDuration, grid.EnemyTargetFillCurve);
+                    
+                    // Update tracked visual for this offset
+                    targetedVisualsByOffset[offset] = visual;
+                }
+            }
+        }
+
+        // Clear any additional offsets that became invalid
+        foreach (var offset in additionalCleared)
+        {
+            activeCardinalOffsets.Remove(offset);
+            if (!clearedCardinalOffsets.Contains(offset))
+            {
+                clearedCardinalOffsets.Add(offset);
+            }
+            targetedVisualsByOffset.Remove(offset);
+        }
+
         UpdateBombVisual(grid);
         InitializeCableVisual(grid);
     }
@@ -81,32 +231,33 @@ public class BombSpell : EnemySpellBase
     {
         if (grid == null) return;
 
-        int clearedCount = GetClearedCardinalCount(grid);
-
-        if (clearedCount >= 3)
+        if (activeCardinalOffsets.Count <= 1)
         {
-            Debug.Log("Bomb defused! 3 targets cleared.");
             ClearBombVisual(grid);
             RemoveBombElement(grid);
             ClearCableVisual();
             targetedPositions.Clear();
             cardinalPositions.Clear();
-            clearedPositions.Clear();
-            onComplete?.Invoke(); // triggers RerollAndRetarget in EnemyBehaviour
+            activeCardinalOffsets.Clear();
+            clearedCardinalOffsets.Clear();
+            targetedVisualsByOffset.Clear();
+            onComplete?.Invoke();
             return;
         }
 
         remainingMoves--;
         remainingMoves = Mathf.Max(0, remainingMoves);
 
-        //Update countdown indicators
-        float animDuration = grid.EnemyTargetAnimDuration;
-        AnimationCurve curve = grid.EnemyTargetFillCurve;
-        foreach (var pos in cardinalPositions)
+        foreach (var offset in activeCardinalOffsets)
         {
+            Vector2Int pos = bombPosition + offset;
+            if (!grid.IsPositionValid(pos)) continue;
             ElementVisual visual = grid.GetElementVisualAt(pos);
             if (visual != null && visual.IsTargetedByEnemy)
-                visual.UpdateTargetVisual(remainingMoves, initialMoves, animDuration, curve);
+            {
+                visual.UpdateTargetVisual(initialMoves, initialMoves,
+                    grid.EnemyTargetAnimDuration, grid.EnemyTargetFillCurve);
+            }
         }
 
         UpdateBombVisual(grid);
@@ -114,47 +265,50 @@ public class BombSpell : EnemySpellBase
         if (remainingMoves <= 0)
         {
             Debug.Log("Bomb exploded!");
-            grid.explosionTrigger.Explode(grid.VisualGrid.GridToWorldPosition(bombPosition - new Vector2Int(1,0)));
+            grid.explosionTrigger.Explode(grid.VisualGrid.GridToWorldPosition(bombPosition));
             Camera.main.GetComponent<CameraShake>().Shake(0.4f, 0.5f);
 
-            // Remove bomb element before explosion so EnemySpellState refills the slot
             ClearBombVisual(grid);
             RemoveBombElement(grid);
             ClearCableVisual();
 
             SelectExplosionTargets(grid);
-            ApplyEffect(grid, onComplete,true);
+            ApplyEffect(grid, onComplete, true);
         }
     }
 
-    private int GetClearedCardinalCount(Grid grid)
+    private Vector2Int FindBombPosition(Grid grid)
     {
-        int cleared = 0;
-        List<Vector2Int> newlyCleared = new List<Vector2Int>();
+        Element bombEl = grid.BombElement;
+        if (bombEl == null) return new Vector2Int(-1, -1);
 
-        foreach (var pos in cardinalPositions)
+        for (int x = 0; x < grid.GridSize; x++)
         {
-            ElementVisual visual = grid.GetElementVisualAt(pos);
-            if (visual == null || !visual.IsTargetedByEnemy)
+            for (int y = 0; y < grid.GridSize; y++)
             {
-                // Check if this position was already processed
-                if (!clearedPositions.Contains(pos))
+                Vector2Int pos = new Vector2Int(x, y);
+                if (grid.GetElementAt(pos) == bombEl)
+                    return pos;
+            }
+        }
+        return new Vector2Int(-1, -1);
+    }
+
+    private void ClearAllCurrentTargeting(Grid grid)
+    {
+        for (int x = 0; x < grid.GridSize; x++)
+        {
+            for (int y = 0; y < grid.GridSize; y++)
+            {
+                Vector2Int pos = new Vector2Int(x, y);
+                ElementVisual visual = grid.GetElementVisualAt(pos);
+                if (visual != null && visual.IsTargetedByEnemy)
                 {
-                    newlyCleared.Add(pos);
-                    clearedPositions.Add(pos);
+                    visual.ClearTargetVisual();
+                    visual.SetTargetedByEnemy(false);
                 }
-                cleared++;
             }
         }
-        if (cableVisual != null && newlyCleared.Count > 0)
-        {
-            foreach (var pos in newlyCleared)
-            {
-                cableVisual.RemoveCable(pos);
-            }
-        }
-
-        return cleared;
     }
 
     private void SelectExplosionTargets(Grid grid)
@@ -191,7 +345,8 @@ public class BombSpell : EnemySpellBase
 
     private void InitializeCableVisual(Grid grid)
     {
-        if (cardinalPositions.Count < 4) return;
+        // Only initialize if we have tracking data
+        if (activeCardinalOffsets.Count + clearedCardinalOffsets.Count < 4) return;
 
         EnemyBehaviour enemy = GameManager.Instance.CombatHandler.GetEnemyRef();
 
@@ -200,7 +355,17 @@ public class BombSpell : EnemySpellBase
             cableVisual = enemy.GetComponentInChildren<BombCableVisual>();
             if (cableVisual != null)
             {
-                cableVisual.Initialize(grid, bombPosition, cardinalPositions);
+                List<Vector2Int> allOffsets = new List<Vector2Int>(activeCardinalOffsets);
+                allOffsets.AddRange(clearedCardinalOffsets);
+
+                // Initialize with all 4 original cardinal directions
+                cableVisual.Initialize(grid, bombPosition, allOffsets);
+
+                // Remove cables that were already cleared
+                foreach (Vector2Int clearedOffset in clearedCardinalOffsets)
+                {
+                    cableVisual.RemoveCable(clearedOffset);
+                }
             }
         }
     }
@@ -238,8 +403,8 @@ public class BombSpell : EnemySpellBase
     private Vector2Int PickRandomInnerPosition(Grid grid)
     {
         List<Vector2Int> inner = new List<Vector2Int>();
-        for (int x = 1; x < Grid.GridSize - 1; x++)
-            for (int y = 1; y < Grid.GridSize - 1; y++)
+        for (int x = 1; x < grid.GridSize - 1; x++)
+            for (int y = 1; y < grid.GridSize - 1; y++)
             {
                 Vector2Int pos = new Vector2Int(x, y);
                 if (grid.IsPositionValid(pos))
@@ -255,11 +420,7 @@ public class BombSpell : EnemySpellBase
     private void PlaceBombElement(Grid grid)
     {
         Element bombEl = grid.BombElement;
-        if (bombEl == null)
-        {
-            Debug.LogWarning("BombSpell: No bomb Element assigned on Grid.");
-            return;
-        }
+        if (bombEl == null) return;
 
         grid.SetElementAt(bombPosition, bombEl);
 
@@ -290,6 +451,7 @@ public class BombSpell : EnemySpellBase
         if (grid == null || bombPosition.x == -1) return;
         RemoveBombElement(grid);
         ClearCableVisual();
-        clearedPositions.Clear();
+        clearedCardinalOffsets.Clear();
+        targetedVisualsByOffset.Clear();
     }
 }

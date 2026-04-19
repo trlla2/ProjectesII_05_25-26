@@ -5,21 +5,21 @@ public class RandomDestroyLvl2Spell : TimedDestroySpellBase
 {
     private readonly int elementCount;
 
-    public RandomDestroyLvl2Spell(int count = 3, float damage = 4f, float delay = 5f, float countdown = 15f, bool excludeBelow = true, int moveCount = 3)
-        : base(delay, countdown, damage, excludeBelow)
+    public RandomDestroyLvl2Spell(int count = 3, float countdown = 8f, float damage = 4f, float bonusTimeOnClear = 2f)
+        : base(countdown, damage)
     {
         elementCount = count;
         spellName = "Random Destroy Lvl2";
-        useMoveTicks = true;
-        SetMoveCount(moveCount);
+        bonusTimePerClearedTarget = bonusTimeOnClear;
+        shouldRerollAfterAttack = true;
     }
 
     protected override void SelectTargets(Grid grid)
     {
         List<Vector2Int> allPositions = new List<Vector2Int>();
 
-        for (int x = 0; x < Grid.GridSize; x++)
-            for (int y = 0; y < Grid.GridSize; y++)
+        for (int x = 0; x < grid.GridSize; x++)
+            for (int y = 0; y < grid.GridSize; y++)
             {
                 Vector2Int pos = new Vector2Int(x, y);
                 Element element = grid.GetElementAt(pos);
@@ -40,7 +40,6 @@ public class RandomDestroyLvl2Spell : TimedDestroySpellBase
             if (visual != null)
             {
                 visual.SetTargetedByEnemy(true);
-                visual.UpdateTargetVisual(remainingMoves, initialMoves, grid.EnemyTargetAnimDuration, grid.EnemyTargetFillCurve);
             }
 
             allPositions.RemoveAt(randomIndex);

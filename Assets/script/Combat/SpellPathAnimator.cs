@@ -8,7 +8,6 @@ public class SpellPathAnimator : MonoBehaviour
     [Header("Spell Animation Settings")]
     [SerializeField] private float elementScale = 0.8f;
     [SerializeField] private float elementSpacing = 0.1f;
-    //[SerializeField] private Ease movementEase = Ease.OutCubic;
 
     [Header("References")]
     [SerializeField] private GameObject clonePrefab;
@@ -18,12 +17,25 @@ public class SpellPathAnimator : MonoBehaviour
     [Header("Animator Type")]
     [SerializeField] private bool isPlayerAnimator = true;
 
+    [Header("Hit Particle Systems")]
+    [SerializeField] private ParticleSystem redHitParticle;
+    [SerializeField] private ParticleSystem blueHitParticle;
+    [SerializeField] private ParticleSystem greenHitParticle;
+    [SerializeField] private ParticleSystem yellowHitParticle;
+
+    [Header("Element Trails")]
+    [SerializeField] private GameObject redTrail;
+    [SerializeField] private GameObject blueTrail;
+    [SerializeField] private GameObject greenTrail;
+    [SerializeField] private GameObject yellowTrail;
+
     private float damagePerElement = 4f;
 
     private CameraShake cameraShake;
     private List<GameObject> activeClones = new List<GameObject>();
     private Dictionary<GameObject, Element> cloneElementMap = new Dictionary<GameObject, Element>();
-
+    private Dictionary<GameObject, GameObject> cloneTrailMap = new Dictionary<GameObject, GameObject>();
+    public System.Action OnAttack;
 
     private void Start()
     {
@@ -57,6 +69,13 @@ public class SpellPathAnimator : MonoBehaviour
 
     public void OnSpellCast(Vector2Int[] pathPositions, List<Element> elements, System.Action onComplete = null)
     {
+        if (!isPlayerAnimator)
+        {
+            onComplete += (() =>
+            {
+                GameManager.Instance?.CombatHandler.GetEnemyRef().animator.SetTrigger("Attack");
+            });
+        }
         if (pathPositions == null || pathPositions.Length == 0)
         {
             onComplete?.Invoke();
@@ -79,7 +98,6 @@ public class SpellPathAnimator : MonoBehaviour
         StartCoroutine(AnimateSpellPath(pathPositions, elements, onComplete));
     }
 
-   
     public void CleanupAllAnimations()
     {
         StopAllCoroutines();
@@ -88,13 +106,14 @@ public class SpellPathAnimator : MonoBehaviour
         {
             if (clone != null)
             {
+                DetachTrailFromClone(clone);
                 Destroy(clone);
             }
         }
         activeClones.Clear();
         cloneElementMap.Clear();
+        cloneTrailMap.Clear();
     }
-
 
     private IEnumerator AnimateSpellPath(Vector2Int[] pathPositions, List<Element> elements, System.Action onComplete)
     {
@@ -124,6 +143,8 @@ public class SpellPathAnimator : MonoBehaviour
 
         activeClones.RemoveAll(obj => obj == null);
         cloneElementMap.Clear();
+        cloneTrailMap.Clear();
+        OnAttack?.Invoke();
         onComplete?.Invoke();
     }
 
@@ -131,10 +152,16 @@ public class SpellPathAnimator : MonoBehaviour
     {
         yield return new WaitForSeconds(startDelay);
 
+        AttachTrailToClone(clone);
+
         Sequence animationSequence = DOTween.Sequence();
 
         foreach (PathSection section in spellPathData.pathSections)
         {
+            // Resolve random loop params once per clone per cast
+            if (section.isRandPos && section.mode == SpellPathMode.Loop)
+                section.ResolveRandomLoop();
+
             List<Transform> waypoints = section.GetProcessedWaypoints();
 
             if (waypoints.Count == 0)
@@ -152,8 +179,60 @@ public class SpellPathAnimator : MonoBehaviour
             }
         }
 
-        animationSequence.OnComplete(() => OnCloneAnimationComplete(clone , startDelay));
+        animationSequence.OnComplete(() => OnCloneAnimationComplete(clone, startDelay));
         animationSequence.Play();
+    }
+
+    private void AttachTrailToClone(GameObject clone)
+    {
+        if (!cloneElementMap.TryGetValue(clone, out Element element)) return;
+
+        GameObject trailPrefab = GetTrailForElement(element.Type);
+        if (trailPrefab == null) return;
+
+        GameObject trailInstance = Instantiate(trailPrefab, clone.transform);
+        trailInstance.transform.localPosition = Vector3.zero;
+        trailInstance.SetActive(true);
+
+        cloneTrailMap[clone] = trailInstance;
+    }
+
+    private void DetachTrailFromClone(GameObject clone)
+    {
+        if (!cloneTrailMap.TryGetValue(clone, out GameObject trailInstance)) return;
+        if (trailInstance == null)
+        {
+            cloneTrailMap.Remove(clone);
+            return;
+        }
+
+        // Unparent so the trail lingers briefly before being destroyed,
+        trailInstance.transform.SetParent(null, true);
+
+        TrailRenderer tr = trailInstance.GetComponentInChildren<TrailRenderer>();
+        if (tr != null)
+        {
+            tr.emitting = false;
+            Destroy(trailInstance, tr.time);
+        }
+        else
+        {
+            Destroy(trailInstance);
+        }
+
+        cloneTrailMap.Remove(clone);
+    }
+
+    private GameObject GetTrailForElement(ElementType elementType)
+    {
+        return elementType switch
+        {
+            ElementType.Red    => redTrail,
+            ElementType.Blue   => blueTrail,
+            ElementType.Green  => greenTrail,
+            ElementType.Yellow => yellowTrail,
+            _                  => null
+        };
     }
 
     private void AnimateCurvedPath(Sequence sequence, GameObject clone, List<Transform> waypoints, PathSection section)
@@ -178,52 +257,60 @@ public class SpellPathAnimator : MonoBehaviour
     {
         if (waypoints.Count >= 2)
         {
-            // Loop between two points
             Vector3 startPoint = waypoints[0].position;
-            Vector3 endPoint = waypoints[1].position;
-            Vector3 center = (startPoint + endPoint) / 2f;
-            float radius = Vector3.Distance(startPoint, endPoint) / 2f;
+            Vector3 endPoint   = waypoints[1].position;
+            Vector3 center     = (startPoint + endPoint) / 2f;
 
-            Vector3 toEnd = endPoint - center;
-            float startAngle = Mathf.Atan2(toEnd.y, toEnd.x);
+            float radius = section.isRandPos
+                ? section.finalRadius
+                : Vector3.Distance(startPoint, endPoint) / 2f;
 
-            Vector3[] circlePoints = CreateCircularPathBetweenPoints(center, radius, startAngle, 8);
+            Vector3 toEnd      = endPoint - center;
+            float startAngle   = Mathf.Atan2(toEnd.y, toEnd.x);
+            bool clockwise     = section.isRandPos && section.finalClockwise;
+
+            Vector3[] circlePoints = CreateCircularPathBetweenPoints(center, radius, startAngle, 8, clockwise);
 
             sequence.Append(
-                clone.transform.DOPath(
-                    circlePoints,
-                    section.duration,
-                    PathType.CatmullRom
-                )
-                .SetEase(section.animCurve)
+                clone.transform.DOPath(circlePoints, section.duration, PathType.CatmullRom)
+                    .SetEase(section.animCurve)
             );
         }
         else if (waypoints.Count == 1)
         {
-            // Loop around a single point
             Vector3 center = waypoints[0].position;
-            Vector3[] circlePoints = CreateCircularPath(center, 1.2f, 8);
+
+            float radius   = section.isRandPos ? section.finalRadius : 1.2f;
+            bool clockwise = section.isRandPos && section.finalClockwise;
+
+            Vector3[] circlePoints = CreateCircularPath(center, radius, 8, clockwise);
 
             sequence.Append(
-                clone.transform.DOPath(
-                    circlePoints,
-                    section.duration,
-                    PathType.CatmullRom
-                )
-                .SetEase(section.animCurve)
+                clone.transform.DOPath(circlePoints, section.duration, PathType.CatmullRom)
+                    .SetEase(section.animCurve)
             );
         }
     }
 
     private void OnCloneAnimationComplete(GameObject clone, float startDelay)
     {
+        DetachTrailFromClone(clone);
+
         if (GameManager.Instance != null && cloneElementMap.ContainsKey(clone))
         {
-            Element element = cloneElementMap[clone];
-            
+            ElementType element = cloneElementMap[clone].Type;
+
+            element = element switch
+            {
+                ElementType.Orange => ElementType.Red,
+                ElementType.Melon  => ElementType.Green,
+                _                  => element
+            };
+
             if (isPlayerAnimator)
             {
-                GameManager.Instance.CombatHandler.AttackEnemy(element.Type);
+                PlayHitParticle(element, clone.transform.position);
+                GameManager.Instance.CombatHandler.AttackEnemy(element);
             }
             else
             {
@@ -233,10 +320,9 @@ public class SpellPathAnimator : MonoBehaviour
 
         if (cameraShake != null)
         {
-            cameraShake.Shake(0.25f, startDelay - 0.05f);//shake w/ sligthly less delay than startDelay
+            cameraShake.Shake(0.25f, startDelay - 0.05f);
         }
 
-        // Fade out
         SpriteRenderer sr = clone.GetComponent<SpriteRenderer>();
         if (sr != null)
         {
@@ -257,6 +343,25 @@ public class SpellPathAnimator : MonoBehaviour
                 Destroy(clone);
             }
         }
+    }
+
+    private void PlayHitParticle(ElementType elementType, Vector3 position)
+    {
+        ParticleSystem ps = elementType switch
+        {
+            ElementType.Red    => redHitParticle,
+            ElementType.Blue   => blueHitParticle,
+            ElementType.Green  => greenHitParticle,
+            ElementType.Yellow => yellowHitParticle,
+            ElementType.Orange => redHitParticle,
+            ElementType.Melon  => greenHitParticle,
+            _                  => null
+        };
+
+        if (ps == null) return;
+
+        ps.transform.position = position;
+        ps.Play();
     }
 
     private List<GameObject> CreateClones(Vector2Int[] pathPositions, List<Element> providedElements = null)
@@ -335,31 +440,33 @@ public class SpellPathAnimator : MonoBehaviour
         return Vector3.zero;
     }
 
-    private Vector3[] CreateCircularPath(Vector3 center, float radius, int segments)
+    private Vector3[] CreateCircularPath(Vector3 center, float radius, int segments, bool clockwise = false)
     {
-        Vector3[] points = new Vector3[segments + 1];
+        Vector3[] points  = new Vector3[segments + 1];
+        float direction   = clockwise ? -1f : 1f;
 
         for (int i = 0; i <= segments; i++)
         {
-            float angle = i * (360f / segments) * Mathf.Deg2Rad;
-            float x = center.x + Mathf.Cos(angle) * radius;
-            float y = center.y + Mathf.Sin(angle) * radius;
-            points[i] = new Vector3(x, y, center.z);
+            float angle = direction * i * (360f / segments) * Mathf.Deg2Rad;
+            float x     = center.x + Mathf.Cos(angle) * radius;
+            float y     = center.y + Mathf.Sin(angle) * radius;
+            points[i]   = new Vector3(x, y, center.z);
         }
 
         return points;
     }
 
-    private Vector3[] CreateCircularPathBetweenPoints(Vector3 center, float radius, float startAngle, int segments)
+    private Vector3[] CreateCircularPathBetweenPoints(Vector3 center, float radius, float startAngle, int segments, bool clockwise = false)
     {
-        Vector3[] points = new Vector3[segments + 1];
+        Vector3[] points  = new Vector3[segments + 1];
+        float direction   = clockwise ? -1f : 1f;
 
         for (int i = 0; i <= segments; i++)
         {
-            float angle = startAngle + (i * (360f / segments) * Mathf.Deg2Rad);
-            float x = center.x + Mathf.Cos(angle) * radius;
-            float y = center.y + Mathf.Sin(angle) * radius;
-            points[i] = new Vector3(x, y, center.z);
+            float angle = startAngle + direction * (i * (360f / segments) * Mathf.Deg2Rad);
+            float x     = center.x + Mathf.Cos(angle) * radius;
+            float y     = center.y + Mathf.Sin(angle) * radius;
+            points[i]   = new Vector3(x, y, center.z);
         }
 
         return points;

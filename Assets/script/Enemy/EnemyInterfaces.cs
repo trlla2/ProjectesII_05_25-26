@@ -1,16 +1,23 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IEnemySpell
+public abstract class IEnemySpell
 {
-    void Execute(Grid grid);
+    public System.Action OnExecute;
+
+    public virtual void Execute(Grid grid)
+    {
+        OnExecute?.Invoke();
+    }
     //Tick once per player move. if max moves reached, apply effect.
-    void Tick(Grid grid, System.Action onComplete = null);
+    public abstract void Tick(Grid grid, System.Action onComplete = null);
     int RemainingMoves { get; }
-    string GetSpellName();
+    public abstract string GetSpellName();
     bool ShouldRerollAfterAttack { get; }
-    void Cleanup(Grid grid); // For spells taht use spelcial elements
+    public abstract void Cleanup(Grid grid); // For spells taht use spelcial elements
+    public abstract void RetargetAfterGravity(Grid grid);
 }
 
 public abstract class EnemySpellBase : IEnemySpell  
@@ -21,32 +28,43 @@ public abstract class EnemySpellBase : IEnemySpell
     protected float damagePerElement;
     protected List<Vector2Int> targetedPositions = new List<Vector2Int>();
 
-    protected bool excludeBelowTargets = true;
     protected bool shouldRerollAfterAttack = true;
 
     public int RemainingMoves => remainingMoves;
-    public string GetSpellName() => spellName;
+    public override string GetSpellName() => spellName;
     public bool ShouldRerollAfterAttack => shouldRerollAfterAttack;
 
-    public abstract void Execute(Grid grid);
-
-    // Default no-op — only spells that place persistent grid state need to override this
-    public virtual void Cleanup(Grid grid) { }
-
-    public virtual void Tick(Grid grid, System.Action onComplete = null)
+    public override void Execute(Grid grid)
     {
-        if (grid != null)
+        base.Execute(grid);
+    }
+
+    // Default no-op – only spells that place persistent grid state need to override this
+    public override void Cleanup(Grid grid) { }
+
+    public override void RetargetAfterGravity(Grid grid)
+    {
+        if (grid == null) return;
+
+        targetedPositions.Clear();
+        int size = grid.GridSize;
+
+        for (int x = 0; x < size; x++)
         {
-            float animDuration = grid.EnemyTargetAnimDuration;
-            AnimationCurve curve = grid.EnemyTargetFillCurve;
-            foreach (var pos in targetedPositions)
+            for (int y = 0; y < size; y++)
             {
+                Vector2Int pos = new Vector2Int(x, y);
                 ElementVisual visual = grid.GetElementVisualAt(pos);
                 if (visual != null && visual.IsTargetedByEnemy)
-                    visual.UpdateTargetVisual(remainingMoves, initialMoves, animDuration, curve);
+                {
+                    targetedPositions.Add(pos);
+                }
             }
         }
+    }
 
+    public override void Tick(Grid grid, System.Action onComplete = null)
+    {
         remainingMoves--;
         remainingMoves = Mathf.Max(0, remainingMoves);
 
@@ -59,9 +77,7 @@ public abstract class EnemySpellBase : IEnemySpell
             {
                 ElementVisual visual = grid.GetElementVisualAt(pos);
                 if (visual != null && visual.IsTargetedByEnemy)
-                {
                     visual.UpdateTargetVisual(remainingMoves, initialMoves, animDuration, curve);
-                }
             }
         }
 
@@ -117,15 +133,18 @@ public abstract class EnemySpellBase : IEnemySpell
                     visual.SetTargetedByEnemy(false);
                 }
             }
+            if (visual != null)
+            {
+                visual.StopHoverAnimation();
+            }
         }
 
         if (finalPositions.Count > 0)
         {
-            // Pass excludeBelowTargets through to grid so the refill logic can choose behavior
             grid.ProcessEnemySpell(finalPositions, () =>
             {
                 DamagePlayerWithAnimation(grid, finalPositions.ToArray(), elements, damagePerElement, onComplete);
-            }, excludeBelowTargets, rerollAfter);
+            }, rerollAfter);
         }
         else
         {

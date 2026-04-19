@@ -3,21 +3,22 @@ using UnityEngine;
 
 public class BossStage1Spell : EnemySpellBase
 {
-    public BossStage1Spell(float damage = 4f, int moves = 2, bool excludeBelowTargets = true)
+    public BossStage1Spell(float damage = 4f, int moves = 2)
     {
         damagePerElement = damage;
         remainingMoves = moves;
         initialMoves = moves;
         spellName = "BossStage1 Attack";
-        this.excludeBelowTargets = excludeBelowTargets;
     }
 
     public override void Execute(Grid grid)
     {
+        base.Execute(grid);
+        
         targetedPositions.Clear();
         if (grid == null) return;
 
-        int size = Grid.GridSize;
+        int size = grid.GridSize;
         bool performColumnsAttack = Random.value > 0.5f;
 
         if (performColumnsAttack)

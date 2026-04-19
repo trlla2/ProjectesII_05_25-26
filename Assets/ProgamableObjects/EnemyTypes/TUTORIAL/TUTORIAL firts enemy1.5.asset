@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ab529a0c12673a408eb38b86a880060, type: 3}
+  m_Name: TUTORIAL firts enemy1.5
+  m_EditorClassIdentifier: 
+  name: Door
+  health: 24
+  damage: 0
+  elementCount: 0
+  level: 0
+  difficulty: 1
+  weaknesses: 
+  weaknessMultiplier: 2
+  resistances: 
+  resistanceMultiplier: 0.5
+  enemySprite: {fileID: 963925521293885371, guid: c5d4d93c2f1ac2d43a79783c41fbd5d0, type: 3}
+  animatorController: {fileID: 0}
+  spellType: 2
+  damagePerElement: 0
+  moveCount: 100
+  goldReward: 100
+  attackTimer: 6
+  lvl2Countdown: 15
+  lvl2BonusTimeOnClear: 2
+  continuousSelectionInterval: 2.5
+  visibilityDuration: 2.5
+  hiddenSprite: {fileID: 0}
+  blockerCount: 2
+  blockerDamagePercent: 0.25
+  haveDrops: 0
+  spellDrops: []
+  swapperSwapInterval: 2.5

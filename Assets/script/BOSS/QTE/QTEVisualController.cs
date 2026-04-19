@@ -200,7 +200,9 @@ public class QTEVisualController : MonoBehaviour
     {
         if (audioSource != null && trailCompleteSound != null)
         {
+            Time.timeScale = 1;
             audioSource.PlayOneShot(trailCompleteSound);
+            Time.timeScale = 0;
         }
     }
 

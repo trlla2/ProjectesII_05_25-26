@@ -3,6 +3,7 @@ using TMPro;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
+using Unity.VisualScripting;
 
 public class OpenChestScreen : MonoBehaviour
 {
@@ -27,7 +28,6 @@ public class OpenChestScreen : MonoBehaviour
 
     private void Start()
     {
-        //Pull();
         _translator.ToTarget();
     }
     private void OnEnable() { _translator.ToTarget(); }
@@ -40,7 +40,6 @@ public class OpenChestScreen : MonoBehaviour
             if(item.Rarity == rarity)
                 candidates.Add(item);
         }
-
         _selectedItem = candidates[Random.Range(0, candidates.Count)];
 
         

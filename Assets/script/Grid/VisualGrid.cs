@@ -339,22 +339,7 @@ public class VisualGrid : MonoBehaviour
 
                 if (element == grid.EmptyElement || element == null)
                 {
-                    bool isBelowTargeted = false;
-                    for (int yAbove = y + 1; yAbove < grid.GridData.GridSize; yAbove++)
-                    {
-                        Vector2Int abovePos = new Vector2Int(x, yAbove);
-                        ElementVisual aboveVisual = grid.GridData.GetVisualAt(abovePos);
-                        if (aboveVisual != null && aboveVisual.IsTargetedByEnemy)
-                        {
-                            isBelowTargeted = true;
-                            break;
-                        }
-                    }
-
-                    if (!isBelowTargeted)
-                    {
-                        emptyPositions.Add(pos);
-                    }
+                    emptyPositions.Add(pos);
                 }
             }
         }
@@ -550,8 +535,50 @@ public class VisualGrid : MonoBehaviour
                 if (visual != null)
                 {
                     visual.highlighter.SetHighlight(false);
+                    visual.StopHoverAnimation();
                 }
             }
+        }
+    }
+
+    public IEnumerator AnimateEnemySwap(List<(Vector2Int, Vector2Int)> pairs, float duration)
+    {
+        if (!isInitialized || grid == null || grid.GridData == null)
+            yield break;
+
+        var items = new List<(ElementVisual visual, Vector3 start, Vector3 target)>();
+
+        foreach (var pair in pairs)
+        {
+            // GetVisualAt(posA) returns the visual that was at posB – its GetWorldPosition() is still at posB's location.
+            // We animate it to posA's world position
+            ElementVisual va = grid.GridData.GetVisualAt(pair.Item1);
+            ElementVisual vb = grid.GridData.GetVisualAt(pair.Item2);
+
+            if (va != null)
+                items.Add((va, va.GetWorldPosition(), GridToWorldPosition(pair.Item1)));
+            if (vb != null)
+                items.Add((vb, vb.GetWorldPosition(), GridToWorldPosition(pair.Item2)));
+        }
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = swapCurve.Evaluate(Mathf.Clamp01(elapsed / duration));
+
+            foreach (var item in items)
+            {
+                if (item.visual != null)
+                    item.visual.SetWorldPosition(Vector3.Lerp(item.start, item.target, t));
+            }
+            yield return null;
+        }
+
+        foreach (var item in items)
+        {
+            if (item.visual != null)
+                item.visual.SetWorldPosition(item.target);
         }
     }
 }

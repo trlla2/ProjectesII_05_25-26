@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 public class PathData
 {
-    private readonly List<Vector2Int> positions;
-    private readonly int maxLength;
+    private List<Vector2Int> positions;
+    private int maxLength;
 
     public int Count => positions.Count;
     public int MaxLength => maxLength;

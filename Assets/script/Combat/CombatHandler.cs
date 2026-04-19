@@ -19,16 +19,15 @@ public class CombatHandler : MonoBehaviour
     [SerializeField] private EnemyType forcedEnemyType;
 
     // Events
-    public delegate void GetOnEndBattle(bool isWin, int exp, Spell drop);
+    public delegate void GetOnEndBattle(bool isWin, int exp, int gold, Spell drop);
     public event GetOnEndBattle OnEndBattle;
 
     public event System.Action OnPlayerHitRecived;
+    public event System.Action OnPlayerDead;
     public event System.Action OnPlayerHealed;
     public event System.Action OnPlayerHitEvaded;
 
     public event System.Action<EnemyBehaviour> OnSetEnemyReference;
-
-    
 
     public void Awake()
     {
@@ -97,7 +96,7 @@ public class CombatHandler : MonoBehaviour
         OnPlayerHitRecived?.Invoke();
 
         if (!GameManager.Instance.PlayerStats.IsAlive())
-            OnPlayerDead();
+            PlayerDead();
     }
 
     public void HealPlayer(int amount)
@@ -106,10 +105,11 @@ public class CombatHandler : MonoBehaviour
         OnPlayerHealed?.Invoke();
     }
 
-    public void OnPlayerDead()
+    public void PlayerDead()
     {
         enemyInCombat?.StopBattle();
-        OnEndBattle?.Invoke(false, 0, null);
+        OnPlayerDead?.Invoke();
+        OnEndBattle?.Invoke(false, 0, 0, null);
     }
 
     public void OnEnemyDead()
@@ -123,9 +123,12 @@ public class CombatHandler : MonoBehaviour
         if(drop != null)
             GameManager.Instance.PlayerStats.AddKnownSpell(drop);
 
+        int gold = enemyInCombat.GetEnemyType().GoldReward;
+        GameManager.Instance.PlayerStats.AddMoney(gold);
+
         DeleteEnemyRef();
         //_boardClickHandler.HandleBoardRaycast(true);
-        OnEndBattle?.Invoke(true, exp, drop);
+        OnEndBattle?.Invoke(true, exp, gold, drop);
     }
 
     public void SetHoverHandlerRef(SpellHoverHandler spellHover) { spellHoverHandler = spellHover; }

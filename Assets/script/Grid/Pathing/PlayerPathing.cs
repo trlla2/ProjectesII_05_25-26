@@ -2,21 +2,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//Grid no coneix a playerpahing, 
+//Desde aquí gestionem la logica de pathing, validació i cast de spells,
+//així com les visuals associades (linies, highlight dels elements seleccionats, etc)
+
+//Les dependencies més importants son SpellEffectHandler, que gestiona els efectes i visuals de les spells un cop castades,
+//i el SpellPathAnimator, que gestiona les animacions dels elements anant cap a l'enemic. Es desde aquí on cridem enemyHit
+
 [RequireComponent(typeof(LineRenderer))]
 public class PlayerPathing : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Grid grid;
     [SerializeField] private Transform cursorVisual;
+    [SerializeField] private SpellEffectHandler spellEffectHandler;
+    [SerializeField] private AudioSource sfxLoop;
 
     [Header("Pathing Settings")]
     [SerializeField] private int maxPathLength = 6;
     [SerializeField] private float selectScaleAmount = 0.2f;
     [SerializeField] private float selectScaleTime = 0.2f;
     [SerializeField] private float xDistanceBetween = 1.25f;
-    [SerializeField] private float castCooldown = 0.45f;
+    [SerializeField] private float castCooldown = 0.25f;
 
     [SerializeField] private SpellPathAnimator spellPathAnimator;
+
 
     [Header("Tutorial")]
     [SerializeField] private TutorialManager tutorialManager;
@@ -24,7 +34,6 @@ public class PlayerPathing : MonoBehaviour
     private IInputHandler inputHandler;
     private IPathValidator pathValidator;
     private ISpellMatcher spellMatcher;
-
     private PathData pathData;
     private PathVisualizer pathVisualizer;
 
@@ -32,6 +41,8 @@ public class PlayerPathing : MonoBehaviour
     private bool canPath = true;
     private bool isQTEActive = false;
     private float lastCastTime = -100000000.0f;
+
+    public System.Action OnSpellCast;
 
     private void Awake()
     {
@@ -42,6 +53,7 @@ public class PlayerPathing : MonoBehaviour
     {
         ValidateSetup();
         SubscribeToEvents();
+        spellEffectHandler?.Initialize(tutorialManager);
     }
 
     private void OnDestroy()
@@ -51,7 +63,7 @@ public class PlayerPathing : MonoBehaviour
 
     private void InitializeComponents()
     {
-        float adjacencyDistance = xDistanceBetween * 1.1f;
+        float adjacencyDistance = xDistanceBetween;
 
         inputHandler = new MouseInputHandler();
         pathValidator = new WorldSpacePathValidator(grid, adjacencyDistance);
@@ -86,6 +98,7 @@ public class PlayerPathing : MonoBehaviour
         if (grid != null)
         {
             grid.OnRerollStarted += HandleRerollStarted;
+            grid.OnEnemySpellStarted += HandleEnemySpellStarted;
         }
     }
 
@@ -102,6 +115,7 @@ public class PlayerPathing : MonoBehaviour
         if (grid != null)
         {
             grid.OnRerollStarted -= HandleRerollStarted;
+            grid.OnEnemySpellStarted -= HandleEnemySpellStarted;
         }
     }
 
@@ -110,10 +124,14 @@ public class PlayerPathing : MonoBehaviour
         ForceEndPathing();
     }
 
+    private void HandleEnemySpellStarted()
+    {
+        ForceEndPathing();
+    }
+
     private void HandleQTEStarted()
     {
         isQTEActive = true;
-        Debug.Log("[PlayerPathing] QTE started - disabling pathing");
         
         // Force end any active pathing
         if (isPathing)
@@ -125,18 +143,20 @@ public class PlayerPathing : MonoBehaviour
     private void HandleQTEEnded()
     {
         isQTEActive = false;
-        Debug.Log("[PlayerPathing] QTE ended - enabling pathing");
     }
 
     private void Update()
     {
         if (grid.CurrentState != GridStateType.Idle)
+        {
+            if (isPathing)
+                ForceEndPathing();
             return;
-        
-        // Disable pathing during QTE
+        }
+
         if (isQTEActive)
             return;
-        
+
         if (!canPath)
             return;
 
@@ -145,7 +165,7 @@ public class PlayerPathing : MonoBehaviour
         {
             grid.VisualGrid.ShowInactiveGrid(true);
             return;
-        }   
+        }
 
         HandleInput();
         UpdateVisuals();
@@ -185,6 +205,7 @@ public class PlayerPathing : MonoBehaviour
         isPathing = true;
         pathData.Clear();
         pathVisualizer.ShowCursor(true);
+        sfxLoop.Play();
     }
 
     private void ContinuePathing()
@@ -225,6 +246,7 @@ public class PlayerPathing : MonoBehaviour
 
         ClearPath();
         pathVisualizer.ClearVisuals();
+        sfxLoop.Pause();
     }
 
 
@@ -258,6 +280,7 @@ public class PlayerPathing : MonoBehaviour
         foreach (Vector2Int pos in positions)
         {
             pathVisualizer.HighlightElement(pos, false);
+
         }
 
         pathData.Clear();
@@ -282,29 +305,51 @@ public class PlayerPathing : MonoBehaviour
         {
             lastCastTime = Time.time;
             ExecuteSpell(matchedSpell, pathElements);
+            OnSpellCast?.Invoke();
         }
     }
 
     private void ExecuteSpell(Spell spell, List<Element> pathElements)
     {
-
         Vector2Int[] positions = pathData.Positions;
         List<Vector2Int> posList = new List<Vector2Int>(positions);
+
+        // Notify blocker enemy of used positions (for block breaking)
+        NotifyBlockerEnemyOfUsedPositions(posList);
+
+        grid.InstantVisualEmpty(posList, chargeOrb: true);
 
         if (spellPathAnimator != null)
         {
             spellPathAnimator.OnSpellCast(positions, spell.Recipe, () =>
             {
-                CompleteSpellExecution(spell, positions);
+                StartCoroutine(CompleteSpellWhenGridReady(spell, positions));
             });
-
-            grid.InstantVisualEmpty(posList, chargeOrb: true);
         }
         else
         {
             CompleteSpellExecution(spell, positions);
-            grid.InstantVisualEmpty(posList, chargeOrb: true); 
         }
+    }
+
+    private void NotifyBlockerEnemyOfUsedPositions(List<Vector2Int> usedPositions)
+    {
+        if (GameManager.Instance == null || GameManager.Instance.CombatHandler == null)
+            return;
+
+        EnemyBehaviour enemy = GameManager.Instance.CombatHandler.GetEnemyRef();
+        if (enemy == null)
+            return;
+
+        enemy.NotifyAdjacentElementsUsed(usedPositions);
+    }
+
+    private IEnumerator CompleteSpellWhenGridReady(Spell spell, Vector2Int[] positions)
+    {
+        while (grid.CurrentState != GridStateType.Idle)
+            yield return null;
+
+        CompleteSpellExecution(spell, positions);
     }
 
 
@@ -316,14 +361,16 @@ public class PlayerPathing : MonoBehaviour
         HandleSpellEffects(spell);
     }
 
-    //Can be converted into a SpellEffectHandler class in the future if more complex effects are needed
     private void HandleSpellEffects(Spell spell)
     {
+        if (spellEffectHandler != null)
+        {
+            spellEffectHandler.HandleSpellEffects(spell);
+            return;
+        }
+
+        // Fallback if handler is not assigned
         GameManager.Instance.NotifyPlayerMove();
-
-        if (spell.Name == "HEAL") GameManager.Instance.CombatHandler.HealPlayer(5);
-
-        // Notify tutorial system that a spell was cast
         if (tutorialManager != null)
             tutorialManager.NotifySpellCast();
     }
@@ -393,8 +440,8 @@ public class PlayerPathing : MonoBehaviour
         }
     }
 
-    private void HandleBattleEnd(bool isWin, int exp, Spell drop)
-    {
+    private void HandleBattleEnd(bool isWin, int exp, int g, Spell drop)
+    {   
         SetPathingEnabled(false);
     }
 

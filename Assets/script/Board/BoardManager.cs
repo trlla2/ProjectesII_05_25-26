@@ -10,10 +10,14 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private bool _isTutorial;
     public bool IsTutorial => _isTutorial;
 
+    [SerializeField] private bool _isHallOfEgress;
+    public bool IsHallOfEgress => _isHallOfEgress;
+
     public StageLevelData currentStageLevelData;
 
     public BoardTile startingTile;
     public BoardTileData emptyTileData;
+    public BoardTileData branchOriginTileData;
     public BoardTileData enemyTileData;
     public BoardTileData chestTileData;
     public BoardTileData bossTileData;
@@ -21,12 +25,19 @@ public class BoardManager : MonoBehaviour
     public BoardTileData chestOfEgressTileData;
 
     [SerializeField] private BoardGenerator boardGenerator;
+    [SerializeField] private PlayerMovement _player;
+    public PlayerMovement Player => _player;
 
     public List<BoardTile> generatedTiles;
 
     [SerializeField] private OpenChestScreen openChestPanel;
     [SerializeField] private NewSpellPanelBehaviour newSpellPanel;
     [SerializeField] private ChestOfEgressScreen chestOfEgressPanel;
+    [SerializeField] private BranchChoicePanelHandler branchChoicePanel;
+    [SerializeField] private ShopScreen shopPanel;
+    [SerializeField] private SlotMachineScreen slotMachinePanel;
+
+
     [SerializeField] private BoardTileData fogTileData;
 
     [Header("Encounters")]
@@ -70,8 +81,6 @@ public class BoardManager : MonoBehaviour
             var order = currentStageLevelData.GetEncountersOrder() ?? new List<EnemyDifficulty>();
             var bosses = currentStageLevelData.GetBossEncounters() ?? new List<EnemyType>();
 
-            Debug.Log($"BoardManager: cargando StageLevelData con {enemies.Count} enemigos, {order.Count} encuentros, {bosses.Count} bosses.");
-
             encountersManager.LoadEnemyEncounters(enemies);
             encountersManager.LoadEnemyEncountersOrder(order);
             encountersManager.LoadBossesEncounters(bosses);
@@ -79,7 +88,6 @@ public class BoardManager : MonoBehaviour
             startingTile.SetGridPosition(new Vector2Int(0, 0));
             generatedTiles.Add(startingTile);
         }
-        
 
         boardCamera = Camera.main;
     }
@@ -121,9 +129,14 @@ public class BoardManager : MonoBehaviour
         newTile.SetBoardManager(this);
 
         generatedTiles.Add(newTile);
-        Debug.Log($"casilla generada en {gridPosition}");
 
         return newTile;
+    }
+
+    public BranchOriginTile CreateBranchOriginTile(Vector2Int gridPosition, Transform parent)
+    {
+        BoardTile tile = CreateNewTile(branchOriginTileData, gridPosition, parent);
+        return tile as BranchOriginTile;
     }
 
     public void ReplaceTileType(BoardTile tile, BoardTileData newData)
@@ -132,11 +145,27 @@ public class BoardManager : MonoBehaviour
         BoardTile newTile = CreateNewTile(newData, tile.GetGridPosition(), tile.transform.parent);
         newTile.SetGridPosition(tile.GetGridPosition());
 
+        foreach (BoardTile neighbor in tile.neighbors)
+        {
+            if (neighbor != null)
+                neighbor.neighbors.Remove(tile);
+        }
+
         UpdateNeighbors(newTile);
 
         if (newData == fogTileData) newTile.GetComponent<FogTile>().SetFoggedTileData(tile.GetData());
 
-        newTile.generatedBranch = tile.generatedBranch;
+        // para no corromper la lista durante PutFogOnBranch
+        if (newData != fogTileData && _revealedBranch != null && _revealedBranch.Contains(tile))
+            _revealedBranch.Add(newTile);
+
+        if (tile is BranchOriginTile)
+        {
+            BranchOriginTile branchOrigin = tile as BranchOriginTile;
+            BranchOriginTile newBranchOrigin = newTile as BranchOriginTile;
+            if (branchOrigin.GeneratedBranch != null && newTile is BranchOriginTile)
+                newBranchOrigin.SetGeneratedBranch(branchOrigin.GeneratedBranch);
+        }
 
         generatedTiles.Remove(tile);
         Destroy(tile.gameObject);
@@ -146,11 +175,11 @@ public class BoardManager : MonoBehaviour
     {
         if (_revealedBranch == null) return;
 
-        PutFogOnBranch(_revealedBranch);
+        List<BoardTile> branchToHide = new List<BoardTile>(_revealedBranch);
+        _revealedBranch = null; // limpiar ANTES de iterar para evitar que ReplaceTileType la corrompa
 
-        if (_revealedBranch != null) _revealedBranch = null;
+        PutFogOnBranch(branchToHide);
     }
-
 
     public void PutFogOnTile(BoardTile tile)
     {
@@ -160,12 +189,11 @@ public class BoardManager : MonoBehaviour
 
     public void PutFogOnBranch(List<BoardTile> branch)
     {
-        // Guardar las posiciones antes de destruir los tiles
         List<Vector2Int> branchPositions = new List<Vector2Int>();
         foreach (BoardTile tile in branch)
             branchPositions.Add(tile.GetGridPosition());
 
-        BoardTile originTile = branch[0]; // la EmptyTile origen no se reemplaza
+        BranchOriginTile originTile = branch[0] as BranchOriginTile;
 
         foreach (BoardTile tile in branch)
         {
@@ -173,7 +201,6 @@ public class BoardManager : MonoBehaviour
             ReplaceTileType(tile, fogTileData);
         }
 
-        // Reconstruir la lista de la branch con las FogTiles recién creadas
         List<BoardTile> updatedBranch = new List<BoardTile>();
         foreach (Vector2Int pos in branchPositions)
         {
@@ -182,7 +209,7 @@ public class BoardManager : MonoBehaviour
                 updatedBranch.Add(found);
         }
 
-        originTile.generatedBranch = updatedBranch;
+        originTile.SetGeneratedBranch(updatedBranch);
     }
 
     public void RevealBranch(List<BoardTile> branch)
@@ -210,17 +237,80 @@ public class BoardManager : MonoBehaviour
                 updatedBranch.Add(found);
         }
 
-        // Actualizar generatedBranch del origin con las referencias actuales
-        BoardTile originTile = updatedBranch.Count > 0 ? updatedBranch[0] : null;
+        BranchOriginTile originTile = updatedBranch.Count > 0 ? updatedBranch[0] as BranchOriginTile : null;
         if (originTile != null)
-            originTile.generatedBranch = updatedBranch;
+            originTile.SetGeneratedBranch(updatedBranch);
 
         _revealedBranch = updatedBranch;
     }
 
+    public void ShowBranchChoice(BranchOriginTile originTile)
+    {
+        if (branchChoicePanel == null || originTile.GeneratedBranch == null
+            || originTile.GeneratedBranch.Count < 2) return;
+
+        Vector2Int originPos     = originTile.GetGridPosition();
+        Vector2Int branchNextPos = originTile.GeneratedBranch[1].GetGridPosition();
+
+        BoardTile mainNext = null;
+        foreach (BoardTile neighbor in originTile.neighbors)
+        {
+            if (neighbor.GetGridPosition() == branchNextPos) continue;
+            if (!neighbor.IsWalkable()) continue;
+
+            Vector2Int delta = neighbor.GetGridPosition() - originPos;
+            bool isForward = (delta.x > 0 && delta.y == 0)
+                          || (delta.x == 0 && delta.y > 0)
+                          || (delta.x > 0 && delta.y > 0);
+            if (isForward)
+            {
+                mainNext = neighbor;
+                break;
+            }
+        }
+
+        if (mainNext == null) return;
+
+        RevealBranch(originTile.GeneratedBranch);
+
+        BoardTile freshBranchNext = generatedTiles.Find(t => t.GetGridPosition() == branchNextPos);
+        if (freshBranchNext == null) return;
+
+
+        BoardTile rightTile, leftTile;
+        if (mainNext.GetGridPosition().x == _player.GetCurrentTile().GetGridPosition().x + 1)
+        {
+            rightTile = mainNext;
+            leftTile = freshBranchNext;
+        }
+        else
+        {
+            if (mainNext.GetGridPosition().y == _player.GetCurrentTile().GetGridPosition().y + 1)
+            {
+                if (freshBranchNext.GetGridPosition().x == _player.GetCurrentTile().GetGridPosition().x + 1)
+                {
+                    rightTile = freshBranchNext;
+                    leftTile = mainNext;
+                }
+                else
+                {
+                    rightTile = mainNext;
+                    leftTile = freshBranchNext;
+                }
+            }
+            else
+            {
+                rightTile = freshBranchNext;
+                leftTile = mainNext;
+            }
+        }
+
+            branchChoicePanel.Show(rightTile, leftTile);
+    }
 
     public void OpenChest(ChestTile chestTile)
     {
+        if (openChestPanel == null) return;
         openChestPanel.openedChest = chestTile;
         openChestPanel.Pull(currentStageLevelData.GetPullItemRarity());
         openChestPanel.gameObject.SetActive(true);
@@ -236,6 +326,20 @@ public class BoardManager : MonoBehaviour
     {
         boardCamera.gameObject.GetComponent<TileClickHandler>().HandleBoardRaycast(false);
         newSpellPanel.Show(tile);
+    }
+
+    public void OpenShop(ShopTile tile)
+    {
+        if (shopPanel != null)
+            shopPanel.Open(tile);
+        else
+            Debug.LogWarning("BoardManager: shopPanel no está asignado.");
+    }
+
+    public void OpenSlotMachineScreen(SlotMachineTile tile)
+    {
+        if (slotMachinePanel != null)
+            slotMachinePanel.Open(tile);
     }
 
     public void HandleBoardCamera(bool enable)
@@ -254,6 +358,4 @@ public class BoardManager : MonoBehaviour
 
     public bool HasChoosedBranchPath() { return _branchPathChoosed; }
     public void BranchPathChoosed() { _branchPathChoosed = true; }
-
-    //public bool IsTutorial() { return _isTutorial; }
 }

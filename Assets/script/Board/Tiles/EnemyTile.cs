@@ -2,11 +2,12 @@ using UnityEngine;
 
 public class EnemyTile : BoardTile
 {
-    [SerializeField] private string _combatSceneName;
-    [SerializeField] private BoardTileData _postInteractionTile;
+    [SerializeField] protected string _combatSceneName;
     [SerializeField] private int lootRatePercentage;
 
     private TileClickHandler _boardRaycast;
+
+    [SerializeField] private TutorialFoggedTilesShower _tutorialFoggedTilesShower;
 
     private void Start()
     {
@@ -33,7 +34,14 @@ public class EnemyTile : BoardTile
         GameManager.Instance.EnterBattle();
 
         GameManager.Instance.OnEnterBoard += Replace;
-        GameManager.Instance.OnEnterBoard += TryToRevealGeneratedBranchIfHasOne;
+        
+        if (_tutorialFoggedTilesShower != null)
+        {
+            GameManager.Instance.OnEnterBoard -= _tutorialFoggedTilesShower.ShowFoggedTiles;
+            GameManager.Instance.OnEnterBoard += _tutorialFoggedTilesShower.ShowFoggedTiles;
+        }
+        else
+            GameManager.Instance.OnEnterBoard += TryToRevealGeneratedBranchIfHasOne;
 
     }
 
@@ -52,11 +60,12 @@ public class EnemyTile : BoardTile
     {
         _boardRaycast.HandleBoardRaycast(true);
 
-        _boardManager.ReplaceTileType(this, _postInteractionTile);
+        
+        ReplaceWithPostInteraction();
         _boardManager.IncrementEnemyDefeatedCount();
     }
 
-    public void ReplaceWhenWin(bool win, int xp, Spell drop)
+    public void ReplaceWhenWin(bool win, int xp, int g, Spell drop)
     {
         _boardRaycast.HandleBoardRaycast(true);
 
@@ -65,7 +74,7 @@ public class EnemyTile : BoardTile
 
         if (win)
         {
-            _boardManager.ReplaceTileType(this, _postInteractionTile);
+            ReplaceWithPostInteraction();
             _boardManager.IncrementEnemyDefeatedCount();
         }
     }

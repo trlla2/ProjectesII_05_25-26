@@ -6,18 +6,18 @@ public class DiagonalDestroySpell : EnemySpellBase
 {
     private bool useMainDiagonal;
 
-    public DiagonalDestroySpell(float damage = 4f, int moves = 2, bool excludeBelowTargets = true, bool mainDiagonal = true)
+    public DiagonalDestroySpell(float damage = 4f, int moves = 2, bool mainDiagonal = true)
     {
         damagePerElement = damage;
         remainingMoves = moves;
         initialMoves = moves;
         spellName = "Diagonal Destroy";
-        this.excludeBelowTargets = excludeBelowTargets;
         useMainDiagonal = mainDiagonal;
     }
 
     public override void Execute(Grid grid)
     {
+        base.Execute(grid);
         targetedPositions.Clear();
 
         if (grid == null)
@@ -25,7 +25,7 @@ public class DiagonalDestroySpell : EnemySpellBase
 
         useMainDiagonal = Random.value > 0.5f;
 
-        int size = Grid.GridSize;
+        int size = grid.GridSize;
         for (int i = 0; i < size; i++)
         {
             Vector2Int pos = useMainDiagonal ? new Vector2Int(i, i) : new Vector2Int(i, size - 1 - i);

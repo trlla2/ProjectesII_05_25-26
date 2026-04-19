@@ -7,9 +7,9 @@ public class BombCableVisual : MonoBehaviour
     [SerializeField] private Material cableMaterial2;
     [SerializeField] private Material cableMaterial3;
 
-    private Dictionary<Vector2Int, List<LineRenderer>> cablesByCardinal = new Dictionary<Vector2Int, List<LineRenderer>>();
+    private Dictionary<Vector2Int, List<LineRenderer>> cablesByOffset = new Dictionary<Vector2Int, List<LineRenderer>>();
     private Dictionary<int, List<LineRenderer>> cablesByColorIndex = new Dictionary<int, List<LineRenderer>>();
-    private List<Vector2Int> cardinalPositions = new List<Vector2Int>();
+    private List<Vector2Int> activeOffsets = new List<Vector2Int>();
     private Vector2Int bombPosition;
     private Grid grid;
 
@@ -19,11 +19,11 @@ public class BombCableVisual : MonoBehaviour
     [SerializeField] private int LinesPerCardinal = 3;
     [SerializeField] private float LineWidth = 0.05f;
 
-    public void Initialize(Grid grid, Vector2Int bombPos, List<Vector2Int> cardinals)
+    public void Initialize(Grid grid, Vector2Int bombPos, List<Vector2Int> offsets)
     {
         this.grid = grid;
         this.bombPosition = bombPos;
-        this.cardinalPositions = new List<Vector2Int>(cardinals);
+        this.activeOffsets = new List<Vector2Int>(offsets);
 
         ClearAllLines();
         CreateCableLines();
@@ -31,14 +31,14 @@ public class BombCableVisual : MonoBehaviour
 
     private void CreateCableLines()
     {
-        if (cardinalPositions.Count < 4) return;
+        if (activeOffsets.Count < 4) return;
 
         // Initialize color tracking
         cablesByColorIndex[0] = new List<LineRenderer>();
         cablesByColorIndex[1] = new List<LineRenderer>();
         cablesByColorIndex[2] = new List<LineRenderer>();
 
-        foreach (Vector2Int cardinalPos in cardinalPositions)
+        foreach (Vector2Int offset in activeOffsets)
         {
             List<LineRenderer> lines = new List<LineRenderer>();
 
@@ -46,14 +46,14 @@ public class BombCableVisual : MonoBehaviour
             {
                 Material material = GetMaterialForIndex(i);
                 LineRenderer line = CreateLineRenderer(material);
-                SetupLineRenderer(line, cardinalPos, i);
+                SetupLineRenderer(line, offset, i);
                 lines.Add(line);
 
                 // Track by color
                 cablesByColorIndex[i].Add(line);
             }
 
-            cablesByCardinal[cardinalPos] = lines;
+            cablesByOffset[offset] = lines;
         }
     }
 
@@ -66,7 +66,7 @@ public class BombCableVisual : MonoBehaviour
         line.material = material;
         line.startWidth = LineWidth;
         line.endWidth = LineWidth;
-        line.useWorldSpace = true;
+        line.useWorldSpace = false;
         line.sortingOrder = -3;
 
         return line;
@@ -83,7 +83,7 @@ public class BombCableVisual : MonoBehaviour
         }
     }
 
-    private void SetupLineRenderer(LineRenderer line, Vector2Int cardinalPos, int lineIndex)
+    private void SetupLineRenderer(LineRenderer line, Vector2Int offset, int lineIndex)
     {
         if (line == null) return;
 
@@ -91,30 +91,29 @@ public class BombCableVisual : MonoBehaviour
         line.loop = false;
 
         Vector3 bombWorldPos = grid.VisualGrid.GridToWorldPosition(bombPosition);
-        Vector3 cardinalWorldPos = grid.VisualGrid.GridToWorldPosition(cardinalPos);
+        Vector3 cardinalWorldPos = grid.VisualGrid.GridToWorldPosition(bombPosition + offset);
 
         Vector3 direction = (cardinalWorldPos - bombWorldPos).normalized;
         Vector3 perpendicular = new Vector3(-direction.y, direction.x, 0f);
-        float offset = (lineIndex - 1) * LineOffset; // -1, 0, 1 for 3 lines
+        float indexOffset = (lineIndex - 1) * LineOffset; // -1, 0, 1 for 3 lines
 
-        Vector3 offsetVector = perpendicular * offset;
+        Vector3 offsetVector = perpendicular * indexOffset;
 
         line.SetPosition(0, bombWorldPos + offsetVector);
         line.SetPosition(1, cardinalWorldPos + offsetVector);
         line.enabled = true;
     }
 
-    public void RemoveCable(Vector2Int clearedPosition)
+    public void RemoveCable(Vector2Int clearedOffset)
     {
-        if (!cablesByCardinal.ContainsKey(clearedPosition)) return;
+        if (!cablesByOffset.ContainsKey(clearedOffset)) return;
 
-        List<LineRenderer> linesToRemove = cablesByCardinal[clearedPosition];
+        List<LineRenderer> linesToRemove = cablesByOffset[clearedOffset];
 
         foreach (LineRenderer line in linesToRemove)
         {
             if (line != null)
             {
-                
                 for (int i = 0; i < LinesPerCardinal; i++)
                 {
                     if (cablesByColorIndex.ContainsKey(i))
@@ -127,8 +126,8 @@ public class BombCableVisual : MonoBehaviour
             }
         }
 
-        cablesByCardinal.Remove(clearedPosition);
-        cardinalPositions.Remove(clearedPosition);
+        cablesByOffset.Remove(clearedOffset);
+        activeOffsets.Remove(clearedOffset);
 
         DestroyAllLinesOfColor(destroyIndex);
         destroyIndex++;
@@ -147,8 +146,8 @@ public class BombCableVisual : MonoBehaviour
                 line.enabled = false;
                 Destroy(line.gameObject);
 
-                // Remove from cardinal tracking
-                foreach (var kvp in cablesByCardinal)
+                // Remove from offset tracking
+                foreach (var kvp in cablesByOffset)
                 {
                     kvp.Value.Remove(line);
                 }
@@ -161,7 +160,7 @@ public class BombCableVisual : MonoBehaviour
     public void ClearAllLines()
     {
         destroyIndex = 0;
-        foreach (var kvp in cablesByCardinal)
+        foreach (var kvp in cablesByOffset)
         {
             foreach (LineRenderer line in kvp.Value)
             {
@@ -172,13 +171,13 @@ public class BombCableVisual : MonoBehaviour
                 }
             }
         }
-        cablesByCardinal.Clear();
+        cablesByOffset.Clear();
         cablesByColorIndex.Clear();
     }
 
     public int GetActiveCableCount()
     {
-        return cablesByCardinal.Count;
+        return cablesByOffset.Count;
     }
 
     private void OnDestroy()

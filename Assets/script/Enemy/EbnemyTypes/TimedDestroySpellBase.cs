@@ -1,118 +1,215 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public abstract class TimedDestroySpellBase : EnemySpellBase
 {
     private SpellTimer spellTimer;
-    private Grid cachedGrid;
-    private bool timerExpired;
+    protected Grid cachedGrid;
     private bool effectApplied;
-    private bool delayCompleted;
-    protected bool useMoveTicks = false;
+    private bool isPaused;
 
-    public bool UseMoveTicks => useMoveTicks;
+    protected float bonusTimePerClearedTarget = 0f;
+    private int pendingClearedCount;
 
-    protected TimedDestroySpellBase(float delay, float countdown, float damage, bool excludeBelow)
+    public SpellTimer Timer => spellTimer;
+    public bool IsEffectApplied => effectApplied;
+    public virtual bool IsTimerExpired => spellTimer?.IsExpired ?? false;
+    public List<Vector2Int> TargetedPositions => targetedPositions;
+
+    protected TimedDestroySpellBase(float countdown, float damage)
     {
-        spellTimer = new SpellTimer(delay, countdown);
+        spellTimer = new SpellTimer(countdown);
         damagePerElement = damage;
-        remainingMoves = 1;
-        initialMoves = 1;
-        this.excludeBelowTargets = excludeBelow;
+        remainingMoves = 0;
+        initialMoves = 0;
     }
 
-    protected void SetMoveCount(int moves)
+    // Returns how many targets were detected as cleared during the last RetargetAfterGravity
+    public int ConsumeClearedCount()
     {
-        remainingMoves = moves;
-        initialMoves = moves;
+        int c = pendingClearedCount;
+        pendingClearedCount = 0;
+        return c;
     }
 
     public override void Execute(Grid grid)
     {
+        base.Execute(grid);
         targetedPositions.Clear();
         cachedGrid = grid;
-        timerExpired = false;
-        effectApplied = false;
-        delayCompleted = false;
+        ResetEffectState();
 
         if (grid == null) return;
 
         SelectTargets(grid);
-        StartDelayBlinkAnimation(grid);
+        ApplyTargetingVisuals(grid);
 
-        spellTimer.Start(grid,
-            onDelayComplete: () => OnDelayComplete(grid),
-            onCountdownExpired: () => OnCountdownExpired(grid)
-        );
+        SubscribeTimerEvents();
+        spellTimer.Start();
+    }
+
+    protected void SubscribeTimerEvents()
+    {
+        spellTimer.OnTimerExpired -= OnTimerExpired; //unsubscribe first to prevent multiple subscriptions
+        spellTimer.OnTimerExpired += OnTimerExpired;
     }
 
     protected abstract void SelectTargets(Grid grid);
 
+    private void ApplyTargetingVisuals(Grid grid)
+    {
+        if (grid == null) return;
+
+        foreach (var pos in targetedPositions)
+        {
+            ElementVisual visual = grid.GetElementVisualAt(pos);
+            if (visual != null)
+            {
+                visual.SetTargetedByEnemy(true);
+                visual.StartTimedFillAnimation(spellTimer.RemainingSeconds);
+            }
+        }
+    }
+
     public void PauseTimer()
     {
+        spellTimer?.Pause();
+        isPaused = true;
         if (cachedGrid == null) return;
-        spellTimer.Pause(cachedGrid);
+        foreach (var pos in targetedPositions)
+            cachedGrid.GetElementVisualAt(pos)?.PauseTimedFillAnimation();
     }
 
     public void ResumeTimer()
     {
+        spellTimer?.Resume();
+        isPaused = false;
         if (cachedGrid == null) return;
-        spellTimer.Resume(cachedGrid);
+        foreach (var pos in targetedPositions)
+            cachedGrid.GetElementVisualAt(pos)?.ResumeTimedFillAnimation();
     }
 
-
-    public void PauseVisuals(Grid grid)
+    public void AddTime(float seconds)
     {
-        if (grid == null) return;
+        if (spellTimer == null || effectApplied) return;
+        spellTimer.AddTime(seconds);
+
+        if (cachedGrid == null) return;
+
+        // Smoothly extend the fill animation to reflect the new remaining duration
         foreach (var pos in targetedPositions)
         {
-            ElementVisual visual = grid.GetElementVisualAt(pos);
-            if (visual != null && visual.IsTargetedByEnemy)
-                visual.PauseTimedCountdown();
+            ElementVisual visual = cachedGrid.GetElementVisualAt(pos);
+            if (visual == null) continue;
+            visual.ExtendTimedCountdown(spellTimer.RemainingSeconds, spellTimer.TotalSeconds);
         }
     }
 
-    public void ResumeVisuals(Grid grid)
+    // Call this every frame to drive visual state from timer state.
+    public virtual void UpdateVisuals()
     {
-        if (grid == null) return;
+        if (cachedGrid == null || effectApplied || isPaused) return;
+
+        List<Vector2Int> invalidPositions = null;
+
         foreach (var pos in targetedPositions)
         {
-            ElementVisual visual = grid.GetElementVisualAt(pos);
-            if (visual != null && visual.IsTargetedByEnemy)
-                visual.ResumeTimedCountdown();
+            ElementVisual visual = cachedGrid.GetElementVisualAt(pos);
+            Element element = cachedGrid.GetElementAt(pos);
+
+            bool valid = element != null && element != cachedGrid.EmptyElement && visual != null;
+
+            if (!valid)
+            {
+                if (visual != null)
+                {
+                    visual.SetTimedCountdownProgress(0f);
+                    visual.SetTargetedByEnemy(false);
+                }
+                invalidPositions ??= new List<Vector2Int>();
+                invalidPositions.Add(pos);
+            }
+            // DOTween drives the fill — no per-frame SetTimedCountdownProgress needed
+        }
+
+        if (invalidPositions != null)
+        {
+            // Remove ALL invalid positions first, before adding bonus time,
+            foreach (var pos in invalidPositions)
+            {
+                targetedPositions.Remove(pos);
+                pendingClearedCount++;
+            }
+
+            if (bonusTimePerClearedTarget > 0f)
+                AddTime(bonusTimePerClearedTarget * invalidPositions.Count);
         }
     }
-    public void TickPlayerMove(Grid grid, System.Action onComplete = null)
+
+    public bool OnTargetCleared(Grid grid, Vector2Int clearedPosition)
     {
-        if (effectApplied)
+        if (!targetedPositions.Contains(clearedPosition)) return false;
+
+        ElementVisual visual = grid?.GetElementVisualAt(clearedPosition);
+        if (visual != null)
         {
-            onComplete?.Invoke();
-            return;
+            visual.SetTimedCountdownProgress(0f);
+            visual.SetTargetedByEnemy(false);
         }
 
-        if (!HasAnyValidTarget(grid))
+        targetedPositions.Remove(clearedPosition);
+
+        if (bonusTimePerClearedTarget > 0f)
         {
-            targetedPositions.Clear();
-            ClearAllVisuals(grid);
-            onComplete?.Invoke();
-            return;
+            AddTime(bonusTimePerClearedTarget);
         }
 
-        remainingMoves--;
-        remainingMoves = Mathf.Max(0, remainingMoves);
+        return !HasAnyValidTarget(grid);
+    }
 
-        UpdateMoveVisuals(grid);
+    //Update targetedPositions to follow visuals that moved with gravity.
+    public override void RetargetAfterGravity(Grid grid)
+    {
+        if (grid == null || effectApplied) return;
 
-        if (remainingMoves <= 0)
+        int previousCount = targetedPositions.Count;
+        targetedPositions.Clear();
+        int size = grid.GridSize;
+
+        for (int x = 0; x < size; x++)
         {
-            effectApplied = true;
-            ClearAllVisuals(grid);
-            ApplyEffect(grid, onComplete);
-            return;
+            for (int y = 0; y < size; y++)
+            {
+                Vector2Int pos = new Vector2Int(x, y);
+                ElementVisual visual = grid.GetElementVisualAt(pos);
+                if (visual == null || !visual.IsTargetedByEnemy) continue;
+
+                Element el = grid.GetElementAt(pos);
+                if (el != null && el != grid.EmptyElement)
+                {
+                    // Element survived gravity — keep targeting it.
+                    targetedPositions.Add(pos);
+                }
+                else
+                {
+                    //visual drifted to an empty slot
+                    visual.ClearOverrideSprite();
+                    visual.SetTargetedByEnemy(false);
+                    visual.SetTimedCountdownProgress(0f);
+                }
+            }
         }
 
-        onComplete?.Invoke();
+        // Visuals destroyed by DeleteElementsByPlayer are gone before gravity runs,
+        // so the only way to detect cleared targets is the count difference.
+        int clearedDuringGravity = previousCount - targetedPositions.Count;
+        if (clearedDuringGravity > 0)
+        {
+            pendingClearedCount += clearedDuringGravity;
+            if (bonusTimePerClearedTarget > 0f)
+                AddTime(bonusTimePerClearedTarget * clearedDuringGravity);
+        }
     }
 
     public override void Tick(Grid grid, System.Action onComplete = null)
@@ -123,7 +220,7 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
             return;
         }
 
-        if (!timerExpired)
+        if (!spellTimer.IsExpired)
         {
             onComplete?.Invoke();
             return;
@@ -138,43 +235,7 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
         }
 
         effectApplied = true;
-        ClearAllVisuals(grid);
         ApplyEffect(grid, onComplete);
-    }
-
-    private void StartDelayBlinkAnimation(Grid grid)
-    {
-        if (grid == null) return;
-
-        float blinkStrength = 0.05f;
-        float blinkFrequency = 1f;
-        float delayDuration = spellTimer.delaySeconds;
-
-        foreach (var pos in targetedPositions)
-        {
-            ElementVisual visual = grid.GetElementVisualAt(pos);
-            if (visual != null && visual.IsTargetedByEnemy)
-            {
-                ScaleAnimator scaleAnimator = visual.GetComponent<ScaleAnimator>();
-                if (scaleAnimator != null)
-                    scaleAnimator.PlayDelayBlink(blinkStrength, blinkFrequency, delayDuration);
-            }
-        }
-    }
-
-    private void UpdateMoveVisuals(Grid grid)
-    {
-        if (grid == null) return;
-
-        float animDuration = grid.EnemyTargetAnimDuration;
-        AnimationCurve curve = grid.EnemyTargetFillCurve;
-
-        foreach (var pos in targetedPositions)
-        {
-            ElementVisual visual = grid.GetElementVisualAt(pos);
-            if (visual != null && visual.IsTargetedByEnemy)
-                visual.UpdateTargetVisual(remainingMoves, initialMoves, animDuration, curve);
-        }
     }
 
     private void ClearAllVisuals(Grid grid)
@@ -187,31 +248,52 @@ public abstract class TimedDestroySpellBase : EnemySpellBase
             if (visual != null)
             {
                 visual.ClearTargetVisual();
-                visual.ClearTimedTargetVisual();
+                visual.SetTimedCountdownProgress(0f);
+                visual.SetTargetedByEnemy(false);
             }
         }
     }
 
-    private void OnDelayComplete(Grid grid)
+    private void OnTimerExpired()
+    {
+        UnsubscribeEvents();
+    }
+
+    private void UnsubscribeEvents()
+    {
+        if (spellTimer != null)
+        {
+            spellTimer.OnTimerExpired -= OnTimerExpired;
+        }
+    }
+
+    public override void Cleanup(Grid grid)
+    {
+        spellTimer?.Stop();
+        UnsubscribeEvents();
+        ClearAllVisuals(grid);
+    }
+
+    public void ReapplyTargetingVisuals(Grid grid)
     {
         if (grid == null || effectApplied) return;
-
-        delayCompleted = true;
 
         foreach (var pos in targetedPositions)
         {
             ElementVisual visual = grid.GetElementVisualAt(pos);
-            if (visual != null && visual.IsTargetedByEnemy)
-                visual.StartTimedCountdown(spellTimer.CountdownSeconds);
+            if (visual != null && !visual.IsTargetedByEnemy)
+            {
+                visual.SetTargetedByEnemy(true);
+                // Restart the animation from the current remaining time
+                visual.StartTimedFillAnimation(spellTimer.RemainingSeconds);
+            }
         }
     }
 
-    private void OnCountdownExpired(Grid grid)
+    protected void ResetEffectState()
     {
-        if (grid == null) return;
-        timerExpired = true;
+        effectApplied = false;
+        isPaused = false;
+        pendingClearedCount = 0;
     }
-
-    public bool IsTimerExpired() => timerExpired;
-    public bool IsEffectApplied() => effectApplied;
 }

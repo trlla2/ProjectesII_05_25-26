@@ -7,7 +7,10 @@ public enum ElementType
     Green = 2,
     Yellow = 3,
     EMPTY,
-    Bomb
+    Bomb,
+    Blocked,
+    Orange,
+    Melon
 }
 
 [System.Serializable]
@@ -39,4 +42,7 @@ public class Element : ScriptableObject
     public ElementType Type;
     public Sprite Sprite;
     public Color Color;
+    public bool spawnableInGrid = true;
+
+    public float spawnWeight = 1f;
 }

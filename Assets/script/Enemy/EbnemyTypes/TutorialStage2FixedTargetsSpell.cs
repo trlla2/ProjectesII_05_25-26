@@ -10,17 +10,17 @@ public class TutorialStage2FixedTargetsSpell : EnemySpellBase
         new Vector2Int(3, 0)
     };
 
-    public TutorialStage2FixedTargetsSpell(float damage = 4f, int moves = 4, bool excludeBelowTargets = true)
+    public TutorialStage2FixedTargetsSpell(float damage = 4f, int moves = 4)
     {
         damagePerElement = damage;
         remainingMoves = moves;
         initialMoves = moves;
         spellName = "Tutorial Stage 2 - Fixed Targets";
-        this.excludeBelowTargets = excludeBelowTargets;
     }
 
     public override void Execute(Grid grid)
     {
+        base.Execute(grid);
         targetedPositions.Clear();
 
         if (grid == null)

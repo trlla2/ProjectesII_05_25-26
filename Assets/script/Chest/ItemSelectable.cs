@@ -15,14 +15,20 @@ public class ItemSelectable : MonoBehaviour
     private RemoveItemPanelHandler panelRef;
     private TranslatorUI translator;
 
+    public bool CanBeSelected = true;
+    
+    public System.Action OnSelect;
+
     private void Awake()
     {
         translator = GetComponent<TranslatorUI>();
+
         selectImage.SetActive(false);
     }
 
     public void SetItem(RemoveItemPanelHandler reference, Item item)
     {
+
         currentItem = item;
         itemSprite.sprite = item.Sprite;
         panelRef = reference;
@@ -30,12 +36,17 @@ public class ItemSelectable : MonoBehaviour
 
     public void Select()
     {
+        if (!CanBeSelected)
+            return;
+
         selectImage.SetActive(true);
         translator.ToTarget();
 
+        OnSelect?.Invoke();
+
         if (panelRef != null)
             panelRef.SelectItem(this);
-
+        
         HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.RigidImpact);
     }
 

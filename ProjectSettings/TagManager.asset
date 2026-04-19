@@ -3,12 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Planeta
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - TIleBoard
+  - Outline Objects
   - Water
   - UI
   - ChestAnimationUI
@@ -38,6 +39,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: BKG
+    uniqueID: 2814965803
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

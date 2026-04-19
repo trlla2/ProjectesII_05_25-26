@@ -10,14 +10,9 @@ public class OrbVisual : MonoBehaviour
     [SerializeField] private Slider chargeBar;
     public Transform ChargeElementTargetPos;
     [SerializeField] private Image orbImage;
+    [SerializeField] private Image fillImage;
     [SerializeField] private ParticleSystem chargeParticles;
-    [SerializeField] private ParticleSystem fullChargeParticles;
-
-    [Header("Sprites")]
-    [SerializeField] private Sprite inactive;
-    [SerializeField] private Sprite charging;
-    [SerializeField] private Sprite charged;
-    [SerializeField] private Sprite depleted;
+    [SerializeField] public ParticleSystem fullChargeParticles;
 
     [Header("Animation")]
     [SerializeField] private float fillAnimationDuration = 0.3f;
@@ -69,7 +64,6 @@ public class OrbVisual : MonoBehaviour
     {
         UpdateCharge(current, Orb.MaxCharge);
 
-        //number of particles = amount gained this event
         int delta = Mathf.Max(0, current - previous);
         if (delta > 0)
         {
@@ -84,41 +78,31 @@ public class OrbVisual : MonoBehaviour
         chargeBar.DOKill();
         chargeBar.DOValue(targetFill, fillAnimationDuration).SetEase(fillCurve);
 
+        if (fillImage != null)
+        {
+            fillImage.DOKill();
+            fillImage.DOFillAmount(targetFill, fillAnimationDuration).SetEase(fillCurve);
+        }
+
         if (animationEffects != null && current > 0)
         {
-            float chargePercent = targetFill;
-            float shakeAmount = maxShakeAmount * chargePercent;
-            float shakeDuration = maxShakeDuration * chargePercent;
+            float shakeAmount = maxShakeAmount * targetFill;
+            float shakeDuration = maxShakeDuration * targetFill;
             animationEffects.Shake(shakeAmount, shakeDuration);
         }
     }
 
     public void SetState(OrbState state)
     {
-        Color targetColor = Color.white;
-
         switch (state)
         {
-            case OrbState.Inactive:
-                orbImage.sprite = inactive;
-                break;
-            case OrbState.Charging:
-                orbImage.sprite = charging;
-                break;
             case OrbState.Charged:
-                orbImage.sprite = charged;
                 PlayFullChargeEffect();
                 break;
             case OrbState.Activated:
-                orbImage.sprite = depleted;
                 PlayDepletedEffect();
                 break;
         }
-
-        orbImage.color = targetColor;
-
-        if (state == OrbState.Charged && fullChargeParticles != null)
-            fullChargeParticles.Play();
     }
 
     public void PlayChargeEffect(int chargeAmount)
@@ -136,8 +120,7 @@ public class OrbVisual : MonoBehaviour
 
     public void PlayFullChargeEffect()
     {
-        if (fullChargeParticles != null)
-            fullChargeParticles.Play();
+        if (fullChargeParticles != null) { fullChargeParticles.Play(); }
 
         if (animationEffects != null)
         {

@@ -87,10 +87,10 @@ public class Orb1QTE : MonoBehaviour, IQTE
         Time.timeScale = 0f;
 
         SequentialTracePhase sequentialPhase = new SequentialTracePhase(
-            grid, 
-            visualController, 
-            sequentialPointCount, 
-            sequentialRevealTime, 
+            grid,
+            visualController,
+            sequentialPointCount,
+            sequentialRevealTime,
             sequentialInputTime
         );
 
@@ -156,6 +156,8 @@ public class Orb1QTE : MonoBehaviour, IQTE
     {
         isWaitingForSuccessAnimation = true;
 
+        visualEffects.PlayChargeAttackEffect();
+
         Vector3 targetOrbPosition = Vector3.zero;
         if (orbTransform != null)
         {
@@ -174,7 +176,7 @@ public class Orb1QTE : MonoBehaviour, IQTE
             visualController,
             targetOrbPosition,
             this
-        );
+            );
 
         animPhase.OnPhaseComplete += HandleSuccessAnimationComplete;
         Phases.Add(animPhase);
@@ -196,6 +198,7 @@ public class Orb1QTE : MonoBehaviour, IQTE
         HandleFinalComplete(true);
     }
 
+
     private void HandleFinalComplete(bool success)
     {
         isActive = false;
@@ -207,6 +210,7 @@ public class Orb1QTE : MonoBehaviour, IQTE
         OrbVisual currentOrbVisual = GameManager.Instance.CombatHandler.bossManager.GetCurrentOrbVisual();
         if (currentOrbVisual != null)
         {
+            currentOrbVisual.fullChargeParticles.Stop();
             OrbAnimationEffects effects = currentOrbVisual.GetComponent<OrbAnimationEffects>();
             if (effects != null)
             {

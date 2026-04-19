@@ -1,10 +1,23 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*Hola Edu. Si vols començar per algun lloc a entrendre el codi, et recomano començar per la aquí, Grid.cs es el controlador
+ * en un sistema Data-Controller-Visual. Data es el GridData, que és on es guarda tota la informació de la graella 
+ * (quins elements hi ha a cada posició, quins visuals hi ha, etc). El controlador és aquest script GIRD.cs es el únic script que controla la data, grid.cs gestiona tota la lògica de la graella (inserir spels, eliminar elements, gestionar events specifics del boss o tuto).
+ * I finalment el Visual és el VisualGrid, que és el que s'encarrega de mostrar la graella a pantalla, gestionar les animacions visuals, i gestionar els ElementVisuals.
+ * Aquí a Grid també tenim una máquina d'estats, venen de IGridState i tenim IdleState, RerollState, RefillState, EnemySpellState, ProcessingState...) per veure com es gestionen les diferents fases del joc pos anar a 
+ * GridStates. També tinc classes auxiliars com GridGravity, que s'encarrega de gestionar la gravetat a la graella, o SpellInserter, que s'encarrega de gestionar la lògica d'inserir un spell a la graella o SpellInserter, que s'encarrega de gestionar la lògica d'inserir un spell a la graella.
+ * 
+ * Els elements Principals que interactuan amb Grid.cs són: PlayerPathing, que és el que gestiona la selecció del jugador a la graella i com interactua amb els elements i 
+ * EnemyBehaviour, que és el que gestiona el comportament de l'enemic i les seves interaccions amb la graella En aquests scripts també tindrás explicacions generals.
+ */
+
+
 public class Grid : MonoBehaviour
 {
-    public const int GridSize = 4;
+    public int GridSize = 4;
 
     [Header("Configuration")]
     [SerializeField] private List<Element> availableElements;
@@ -27,6 +40,8 @@ public class Grid : MonoBehaviour
 
     public event System.Action OnRerollStarted;
     public event System.Action OnRerollCompleted;
+    public event System.Action OnEnemySpellStarted;
+    public event System.Action<GridStateType> OnStateChanged;
 
     public void NotifyRerollStarted() => OnRerollStarted?.Invoke();
     public void NotifyRerollCompleted() => OnRerollCompleted?.Invoke();
@@ -34,6 +49,7 @@ public class Grid : MonoBehaviour
     public AnimationCurve EnemyTargetFillCurve => enemyBlinkCurve;
     public float EnemyTargetAnimDuration => enemyDeletionDuration;
 
+    public SpellPathAnimator EnemySpellAnimator => enemySpellAnimator;
     private GridData gridData;
     private GridGravity gravityHandler;
     private ISpellInserter spellInserter;
@@ -47,8 +63,42 @@ public class Grid : MonoBehaviour
     public List<Element> AvailableElements => availableElements;
     public VisualGrid VisualGrid => visualGrid;
 
+    public List<Element> SpawnableElements => availableElements.FindAll(e => GetEffectiveSpawnWeight(e) > 0f);
+
+    private float GetEffectiveSpawnWeight(Element element)
+    {
+        if (GridSpawnRegistry.TryGetWeightOverride(element.Type, out float overrideWeight))
+            return overrideWeight;
+        return element.spawnableInGrid ? element.spawnWeight : 0f;
+    }
+
+    //Picks a random element from the list using each element's wheighs
+    public Element PickWeightedRandom(List<Element> elements)
+    {
+        float totalWeight = 0f;
+        foreach (Element e in elements)
+            totalWeight += GetEffectiveSpawnWeight(e);
+
+        if (totalWeight <= 0f)
+            return elements[Random.Range(0, elements.Count)];
+
+        float roll = Random.Range(0f, totalWeight);
+        foreach (Element e in elements)
+        {
+            roll -= GetEffectiveSpawnWeight(e);
+            if (roll <= 0f)
+                return e;
+        }
+
+        return elements[elements.Count - 1];
+    }
+
     private void Awake()
     {
+        if (tutorialManager != null)
+        {
+            if (tutorialManager.IsTutorialActive()) GridSize = tutorialManager.activeLayout.GridSize;
+        }
         Initialize(availableElements, emptyElement);
     }
 
@@ -64,13 +114,11 @@ public class Grid : MonoBehaviour
 
         InitializeComponents();
         visualGrid.Initialize(this);
-        RandomizeBoard(availableElements);
+        RandomizeBoard(SpawnableElements);
 
         if (GameManager.Instance != null)
         {
             InsertSpell(GameManager.Instance.PlayerStats.GetSpellBook()[(int)Random.Range(0, GameManager.Instance.PlayerStats.GetSpellBook().Count)].Recipe);
-            Debug.Log("Inserting");
-            
         }
         else
         {
@@ -87,7 +135,6 @@ public class Grid : MonoBehaviour
         if (GameManager.Instance != null)
         {
             InsertSpell(GameManager.Instance.PlayerStats.GetSpellBook()[(int)Random.Range(0, GameManager.Instance.PlayerStats.GetSpellBook().Count)].Recipe);
-            Debug.Log("Inserting");
         }
     }
 
@@ -99,15 +146,6 @@ public class Grid : MonoBehaviour
         bool success = spellInserter.TryInsertSpell(gridData, spellRecipe);
     }
 
-    public void SwapElements(Vector2Int posA, Vector2Int posB)
-    {
-        if (CurrentState != GridStateType.Idle)
-            return;
-
-
-        gridData.SwapElements(posA, posB);
-        visualGrid.Swap(posA, posB, 0.3f);
-    }
 
     public void InstantVisualEmpty(List<Vector2Int> positions, bool chargeOrb = false)
     {
@@ -120,10 +158,16 @@ public class Grid : MonoBehaviour
         foreach (Vector2Int pos in positions)
         {
             ElementVisual visual = gridData.GetVisualAt(pos);
-            if (visual != null && visual.IsTargetedByEnemy)
+            if (visual != null)
             {
-                visual.SetTargetedByEnemy(false);
-                visual.ClearOverrideSprite();
+                visual.StopHoverAnimation();
+                visual.highlighter?.SetHighlight(false);
+
+                if (visual.IsTargetedByEnemy)
+                {
+                    visual.SetTargetedByEnemy(false);
+                    visual.ClearOverrideSprite();
+                }
             }
             gridData.SetElementAt(pos, emptyElement);
             if (visualGrid.GetVisualAt(pos) != null)
@@ -178,20 +222,25 @@ public class Grid : MonoBehaviour
             }
         }
 
+        if (CurrentState == GridStateType.Idle)
+        {
+            TryStartRefill();
+        }
+        else
+        {
+            StartCoroutine(DeferredRefill());
+        }
+    }
+
+    private IEnumerator DeferredRefill()
+    {
+        while (CurrentState != GridStateType.Idle)
+            yield return null;
+
         TryStartRefill();
     }
-
-    public void BlockElements(float duration, List<Vector2Int> positions)
-    {
-        if (positions == null || positions.Count == 0)
-            return;
-
-        StartCoroutine(BlockElementsRoutine(duration, positions));
-    }
-
     public void Reroll(int scrollTimes = 5)
     {
-        Debug.Log(CurrentState);
         if (CurrentState == GridStateType.Idle || CurrentState == GridStateType.ValidateSpell || CurrentState == GridStateType.Processing)
         {
             List<Spell> spellsToUse = availableSpells;
@@ -202,7 +251,7 @@ public class Grid : MonoBehaviour
                 spellsToUse = GameManager.Instance.PlayerStats.GetSpellBook();
             }
 
-            ChangeState(new RerollState(this, visualGrid, availableElements, spellsToUse, scrollTimes));
+            ChangeState(new RerollState(this, visualGrid, SpawnableElements, spellsToUse, scrollTimes));
         }
     }
 
@@ -216,11 +265,6 @@ public class Grid : MonoBehaviour
         gridData.SetElementAt(position, element);
     }
 
-    public Element[,] GetAllElements()
-    {
-        return gridData.GetAllElements();
-    }
-
     public bool IsPositionValid(Vector2Int position)
     {
         return gridData.IsPositionValid(position);
@@ -231,12 +275,7 @@ public class Grid : MonoBehaviour
         return gridData.GetVisualAt(position);
     }
 
-    public void SetElementVisualAt(Vector2Int position, ElementVisual visual)
-    {
-        gridData.SetVisualAt(position, visual);
-    }
-
-    public void ProcessEnemySpell(List<Vector2Int> positions, System.Action onComplete = null,  bool excludeBelowTargets = true, bool rerollAfter = false)
+    public void ProcessEnemySpell(List<Vector2Int> positions, System.Action onComplete = null, bool rerollAfter = false)
     {
         if (positions == null || positions.Count == 0)
         {
@@ -244,18 +283,47 @@ public class Grid : MonoBehaviour
             return;
         }
 
-        if (CurrentState == GridStateType.Idle && GetEmptyPositions().Count > 0)
+        // Notify before any state change so PlayerPathing can clean up
+        OnEnemySpellStarted?.Invoke();
+
+        if (CurrentState != GridStateType.Idle)
+        {
+            StartCoroutine(ProcessEnemySpellWhenReady(positions, onComplete, rerollAfter));
+            return;
+        }
+
+        if (GetEmptyPositions().Count > 0)
         {
             ChangeState(new RefillState(this, visualGrid,
                 onRefillComplete: () =>
                 {
-                    ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete, excludeBelowTargets, rerollAfter));
+                    ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete, rerollAfter));
                 }
             ));
             return;
         }
 
-        ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete, excludeBelowTargets, rerollAfter));
+        ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete, rerollAfter));
+    }
+
+    private IEnumerator ProcessEnemySpellWhenReady(List<Vector2Int> positions, System.Action onComplete, bool rerollAfter)
+    {
+        while (CurrentState != GridStateType.Idle)
+            yield return null;
+
+        if (GetEmptyPositions().Count > 0)
+        {
+            ChangeState(new RefillState(this, visualGrid,
+                onRefillComplete: () =>
+                {
+                    ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete, rerollAfter));
+                }
+            ));
+        }
+        else
+        {
+            ChangeState(new EnemySpellState(this, visualGrid, positions, onComplete, rerollAfter));
+        }
     }
 
 
@@ -278,10 +346,10 @@ public class Grid : MonoBehaviour
             if (useTutorialRefill)
                 element = tutorialManager.GetRefillElement(pos.x, pos.y);
             else
-                element = elements[Random.Range(0, elements.Count)];
+                element = PickWeightedRandom(elements);
 
             if (element == null)
-                element = elements[Random.Range(0, elements.Count)];
+                element = PickWeightedRandom(elements);
 
             gridData.SetElementAt(pos, element);
 
@@ -296,32 +364,7 @@ public class Grid : MonoBehaviour
             tutorialManager.ConsumeRefillOverride();
     }
 
-    private IEnumerator BlockElementsRoutine(float duration, List<Vector2Int> positions)
-    {
-        foreach (var pos in positions)
-        {
-            ElementVisual visual = gridData.GetVisualAt(pos);
-            if (visual != null)
-            {
-                visual.SetSelectable(false);
-                //future: add block visual effect
-            }
-        }
-
-        yield return new WaitForSeconds(duration);
-
-        foreach (var pos in positions)
-        {
-            ElementVisual visual = gridData.GetVisualAt(pos);
-            if (visual != null)
-            {
-                visual.SetSelectable(true);
-            }
-        }
-
-    }
-
-    private void CollectAndChargeWeakElements(List<Vector2Int> positions)
+    public void CollectAndChargeWeakElements(List<Vector2Int> positions)
     {
         BossManager bossManager = GameManager.Instance.CombatHandler.bossManager;
         if (bossManager == null)
@@ -339,7 +382,11 @@ public class Grid : MonoBehaviour
 
             Element element = gridData.GetElementAt(pos);
 
-            if (element != null && element != emptyElement && element.Type == weakElement)
+            bool isWeak = element != null && element.Type == weakElement;
+            if(element.Type == ElementType.Orange) {if (weakElement == ElementType.Red || weakElement == ElementType.Yellow) isWeak = true;}
+            if(element.Type == ElementType.Melon) {if (weakElement == ElementType.Blue|| weakElement == ElementType.Green) isWeak = true;}
+
+            if (isWeak)
             {
                 ElementVisual visual = gridData.GetVisualAt(pos);
                 if (visual != null)
@@ -360,6 +407,7 @@ public class Grid : MonoBehaviour
         currentState?.Exit();
         currentState = newState;
         currentState?.Enter();
+        OnStateChanged?.Invoke(currentState.GetStateType());
     }
 
     private void InitializeComponents()
@@ -379,7 +427,7 @@ public class Grid : MonoBehaviour
             for (int y = 0; y < GridSize; y++)
             {
                 Vector2Int pos = new Vector2Int(x, y);
-                Element randomElement = elements[Random.Range(0, elements.Count)];
+                Element randomElement = PickWeightedRandom(elements);
                 gridData.SetElementAt(pos, randomElement);
 
                 ElementVisual visual = gridData.GetVisualAt(pos);
@@ -416,12 +464,22 @@ public class Grid : MonoBehaviour
         return emptyPositions;
     }
 
+    public void RetargetActiveSpell()
+    {
+        if (GameManager.Instance == null || GameManager.Instance.CombatHandler == null)
+            return;
+        EnemyBehaviour enemy = GameManager.Instance.CombatHandler.GetEnemyRef();
+        if (enemy == null || enemy.ActiveSpell == null)
+            return;
+        enemy.ActiveSpell.RetargetAfterGravity(this);
+    }
+
     public void TryStartRefill()
     {
         if (CurrentState != GridStateType.Idle)
             return;
 
-        if (GetEmptyPositions().Count <= 0)
+        if (GetEmptyPositions().Count == 0)
             return;
 
         ChangeState(new RefillState(this, visualGrid));
@@ -443,5 +501,13 @@ public class Grid : MonoBehaviour
         if (spells == null || spells.Count == 0) return false;
         Spell spell = spells[Random.Range(0, spells.Count)];
         return spellInserter.TryInsertSpell(gridData, spell.Recipe);
+    }
+
+    public void ProcessEnemySwap(List<(Vector2Int, Vector2Int)> pairs, float swapDuration)
+    {
+        if (CurrentState != GridStateType.Idle) return;
+        if (pairs == null || pairs.Count == 0) return;
+
+        ChangeState(new SwapState(this, visualGrid, pairs, swapDuration));
     }
 }

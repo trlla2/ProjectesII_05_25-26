@@ -70,4 +70,9 @@ public class OnBoardingManager : MonoBehaviour
     {
         return panelList.IsPanelExplained(key);
     }
+
+    public void MarkPanelAsExplained(OnBoardingKey key)
+    {
+        panelList.MarkPanelAsExplained(key);
+    }
 }

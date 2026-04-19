@@ -14,7 +14,7 @@ public class OnBoardingTrigger_BossStage1 : MonoBehaviour
 
     private void Update()
     {
-        if (!hasTriggeredOrbChargedOnBoarding && _bossOrb1.State == OrbState.Charged)
+        if (!hasTriggeredOrbChargedOnBoarding && _bossOrb1.IsFullyCharged())
         {
             hasTriggeredOrbChargedOnBoarding = true;
             StartCoroutine(TriggerOrbChargedOnBoardingWithDelay());
@@ -30,9 +30,9 @@ public class OnBoardingTrigger_BossStage1 : MonoBehaviour
     private IEnumerator TriggerOrbChargedOnBoardingWithDelay()
     {
         yield return new WaitForSecondsRealtime(10f);
-        if (_bossOrb1.State == OrbState.Charging || _bossOrb1.State == OrbState.Activated || _bossOrb1.State == OrbState.Inactive)
-            yield break;
-        
-        OnBoardingManager.Instance.TriggerIfNew(OnBoardingKey.BOSS_STAGE1_ORBCHARGED);
+        if (!_bossOrb1.HasBeenActivated)
+            OnBoardingManager.Instance.TriggerIfNew(OnBoardingKey.BOSS_STAGE1_ORBCHARGED);
+        else
+            OnBoardingManager.Instance.MarkPanelAsExplained(OnBoardingKey.BOSS_STAGE1_ORBCHARGED);
     }
 }

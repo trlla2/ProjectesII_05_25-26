@@ -261,6 +261,7 @@ public class ElementVisual : MonoBehaviour
                 warningSignRenderer.gameObject.SetActive(false);
 
             GameObject temp = Instantiate(breakEnemyHoverParticles, transform);
+            breakSelectionAudioSource.Play();
             temp.transform.SetParent(null);
             StopCountdown();
             StopTimedCountdown();

@@ -391,7 +391,6 @@ public class BlockerSpell : IEnemySpell
     private void StartAttackSpell(Grid grid)
     {
         activeAttackSpell = new SingleElementTimedSpell(attackTimer, damagePerElement);
-        activeAttackSpell.SkipHitAnimation = true;
         activeAttackSpell.Execute(grid);
     }
 

@@ -6,7 +6,6 @@ public class ChestTile : BoardTile
 
     public override void Interact()
     {
-        Debug.Log("opening chest...");
         openChestSource.Play();
         Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(false);
         _boardManager.OpenChest(this);

@@ -23,11 +23,6 @@ public class OnBoardingManager : MonoBehaviour
         instancedPanels = panelList.LoadPrefsData(this.transform);
     }
 
-    //private void Start()
-    //{
-    //    OnBoardingManager.Instance.TriggerIfNew(OnBoardingKey.USABLE_ITEMS);
-    //}
-
     public void TriggerIfNew(OnBoardingKey key)
     {
         if (panelList.IsPanelExplained(key)) return;

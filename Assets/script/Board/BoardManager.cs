@@ -81,8 +81,6 @@ public class BoardManager : MonoBehaviour
             var order = currentStageLevelData.GetEncountersOrder() ?? new List<EnemyDifficulty>();
             var bosses = currentStageLevelData.GetBossEncounters() ?? new List<EnemyType>();
 
-            Debug.Log($"BoardManager: cargando StageLevelData con {enemies.Count} enemigos, {order.Count} encuentros, {bosses.Count} bosses.");
-
             encountersManager.LoadEnemyEncounters(enemies);
             encountersManager.LoadEnemyEncountersOrder(order);
             encountersManager.LoadBossesEncounters(bosses);
@@ -131,7 +129,6 @@ public class BoardManager : MonoBehaviour
         newTile.SetBoardManager(this);
 
         generatedTiles.Add(newTile);
-        Debug.Log($"casilla generada en {gridPosition}");
 
         return newTile;
     }

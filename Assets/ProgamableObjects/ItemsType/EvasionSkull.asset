@@ -15,7 +15,7 @@ MonoBehaviour:
   nameItem: Evasion Skull
   description: 'Gives 10% of evasion '
   rarity: 0
-  sprite: {fileID: 3258979074984140082, guid: 0f82f4831e6f26d4f993139c9ebd6732, type: 3}
+  sprite: {fileID: 5695144912973170895, guid: 40ec649488dfb054ebb1285089645f20, type: 3}
   TargetSprite: {fileID: 0}
   effectType: 0
   extraDamageEffect:
@@ -98,26 +98,27 @@ MonoBehaviour:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    fireElementType: 0
     delayBetweenElements: 0.15
   lightningObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    lightningElementType: 3
     delayBetweenElements: 0.15
   shamrockObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    shamrockElementType: 2
     delayBetweenElements: 0.15
   moonObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    moonElementType: 1
     delayBetweenElements: 0.15
+  freezeEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    freezeDuration: 4
   activationType: 0
   consumeOnUse: 1
   cooldown: 0

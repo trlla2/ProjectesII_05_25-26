@@ -199,11 +199,6 @@ public class Orb1QTE : MonoBehaviour, IQTE
         HandleFinalComplete(true);
     }
 
-    public void PlayChargingParticles()
-    {
-        if(visualEffects != null)
-        visualEffects.PlayChargeAttackEffect();
-    }
 
     private void HandleFinalComplete(bool success)
     {

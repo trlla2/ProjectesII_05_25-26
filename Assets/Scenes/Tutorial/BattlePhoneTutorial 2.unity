@@ -5081,6 +5081,9 @@ MonoBehaviour:
   title1: {fileID: 238200774}
   winText: you win
   loseText: you lose
+  winSFX: {fileID: 0}
+  loseSFX: {fileID: 0}
+  aS: {fileID: 0}
   OnStage1Enter:
     m_PersistentCalls:
       m_Calls:
@@ -10647,6 +10650,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  alreadyHit: 0
 --- !u!114 &603170642
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16810,6 +16814,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  alreadyHit: 0
 --- !u!114 &742810390
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32737,11 +32742,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4888071274111498029, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: m_LocalScale.x
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4888071274111498029, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: m_LocalScale.y
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4888071274111498029, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: m_LocalPosition.x

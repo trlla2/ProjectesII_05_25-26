@@ -5070,6 +5070,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   loseScene: HallOfEgress
   sceneToUnload: BattlePhoneTutorial 2
+  forceToHallOfEgress: 0
   bgFader: {fileID: 47990342}
   winColor: {r: 0.12941177, g: 0.6156863, b: 0.80392164, a: 1}
   loseColor: {r: 0.9725491, g: 0, b: 0.43137258, a: 1}
@@ -32739,14 +32740,6 @@ PrefabInstance:
     - target: {fileID: 4298844807172937086, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4888071274111498029, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4888071274111498029, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4888071274111498029, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: m_LocalPosition.x

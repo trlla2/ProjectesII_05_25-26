@@ -77,7 +77,7 @@ public class PlayerStats
         ResetLevelStats();
 
         // currency 
-        money = 1000;
+        money = 50;
 
         // spells  & Items
         spellBook = new Spell[spellBookSize];

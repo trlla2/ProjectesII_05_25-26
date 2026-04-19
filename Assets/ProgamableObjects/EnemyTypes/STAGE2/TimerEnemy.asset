@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: TimerEnemy
   m_EditorClassIdentifier: 
   name: Skull
-  health: 100
+  health: 50
   damage: 10
   elementCount: 3
-  level: 2
+  level: 1
   difficulty: 3
   weaknesses: 
   weaknessMultiplier: 2
@@ -27,6 +27,7 @@ MonoBehaviour:
   spellType: 3
   damagePerElement: 4
   moveCount: 3
+  goldReward: 100
   attackTimer: 6
   lvl2Countdown: 8
   lvl2BonusTimeOnClear: 2
@@ -37,3 +38,4 @@ MonoBehaviour:
   blockerDamagePercent: 0.25
   haveDrops: 0
   spellDrops: []
+  swapperSwapInterval: 2.5

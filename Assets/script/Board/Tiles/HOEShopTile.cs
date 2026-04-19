@@ -1,12 +1,13 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class HOEShopTile : BoardTile
 {
-    //[SerializeField] private ScreenShop _hoeShopPanel;
+    public UnityEvent OnInteract;
 
     public override void Interact()
     {
-        // screenshop.open
+        OnInteract.Invoke();
     }
 
 }

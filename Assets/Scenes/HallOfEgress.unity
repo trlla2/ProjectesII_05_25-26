@@ -10315,6 +10315,38 @@ PrefabInstance:
       propertyPath: 'neighbors.Array.data[0]'
       value: 
       objectReference: {fileID: 1321387669}
+    - target: {fileID: 4543001063422637868, guid: 6a19f42d2c161944ea760fa0bad4be74, type: 3}
+      propertyPath: OnInteract.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4543001063422637868, guid: 6a19f42d2c161944ea760fa0bad4be74, type: 3}
+      propertyPath: OnInteract.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4543001063422637868, guid: 6a19f42d2c161944ea760fa0bad4be74, type: 3}
+      propertyPath: OnInteract.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1649137741}
+    - target: {fileID: 4543001063422637868, guid: 6a19f42d2c161944ea760fa0bad4be74, type: 3}
+      propertyPath: OnInteract.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4543001063422637868, guid: 6a19f42d2c161944ea760fa0bad4be74, type: 3}
+      propertyPath: OnInteract.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: set_enabled
+      objectReference: {fileID: 0}
+    - target: {fileID: 4543001063422637868, guid: 6a19f42d2c161944ea760fa0bad4be74, type: 3}
+      propertyPath: OnInteract.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: SkinShop, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4543001063422637868, guid: 6a19f42d2c161944ea760fa0bad4be74, type: 3}
+      propertyPath: OnInteract.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_BoolArgument
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4543001063422637868, guid: 6a19f42d2c161944ea760fa0bad4be74, type: 3}
+      propertyPath: OnInteract.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 5110594593294184157, guid: 6a19f42d2c161944ea760fa0bad4be74, type: 3}
       propertyPath: m_Name
       value: HOEShopTile
@@ -15617,6 +15649,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1983104618292807921, guid: c1bab8d764505224999ca3ee0ac7b8a7, type: 3}
   m_PrefabInstance: {fileID: 1622671642}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1649137741 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7203423594909503587, guid: 03c492de111202c468ad96b207f716bd, type: 3}
+  m_PrefabInstance: {fileID: 5593568774052475539}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb28e53a6d74d39458a21dcac9f4dbc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1654383837 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4438251360550834, guid: 5f24911f9eb596c42ae5c6211ea721cb, type: 3}

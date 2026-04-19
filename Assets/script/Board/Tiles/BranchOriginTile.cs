@@ -8,6 +8,7 @@ public class BranchOriginTile : BoardTile
     public List<BoardTile> GeneratedBranch => generatedBranch;
 
     public UnityEvent OnInteract;
+    public UnityEvent OnPathChosen;
 
     public override void Interact()
     {
@@ -52,6 +53,8 @@ public class BranchOriginTile : BoardTile
         {
             _boardManager.PutFogOnRevealedBranch();
         }
+
+        OnPathChosen.Invoke();
     }
 
     public void SetGeneratedBranch(List<BoardTile> branchTiles)

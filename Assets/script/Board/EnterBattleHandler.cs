@@ -19,7 +19,7 @@ public class EnterBattleHandler : MonoBehaviour
 
     private void ActivateGameObjects()
     {
-        foreach (var gameObject in gameObjectsToDeactivate) { gameObject.SetActive(true); }
+        foreach (var gameObject in gameObjectsToDeactivate) { gameObject.SetActive(true); } 
     }
 
     private void OnDestroy()

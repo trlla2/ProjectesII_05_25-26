@@ -3,6 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*Hola Edu. Si vols començar per algun lloc a entrendre el codi, et recomano començar per la aquí, Grid.cs es el controlador
+ * en un sistema Data-Controller-Visual. Data es el GridData, que és on es guarda tota la informació de la graella 
+ * (quins elements hi ha a cada posició, quins visuals hi ha, etc). El controlador és aquest script GIRD.cs es el únic script que controla la data, grid.cs gestiona tota la lògica de la graella (inserir spels, eliminar elements, gestionar events specifics del boss o tuto).
+ * I finalment el Visual és el VisualGrid, que és el que s'encarrega de mostrar la graella a pantalla, gestionar les animacions visuals, i gestionar els ElementVisuals.
+ * Aquí a Grid també tenim una máquina d'estats, venen de IGridState i tenim IdleState, RerollState, RefillState, EnemySpellState, ProcessingState...) per veure com es gestionen les diferents fases del joc pos anar a 
+ * GridStates. També tinc classes auxiliars com GridGravity, que s'encarrega de gestionar la gravetat a la graella, o SpellInserter, que s'encarrega de gestionar la lògica d'inserir un spell a la graella o SpellInserter, que s'encarrega de gestionar la lògica d'inserir un spell a la graella.
+ * 
+ * Els elements Principals que interactuan amb Grid.cs són: PlayerPathing, que és el que gestiona la selecció del jugador a la graella i com interactua amb els elements i 
+ * EnemyBehaviour, que és el que gestiona el comportament de l'enemic i les seves interaccions amb la graella En aquests scripts també tindrás explicacions generals.
+ */
+
+
 public class Grid : MonoBehaviour
 {
     public int GridSize = 4;
@@ -123,7 +135,6 @@ public class Grid : MonoBehaviour
         if (GameManager.Instance != null)
         {
             InsertSpell(GameManager.Instance.PlayerStats.GetSpellBook()[(int)Random.Range(0, GameManager.Instance.PlayerStats.GetSpellBook().Count)].Recipe);
-            Debug.Log("Inserting");
         }
     }
 
@@ -228,15 +239,6 @@ public class Grid : MonoBehaviour
 
         TryStartRefill();
     }
-
-    public void BlockElements(float duration, List<Vector2Int> positions)
-    {
-        if (positions == null || positions.Count == 0)
-            return;
-
-        StartCoroutine(BlockElementsRoutine(duration, positions));
-    }
-
     public void Reroll(int scrollTimes = 5)
     {
         if (CurrentState == GridStateType.Idle || CurrentState == GridStateType.ValidateSpell || CurrentState == GridStateType.Processing)
@@ -263,11 +265,6 @@ public class Grid : MonoBehaviour
         gridData.SetElementAt(position, element);
     }
 
-    public Element[,] GetAllElements()
-    {
-        return gridData.GetAllElements();
-    }
-
     public bool IsPositionValid(Vector2Int position)
     {
         return gridData.IsPositionValid(position);
@@ -276,11 +273,6 @@ public class Grid : MonoBehaviour
     public ElementVisual GetElementVisualAt(Vector2Int position)
     {
         return gridData.GetVisualAt(position);
-    }
-
-    public void SetElementVisualAt(Vector2Int position, ElementVisual visual)
-    {
-        gridData.SetVisualAt(position, visual);
     }
 
     public void ProcessEnemySpell(List<Vector2Int> positions, System.Action onComplete = null, bool rerollAfter = false)
@@ -370,30 +362,6 @@ public class Grid : MonoBehaviour
 
         if (useTutorialRefill)
             tutorialManager.ConsumeRefillOverride();
-    }
-
-    private IEnumerator BlockElementsRoutine(float duration, List<Vector2Int> positions)
-    {
-        foreach (var pos in positions)
-        {
-            ElementVisual visual = gridData.GetVisualAt(pos);
-            if (visual != null)
-            {
-                visual.SetSelectable(false);
-            }
-        }
-
-        yield return new WaitForSeconds(duration);
-
-        foreach (var pos in positions)
-        {
-            ElementVisual visual = gridData.GetVisualAt(pos);
-            if (visual != null)
-            {
-                visual.SetSelectable(true);
-            }
-        }
-
     }
 
     public void CollectAndChargeWeakElements(List<Vector2Int> positions)

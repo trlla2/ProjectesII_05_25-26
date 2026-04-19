@@ -153,7 +153,7 @@ public class EnemyBehaviour : MonoBehaviour
         StopAllCoroutines();
     }
 
-    private void CreateAndExecuteSpell(bool IsFirstExecute = false)
+    private void CreateAndExecuteSpell()
     {
         if (enemyType == null || grid == null)
             return;
@@ -170,12 +170,7 @@ public class EnemyBehaviour : MonoBehaviour
         if (activeSpell is SwapperSpell existingSwapper && existingSwapper.IsActive)
             return;
 
-        HandleTargetVFX();
-        int executeCountForTutorialTimedEnemy = 0;
-        if (activeSpell is TutorialStage2TimedSpell && != IsFirstExecute)
-        {
-            executeCountForTutorialTimedEnemy = 2;
-        }
+        HandleTargetVFX();  
         activeSpell = enemyType.CreateSpell();
         if (activeSpell != null)
         {
@@ -214,17 +209,10 @@ public class EnemyBehaviour : MonoBehaviour
             }
             else
             {
-
-                if (activeSpell is TutorialStage2TimedSpell tutorialTimedSpell)
-                {
-                    tutorialTimedSpell.executeCount = executeCountForTutorialTimedEnemy;
-                    activeSpell.Execute(grid);
-                    timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
-                }
+                activeSpell.Execute(grid);
 
                 if (activeSpell is TimedDestroySpellBase)
                 {
-                    activeSpell.Execute(grid);
                     timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
                 }
             }

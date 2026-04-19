@@ -21,10 +21,6 @@ MonoBehaviour:
     showHand: 0
     handPath: []
     handDuration: 0
-    showArrow: 0
-    arrowFrom: 0
-    arrowTo: 0
-    arrowLabel: 
     advanceCondition: 0
     pauseEnemyTimers: 1
     lockInput: 1
@@ -37,11 +33,7 @@ MonoBehaviour:
     showHand: 1
     handPath:
     - {x: 20, y: 20}
-    handDuration: 8
-    showArrow: 0
-    arrowFrom: 0
-    arrowTo: 0
-    arrowLabel: 
+    handDuration: 5
     advanceCondition: 1
     pauseEnemyTimers: 0
     lockInput: 1
@@ -53,59 +45,20 @@ MonoBehaviour:
     showHand: 1
     handPath:
     - {x: 20, y: 20}
-    handDuration: 2
-    showArrow: 0
-    arrowFrom: 0
-    arrowTo: 0
-    arrowLabel: 
+    handDuration: 1
     advanceCondition: 1
     pauseEnemyTimers: 0
     lockInput: 1
-  - type: 1
-    text: You got attaked!
-    autoDismissTime: 3
+  - type: 0
+    text: You got attaked! Match to Heal UP
+    autoDismissTime: 0
     highlightPositions: []
     allowedPath: []
     showHand: 0
     handPath: []
     handDuration: 0
-    showArrow: 0
-    arrowFrom: 0
-    arrowTo: 0
-    arrowLabel: 
-    advanceCondition: 1
-    pauseEnemyTimers: 1
-    lockInput: 1
-  - type: 0
-    text: Quick! Match to heal yourself
-    autoDismissTime: 0
-    highlightPositions: []
-    allowedPath: []
-    showHand: 0
-    handPath: []
-    handDuration: 3
-    showArrow: 0
-    arrowFrom: 0
-    arrowTo: 0
-    arrowLabel: 
     advanceCondition: 0
     pauseEnemyTimers: 1
-    lockInput: 1
-  - type: 2
-    text: 
-    autoDismissTime: 0
-    highlightPositions: []
-    allowedPath: []
-    showHand: 1
-    handPath:
-    - {x: 20, y: 30}
-    handDuration: 2
-    showArrow: 0
-    arrowFrom: 0
-    arrowTo: 0
-    arrowLabel: 
-    advanceCondition: 1
-    pauseEnemyTimers: 0
     lockInput: 1
   - type: 2
     text: 
@@ -126,13 +79,9 @@ MonoBehaviour:
     - {x: 1, y: 0}
     - {x: 1, y: 2}
     handDuration: 3
-    showArrow: 0
-    arrowFrom: 0
-    arrowTo: 0
-    arrowLabel: 
-    advanceCondition: 1
+    advanceCondition: 2
     pauseEnemyTimers: 1
-    lockInput: 1
+    lockInput: 0
   - type: 4
     text: 
     autoDismissTime: 0
@@ -152,14 +101,10 @@ MonoBehaviour:
     - {x: 1, y: 0}
     - {x: 1, y: 2}
     handDuration: 3
-    showArrow: 0
-    arrowFrom: 0
-    arrowTo: 0
-    arrowLabel: 
     advanceCondition: 2
     pauseEnemyTimers: 1
     lockInput: 0
-  - type: 1
+  - type: 0
     text: Great! Now you are ready to defeat him
     autoDismissTime: 4
     highlightPositions: []
@@ -167,11 +112,7 @@ MonoBehaviour:
     showHand: 0
     handPath: []
     handDuration: 0
-    showArrow: 0
-    arrowFrom: 0
-    arrowTo: 0
-    arrowLabel: 
-    advanceCondition: 1
+    advanceCondition: 0
     pauseEnemyTimers: 1
     lockInput: 1
   - type: 3
@@ -182,10 +123,6 @@ MonoBehaviour:
     showHand: 0
     handPath: []
     handDuration: 0
-    showArrow: 0
-    arrowFrom: 0
-    arrowTo: 0
-    arrowLabel: 
     advanceCondition: 3
     pauseEnemyTimers: 0
     lockInput: 0

@@ -204,7 +204,7 @@ public class BoardTilePopulator
         }
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    //helpers
     private void RebuildOccupiedCache()
     {
         _occupiedBySpecial.Clear();

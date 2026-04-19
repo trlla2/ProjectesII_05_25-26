@@ -16,7 +16,7 @@ public class DecorationTile : MonoBehaviour
 
     private void PlayFloatAnimation()
     {
-        // que floten sincronizadas
+        // que floten desincronizadas
         float phaseOffset = Random.Range(0f, _floatDuration);
 
         _floatTween = transform

@@ -13,8 +13,6 @@ public class ChestOfEgressTile : BoardTile
             Renderer chestRenderer = chestObj.GetComponent<Renderer>();
             if (chestRenderer != null)
                 chestRenderer.material.color = _chestColor;
-            else
-                Debug.LogWarning($"ChestOfEgressTile: No Renderer found on {chestObj.name}");
         }
     }
 

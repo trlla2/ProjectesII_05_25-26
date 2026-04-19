@@ -65,17 +65,14 @@ public class MoneyUIHandler : MonoBehaviour
             time = 0;
             parentFader.ToTarget();
             isFading = true;
-            
+            SFXManager.Instance.PlaySFXByName("GetCoins");
         }
 
         if (moneyAddedGO != null && amount > 0)
         {
-            Debug.Log("Se intenta");
-
             moneyAddedGO.GetComponent<TMP_Text>().text = $"+{amount}";
             moneyAddedGO.GetComponent<TranslatorUI>().ToTarget();
-            Debug.Log("Se Ha hecho");
-
+            SFXManager.Instance.PlaySFXByName("GetCoins");
         }
 
         moneyText.text = GameManager.Instance.PlayerStats.Money.ToString();
@@ -86,6 +83,7 @@ public class MoneyUIHandler : MonoBehaviour
     {
         if (!showAlways)
         {
+            SFXManager.Instance.PlaySFXByName("GetCoins");
             time = 0;
             parentFader.ToTarget();
             isFading = true;

@@ -7,6 +7,8 @@ public class EnemyTile : BoardTile
 
     private TileClickHandler _boardRaycast;
 
+    [SerializeField] private TutorialFoggedTilesShower _tutorialFoggedTilesShower;
+
     private void Start()
     {
         _boardRaycast = Camera.main.GetComponent<TileClickHandler>();
@@ -50,6 +52,8 @@ public class EnemyTile : BoardTile
     {
         _boardRaycast.HandleBoardRaycast(true);
 
+        if (_tutorialFoggedTilesShower != null)
+            _tutorialFoggedTilesShower.ShowFoggedTiles();
         ReplaceWithPostInteraction();
         _boardManager.IncrementEnemyDefeatedCount();
     }

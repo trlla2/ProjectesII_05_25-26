@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class EnemyTile : BoardTile
 {
-    [SerializeField] private string _combatSceneName;
+    [SerializeField] protected string _combatSceneName;
     [SerializeField] private int lootRatePercentage;
 
     private TileClickHandler _boardRaycast;
@@ -15,8 +15,6 @@ public class EnemyTile : BoardTile
     public override void Interact()
     {
         Debug.Log("starting combat...");
-
-        
 
         if (!_boardManager.EncountersManager.IsForced())
         {

@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class BossTile : EnemyTile
 {
+    [SerializeField] protected string _combatSceneName;
+
     protected override EnemyType ResolveEnemy()
     {
 

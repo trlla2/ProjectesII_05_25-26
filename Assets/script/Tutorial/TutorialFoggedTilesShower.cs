@@ -11,6 +11,7 @@ public class TutorialFoggedTilesShower : MonoBehaviour
     {
         GameManager.Instance.OnEnterBoard -= ShowFoggedTiles;
 
+
         foreach (FogTile foggedTile in _foggedTiles)
         {
             if (foggedTile.FoggedTileData != null)

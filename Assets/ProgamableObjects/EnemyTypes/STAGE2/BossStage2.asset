@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ab529a0c12673a408eb38b86a880060, type: 3}
+  m_Name: BossStage2
+  m_EditorClassIdentifier: 
+  name: Sea Minotaur
+  health: 1000
+  damage: 17
+  elementCount: 0
+  level: 1
+  difficulty: 7
+  weaknesses: 01000000
+  weaknessMultiplier: 2
+  resistances: 00000000
+  resistanceMultiplier: 0.5
+  enemySprite: {fileID: 21300000, guid: 6e73faeff3d53ef4ab9e1d76b914bda2, type: 3}
+  animatorController: {fileID: 9100000, guid: 5f84ae3019d816b499709a29ed4ee5aa, type: 2}
+  spellType: 14
+  damagePerElement: 4
+  moveCount: 5
+  goldReward: 1500
+  attackTimer: 7
+  lvl2Countdown: 15
+  lvl2BonusTimeOnClear: 5
+  continuousSelectionInterval: 4
+  visibilityDuration: 2.5
+  hiddenSprite: {fileID: 0}
+  blockerCount: 2
+  blockerDamagePercent: 0.25
+  haveDrops: 1
+  spellDrops:
+  - {fileID: 11400000, guid: e02a4c0454b986845a065ad209d800cd, type: 2}
+  - {fileID: 11400000, guid: e8ecfab035326b84386fbbcadbfc34ff, type: 2}
+  swapperSwapInterval: 3

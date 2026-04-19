@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-//static class to hold spawn weight for the grid spawner.
+//static class to hold spawn weight for the grid spawner.We need to override them when palyer gets Firestar or moonsham items
 public static class GridSpawnRegistry
 {
     private static Dictionary<ElementType, float> _overrides = new Dictionary<ElementType, float>();
@@ -21,7 +21,7 @@ public static class GridSpawnRegistry
     }
 
     //Called automatically before any scene loads to avoid stale
-    // state leaking between editor play sessions
+    //state leaking between editor play sessions... https://docs.unity3d.com/es/530/ScriptReference/RuntimeInitializeOnLoadMethodAttribute.html
     [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Reset() => _overrides.Clear();
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
-    public const int GridSize = 4;
+    public int GridSize = 4;
 
     [Header("Configuration")]
     [SerializeField] private List<Element> availableElements;
@@ -83,6 +83,10 @@ public class Grid : MonoBehaviour
 
     private void Awake()
     {
+        if (tutorialManager != null)
+        {
+            if (tutorialManager.IsTutorialActive()) GridSize = tutorialManager.activeLayout.GridSize;
+        }
         Initialize(availableElements, emptyElement);
     }
 
@@ -103,7 +107,6 @@ public class Grid : MonoBehaviour
         if (GameManager.Instance != null)
         {
             InsertSpell(GameManager.Instance.PlayerStats.GetSpellBook()[(int)Random.Range(0, GameManager.Instance.PlayerStats.GetSpellBook().Count)].Recipe);
-            Debug.Log("Inserting");
         }
         else
         {

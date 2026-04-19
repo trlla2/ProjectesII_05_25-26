@@ -27,14 +27,16 @@ public class SequentialTracePhase : IQTEPhase
     //radius for a correct touch
     private const float HitRadius = 0.8f;
 
-    public SequentialTracePhase(Grid grid, QTEVisualController visual, int points = 6, float revealTime = 3f, float inputTime = 4f)
+    public SequentialTracePhase(Grid grid, QTEVisualController visual, int points = 6, float revealTime = 3f, float inputTime = 4f, System.Action<bool> onComplete = null)
     {
         this.grid = grid;
         this.visualController = visual;
         this.coroutineRunner = visual; // QTEVisualController is a MonoBehaviour
-        pointCount = points;
         revealDuration = revealTime;
+        pointCount = points;
         inputDuration = inputTime;
+
+        OnPhaseComplete += onComplete;
 
         if (mainCamera == null)
             mainCamera = Camera.main;
@@ -87,8 +89,8 @@ public class SequentialTracePhase : IQTEPhase
         tracePoints = new List<Vector2Int>();
         var available = new List<Vector2Int>();
 
-        for (int x = 0; x < Grid.GridSize; x++)
-            for (int y = 0; y < Grid.GridSize; y++)
+        for (int x = 0; x < grid.GridSize; x++)
+            for (int y = 0; y < grid.GridSize; y++)
                 available.Add(new Vector2Int(x, y));
 
         for (int i = 0; i < pointCount && available.Count > 0; i++)

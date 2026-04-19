@@ -1,3 +1,4 @@
+using Microsoft.Unity.VisualStudio.Editor;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -87,10 +88,10 @@ public class Orb1QTE : MonoBehaviour, IQTE
         Time.timeScale = 0f;
 
         SequentialTracePhase sequentialPhase = new SequentialTracePhase(
-            grid, 
-            visualController, 
-            sequentialPointCount, 
-            sequentialRevealTime, 
+            grid,
+            visualController,
+            sequentialPointCount,
+            sequentialRevealTime,
             sequentialInputTime
         );
 
@@ -156,6 +157,8 @@ public class Orb1QTE : MonoBehaviour, IQTE
     {
         isWaitingForSuccessAnimation = true;
 
+        visualEffects.PlayChargeAttackEffect();
+
         Vector3 targetOrbPosition = Vector3.zero;
         if (orbTransform != null)
         {
@@ -174,7 +177,7 @@ public class Orb1QTE : MonoBehaviour, IQTE
             visualController,
             targetOrbPosition,
             this
-        );
+            );
 
         animPhase.OnPhaseComplete += HandleSuccessAnimationComplete;
         Phases.Add(animPhase);
@@ -194,6 +197,12 @@ public class Orb1QTE : MonoBehaviour, IQTE
 
         isWaitingForSuccessAnimation = false;
         HandleFinalComplete(true);
+    }
+
+    public void PlayChargingParticles()
+    {
+        if(visualEffects != null)
+        visualEffects.PlayChargeAttackEffect();
     }
 
     private void HandleFinalComplete(bool success)

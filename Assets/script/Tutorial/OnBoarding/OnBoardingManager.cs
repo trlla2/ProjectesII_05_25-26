@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -32,13 +33,14 @@ public class OnBoardingManager : MonoBehaviour
         if (panelList.IsPanelExplained(key)) return;
         if (currentPanel == null) return;
 
-        panelList.MarkPanelAsExplained(key);
+        
         Time.timeScale = 0f;
 
         OnboardingPanel panelToOpen = GetPanelWithKey(key);
         panelToOpen.Show(() =>
         {
             Time.timeScale = 1f;
+            panelList.MarkPanelAsExplained(key);
         });
     }
 
@@ -53,4 +55,24 @@ public class OnBoardingManager : MonoBehaviour
         panelList.ResetAllSavedData();
     }
 
+    public void TriggerIfNewWithDelay(OnBoardingKey key)
+    {
+        StartCoroutine(ShowOnBoardingWithKey(key));
+    }
+
+    private IEnumerator ShowOnBoardingWithKey(OnBoardingKey key)
+    {
+        yield return new WaitForSecondsRealtime(0.5f);
+        OnBoardingManager.Instance.TriggerIfNew(key);
+    }
+
+    public bool IsPanelExplainedWithKey(OnBoardingKey key)
+    {
+        return panelList.IsPanelExplained(key);
+    }
+
+    public void MarkPanelAsExplained(OnBoardingKey key)
+    {
+        panelList.MarkPanelAsExplained(key);
+    }
 }

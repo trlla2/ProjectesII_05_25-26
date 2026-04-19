@@ -1,7 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class PlayerStats
 {
@@ -116,11 +116,12 @@ public class PlayerStats
     {
         maxHp = baseMaxHP;
         hp = maxHp;
-
-        ModifyEvasionUpgradesLvl(-_evasionBaseUpgrades);
-        ModifyExtraHealthUpgradesLvl(-_maxHealthBaseUpgrades);
-        ModifyExtraDamageUpgradesLvl(-_damageBaseUpgrades);
-        ModifyDefenseUpgradesLvl(-_defenseBaseUpgrades);
+        
+        _evasionBaseUpgrades = 0;
+        _maxHealthBaseUpgrades = 0;
+        _damageBaseUpgrades = 0;
+        _defenseBaseUpgrades = 0;
+        //
         _evasionModifier = 0;
         _maxHealthModifier = 0;
         _damageModifier = 0;
@@ -135,16 +136,6 @@ public class PlayerStats
         ResetLevelStats();
     }
 
-    public List<DamageType> AttackWithSpell(Spell spell)
-    {
-        List<DamageType> damages = new List<DamageType>();
-        foreach (Element e in spell.Recipe)
-        {
-            damages.Add(AttackWithElement(e.Type));
-        }
-
-        return damages;
-    }
 
     public DamageType AttackWithElement(ElementType elementType)
     {
@@ -206,6 +197,7 @@ public class PlayerStats
 
         if (CanLevelUp())
             OnLevelUp.Invoke();
+            
     }
 
     private void LevelUp()
@@ -367,28 +359,38 @@ public class PlayerStats
     {
         _evasionBaseUpgrades += amount;
         OnStatUpgradeLevelChanged?.Invoke(ModificableStat.EVASION, _evasionBaseUpgrades);
+        OnBoardingManager.Instance.TriggerIfNewWithDelay(OnBoardingKey.BUFFS_N_DEBUFFS);
     }
 
     public void ModifyExtraHealthUpgradesLvl(int amount)
     {
         _maxHealthBaseUpgrades += amount;
         OnStatUpgradeLevelChanged?.Invoke(ModificableStat.HEALTH, _maxHealthBaseUpgrades);
+        OnBoardingManager.Instance.TriggerIfNewWithDelay(OnBoardingKey.BUFFS_N_DEBUFFS);
     }
 
     public void ModifyExtraDamageUpgradesLvl(int amount)
     {
         _damageBaseUpgrades += amount;
         OnStatUpgradeLevelChanged?.Invoke(ModificableStat.DAMAGE, _damageBaseUpgrades);
+        OnBoardingManager.Instance.TriggerIfNewWithDelay(OnBoardingKey.BUFFS_N_DEBUFFS);
     }
 
     public void ModifyDefenseUpgradesLvl(int amount)
     {
         _defenseBaseUpgrades += amount;
         OnStatUpgradeLevelChanged?.Invoke(ModificableStat.DEFENSE, _defenseBaseUpgrades);
+        OnBoardingManager.Instance.TriggerIfNewWithDelay(OnBoardingKey.BUFFS_N_DEBUFFS);
     }
 
     public void HealPercentage(float percentage)
     {
         Heal((maxHp + extraHealth) * percentage);
     }
+
+    //public bool IsAnyStatUpgraded()
+    //{
+    //    return _evasionBaseUpgrades > 0 || _maxHealthBaseUpgrades > 0 || _damageBaseUpgrades > 0 || _defenseBaseUpgrades > 0;
+    //}
+
 }

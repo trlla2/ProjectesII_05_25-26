@@ -298,12 +298,19 @@ public class SpellPathAnimator : MonoBehaviour
 
         if (GameManager.Instance != null && cloneElementMap.ContainsKey(clone))
         {
-            Element element = cloneElementMap[clone];
+            ElementType element = cloneElementMap[clone].Type;
+
+            element = element switch
+            {
+                ElementType.Orange => ElementType.Red,
+                ElementType.Melon  => ElementType.Green,
+                _                  => element
+            };
 
             if (isPlayerAnimator)
             {
-                PlayHitParticle(element.Type, clone.transform.position);
-                GameManager.Instance.CombatHandler.AttackEnemy(element.Type);
+                PlayHitParticle(element, clone.transform.position);
+                GameManager.Instance.CombatHandler.AttackEnemy(element);
             }
             else
             {

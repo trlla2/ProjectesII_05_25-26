@@ -17,7 +17,6 @@ public class QTENumberPopup : MonoBehaviour
         Color.green, Color.red, Color.white 
     };
     [SerializeField] private float numberGlowIntensity = 2f;
-    [SerializeField] private float fontSize = 48f;
 
     [Header("References")]
     [SerializeField] private Canvas qteCanvas;
@@ -68,14 +67,14 @@ public class QTENumberPopup : MonoBehaviour
 
         TMP_Text text = popup.GetComponentInChildren<TMP_Text>();
         text.text = number.ToString();
-        
+
         Color numberColor = (number - 1 < numberColors.Length) ? numberColors[number - 1] : Color.white;
         text.color = numberColor * numberGlowIntensity;
 
         Image bgImage = popup.GetComponent<Image>();
         if (bgImage != null)
         {
-            bgImage.color = new Color(numberColor.r, numberColor.g, numberColor.b, 0.3f);
+            bgImage.color = new Color(numberColor.r, numberColor.g, numberColor.b, 0.8f);
         }
 
         //Scale animation with unscaled time (bc paused game)

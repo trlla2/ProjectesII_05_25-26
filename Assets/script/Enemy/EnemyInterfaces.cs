@@ -47,7 +47,7 @@ public abstract class EnemySpellBase : IEnemySpell
         if (grid == null) return;
 
         targetedPositions.Clear();
-        int size = Grid.GridSize;
+        int size = grid.GridSize;
 
         for (int x = 0; x < size; x++)
         {

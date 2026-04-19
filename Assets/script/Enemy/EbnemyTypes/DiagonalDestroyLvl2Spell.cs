@@ -13,7 +13,7 @@ public class DiagonalDestroyLvl2Spell : TimedDestroySpellBase
     protected override void SelectTargets(Grid grid)
     {
         bool useMainDiagonal = Random.value > 0.5f;
-        int size = Grid.GridSize;
+        int size = grid.GridSize;
 
         for (int i = 0; i < size; i++)
         {

@@ -4,16 +4,22 @@ using UnityEngine;
 public enum OnBoardingKey
 {
     DEBUG,
-    USABLE_ITEMS,
-    ITEMS_COMBINATION,
-    CHEST_OF_EGRESS,
-    SPELLBOOK,
-    SLOT_MACHINE, 
-    SHOP, // maybe no xd
-    BOMB_ENEMY, // destroy the cable connection to defuse the bomb
-    HIDDEN_ENEMY,
-    BOSS_STAGE1_START,
-    BOSS_STAGE1_ORBCHARGED,
+    USABLE_ITEMS, //
+    ITEMS_COMBINATION, // elementos dobles
+    CHEST_OF_EGRESS, //
+    SPELLBOOK, //
+    SPELLBOOK_DEDICO,
+    SHOP, // 
+    BOMB_ENEMY, // 
+    HIDDEN_ENEMY, //
+    BOSS_STAGE1_START, //
+    BOSS_STAGE1_ORBCHARGED, //
+    BUFFS_N_DEBUFFS, //
+    LVL_UP_ELEMENTS, // falta integrarlo
+    HALL_OF_EGRESS_INTRO,
+    HALL_OF_EGRESS_GOTOSPELLBOOK,
+    HALL_OF_EGRESS_GOTOSPELLBOOK_DEDICO
+
 
 }
 

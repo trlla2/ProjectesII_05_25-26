@@ -17,6 +17,7 @@ public class Orb : MonoBehaviour
     public event Action<OrbState> OnStateChanged;
     public event Action OnOrbActivated;
     public event Action OnOrbDepleted;
+    public bool HasBeenActivated {get; private set;} = false;
 
     [HideInInspector]
     public bool IsActive;
@@ -66,7 +67,7 @@ public class Orb : MonoBehaviour
 
     private void ActivateOrb()
     {
-
+        HasBeenActivated = true;
         OnOrbActivated?.Invoke();
 
         qteController.OnQTEComplete += HandleQTEComplete;
@@ -155,5 +156,10 @@ public class Orb : MonoBehaviour
             State = newState;
             OnStateChanged?.Invoke(State);
         }
+    }
+
+    public bool IsFullyCharged()
+    {
+        return CurrentCharge >= MaxCharge;
     }
 }

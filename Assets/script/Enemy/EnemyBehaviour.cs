@@ -116,8 +116,8 @@ public class EnemyBehaviour : MonoBehaviour
 
         if (activeSpell != null && grid != null)
         {
-            for (int x = 0; x < Grid.GridSize; x++)
-                for (int y = 0; y < Grid.GridSize; y++)
+            for (int x = 0; x < grid.GridSize; x++)
+                for (int y = 0; y < grid.GridSize; y++)
                 {
                     var pos = new Vector2Int(x, y);
                     var visual = grid.GetElementVisualAt(pos);
@@ -158,14 +158,6 @@ public class EnemyBehaviour : MonoBehaviour
         if (enemyType == null || grid == null)
             return;
 
-
-        if (activeSpell is TutorialStage2TimedSpell)
-        {
-            activeSpell.Execute(grid);
-            timedSpellMonitor = StartCoroutine(MonitorTimedSpell());
-            return;
-        }
-
         // Don't recreate if it's an active MultipleTimedSpellBase
         if (activeSpell is MultipleTimedSpellBase existingMulti && existingMulti.IsActive)
             return;
@@ -178,8 +170,7 @@ public class EnemyBehaviour : MonoBehaviour
         if (activeSpell is SwapperSpell existingSwapper && existingSwapper.IsActive)
             return;
 
-        HandleTargetVFX();
-
+        HandleTargetVFX();  
         activeSpell = enemyType.CreateSpell();
         if (activeSpell != null)
         {
@@ -286,6 +277,10 @@ public class EnemyBehaviour : MonoBehaviour
         activeSpell.Tick(grid, () =>
         {
             StartCoroutine(RerollAndRetarget());
+            if(activeSpell is BombSpell)
+            {
+                
+            }
         });
     }
 

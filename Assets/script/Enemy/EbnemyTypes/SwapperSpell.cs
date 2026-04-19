@@ -459,9 +459,9 @@ public class SwapperSpell : EnemySpellBase
         Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
 
         List<Vector2Int> candidates = new List<Vector2Int>();
-        for (int x = 0; x < Grid.GridSize; x++)
+        for (int x = 0; x < grid.GridSize; x++)
         {
-            for (int y = 0; y < Grid.GridSize; y++)
+            for (int y = 0; y < grid.GridSize; y++)
             {
                 Vector2Int pos = new Vector2Int(x, y);
                 if (used.Contains(pos)) continue;

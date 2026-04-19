@@ -7,6 +7,8 @@ public class TutorialGridLayout : ScriptableObject
     [Header("4x4 bottom to top")]
     public List<ElementRow> rows = new List<ElementRow>(4);
 
+    public int GridSize = 4;
+
     [Header("Applied in order after each refill")]
     public List<TutorialRefillOverride> refillOverrides;
 

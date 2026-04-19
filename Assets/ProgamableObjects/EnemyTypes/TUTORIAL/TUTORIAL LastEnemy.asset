@@ -10,26 +10,32 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1ab529a0c12673a408eb38b86a880060, type: 3}
-  m_Name: TUTORIAL firts enemy
+  m_Name: TUTORIAL LastEnemy
   m_EditorClassIdentifier: 
-  name: Door
-  health: 24
+  name: Tiefling
+  health: 40
   damage: 0
-  elementCount: 0
+  elementCount: 1
   level: 0
   difficulty: 1
   weaknesses: 
   weaknessMultiplier: 2
   resistances: 
   resistanceMultiplier: 0.5
-  enemySprite: {fileID: -7341407202210888751, guid: be13fc386c8d5704594f72efe271293a, type: 3}
-  animatorController: {fileID: 0}
-  spellType: 2
-  damagePerElement: 0
-  moveCount: 100
-  AtackTimer: 4
-  lvl2Delay: 5
+  enemySprite: {fileID: 21300000, guid: f0247ee85c795f74b8e75f5d410094f0, type: 3}
+  animatorController: {fileID: 9100000, guid: d36a08dc8ae36ac459a83d7562e96123, type: 2}
+  spellType: 0
+  damagePerElement: 3
+  moveCount: 0
+  goldReward: 100
+  attackTimer: 5
   lvl2Countdown: 15
+  lvl2BonusTimeOnClear: 2
+  continuousSelectionInterval: 2.5
   visibilityDuration: 2.5
   hiddenSprite: {fileID: 0}
-  excludeBelowTargets: 0
+  blockerCount: 2
+  blockerDamagePercent: 0.25
+  haveDrops: 0
+  spellDrops: []
+  swapperSwapInterval: 2.5

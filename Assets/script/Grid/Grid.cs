@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
-    public const int GridSize = 4;
+    public int GridSize = 4;
 
     [Header("Configuration")]
     [SerializeField] private List<Element> availableElements;
@@ -83,6 +83,7 @@ public class Grid : MonoBehaviour
 
     private void Awake()
     {
+        if(tutorialManager.IsTutorialActive()) GridSize = tutorialManager.activeLayout.GridSize;
         Initialize(availableElements, emptyElement);
     }
 

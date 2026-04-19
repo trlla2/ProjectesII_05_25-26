@@ -11,7 +11,7 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private EnemyBehaviour enemyBehaviour;
 
     [SerializeField] private TutorialSequence activeSequence;
-    [SerializeField] private TutorialGridLayout activeLayout;
+    public  TutorialGridLayout activeLayout;
     private int currentStepIndex;
     private int refillIndex;
     private bool tutorialActive;
@@ -79,6 +79,7 @@ public class TutorialManager : MonoBehaviour
 
     public void StopTutorial()
     {
+        grid.VisualGrid.gameObject.SetActive(false);
         tutorialActive = false;
         allowedPathSet = null;
         uiController.HideAll();
@@ -124,9 +125,9 @@ public class TutorialManager : MonoBehaviour
 
     private void ApplyGridLayout(TutorialGridLayout layout)
     {
-        for (int x = 0; x < Grid.GridSize; x++)
+        for (int x = 0; x < layout.GridSize; x++)
         {
-            for (int y = 0; y < Grid.GridSize; y++)
+            for (int y = 0; y < layout.GridSize; y++)
             {
                 Element element = layout.GetElement(x, y);
                 if (element != null)

@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2de90ffb221997447a171e015eca53c6, type: 3}
   m_Name: Bandana
   m_EditorClassIdentifier: 
-  nameItem: Bandana
+  nameItem: Old Wizzard Hat
   description: Gives a chance to deal critical damage
   rarity: 0
-  sprite: {fileID: 1508313600, guid: 71176c8eaa438204183310174053306d, type: 3}
+  sprite: {fileID: 5555539270824955543, guid: ce7b5e45b40a2794bba8026919616e1e, type: 3}
   TargetSprite: {fileID: 0}
   effectType: 0
   extraDamageEffect:
@@ -98,26 +98,27 @@ MonoBehaviour:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    fireElementType: 0
     delayBetweenElements: 0.15
   lightningObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    lightningElementType: 3
     delayBetweenElements: 0.15
   shamrockObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    shamrockElementType: 2
     delayBetweenElements: 0.15
   moonObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    moonElementType: 1
     delayBetweenElements: 0.15
+  freezeEffect:
+    animationDuration: 0.6
+    curveStrength: 1.5
+    xSprite: {fileID: 0}
+    freezeDuration: 4
   activationType: 0
   consumeOnUse: 1
   cooldown: 0

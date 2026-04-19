@@ -259,7 +259,6 @@ public class BlockerSpell : IEnemySpell
 
         if (cachedEnemy == null)
         {
-            Debug.LogWarning("No cached enemy reference for animation");
             onComplete?.Invoke();
             return;
         }
@@ -267,7 +266,6 @@ public class BlockerSpell : IEnemySpell
         SpellPathAnimator animator = cachedEnemy.GetComponentInChildren<SpellPathAnimator>();
         if (animator == null)
         {
-            Debug.LogWarning("No SpellPathAnimator found on enemy");
             onComplete?.Invoke();
             return;
         }

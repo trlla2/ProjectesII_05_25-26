@@ -144,7 +144,7 @@ public abstract class ActivatableEffectBase : IActivatableEffect
             // Destroy ElementVisual objects and queue refill
             grid.DeleteElementsByPlayer(positions);
             IEnemySpell enemySpell = GameManager.Instance.CombatHandler.GetEnemyRef().ActiveSpell;
-            if (tickEnemyProgress || enemySpell is BombSpell || enemySpell is HiddenDestroySpell)
+            if (tickEnemyProgress || enemySpell is BombSpell || enemySpell is HiddenDestroySpell || enemySpell is BlockerSpell)
                 GameManager.Instance.NotifyPlayerMove();
 
             grid.ChangeState(new IdleState(grid));

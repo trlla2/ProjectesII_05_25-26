@@ -66,6 +66,12 @@ public class TranslatorUI : MonoBehaviour
         }
 
         currentAnimation = newAnimation;
+
+        if (!gameObject.activeInHierarchy)
+        {
+            return;
+        }
+
         StartCoroutine(currentAnimation);
     }
 
@@ -119,5 +125,10 @@ public class TranslatorUI : MonoBehaviour
         rectTransform.localScale = originScale + (scale * interpolatedValue);
         rectTransform.localEulerAngles = originRotation + (rotation * interpolatedValue);
         OnChange.Invoke(interpolatedValue);
+    }
+
+    private void OnDestroy()
+    {
+        
     }
 }

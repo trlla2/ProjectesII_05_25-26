@@ -15,9 +15,13 @@ public class EnemyAnimationHandler : MonoBehaviour
     {
         animator = GetComponent<Animator>();
 
+        if (behaviour == null) return;
+
         behaviour.OnHitRecived += HitAnimation;
         behaviour.OnEnemyDeath += () => animator.SetBool("Dead", true);
-        behaviour.ActiveSpell.OnExecute += () => animator.SetTrigger("Attack");
+
+        if (behaviour.ActiveSpell != null)
+            behaviour.ActiveSpell.OnExecute += () => animator.SetTrigger("Attack");
     }
 
     private void HitAnimation(float hp)
@@ -27,8 +31,12 @@ public class EnemyAnimationHandler : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (behaviour == null) return;
+
         behaviour.OnHitRecived -= HitAnimation;
         behaviour.OnEnemyDeath -= () => animator.SetBool("Dead", true);
-        behaviour.ActiveSpell.OnExecute -= () => animator.SetTrigger("Attack");
+
+        if (behaviour.ActiveSpell != null)
+            behaviour.ActiveSpell.OnExecute -= () => animator.SetTrigger("Attack");
     }
 }

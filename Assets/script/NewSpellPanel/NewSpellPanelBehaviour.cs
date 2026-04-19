@@ -48,8 +48,27 @@ public class NewSpellPanelBehaviour : MonoBehaviour
 
     public void AcceptSpell()
     {
-        //GameManager.Instance.AddSpellToPlayerSpellBook(spellTile.Spell);
-        Debug.LogError("CAN NOT ADD NEW SPELL TO THE PLAYER");
+        PlayerStats stats = GameManager.Instance.PlayerStats;
+        int emptySlot = -1;
+
+        for (int i = 0; i < stats.SpellBookSize; i++)
+        {
+            if (stats.SpellBook[i] == null)
+            {
+                emptySlot = i;
+                break;
+            }
+        }
+
+        if (emptySlot >= 0)
+        {
+            stats.AddSpellToSpellBook(spellTile.Spell, emptySlot);
+        }
+        else
+        {
+            Debug.LogWarning("Spell book is full! Cannot add new spell.");
+        }
+
         spellTile.Replace();
         spellTile = null;
         translatorUI.ToOrigin();

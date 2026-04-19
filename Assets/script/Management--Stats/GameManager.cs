@@ -36,11 +36,13 @@ public class GameManager : MonoBehaviour
             if (thisDebugStats != null && thisDebugStats.HasDebugSpells())
             {
                 GameManager.Instance.PlayerStats.ClearSpellBook();
-                for (int i = 0; i < GameManager.Instance.PlayerStats.SpellBookSize; i++)
+                for (int i = 0; i < GameManager.Instance.PlayerStats.SpellBookSize && i < thisDebugStats.Spells.Count; i++)
                 {
                     if (thisDebugStats.Spells[i] == null)
                         continue;
-                    GameManager.Instance.gameObject.GetComponent<DEBUG_Stats>().SetDebugSpellList(thisDebugStats.Spells);
+                    DEBUG_Stats instanceDebugStats = GameManager.Instance.gameObject.GetComponent<DEBUG_Stats>();
+                    if (instanceDebugStats != null)
+                        instanceDebugStats.SetDebugSpellList(thisDebugStats.Spells);
                     GameManager.Instance.PlayerStats.AddSpellToSpellBook(thisDebugStats.Spells[i], i);
                 }
             }

@@ -44,8 +44,13 @@ public class EnemyUIHandler : MonoBehaviour
 
     private void Awake()
     {
-        GameManager.Instance.CombatHandler.OnSetEnemyReference += SetEnemyRef;
+        if (GameManager.Instance == null || GameManager.Instance.CombatHandler == null)
+        {
+            Debug.LogWarning("EnemyUIHandler: GameManager or CombatHandler not ready yet.");
+            return;
+        }
 
+        GameManager.Instance.CombatHandler.OnSetEnemyReference += SetEnemyRef;
         critImage.SetActive(false);
     }
 

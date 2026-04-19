@@ -35,22 +35,26 @@ public class VisualGrid : MonoBehaviour
 
     public void FillEmpty(List<Vector2Int> positions, float duration)
     {
+        if (!gameObject.activeInHierarchy) return;
         StartCoroutine(FillEmptyRoutine(positions, duration));
     }
 
     public void Swap(Vector2Int posA, Vector2Int posB, float duration)
     {
+        if (!gameObject.activeInHierarchy) return;
         StartCoroutine(SwapRoutine(posA, posB, duration));
     }
 
     public void Refill(float duration)
     {
+        if (!gameObject.activeInHierarchy) return;
         StartCoroutine(RefillRoutine(duration));
     }
 
     public IEnumerator PlayRerollAnimation(int scrollTimes, float scrollDuration, float columnDelay, 
                                             List<Element> availableElements, Element[,] finalGrid)
     {
+        if (!gameObject.activeInHierarchy) yield break;
         yield return StartCoroutine(RerollScrollRoutine(scrollTimes, scrollDuration, columnDelay, availableElements, finalGrid));
     }
 
@@ -270,6 +274,7 @@ public class VisualGrid : MonoBehaviour
 
     public IEnumerator AnimateGravity(List<Vector2Int> movedPositions, float duration)
     {
+        if (!gameObject.activeInHierarchy) yield break;
         yield return StartCoroutine(GravityRoutine(movedPositions, duration));
     }
 
@@ -545,6 +550,7 @@ public class VisualGrid : MonoBehaviour
     {
         if (!isInitialized || grid == null || grid.GridData == null)
             yield break;
+        if (!gameObject.activeInHierarchy) yield break;
 
         var items = new List<(ElementVisual visual, Vector3 start, Vector3 target)>();
 

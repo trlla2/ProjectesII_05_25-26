@@ -51,6 +51,7 @@ public class SpellHoverHandler : MonoBehaviour
 
     private void OnDestroy()
     {
-        GameManager.Instance.CombatHandler.DeleteEnemyRef();
+        if (GameManager.Instance != null && GameManager.Instance.CombatHandler != null)
+            GameManager.Instance.CombatHandler.DeleteEnemyRef();
     }
 }

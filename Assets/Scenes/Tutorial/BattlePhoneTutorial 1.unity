@@ -23012,7 +23012,6 @@ GameObject:
   - component: {fileID: 1195736973}
   - component: {fileID: 1195736972}
   - component: {fileID: 1195736971}
-  - component: {fileID: 1195736970}
   - component: {fileID: 1195736969}
   - component: {fileID: 1195736968}
   m_Layer: 5
@@ -23131,28 +23130,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79341727b23fdbd4fa90c9dd4761882b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1195736970
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1195736967}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51a293e6c8af68746b9f7f68f4f1ee43, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  winPanel: {fileID: 0}
-  losePanel: {fileID: 0}
-  winText: {fileID: 0}
-  spellDropTextColor: {r: 0, g: 1, b: 0, a: 1}
-  expTextColor: {r: 0, g: 0.5827391, b: 1, a: 1}
-  winTranslator: {fileID: 0}
-  loseTranslator: {fileID: 0}
-  loseScene: HallOfEgress
-  sceneToUnload: BattlePhoneTutorial
-  goToHallOfEgress: 0
 --- !u!114 &1195736971
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24277,37 +24254,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1722858041006547153, guid: 293ccd3aa5d5b064cb000f01caa8235f, type: 3}
   m_PrefabInstance: {fileID: 1289401695}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1311944229
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1311944232}
-  m_Layer: 0
-  m_Name: ------------- TUTORIAL MANAGER
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1311944232
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1311944229}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1312072800
 GameObject:
   m_ObjectHideFlags: 0
@@ -24368,6 +24314,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   loseScene: HallOfEgress
   sceneToUnload: BattlePhoneTutorial 1
+  forceToHallOfEgress: 0
   bgFader: {fileID: 1312072804}
   winColor: {r: 0.12941177, g: 0.6156863, b: 0.80392164, a: 1}
   loseColor: {r: 0.9725491, g: 0, b: 0.43137258, a: 1}
@@ -32262,7 +32209,6 @@ SceneRoots:
   - {fileID: 1516431419}
   - {fileID: 1078555492}
   - {fileID: 1812663563}
-  - {fileID: 1311944232}
   - {fileID: 327775794}
   - {fileID: 1276368603}
   - {fileID: 1195736974}

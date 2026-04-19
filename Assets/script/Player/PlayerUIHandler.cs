@@ -32,9 +32,11 @@ public class PlayerUIHandler : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (GameManager.Instance == null || GameManager.Instance.CombatHandler == null)
+            return;
+
         GameManager.Instance.CombatHandler.OnPlayerHitRecived -= UpdateHealBar;
         GameManager.Instance.CombatHandler.OnPlayerHealed -= UpdateHealBar;
         GameManager.Instance.CombatHandler.OnPlayerHitEvaded -= HitEvaded;
-
     }
 }

@@ -6,6 +6,7 @@ public class TrailSuccessAnimationPhase : IQTEPhase
 {
     public event Action<bool> OnPhaseComplete;
 
+
     private QTEVisualController visualController;
     private QTETrailRenderer trailRenderer;
     private Vector3 orbPosition;
@@ -22,7 +23,7 @@ public class TrailSuccessAnimationPhase : IQTEPhase
     private Coroutine animationCoroutine;
 
     public TrailSuccessAnimationPhase(QTEVisualController visual, Vector3 targetOrbPosition, MonoBehaviour runner)
-    {
+    {   
         visualController = visual;
         orbPosition = targetOrbPosition;
         coroutineRunner = runner;

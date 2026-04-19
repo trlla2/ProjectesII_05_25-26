@@ -62,14 +62,6 @@ public class BranchChoicePanelHandler : MonoBehaviour
             {
                 arrivedTile.Interact();
             }
-            else
-            {
-                BoardTile nextInteractable = _player
-                    .GetNextForwardTileFrom(arrivedTile, walkableOnly: false);
-
-                if (nextInteractable != null)
-                    nextInteractable.Interact();
-            }
         });
     }
 }

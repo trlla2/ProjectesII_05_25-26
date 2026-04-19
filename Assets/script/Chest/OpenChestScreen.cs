@@ -40,11 +40,6 @@ public class OpenChestScreen : MonoBehaviour
             if(item.Rarity == rarity)
                 candidates.Add(item);
         }
-
-        if (candidates.Count <= 0)
-        {
-            Debug.Log($"NO HAY ITEMS curretnItemList:{candidates.Count}, en rarity {rarity.DisplayName()}");
-        }
         _selectedItem = candidates[Random.Range(0, candidates.Count)];
 
         

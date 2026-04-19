@@ -699,10 +699,8 @@ public class EnemyBehaviour : MonoBehaviour
 
     public void DealDamage(DamageType damageType)
     {
-        // For blocker enemy, only take damage from block breaks (handled by dealBossDamage)
         if (activeSpell is BlockerSpell)
         {
-            Debug.Log("Blocker enemy ignores spell damage - only damaged by block breaks!");
             return;
         }
 

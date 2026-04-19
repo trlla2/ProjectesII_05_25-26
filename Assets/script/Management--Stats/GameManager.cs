@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour
         if (Instance != null)
         {
             DEBUG_Stats thisDebugStats = this.gameObject.GetComponent<DEBUG_Stats>();
-            if (thisDebugStats.HasDebugSpells())
+            if (thisDebugStats != null && thisDebugStats.HasDebugSpells())
             {
                 GameManager.Instance.PlayerStats.ClearSpellBook();
                 for (int i = 0; i < GameManager.Instance.PlayerStats.SpellBookSize; i++)

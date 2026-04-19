@@ -107,7 +107,6 @@ public class Grid : MonoBehaviour
         if (GameManager.Instance != null)
         {
             InsertSpell(GameManager.Instance.PlayerStats.GetSpellBook()[(int)Random.Range(0, GameManager.Instance.PlayerStats.GetSpellBook().Count)].Recipe);
-            Debug.Log("Inserting");
         }
         else
         {

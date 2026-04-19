@@ -136,16 +136,6 @@ public class PlayerStats
         ResetLevelStats();
     }
 
-    public List<DamageType> AttackWithSpell(Spell spell)
-    {
-        List<DamageType> damages = new List<DamageType>();
-        foreach (Element e in spell.Recipe)
-        {
-            damages.Add(AttackWithElement(e.Type));
-        }
-
-        return damages;
-    }
 
     public DamageType AttackWithElement(ElementType elementType)
     {

@@ -83,7 +83,10 @@ public class Grid : MonoBehaviour
 
     private void Awake()
     {
-        if(tutorialManager.IsTutorialActive()) GridSize = tutorialManager.activeLayout.GridSize;
+        if (tutorialManager != null)
+        {
+            if (tutorialManager.IsTutorialActive()) GridSize = tutorialManager.activeLayout.GridSize;
+        }
         Initialize(availableElements, emptyElement);
     }
 

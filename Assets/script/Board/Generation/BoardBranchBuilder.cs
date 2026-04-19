@@ -68,7 +68,6 @@ public class BoardBranchBuilder
         BranchOriginTile origin = _boardManager.CreateBranchOriginTile(originPos, originParent);
         if (origin == null)
         {
-            // Restaurar como EmptyTile para no dejar un hueco en el tablero
             _boardManager.CreateNewTile(_boardManager.emptyTileData, originPos, originParent);
             return null;
         }

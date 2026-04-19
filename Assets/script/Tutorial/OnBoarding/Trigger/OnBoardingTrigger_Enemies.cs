@@ -8,7 +8,6 @@ public class OnBoardingTrigger_Enemies : MonoBehaviour
     private bool _isChecking = false;
     private bool _hasWaited = false;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         StartCoroutine(CheckIfEnemyHasToBeExplained());

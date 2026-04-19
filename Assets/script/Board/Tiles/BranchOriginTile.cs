@@ -12,7 +12,6 @@ public class BranchOriginTile : BoardTile
 
     public override void Interact()
     {
-        Debug.Log($"BranchOriginTile arrived at {this.GetGridPosition()}...");
         _boardManager.ShowBranchChoice(this);
         OnInteract?.Invoke();
     }

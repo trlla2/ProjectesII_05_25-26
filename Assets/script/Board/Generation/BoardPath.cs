@@ -82,7 +82,6 @@ public class BoardPath
         foreach (BoardTile neighbor in tileB.neighbors)
             if (neighbor != null) boardManager.UpdateNeighbors(neighbor);
 
-        Debug.Log($"BoardPath.SwapTilePositions: intercambiadas posiciones {posA} y {posB}.");
     }
 
     public void UpdateTileReference(BoardTile oldTile, BoardTile newTile)

@@ -38,13 +38,13 @@ public class SkinShop : MonoBehaviour
         buyButton.onClick.AddListener(Close);
     }
 
-    private void OnEnable()
-    {
-        translator.ToTarget();
-        currentPage = 1;
-        UpdateVisuals();
-        Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(true);
-    }
+    //private void OnEnable()
+    //{
+    //    translator.ToTarget();
+    //    currentPage = 1;
+    //    UpdateVisuals();
+    //    Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(true);
+    //}
 
     public void PreviousPage()
     {

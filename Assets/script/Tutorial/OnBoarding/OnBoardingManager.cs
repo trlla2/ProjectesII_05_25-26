@@ -19,7 +19,7 @@ public class OnBoardingManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(this.gameObject);
 
-        ResetOnBoardingDataFromPlayerPrefs(); // DEBUG ONLY!!! // remove for build
+        //ResetOnBoardingDataFromPlayerPrefs(); // DEBUG ONLY!!! // remove for build
         instancedPanels = panelList.LoadPrefsData(this.transform);
     }
 

@@ -3,6 +3,7 @@ using TMPro;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
+using Unity.VisualScripting;
 
 public class OpenChestScreen : MonoBehaviour
 {
@@ -42,7 +43,7 @@ public class OpenChestScreen : MonoBehaviour
 
         if (candidates.Count <= 0)
         {
-            Debug.Log($"NO HAY ITEMS curretnItemList:{candidates.Count}");
+            Debug.Log($"NO HAY ITEMS curretnItemList:{candidates.Count}, en rarity {rarity.DisplayName()}");
         }
         _selectedItem = candidates[Random.Range(0, candidates.Count)];
 

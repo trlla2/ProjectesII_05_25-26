@@ -31,6 +31,12 @@ public class SellerBehaviour : MonoBehaviour
     [SerializeField]
     private List<string> outOfStockMessages = new List<string>();
 
+    private SFXController textSFX;
+
+    private void Awake()
+    {
+        textSFX = GetComponent<SFXController>();
+    }
 
     public void EnterShopReacion()
     {
@@ -99,6 +105,7 @@ public class SellerBehaviour : MonoBehaviour
         for (int i = 0; i <= dialogue.Length; i++)
         {
             message.maxVisibleCharacters = i;
+            textSFX.PlayRandomSFX();
             yield return new WaitForSeconds(timePerCharacter);
         }
 

@@ -9,6 +9,7 @@ public class PlayerPathing : MonoBehaviour
     [SerializeField] private Grid grid;
     [SerializeField] private Transform cursorVisual;
     [SerializeField] private SpellEffectHandler spellEffectHandler;
+    [SerializeField] private AudioSource sfxLoop;
 
     [Header("Pathing Settings")]
     [SerializeField] private int maxPathLength = 6;
@@ -18,6 +19,7 @@ public class PlayerPathing : MonoBehaviour
     [SerializeField] private float castCooldown = 0.25f;
 
     [SerializeField] private SpellPathAnimator spellPathAnimator;
+
 
     [Header("Tutorial")]
     [SerializeField] private TutorialManager tutorialManager;
@@ -196,6 +198,7 @@ public class PlayerPathing : MonoBehaviour
         isPathing = true;
         pathData.Clear();
         pathVisualizer.ShowCursor(true);
+        sfxLoop.Play();
     }
 
     private void ContinuePathing()
@@ -236,6 +239,7 @@ public class PlayerPathing : MonoBehaviour
 
         ClearPath();
         pathVisualizer.ClearVisuals();
+        sfxLoop.Pause();
     }
 
 

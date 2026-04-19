@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class ShopScreen : MonoBehaviour
@@ -34,6 +35,8 @@ public class ShopScreen : MonoBehaviour
     private int _maxRerolls = 3;
     private int _currentRerolls = 0;
     private int _costReroll = 50;
+
+    public UnityEvent OnPurchase; 
 
     private void Awake()
     {
@@ -148,7 +151,7 @@ public class ShopScreen : MonoBehaviour
                 _seller.PurchasedItemReaction();
                 break;
         }
-
+        OnPurchase?.Invoke();
         offer.MarkAsPurchased();
         RefreshSlots();
     }

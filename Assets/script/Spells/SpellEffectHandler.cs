@@ -176,6 +176,7 @@ public class SpellEffectHandler : MonoBehaviour
                 markers.Add(SpawnThunderMarker(worldPos));
                 ElementVisual visual = grid.GridData.GetVisualAt(capturedPos);
                 visual?.transform.DOPunchScale(Vector3.one * 0.4f, 0.3f, 5, 0.5f);
+                SFXManager.Instance.PlaySFXByName("ActivateObliderateElement");
             });
 
             if (i < strikePositions.Count - 1)

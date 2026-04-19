@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.Timeline;
 
 public class ElementVisual : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class ElementVisual : MonoBehaviour
     [SerializeField] private GameObject breakEnemyHoverParticles;
     [SerializeField] private BlockadeVisual blockadeVisual;
     [SerializeField] private SpriteRenderer warningSignRenderer;
+    [SerializeField] private AudioSource warningSignAudioSource;
+    [SerializeField] private AudioSource breakSelectionAudioSource;
 
     [HideInInspector]
     public Highlighter highlighter;
@@ -258,6 +261,7 @@ public class ElementVisual : MonoBehaviour
                 warningSignRenderer.gameObject.SetActive(false);
 
             GameObject temp = Instantiate(breakEnemyHoverParticles, transform);
+            breakSelectionAudioSource.Play();
             temp.transform.SetParent(null);
             StopCountdown();
             StopTimedCountdown();
@@ -270,7 +274,7 @@ public class ElementVisual : MonoBehaviour
     private void PlayWarningSignIntro()
     {
         if (warningSignRenderer == null) return;
-
+        warningSignAudioSource.Play();
         warningSignTween?.Kill();
         warningSignTween = null;
 

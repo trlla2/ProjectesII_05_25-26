@@ -60,8 +60,6 @@ public class RewardsHandler : MonoBehaviour
         }
         else
         {
-            Debug.Log("PORQUQEEEEEE");
-
             if(exp > 0)
                 expTextWithout.text = exp.ToString();
             else

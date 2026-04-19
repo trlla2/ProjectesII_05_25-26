@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
+
 public class EndPanelHandler : MonoBehaviour
 {
     private enum EndBattleStage { UNDEFINED = 0, STAGE1 = 1, STAGE2 = 2, STAGE3 = 3 }
@@ -47,6 +48,14 @@ public class EndPanelHandler : MonoBehaviour
     [SerializeField]
     private string loseText = "you lose";
 
+    [Header("Audio")]
+    [SerializeField]
+    private AudioClip winSFX;
+    [SerializeField]
+    private AudioClip loseSFX;
+    [SerializeField]
+    private AudioSource aS;
+
     public UnityEvent OnStage1Enter;
     public UnityEvent OnStage2Enter;
     public UnityEvent OnStage3Enter;
@@ -90,12 +99,14 @@ public class EndPanelHandler : MonoBehaviour
             container.sprite = winContainer;
             title1.text = winText;
             title1.color = winColor;
+            aS.PlayOneShot(winSFX);
         }
         else
         {
             container.sprite = loseContainer;
             title1.text = loseText;
             title1.color = loseColor;
+            aS.PlayOneShot(loseSFX);
         }
 
         bgFader.ToTarget();

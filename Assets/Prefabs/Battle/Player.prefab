@@ -164,6 +164,7 @@ MonoBehaviour:
   grid: {fileID: 0}
   cursorVisual: {fileID: 0}
   spellEffectHandler: {fileID: 753431409773059168}
+  sfxLoop: {fileID: 3973334699749129863}
   maxPathLength: 6
   selectScaleAmount: 0.2
   selectScaleTime: 0.2
@@ -302,16 +303,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spellEffects:
   - SpellName: HEAL
-    Sound: {fileID: 0}
-    Particles: {fileID: 0}
+    Sound: {fileID: 8300000, guid: 8113f027a1c74c043b78b508131f9812, type: 3}
+    VFXPrefab:
+    - {fileID: 0}
   - SpellName: FREEZE
-    Sound: {fileID: 0}
-    Particles: {fileID: 0}
+    Sound: {fileID: 8300000, guid: e57f0298cfa0c8d4dba5d776d991e320, type: 3}
+    VFXPrefab:
+    - {fileID: 0}
+    - {fileID: 0}
+  - SpellName: THUNDER
+    Sound: {fileID: 8300000, guid: 929adb1e3d67c864f8396cd0b8d88707, type: 3}
+    VFXPrefab:
+    - {fileID: 0}
   audioSource: {fileID: 7577674364888054274}
   grid: {fileID: 0}
   spellPathAnimator: {fileID: 0}
   thunderMarkerSprite: {fileID: 0}
   thunderDelayBetweenElements: 0.15
+  panel: {fileID: 0}
+  feezeVignette: {fileID: 0}
 --- !u!82 &7577674364888054274
 AudioSource:
   m_ObjectHideFlags: 0
@@ -321,7 +331,7 @@ AudioSource:
   m_GameObject: {fileID: 4902791056421607132}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -3809610640293120454, guid: 9c3ac6dcfee1a214fbdd10fa0c57770a, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
@@ -569,6 +579,7 @@ Transform:
   m_Children:
   - {fileID: 3230627746458870764}
   - {fileID: 8961083596312846576}
+  - {fileID: 5442921092855008923}
   m_Father: {fileID: 4447280998866706708}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7477927036418291155
@@ -5604,3 +5615,132 @@ SortingGroup:
   m_SortingLayer: 2
   m_SortingOrder: 12
   m_SortAtRoot: 0
+--- !u!1 &9170459961633471186
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5442921092855008923}
+  - component: {fileID: 3973334699749129863}
+  m_Layer: 0
+  m_Name: SpellCasting
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5442921092855008923
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9170459961633471186}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7519400199767908280}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &3973334699749129863
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9170459961633471186}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: -3809610640293120454, guid: 9c3ac6dcfee1a214fbdd10fa0c57770a, type: 2}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: b20f4d6d62edc7f4eb723b5bc5b1e76a, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

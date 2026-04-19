@@ -23,6 +23,8 @@ public class UIExplosionToTarget : MonoBehaviour
     [Header("Events")]
     public UnityEvent onReachedTarget;
 
+    public bool alreadyHit = false;
+
     public void TriggerEffect()
     {
         Vector3[] corners = new Vector3[4];
@@ -72,8 +74,12 @@ public class UIExplosionToTarget : MonoBehaviour
         }
 
         item.position = targetWaypoint.position;
+        if(!alreadyHit)
+        {
+            onReachedTarget?.Invoke();
+            alreadyHit = true;
+        }
 
-        onReachedTarget?.Invoke();
         Destroy(item.gameObject);
     }
 }

@@ -82,7 +82,6 @@ public abstract class GridModifierEffectBase : ActivatableEffectBase, IGridModif
         }
 
         yield return new WaitForSeconds(0.2f);
-
         grid.VisualGrid.ShowInactiveGrid(false);
 
         // If a UI animation was injected play it first 

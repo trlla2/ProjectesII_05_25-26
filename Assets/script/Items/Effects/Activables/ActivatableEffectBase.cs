@@ -121,7 +121,7 @@ public abstract class ActivatableEffectBase : IActivatableEffect
             cameraShake?.Shake(0.1f, 0.08f);
 
             HapticsManager.Instance?.GenerateHapticFeedback(HapticsManager.HapticTypes.LightImpact);
-
+            SFXManager.Instance.PlaySFXByName("ReplaceElementGrid");
             GameObject.Destroy(xMarker);
             GameObject.Destroy(tempVisual);
         });

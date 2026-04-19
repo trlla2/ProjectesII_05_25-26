@@ -13,6 +13,7 @@ public class SlotMachineScreen : MonoBehaviour
     [SerializeField] JackPotAnimation _jackPotAnimation;
     [SerializeField] private MoneyUIHandler moneyUI;
     [SerializeField] private TMP_Text _tries;
+    [SerializeField] private GameObject _jackpotParticles;
 
     private float _closeWaitTime = 1f;
     private float _closeWaitTimeJackpot = 5f;
@@ -101,6 +102,7 @@ public class SlotMachineScreen : MonoBehaviour
             _jackPotAnimation.StartAnimation();
             GameManager.Instance.PlayerStats.AddMoney(Mathf.RoundToInt(_currentBet * _jackpotMult));
             _isJackpot = true;
+            SpawnJackpotParticles();
             OnJackpot.Invoke();
         }
         else if (_rows[0].stoppedSlot == _rows[1].stoppedSlot && _rows[1].stoppedSlot == _rows[2].stoppedSlot ||
@@ -134,6 +136,19 @@ public class SlotMachineScreen : MonoBehaviour
             _isJackpot = false;
         }
         _resultsChecked = true;
+    }
+
+    private void SpawnJackpotParticles()
+    {
+        if (_jackpotParticles == null) return;
+
+        Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, Camera.main.nearClipPlane + 1f);
+        Vector3 worldCenter = Camera.main.ScreenToWorldPoint(screenCenter);
+
+        GameObject parts = Instantiate(_jackpotParticles, worldCenter, Quaternion.identity);
+        ParticleSystem particles = parts.GetComponent<ParticleSystem>();
+        particles.Stop();
+        particles.Play();
     }
 
     public void IncreaseBet()

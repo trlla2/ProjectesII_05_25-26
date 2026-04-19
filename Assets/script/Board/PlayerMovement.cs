@@ -243,7 +243,11 @@ public class PlayerMovement : MonoBehaviour
 
             currentTile = tile;
             OnStep.Invoke();
-            currentTile.Interact();
+
+            bool isLastTile = i == path.Count - 1;
+            if (!isLastTile || interactTarget == null)
+                currentTile.Interact();
+
             GameObject newParticles = Instantiate(
                 jumpParticles.gameObject,
                 tile.transform.position,

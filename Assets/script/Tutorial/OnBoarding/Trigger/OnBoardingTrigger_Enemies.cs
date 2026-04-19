@@ -57,6 +57,9 @@ public class OnBoardingTrigger_Enemies : MonoBehaviour
                 case EnemySpellType.HiddenDestroy:
                     OnBoardingManager.Instance.TriggerIfNew(OnBoardingKey.HIDDEN_ENEMY);
                     break;
+                case EnemySpellType.BlockerAttack:
+                    OnBoardingManager.Instance.TriggerIfNew(OnBoardingKey.BLOCKER_ENEMY);
+                    break;
                 default:
                     break;
             }

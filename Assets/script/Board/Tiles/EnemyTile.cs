@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class EnemyTile : BoardTile
 {
-    [SerializeField] private string _combatSceneName;
+    [SerializeField] protected string _combatSceneName;
     [SerializeField] private int lootRatePercentage;
 
     private TileClickHandler _boardRaycast;

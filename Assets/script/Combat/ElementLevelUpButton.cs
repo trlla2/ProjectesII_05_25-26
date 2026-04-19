@@ -105,6 +105,10 @@ public class ElementLevelUpButton : MonoBehaviour
             interpolationTime = 0.0f;
             isInterpolating = true;
         }
+        if (oldLevel != GameManager.Instance.PlayerStats.GetElementLevel(currentElement.Type))
+        {
+            OnElementLevelUp.Invoke();
+        }
     }
 
     private void UpdateBar()
@@ -130,7 +134,6 @@ public class ElementLevelUpButton : MonoBehaviour
             if (oldLevel != GameManager.Instance.PlayerStats.GetElementLevel(currentElement.Type))
             {
                 SpawnLevelUpParticles(lastClickWorldPosition);
-                OnElementLevelUp.Invoke();
             }
         }
     }

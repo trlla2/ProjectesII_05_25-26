@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
 
+
+/* l'Enemy behaviour es el cript de escene que controla el comportament de l'enemic, com els seus atacs, la seva vida, i la interacció amb el grid.
+ * Cada enemic implementa el seu attack a través d'un EnemyType, que és un ScriptableObject que defineix les característiques de l'enemic i el seu atac.
+ * cada enemyType te asociat un enemySpell, que implementa la interfície IEnemySpell, i defineix la lògica de l'atac (quines caselles ataca, quant de temps tarda, etc).
+ * Tenim Enemics de moviments (Basats en EnemySpellbase), enemics de temps(SingleTimedDestroySpell), enemics de temps múltiples (MultipleTimedSpellBase), enemics bloquejants (BlockerSpell) i enemic swapper (SwapperSpell).
+ */
 [RequireComponent(typeof(SpriteRenderer))]
 public class EnemyBehaviour : MonoBehaviour
 {
@@ -401,6 +407,8 @@ public class EnemyBehaviour : MonoBehaviour
         }
     }
 
+    //com que vaig fer la decisio de disseny de basar els enemics amb un sistema de "Ticks",
+    //on cada atac del jugador te progrés en el attack del enemic, necessito aquest sistema de monitorització per a controlar el flux de cada atac segons el seu tipus i les seves necessitats.
     private IEnumerator MonitorTimedSpell()
     {
         TimedDestroySpellBase timedSpell = activeSpell as TimedDestroySpellBase;

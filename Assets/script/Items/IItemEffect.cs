@@ -21,12 +21,6 @@ public struct ItemLevelData<T>
         this.amount = amount;
     }
 }
-public interface IReactiveEffect : IItemEffect
-{
-    void Subscribe(ItemLevel level);
-    void Unsubscribe();
-}
-
 public interface IActivatableEffect : IItemEffect
 {
     void Activate(ItemLevel level, ItemContext context, Action onComplete);
@@ -37,13 +31,6 @@ public interface IGridModifierEffect : IActivatableEffect
 {
 
 }
-
-public interface IOnSpellCastEffect : IItemEffect
-{
-    void OnSpellCast(Grid grid, ItemLevel level, Spell spell, List<Element> castElements,
-                     List<Vector2Int> positions, SpellPathAnimator animator);
-}
-
 public struct ItemContext
 {
     public Grid Grid;

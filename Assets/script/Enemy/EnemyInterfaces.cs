@@ -29,7 +29,6 @@ public abstract class EnemySpellBase : IEnemySpell
     protected List<Vector2Int> targetedPositions = new List<Vector2Int>();
 
     protected bool shouldRerollAfterAttack = true;
-    public bool SkipHitAnimation { get; set; } = false;
 
     public int RemainingMoves => remainingMoves;
     public override string GetSpellName() => spellName;
@@ -109,6 +108,7 @@ public abstract class EnemySpellBase : IEnemySpell
             return;
         }
 
+        //collect only positions that still contain non-empty elements and are targeted
         List<Vector2Int> finalPositions = new List<Vector2Int>();
         List<Element> elements = new List<Element>();
 
@@ -127,11 +127,16 @@ public abstract class EnemySpellBase : IEnemySpell
             }
             else
             {
+                // clear target if it's no longer valid
                 if (visual != null)
+                {
                     visual.SetTargetedByEnemy(false);
+                }
             }
             if (visual != null)
+            {
                 visual.StopHoverAnimation();
+            }
         }
 
         if (finalPositions.Count > 0)
@@ -151,12 +156,6 @@ public abstract class EnemySpellBase : IEnemySpell
 
     protected void DamagePlayerWithAnimation(Grid grid, Vector2Int[] positions, List<Element> elements, float damagePerElement, System.Action onComplete = null)
     {
-        if (SkipHitAnimation)
-        {
-            onComplete?.Invoke();
-            return;
-        }
-
         SpellPathAnimator enemyAnimator = grid.GetEnemySpellAnimator();
 
         if (enemyAnimator != null)

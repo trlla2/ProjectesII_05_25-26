@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -43,6 +45,7 @@ public class TileClickHandler : MonoBehaviour
             if (clickedTile == null) return;
 
             clickedTile.HighlightTile(true);
+
             _boardManager.Player.TryMoveTo(clickedTile, () =>
             {
                 clickedTile.HighlightTile(false);
@@ -54,7 +57,7 @@ public class TileClickHandler : MonoBehaviour
                 if (playerGridPos == clickedTile.GetGridPosition())
                     clickedTile.OnPlayerArrive();
 
-                clickedTile.Interact();
+                //clickedTile.Interact();
             });
 
             if (!_boardManager.Player.isMoving && clickedTile.IsHighlighted())
@@ -66,28 +69,15 @@ public class TileClickHandler : MonoBehaviour
     {
         if (IsPointerOverUI()) return;
 
-        _boardManager.Player.MoveUntilStop/*From*/(/*_boardManager.Player.GetCurrentTile(),*/ arrivedTile =>
+        _boardManager.Player.MoveUntilStop(arrivedTile =>
         {
             if (arrivedTile == null) return;
 
-            // arrivedTile es SIEMPRE la tile donde está el jugador (EmptyTile o BranchOrigin)
             arrivedTile.OnPlayerArrive();
 
             if (arrivedTile.IsBranchOrigin())
             {
-                // El jugador está sobre la branch origin: interactúa con ella
-                // y espera el input del panel de elección
                 arrivedTile.Interact();
-            }
-            else
-            {
-                // El jugador está en una EmptyTile normal: interactúa con la
-                // siguiente tile no-walkable sin moverse
-                BoardTile nextInteractable = _boardManager.Player
-                    .GetNextForwardTileFrom(arrivedTile, walkableOnly: false);
-
-                if (nextInteractable != null)
-                    nextInteractable.Interact();
             }
         });
     }

@@ -65,25 +65,31 @@ public class MoneyUIHandler : MonoBehaviour
             time = 0;
             parentFader.ToTarget();
             isFading = true;
-            SFXManager.Instance.PlaySFXByName("GetCoins");
+            if (SFXManager.Instance != null)
+                SFXManager.Instance.PlaySFXByName("GetCoins");
         }
 
         if (moneyAddedGO != null && amount > 0)
         {
             moneyAddedGO.GetComponent<TMP_Text>().text = $"+{amount}";
             moneyAddedGO.GetComponent<TranslatorUI>().ToTarget();
-            SFXManager.Instance.PlaySFXByName("GetCoins");
+            if (SFXManager.Instance != null)
+                SFXManager.Instance.PlaySFXByName("GetCoins");
         }
 
-        moneyText.text = GameManager.Instance.PlayerStats.Money.ToString();
+        if (GameManager.Instance != null)
+            moneyText.text = GameManager.Instance.PlayerStats.Money.ToString();
     }
 
 
     public void UpdateMoneyUI()
     {
+        if (GameManager.Instance == null) return;
+
         if (!showAlways)
         {
-            SFXManager.Instance.PlaySFXByName("GetCoins");
+            if (SFXManager.Instance != null)
+                SFXManager.Instance.PlaySFXByName("GetCoins");
             time = 0;
             parentFader.ToTarget();
             isFading = true;
@@ -108,7 +114,7 @@ public class MoneyUIHandler : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (useGameManager)
+        if (useGameManager && GameManager.Instance != null)
             GameManager.Instance.PlayerStats.OnMoneyChange -= UpdateMoneyUI;
     }
 }

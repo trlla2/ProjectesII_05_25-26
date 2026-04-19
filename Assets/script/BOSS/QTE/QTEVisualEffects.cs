@@ -9,7 +9,7 @@ public class QTEVisualEffects : MonoBehaviour
     [SerializeField] private CanvasGroup darkOverlay;
     [SerializeField] private float overlayFadeDuration = 0.3f;
     [SerializeField] private float overlayTargetAlpha = 0.7f;
-    
+
     [Header("Screen Flash")]
     [SerializeField] private Image flashImage;
     [SerializeField] private Color flashColor = Color.white;
@@ -20,6 +20,10 @@ public class QTEVisualEffects : MonoBehaviour
     [SerializeField] private ParticleSystem chargeAtatckParticles;
 
     [SerializeField] private float particleSequenceInterval = 0.15f;
+
+    [Header("Audio")]
+    [SerializeField]
+    private AudioSource aS;
 
     CameraShake cameraShake;
 
@@ -111,6 +115,8 @@ public class QTEVisualEffects : MonoBehaviour
         PlayScreenFlash(new Color(1f, 0.8f, 0.2f, 1f), 0.5f);
 
         ShakeCamera(0.5f, 0.3f);
+
+        aS.Play();
 
         if (successParticles != null && successParticles.Length > 0)
         {

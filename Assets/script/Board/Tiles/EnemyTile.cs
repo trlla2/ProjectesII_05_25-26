@@ -34,7 +34,15 @@ public class EnemyTile : BoardTile
         GameManager.Instance.EnterBattle();
 
         GameManager.Instance.OnEnterBoard += Replace;
-        GameManager.Instance.OnEnterBoard += TryToRevealGeneratedBranchIfHasOne;
+        
+        if (_tutorialFoggedTilesShower != null)
+        {
+            GameManager.Instance.OnEnterBoard -= _tutorialFoggedTilesShower.ShowFoggedTiles;
+            GameManager.Instance.OnEnterBoard += _tutorialFoggedTilesShower.ShowFoggedTiles;
+        }
+        else
+            GameManager.Instance.OnEnterBoard += TryToRevealGeneratedBranchIfHasOne;
+
     }
 
     protected virtual EnemyType ResolveEnemy()
@@ -52,8 +60,7 @@ public class EnemyTile : BoardTile
     {
         _boardRaycast.HandleBoardRaycast(true);
 
-        if (_tutorialFoggedTilesShower != null)
-            _tutorialFoggedTilesShower.ShowFoggedTiles();
+        
         ReplaceWithPostInteraction();
         _boardManager.IncrementEnemyDefeatedCount();
     }

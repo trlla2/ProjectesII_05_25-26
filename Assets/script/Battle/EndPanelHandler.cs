@@ -14,6 +14,8 @@ public class EndPanelHandler : MonoBehaviour
     private string loseScene;
     [SerializeField]
     private string sceneToUnload;
+    [SerializeField]
+    private bool forceToHallOfEgress;
 
     [Header("Backkground")]
     [SerializeField]
@@ -139,6 +141,7 @@ public class EndPanelHandler : MonoBehaviour
                 if (willLevelUp)
                     currentStage++;
                 else
+                    
                     SceneTransition.Instance.UnloadScene(sceneToUnload);
                 break;
             case EndBattleStage.STAGE3:
@@ -151,5 +154,15 @@ public class EndPanelHandler : MonoBehaviour
 
     }
 
+
+    private void LoadWinScene()
+    {
+        if(forceToHallOfEgress)
+        {
+            SceneTransition.Instance.UnloadScene(loseScene);
+            return;
+        }
+        SceneTransition.Instance.UnloadScene(sceneToUnload);
+    }
 
 }

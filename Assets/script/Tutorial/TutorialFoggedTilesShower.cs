@@ -9,6 +9,8 @@ public class TutorialFoggedTilesShower : MonoBehaviour
 
     public void ShowFoggedTiles()
     {
+        GameManager.Instance.OnEnterBoard -= ShowFoggedTiles;
+
         foreach (FogTile foggedTile in _foggedTiles)
         {
             if (foggedTile.FoggedTileData != null)

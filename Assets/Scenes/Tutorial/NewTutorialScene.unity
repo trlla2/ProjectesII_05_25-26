@@ -419,6 +419,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _player: {fileID: 144223043}
   camOffset: {x: -16.44, y: 15.8, z: -16.44}
+  _defaultOrthographicSize: 5
+  _branchChoiceOrthographicSize: 8
+  _zoomDuration: 0.5
+  _zoomEase: 4
 --- !u!114 &176424198
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -594,7 +598,7 @@ PrefabInstance:
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: _foggedTileData
       value: 
-      objectReference: {fileID: 11400000, guid: d22ce5231cab6564988711f5ec7898de, type: 2}
+      objectReference: {fileID: 11400000, guid: ae88d58d8bb22fc4bbeafac6528362b9, type: 2}
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: neighbors.Array.size
       value: 2
@@ -1364,6 +1368,7 @@ MonoBehaviour:
   showAlways: 1
   parentFader: {fileID: 509829432}
   duration: 3
+  moneyAddedGO: {fileID: 0}
 --- !u!114 &576556430
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1474,7 +1479,7 @@ PrefabInstance:
     - target: {fileID: -3643486185334491319, guid: a72e4531b5b80b94d8485520414c0dca, type: 3}
       propertyPath: spell
       value: 
-      objectReference: {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
+      objectReference: {fileID: 11400000, guid: 7bcb7841072f0e846992f0ad4f6bfd2e, type: 2}
     - target: {fileID: -3643486185334491319, guid: a72e4531b5b80b94d8485520414c0dca, type: 3}
       propertyPath: postInteractionTile
       value: 
@@ -1923,7 +1928,7 @@ PrefabInstance:
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: _foggedTileData
       value: 
-      objectReference: {fileID: 11400000, guid: f6c70ee3484ef354381f873c5e6a5b31, type: 2}
+      objectReference: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: neighbors.Array.size
       value: 2
@@ -2012,7 +2017,7 @@ PrefabInstance:
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: _foggedTileData
       value: 
-      objectReference: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
+      objectReference: {fileID: 11400000, guid: f6c70ee3484ef354381f873c5e6a5b31, type: 2}
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: neighbors.Array.size
       value: 2
@@ -2251,7 +2256,7 @@ PrefabInstance:
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: _foggedTileData
       value: 
-      objectReference: {fileID: 11400000, guid: b58cebf77c714104da2a8e803a861658, type: 2}
+      objectReference: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: neighbors.Array.size
       value: 2
@@ -4308,7 +4313,7 @@ PrefabInstance:
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: _foggedTileData
       value: 
-      objectReference: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
+      objectReference: {fileID: 11400000, guid: 8680567cd42268149bb5b8f6265fd565, type: 2}
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: neighbors.Array.size
       value: 2
@@ -10817,7 +10822,7 @@ PrefabInstance:
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: _foggedTileData
       value: 
-      objectReference: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
+      objectReference: {fileID: 11400000, guid: b58cebf77c714104da2a8e803a861658, type: 2}
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: neighbors.Array.size
       value: 2
@@ -11388,7 +11393,7 @@ PrefabInstance:
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: _foggedTileData
       value: 
-      objectReference: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
+      objectReference: {fileID: 11400000, guid: b3fb7190cf440d7469b8f7a114fa9673, type: 2}
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: neighbors.Array.size
       value: 2
@@ -11473,6 +11478,10 @@ PrefabInstance:
     - target: {fileID: 5110594593294184157, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: m_Name
       value: FogTile (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
+      propertyPath: isForcedPos
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: _foggedTileData
@@ -11815,7 +11824,7 @@ PrefabInstance:
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: _foggedTileData
       value: 
-      objectReference: {fileID: 11400000, guid: 6b539979a1d22c74aaf69334fdef79e5, type: 2}
+      objectReference: {fileID: 11400000, guid: 3394e25f4e01c0c42a73d47ae22d9095, type: 2}
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: neighbors.Array.size
       value: 2
@@ -11943,7 +11952,7 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 27551c8f56ed7724a8d92062277b60c2, type: 2}
     - target: {fileID: 2944163443859777390, guid: b0f9cb1204414094e8db3b59e9f7bfad, type: 3}
       propertyPath: _combatSceneName
-      value: BattlePhoneTutorial
+      value: BattlePhoneTutorial 1
       objectReference: {fileID: 0}
     - target: {fileID: 2944163443859777390, guid: b0f9cb1204414094e8db3b59e9f7bfad, type: 3}
       propertyPath: neighbors.Array.size
@@ -12088,7 +12097,7 @@ PrefabInstance:
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: _foggedTileData
       value: 
-      objectReference: {fileID: 11400000, guid: 8680567cd42268149bb5b8f6265fd565, type: 2}
+      objectReference: {fileID: 11400000, guid: bbef884fd17a07f49b8b66e603c5a9b7, type: 2}
     - target: {fileID: 7279439381975330137, guid: d5057c59c6638f447874a82b950619f9, type: 3}
       propertyPath: neighbors.Array.size
       value: 2

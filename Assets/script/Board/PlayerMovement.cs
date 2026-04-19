@@ -48,10 +48,15 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        StartCoroutine(MoveAlongPath(path, () =>
+        BoardTile interactTarget = null;
+        if (path.Count > 0 && !path[path.Count - 1].IsWalkable())
         {
-            onArrive?.Invoke();
-        }));
+            interactTarget = path[path.Count - 1];
+            path.RemoveAt(path.Count - 1);
+        }
+
+        BoardTile captured = interactTarget;
+        StartCoroutine(MoveAlongPath(path, () => onArrive?.Invoke(), captured));
     }
 
     public void MoveOneStepForward(System.Action onArrive = null)
@@ -62,10 +67,14 @@ public class PlayerMovement : MonoBehaviour
         BoardTile walkableNext = GetNextForwardTile(walkableOnly: true);
         if (walkableNext != null)
         {
+            BoardTile nonWalkableAfter = !walkableNext.IsBranchOrigin()
+                ? GetNextForwardTileFrom(walkableNext, walkableOnly: false)
+                : null;
+
             StartCoroutine(MoveAlongPath(new List<BoardTile> { walkableNext }, () =>
             {
                 onArrive?.Invoke();
-            }));
+            }, nonWalkableAfter));
             return;
         }
 
@@ -86,8 +95,14 @@ public class PlayerMovement : MonoBehaviour
 
         List<BoardTile> path = BuildAutoAdvancePath();
 
+        BoardTile endTile = path.Count > 0 ? path[path.Count - 1] : currentTile;
+        BoardTile nextNonWalkable = (endTile != null && !endTile.IsBranchOrigin())
+            ? GetNextForwardTileFrom(endTile, walkableOnly: false)
+            : null;
+
         if (path.Count == 0)
         {
+            nextNonWalkable?.Interact();
             onStop?.Invoke(currentTile);
             return;
         }
@@ -95,7 +110,7 @@ public class PlayerMovement : MonoBehaviour
         StartCoroutine(MoveAlongPath(path, () =>
         {
             onStop?.Invoke(currentTile);
-        }));
+        }, nextNonWalkable));
     }
 
     public void MoveUntilStopFrom(BoardTile firstTile, System.Action<BoardTile> onStop = null)
@@ -105,18 +120,27 @@ public class PlayerMovement : MonoBehaviour
 
         List<BoardTile> path = BuildAutoAdvancePathFrom(firstTile);
 
+        BoardTile endTile = path.Count > 0 ? path[path.Count - 1] : firstTile;
+        BoardTile nextNonWalkable = (endTile != null && !endTile.IsBranchOrigin())
+            ? GetNextForwardTileFrom(endTile, walkableOnly: false)
+            : null;
+
         if (path.Count == 0)
         {
-            // moverse a firstTile igualmente y detenerse allí
             if (firstTile != null && firstTile.IsWalkable())
             {
+                BoardTile nonWalkableAfterFirst = !firstTile.IsBranchOrigin()
+                    ? GetNextForwardTileFrom(firstTile, walkableOnly: false)
+                    : null;
+
                 StartCoroutine(MoveAlongPath(new List<BoardTile> { firstTile }, () =>
                 {
                     onStop?.Invoke(currentTile);
-                }));
+                }, nonWalkableAfterFirst));
             }
             else
             {
+                nextNonWalkable?.Interact();
                 onStop?.Invoke(currentTile);
             }
             return;
@@ -125,7 +149,7 @@ public class PlayerMovement : MonoBehaviour
         StartCoroutine(MoveAlongPath(path, () =>
         {
             onStop?.Invoke(currentTile);
-        }));
+        }, nextNonWalkable));
     }
 
     private List<BoardTile> BuildAutoAdvancePath()
@@ -201,11 +225,11 @@ public class PlayerMovement : MonoBehaviour
         return (dx > 0 && dy == 0) || (dx == 0 && dy > 0) || (dx > 0 && dy > 0);
     }
 
-    IEnumerator MoveAlongPath(List<BoardTile> path, System.Action onComplete)
+    IEnumerator MoveAlongPath(List<BoardTile> path, System.Action onComplete, BoardTile interactTarget = null)
     {
         isMoving = true;
 
-        for (int i = 0; i < path.Count; i++) // start from 1 to skip currentTile
+        for (int i = 0; i < path.Count; i++)
         {
             if (path[i] == path[0] && path[0] == currentTile) continue;
             BoardTile tile = path[i];
@@ -229,6 +253,8 @@ public class PlayerMovement : MonoBehaviour
                 yield return new WaitForSeconds(waitTimeBetweenTilesInSeconds);
         }
 
+        interactTarget?.Interact();
+
         isMoving = false;
         onComplete?.Invoke();
     }
@@ -241,7 +267,7 @@ public class PlayerMovement : MonoBehaviour
         while (elapsed < jumpDuration)
         {
             elapsed += Time.deltaTime;
-            float t = elapsed / jumpDuration;
+            float t = Mathf.Clamp01(elapsed / jumpDuration);
 
             Vector3 horizontalPos = Vector3.Lerp(startPos, targetPos, t);
             float height = Mathf.Sin(t * Mathf.PI) * jumpHeight;

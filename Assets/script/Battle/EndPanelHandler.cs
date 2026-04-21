@@ -52,11 +52,11 @@ public class EndPanelHandler : MonoBehaviour
 
     [Header("Audio")]
     [SerializeField]
-    private AudioClip winSFX;
+    private AudioClip winSFX = null;
     [SerializeField]
-    private AudioClip loseSFX;
+    private AudioClip loseSFX = null;
     [SerializeField]
-    private AudioSource aS;
+    private AudioSource aS = null;
 
     public UnityEvent OnStage1Enter;
     public UnityEvent OnStage2Enter;
@@ -108,15 +108,15 @@ public class EndPanelHandler : MonoBehaviour
             container.sprite = winContainer;
             title1.text = winText;
             title1.color = winColor;
-           
-            PlayOneShot(winSFX);
+
+            aS?.PlayOneShot(winSFX);
         }
         else
         {
             container.sprite = loseContainer;
             title1.text = loseText;
             title1.color = loseColor;
-            PlayOneShot(loseSFX);
+            aS?.PlayOneShot(loseSFX);
         }
 
         bgFader.ToTarget();
@@ -171,22 +171,4 @@ public class EndPanelHandler : MonoBehaviour
         }
         SceneTransition.Instance.UnloadScene(sceneToUnload);
     }
-
-    private void PlayOneShot(AudioClip clip)
-    {
-        if (aS is null)
-        {
-            Debug.LogError("ERROR EndPanelHandler: NO AUDIOSOURCE");
-            return;
-        }
-
-        if (clip is null)
-        {
-            Debug.LogError("ERROR EndPanelHandler: NO AUDIOCLIP");
-            return;
-        }
-
-        aS.PlayOneShot(clip);
-    }
-
 }

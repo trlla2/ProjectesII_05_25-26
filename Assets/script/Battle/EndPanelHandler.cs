@@ -108,14 +108,15 @@ public class EndPanelHandler : MonoBehaviour
             container.sprite = winContainer;
             title1.text = winText;
             title1.color = winColor;
-            aS.PlayOneShot(winSFX);
+           
+            PlayOneShot(winSFX);
         }
         else
         {
             container.sprite = loseContainer;
             title1.text = loseText;
             title1.color = loseColor;
-            aS.PlayOneShot(loseSFX);
+            PlayOneShot(loseSFX);
         }
 
         bgFader.ToTarget();
@@ -130,7 +131,6 @@ public class EndPanelHandler : MonoBehaviour
 
         continueFader.ResetToOrigin();
         continueTime = 0;
-        Debug.Log($"Current stage: {currentStage}");
         if (!isWin)
         {
             SceneTransition.Instance.LoadScene(loseScene, false);
@@ -148,14 +148,14 @@ public class EndPanelHandler : MonoBehaviour
                 if (willLevelUp)
                     currentStage++;
                 else
-                    
-                    SceneTransition.Instance.UnloadScene(sceneToUnload);
+
+                    LoadWinScene();
                 break;
             case EndBattleStage.STAGE3:
-                SceneTransition.Instance.UnloadScene(sceneToUnload);
+                LoadWinScene();
                 break;
             default:
-                SceneTransition.Instance.UnloadScene(sceneToUnload);
+                LoadWinScene();
                 break;
         }
 
@@ -170,6 +170,23 @@ public class EndPanelHandler : MonoBehaviour
             return;
         }
         SceneTransition.Instance.UnloadScene(sceneToUnload);
+    }
+
+    private void PlayOneShot(AudioClip clip)
+    {
+        if (aS is null)
+        {
+            Debug.LogError("ERROR EndPanelHandler: NO AUDIOSOURCE");
+            return;
+        }
+
+        if (clip is null)
+        {
+            Debug.LogError("ERROR EndPanelHandler: NO AUDIOCLIP");
+            return;
+        }
+
+        aS.PlayOneShot(clip);
     }
 
 }

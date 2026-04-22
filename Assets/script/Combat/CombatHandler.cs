@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CombatHandler : MonoBehaviour
 {
-    private EnemyBehaviour enemyInCombat;
+    private EnemyBehaviour enemyInCombat = null;
 
     private SpellHoverHandler spellHoverHandler;
 
@@ -61,8 +61,8 @@ public class CombatHandler : MonoBehaviour
         }
 
         enemyInCombat.SetEnemyType(typeToUse);
-        enemyInCombat.StartBattle();
         OnSetEnemyReference?.Invoke(enemyRef);
+        enemyInCombat.StartBattle();
     }
 
     private EnemyType ResolveEnemyType()

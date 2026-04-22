@@ -40,22 +40,42 @@ public class EnemyUIHandler : MonoBehaviour
     private float currentWeaknessTimer = 0;
     private bool isShowingWeakness = false;
 
-    private EnemyBehaviour enemyBehaviour;
+    private EnemyBehaviour enemyBehaviour = null;
 
     private void Awake()
     {
-        if (GameManager.Instance == null || GameManager.Instance.CombatHandler == null)
+        
+        critImage.SetActive(false);
+    }
+
+    private void Start()
+    {
+        if (GameManager.Instance != null && GameManager.Instance.CombatHandler != null)
         {
-            Debug.LogWarning("EnemyUIHandler: GameManager or CombatHandler not ready yet.");
-            return;
+            GameManager.Instance.CombatHandler.OnSetEnemyReference += SetEnemyRef;
+
+
+            // check if is already set the enemy
+            EnemyBehaviour currentEnemy = GameManager.Instance.CombatHandler.GetEnemyRef();
+            if (currentEnemy != null)
+            {
+                SetEnemyRef(currentEnemy);
+            }
+
+        }
+        else
+        {
+            Debug.LogError("EnemyUIHandler: GameManager o CombatHandler no están listos en el Start.");
         }
 
-        GameManager.Instance.CombatHandler.OnSetEnemyReference += SetEnemyRef;
-        critImage.SetActive(false);
+
     }
 
     private void SetEnemyRef(EnemyBehaviour reference)
     {
+        if (reference == null) return;
+
+
         if (enemyBehaviour != null)
         {
             enemyBehaviour.OnHitRecived -= ChangeHealthBar;
@@ -67,6 +87,8 @@ public class EnemyUIHandler : MonoBehaviour
         enemyBehaviour.OnHitRecived += ChangeHealthBar;
         enemyBehaviour.OnGetDamage += AddDamageToQueue;
         nameText.text = enemyBehaviour.GetEnemyType().Name + ", Level " + enemyBehaviour.GetEnemyType().Level;
+
+        ChangeHealthBar(enemyBehaviour.GetMaxHP());
 
     }
 

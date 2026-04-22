@@ -8,7 +8,7 @@ public class StairsTile : BoardTile
 
     [SerializeField] private EmptySpellBookAlertHandler _emptySpellbookAlert;
 
-    private int _stageLevel;
+    //private int _stageLevel;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -22,23 +22,31 @@ public class StairsTile : BoardTile
     {
         if (_boardManager.IsTutorial || GameManager.Instance.StageLevel >= 3)
         {
+            GameManager.Instance.ResetStageLevel();
             SceneTransition.Instance.LoadScene("HallOfEgress", false);
             return;
-        }       
+        }
+        
+        if (!_boardManager.IsHallOfEgress && SceneManager.GetActiveScene().name == _sceneToLoadWhenInteract)
+            GameManager.Instance.AdvanceStageLevel();
 
         if (GameManager.Instance.PlayerStats.GetSpellBook().Count == GameManager.Instance.PlayerStats.SpellBookSize)
         {
-            if (SceneManager.GetActiveScene().name == _sceneToLoadWhenInteract) GameManager.Instance.AdvanceStageLevel();
             SceneTransition.Instance.LoadScene(_sceneToLoadWhenInteract, false);
         }
         else
         {
-            if (_emptySpellbookAlert != null) 
+            if (_emptySpellbookAlert != null)
             {
                 Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(false);
                 _emptySpellbookAlert.Show();
             }
         }
+        //GameManager.Instance.ResetStageLevel();
+        //return;
+        
+
+        
     }
 
 }

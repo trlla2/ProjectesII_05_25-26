@@ -89,4 +89,8 @@ public class GameManager : MonoBehaviour
         stageLevel++;
     }
 
+    public void ResetStageLevel()
+    {
+        stageLevel = 1;
+    }
 }

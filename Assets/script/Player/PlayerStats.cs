@@ -46,8 +46,17 @@ public class PlayerStats
     private int elementalLevelMultiplyer;
 
     // currency 
-    private int money;
-    public int Money => money;
+    private Dictionary<CurrencyType, int> currencyAmounts = new Dictionary<CurrencyType, int>()
+    {
+        { CurrencyType.GOLD, 0 },
+        { CurrencyType.RUBY, 0 }
+    };
+    public int GetCurrency(CurrencyType currencyType)
+    {
+        if (currencyAmounts.ContainsKey(currencyType))
+            return currencyAmounts[currencyType];
+        return 0;
+    }
 
     // spells  & Items
     private const int spellBookSize = 4;
@@ -64,7 +73,7 @@ public class PlayerStats
     //Events
     public event System.Action OnEXPChange;
     public event System.Action OnLevelUp;
-    public event System.Action<float> OnMoneyChange;
+    public event System.Action<CurrencyType, int> OnCurrencyChange;
     public event System.Action OnInventoryChange;
     public event System.Action OnSpellBookChange;
 
@@ -77,7 +86,7 @@ public class PlayerStats
         ResetLevelStats();
 
         // currency 
-        money = 50;
+        currencyAmounts[CurrencyType.GOLD] = 50;
 
         // spells  & Items
         spellBook = new Spell[spellBookSize];
@@ -128,6 +137,8 @@ public class PlayerStats
         _defenseModifier = 0;
         _critPercentModifier = 0;
         spikeDamage = 0;
+
+        currencyAmounts[CurrencyType.GOLD] = 50;
     }
     public void ResetStatsOnDeath()
     {
@@ -168,25 +179,28 @@ public class PlayerStats
         if (hp > maxHp + extraHealth) hp = maxHp + extraHealth;
     }
 
-    public void AddMoney(int amount) 
+    public void AddCurrency(CurrencyType currencyType, int amount) 
     {
-        money += amount;
-        OnMoneyChange?.Invoke(amount);
+        if (!currencyAmounts.ContainsKey(currencyType))
+            currencyAmounts[currencyType] = 0;
+
+        currencyAmounts[currencyType] += amount;
+        OnCurrencyChange?.Invoke(currencyType ,amount);
     }
-    public bool UseMoney(int amount)
+    public bool UseMoney(CurrencyType currencyType, int amount)
     {
-        if (money >= amount)
+        if (currencyAmounts[currencyType] >= amount)
         {
-            money -= amount;
-            OnMoneyChange?.Invoke(-amount);
+            currencyAmounts[currencyType] -= amount;
+            OnCurrencyChange?.Invoke(currencyType, -amount);
             return true;
         }
         return false;
     }
 
-    public bool CanUseMoney(int amount)
+    public bool CanUseMoney(CurrencyType currencyType, int amount)
     {
-        return money >= amount;
+        return currencyAmounts[currencyType] >= amount;
     }
 
     public void AddExp(int amount)

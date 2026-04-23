@@ -54,7 +54,7 @@ public class Palanca : MonoBehaviour
 
     private bool TryConsumeCost()
     {
-        return GameManager.Instance.PlayerStats.UseMoney(cost);
+        return GameManager.Instance.PlayerStats.UseMoney(CurrencyType.GOLD, cost);
     }
 
     private void ExecuteLeverPull()

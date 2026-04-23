@@ -29,9 +29,9 @@ public class MoneyUIHandler : MonoBehaviour
     {
         moneyText = GetComponent<TMP_Text>();
         if(useGameManager)
-            GameManager.Instance.PlayerStats.OnMoneyChange += UpdateMoneyUI;
+            GameManager.Instance.PlayerStats.OnCurrencyChange += UpdateMoneyUI;
 
-        UpdateMoneyUI(0);
+        UpdateMoneyUI(CurrencyType.GOLD, 0);
 
 
         if (!showAlways)
@@ -58,7 +58,7 @@ public class MoneyUIHandler : MonoBehaviour
         parentFader.ToOrigin();
     }
 
-    public void UpdateMoneyUI(float amount)
+    public void UpdateMoneyUI(CurrencyType type, int amount)
     {
         if(!showAlways && amount > 0)
         {
@@ -78,7 +78,7 @@ public class MoneyUIHandler : MonoBehaviour
         }
 
         if (GameManager.Instance != null)
-            moneyText.text = GameManager.Instance.PlayerStats.Money.ToString();
+            moneyText.text = GameManager.Instance.PlayerStats.GetCurrency(CurrencyType.GOLD).ToString();
     }
 
 
@@ -95,7 +95,7 @@ public class MoneyUIHandler : MonoBehaviour
             isFading = true;
 
         }
-        moneyText.text = GameManager.Instance.PlayerStats.Money.ToString();
+        moneyText.text = GameManager.Instance.PlayerStats.GetCurrency(CurrencyType.GOLD).ToString();
     }
 
     private void Update()
@@ -115,6 +115,6 @@ public class MoneyUIHandler : MonoBehaviour
     private void OnDestroy()
     {
         if (useGameManager && GameManager.Instance != null)
-            GameManager.Instance.PlayerStats.OnMoneyChange -= UpdateMoneyUI;
+            GameManager.Instance.PlayerStats.OnCurrencyChange -= UpdateMoneyUI;
     }
 }

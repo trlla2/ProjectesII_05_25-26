@@ -8,7 +8,7 @@ public class GoldTile : BoardTile
     [SerializeField] private GameObject _coinClone;
     public override void Interact()
     {
-        GameManager.Instance.PlayerStats.AddMoney(Random.Range(_minGoldAmount, _maxGoldAmount));
+        GameManager.Instance.PlayerStats.AddCurrency(CurrencyType.GOLD, Random.Range(_minGoldAmount, _maxGoldAmount));
         ReplaceWithPostInteraction();
 
         Instantiate(_coinClone, _coinTransform.position, _coinTransform.rotation, null);

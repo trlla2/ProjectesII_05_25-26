@@ -74,10 +74,10 @@ public class SlotMachineScreen : MonoBehaviour
             }
         }
 
-        if(!GameManager.Instance.PlayerStats.CanUseMoney(_currentBet))
+        if(!GameManager.Instance.PlayerStats.CanUseMoney(CurrencyType.GOLD, _currentBet))
             return;
 
-        GameManager.Instance.PlayerStats.UseMoney(_currentBet);
+        GameManager.Instance.PlayerStats.UseMoney(CurrencyType.GOLD, _currentBet);
 
         _jackPotAnimation.UnShowText();
         _prizeText.text = "";
@@ -100,7 +100,7 @@ public class SlotMachineScreen : MonoBehaviour
             // 4 of the same // NEW SPELL (4-match spells)
             _prizeText.text = $"YOU WON {_currentBet * _jackpotMult} GOLDS!!!";
             _jackPotAnimation.StartAnimation();
-            GameManager.Instance.PlayerStats.AddMoney(Mathf.RoundToInt(_currentBet * _jackpotMult));
+            GameManager.Instance.PlayerStats.AddCurrency(CurrencyType.GOLD, Mathf.RoundToInt(_currentBet * _jackpotMult));
             _isJackpot = true;
             SpawnJackpotParticles();
             OnJackpot.Invoke();
@@ -112,7 +112,7 @@ public class SlotMachineScreen : MonoBehaviour
         {
             // 3 of the same
             _prizeText.text = $"YOU WON {_currentBet * _threeMult} GOLDS!!!";
-            GameManager.Instance.PlayerStats.AddMoney(Mathf.RoundToInt(_currentBet * _threeMult));
+            GameManager.Instance.PlayerStats.AddCurrency(CurrencyType.GOLD, Mathf.RoundToInt(_currentBet * _threeMult));
             _isJackpot = false;
             OnWin.Invoke();
         }
@@ -124,7 +124,7 @@ public class SlotMachineScreen : MonoBehaviour
                  _rows[1].stoppedSlot != _rows[3].stoppedSlot)
         {
             _prizeText.text = $"YOU WON {_currentBet * _fullHouse} GOLDS \n + EXTRA ROLL!!!";
-            GameManager.Instance.PlayerStats.AddMoney(Mathf.RoundToInt(_currentBet * _fullHouse));
+            GameManager.Instance.PlayerStats.AddCurrency(CurrencyType.GOLD, Mathf.RoundToInt(_currentBet * _fullHouse));
             _avaliablePulls++;
             _isJackpot = false;
             OnWin.Invoke();
@@ -153,7 +153,7 @@ public class SlotMachineScreen : MonoBehaviour
 
     public void IncreaseBet()
     {
-        if (!GameManager.Instance.PlayerStats.CanUseMoney(_currentBet + _bet))
+        if (!GameManager.Instance.PlayerStats.CanUseMoney(CurrencyType.GOLD, _currentBet + _bet))
             return;
 
         _currentBet += _bet;

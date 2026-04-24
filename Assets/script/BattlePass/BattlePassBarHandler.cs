@@ -27,6 +27,8 @@ public class BattlePassBarHandler : MonoBehaviour
     private float interpolationTime = 0.0f;
     private bool isInterpolating = false;
 
+    private float startValue;
+    private float targetValue;
     private int newAmount;
 
     private void Start()
@@ -39,62 +41,71 @@ public class BattlePassBarHandler : MonoBehaviour
     public void UpdateBattlePass(int amount)
     {
         newAmount = amount;
-
         UpdateBar();
     }
 
-
     private void ClaimRewards()
     {
-        if (!GameManager.Instance.PlayerStats.CanUseCurrency(CurrencyType.EXP, newAmount))
-            return;
+        var playerStats = GameManager.Instance.PlayerStats;
+        int level = playerStats.BattlePassLevel;
+        var cost = battlePassType.Rewards[level].expCost;
 
-        battlePassType.Rewards[GameManager.Instance.PlayerStats.BattlePassLevel].ClaimReward();
+        if (!playerStats.UseCurrency(CurrencyType.EXP, cost)) return;
 
-        GameManager.Instance.PlayerStats.AddBattlePassLevel();
+        battlePassType.Rewards[level].ClaimReward();
+        playerStats.AddBattlePassLevel();
 
         UpdateVisuals();
     }
     
     private void UpdateVisuals()
     {
-        rewardImage.sprite = battlePassType.Rewards[GameManager.Instance.PlayerStats.BattlePassLevel].reward.Icon;
-        
-        if(battlePassType.Rewards[GameManager.Instance.PlayerStats.BattlePassLevel].quantity > 1)
-            rewardText.text = "x" + battlePassType.Rewards[GameManager.Instance.PlayerStats.BattlePassLevel].quantity;
-        else
-            rewardText.text = "";
+        var playerStats = GameManager.Instance.PlayerStats;
+        int level = playerStats.BattlePassLevel;
+        var reward = battlePassType.Rewards[level];
 
-        if(battlePassType.Rewards[GameManager.Instance.PlayerStats.BattlePassLevel].reward.Type == RewardType.SKIN ||
-            battlePassType.Rewards[GameManager.Instance.PlayerStats.BattlePassLevel].reward.Type == RewardType.SPELL)
+        rewardImage.sprite = reward.RewardDrop.Icon;
+        rewardText.text = reward.quantity > 1 ? "x" + reward.quantity : "";
+
+        if (reward.RewardDrop.Type == RewardType.SKIN || reward.RewardDrop.Type == RewardType.SPELL)
+        {
             rewardBG.SetActive(true);
+        }
 
         UpdateBar();
     }
 
     private void UpdateBar()
     {
+        startValue = battlePassBar.value;
+        targetValue = GameManager.Instance.PlayerStats.GetCurrency(CurrencyType.EXP) + newAmount;
+
         interpolationTime = 0.0f;
         isInterpolating = true;
-
     }
 
     private void HandleInterpolation()
     {
-        if (isInterpolating)
-        {
-            interpolationTime += Time.deltaTime;
-            float t = Mathf.Clamp01(interpolationTime / interpolationDuration);
-            t = interpolationCurve.Evaluate(t);
+        if (!isInterpolating) return;
 
-            battlePassBar.value = Mathf.Lerp(battlePassBar.value, GameManager.Instance.PlayerStats.GetCurrency(CurrencyType.EXP), t);
-            if (t >= 1.0f)
+        interpolationTime += Time.deltaTime;
+        
+        float curveValue = interpolationCurve.Evaluate(interpolationTime / interpolationDuration);
+
+        battlePassBar.value = Mathf.Lerp(startValue, targetValue, curveValue);
+
+        if (interpolationTime >= interpolationDuration)
+        {
+            isInterpolating = false;
+
+            if (newAmount > 0)
             {
-                interpolationTime = 0.0f;
-                isInterpolating = false;
-                battlePassBar.value = GameManager.Instance.PlayerStats.GetCurrency(CurrencyType.EXP);
-                ClaimRewards();
+                GameManager.Instance.PlayerStats.AddCurrency(CurrencyType.EXP, newAmount);
+                newAmount = 0;
             }
+
+            battlePassBar.value = GameManager.Instance.PlayerStats.GetCurrency(CurrencyType.EXP);
+            ClaimRewards();
         }
     }
 

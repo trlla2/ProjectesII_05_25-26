@@ -77,7 +77,7 @@ public class SlotMachineScreen : MonoBehaviour
         if(!GameManager.Instance.PlayerStats.CanUseCurrency(CurrencyType.GOLD, _currentBet))
             return;
 
-        GameManager.Instance.PlayerStats.UseMoney(CurrencyType.GOLD, _currentBet);
+        GameManager.Instance.PlayerStats.UseCurrency(CurrencyType.GOLD, _currentBet);
 
         _jackPotAnimation.UnShowText();
         _prizeText.text = "";

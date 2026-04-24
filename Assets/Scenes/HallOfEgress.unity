@@ -3048,11 +3048,29 @@ MonoBehaviour:
   rewardText: {fileID: 1274372606}
   rewardImage: {fileID: 1208965262}
   rewardBG: {fileID: 1780008692}
-  battlePassType: {fileID: 0}
+  battlePassType: {fileID: 11400000, guid: 0ce081ca7f6a2e54880c0eeb8a13f944, type: 2}
   interpolationDuration: 1
   interpolationCurve:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -12918,7 +12936,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 1
+  m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []

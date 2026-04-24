@@ -185,7 +185,7 @@ public class PlayerStats
         currencyAmounts[currencyType] += amount;
         OnCurrencyChange?.Invoke(currencyType ,amount);
     }
-    public bool UseMoney(CurrencyType currencyType, int amount)
+    public bool UseCurrency(CurrencyType currencyType, int amount)
     {
         if (currencyAmounts[currencyType] >= amount)
         {

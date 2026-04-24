@@ -73,7 +73,7 @@ public class ShopScreen : MonoBehaviour
         _rerollText.text = $"{_costReroll}";
 
 
-        if (!GameManager.Instance.PlayerStats.UseMoney(CurrencyType.GOLD, _costReroll))
+        if (!GameManager.Instance.PlayerStats.UseCurrency(CurrencyType.GOLD, _costReroll))
             return;
 
 
@@ -122,7 +122,7 @@ public class ShopScreen : MonoBehaviour
 
         PlayerStats stats = GameManager.Instance.PlayerStats;
 
-        if (!stats.UseMoney(CurrencyType.GOLD, offer.Cost))
+        if (!stats.UseCurrency(CurrencyType.GOLD, offer.Cost))
         {
             _seller.NotEnoughMoneyReaction();
             return;

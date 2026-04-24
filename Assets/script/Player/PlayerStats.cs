@@ -36,7 +36,7 @@ public class PlayerStats
     private int spikeDamage;
     public int SpikeDamage => spikeDamage;
 
-    // level stats
+    // Combay Stats 
     private int experiencePoints;
     public int ExperiencePoints => experiencePoints;
     private int level;
@@ -49,14 +49,12 @@ public class PlayerStats
     private Dictionary<CurrencyType, int> currencyAmounts = new Dictionary<CurrencyType, int>()
     {
         { CurrencyType.GOLD, 0 },
-        { CurrencyType.RUBY, 0 }
+        { CurrencyType.RUBY, 0 },
+        { CurrencyType.EXP, 0 }
     };
-    public int GetCurrency(CurrencyType currencyType)
-    {
-        if (currencyAmounts.ContainsKey(currencyType))
-            return currencyAmounts[currencyType];
-        return 0;
-    }
+    private int battlePassLevel;
+    public int BattlePassLevel => battlePassLevel;
+
 
     // spells  & Items
     private const int spellBookSize = 4;
@@ -198,9 +196,21 @@ public class PlayerStats
         return false;
     }
 
-    public bool CanUseMoney(CurrencyType currencyType, int amount)
+    public bool CanUseCurrency(CurrencyType currencyType, int amount)
     {
         return currencyAmounts[currencyType] >= amount;
+    }
+
+    public int GetCurrency(CurrencyType currencyType)
+    {
+        if (currencyAmounts.ContainsKey(currencyType))
+            return currencyAmounts[currencyType];
+        return 0;
+    }
+
+    public void AddBattlePassLevel()
+    {
+        battlePassLevel ++;
     }
 
     public void AddExp(int amount)

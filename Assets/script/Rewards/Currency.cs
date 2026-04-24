@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum CurrencyType { GOLD, RUBY }
+public enum CurrencyType { GOLD, RUBY, EXP }
 
 [CreateAssetMenu(fileName = "NewCurrencyType", menuName = "Game/Currency")]
 public class Currency : ScriptableObject, IDropeable
@@ -9,6 +9,7 @@ public class Currency : ScriptableObject, IDropeable
     [SerializeField] private string currencyName;
     [SerializeField] private Sprite icon;
     [SerializeField] private CurrencyType currencyType;
+    [SerializeField] private Color color;
 
 
     public string RewardName => currencyName;

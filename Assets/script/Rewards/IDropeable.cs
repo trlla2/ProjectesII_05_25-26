@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-public enum RewardType { CURRENCY, OBJECT, SKIN }
+public enum RewardType { CURRENCY, OBJECT, SKIN, SPELL }
 public interface IDropeable 
 {
 

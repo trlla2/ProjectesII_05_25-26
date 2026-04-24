@@ -74,7 +74,7 @@ public class SlotMachineScreen : MonoBehaviour
             }
         }
 
-        if(!GameManager.Instance.PlayerStats.CanUseMoney(CurrencyType.GOLD, _currentBet))
+        if(!GameManager.Instance.PlayerStats.CanUseCurrency(CurrencyType.GOLD, _currentBet))
             return;
 
         GameManager.Instance.PlayerStats.UseMoney(CurrencyType.GOLD, _currentBet);
@@ -153,7 +153,7 @@ public class SlotMachineScreen : MonoBehaviour
 
     public void IncreaseBet()
     {
-        if (!GameManager.Instance.PlayerStats.CanUseMoney(CurrencyType.GOLD, _currentBet + _bet))
+        if (!GameManager.Instance.PlayerStats.CanUseCurrency(CurrencyType.GOLD, _currentBet + _bet))
             return;
 
         _currentBet += _bet;

@@ -122,8 +122,19 @@ public class BattlePassBarHandler : MonoBehaviour
 
         if (!playerStats.UseCurrency(CurrencyType.EXP, cost)) return;
         rewardClone.sprite = battlePassType.Rewards[level].RewardDrop.Icon;
-        rewardClone.gameObject.SetActive(false);
-        rewardClone.gameObject.SetActive(true);
+
+        if (rewardClone.IsActive())
+        {
+            rewardClone.GetComponent<TranslatorUI>().ResetTranslator();
+            rewardClone.GetComponent<CanvasGroupFader>().ResetToOrigin();
+
+            rewardClone.GetComponent<TranslatorUI>().ToTarget();
+        }
+        else
+        {
+            rewardClone.gameObject.SetActive(true);
+        }
+            
         battlePassType.Rewards[level].ClaimReward();
         playerStats.AddBattlePassLevel();
 

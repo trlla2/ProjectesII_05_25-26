@@ -50,6 +50,9 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        //This reads the screen's actual refresh rate and matches it automatically
+        Application.targetFrameRate = (int)Screen.currentResolution.refreshRateRatio.value;
+
         Instance = this;
         DontDestroyOnLoad(this.gameObject);
 

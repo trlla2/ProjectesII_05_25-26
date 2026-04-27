@@ -33,7 +33,6 @@ public class Grid : MonoBehaviour
     [Header("Animation Settings")]
     [SerializeField] private AnimationCurve enemyBlinkCurve;
     [SerializeField] private float enemyDeletionDuration = 1f;
-    [SerializeField] private float blockDuration = 1f;
 
     [Header("Tutorial")]
     [SerializeField] private TutorialManager tutorialManager;

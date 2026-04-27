@@ -7,7 +7,6 @@ public class CombatHandler : MonoBehaviour
     private SpellHoverHandler spellHoverHandler;
 
     private int expMultiplyer = 4;
-    private int moneyMultiplyer = 4;
 
     //Boss
     public BossManager bossManager;

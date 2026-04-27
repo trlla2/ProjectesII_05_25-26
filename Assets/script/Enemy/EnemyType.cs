@@ -5,7 +5,8 @@ using UnityEngine;
 public class EnemyType : ScriptableObject
 {
     [Header("Data")]
-    [SerializeField] private string name;
+    //new bc we override the default name from obj
+    [SerializeField] new private string name;
 
     [Header("Basic Stats")]
     [SerializeField] private float health = 100f;

@@ -37,7 +37,7 @@ public class BlockerSpell : IEnemySpell
 
     public override string GetSpellName() => "Blocker";
 
-    public void Execute(Grid grid)
+    public override void Execute(Grid grid)
     {
         if (grid == null) return;
 

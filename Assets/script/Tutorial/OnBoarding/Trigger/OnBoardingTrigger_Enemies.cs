@@ -6,7 +6,6 @@ public class OnBoardingTrigger_Enemies : MonoBehaviour
     [SerializeField] private EnemyBehaviour activeEnemy;
     private bool _isTriggered = false;
     private bool _isChecking = false;
-    private bool _hasWaited = false;
 
     void Start()
     {

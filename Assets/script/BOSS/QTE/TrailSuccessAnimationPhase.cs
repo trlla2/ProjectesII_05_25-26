@@ -17,9 +17,6 @@ public class TrailSuccessAnimationPhase : IQTEPhase
     private float scaleDownDuration = 1.8f;
     private float moveToOrbDuration = 0.5f;
     private float finalScale = 0.1f;
-    private float fadeOutDuration = 0.2f;
-
-    private bool isAnimating;
     private Coroutine animationCoroutine;
 
     public TrailSuccessAnimationPhase(QTEVisualController visual, Vector3 targetOrbPosition, MonoBehaviour runner)
@@ -31,8 +28,6 @@ public class TrailSuccessAnimationPhase : IQTEPhase
 
     public void Enter()
     {
-        isAnimating = true;
-        
         if (visualController != null)
         {
             trailRenderer = visualController.GetTrailRenderer();
@@ -56,8 +51,6 @@ public class TrailSuccessAnimationPhase : IQTEPhase
 
     public void Exit()
     {
-        isAnimating = false;
-        
         if (animationCoroutine != null && coroutineRunner != null)
         {
             coroutineRunner.StopCoroutine(animationCoroutine);
@@ -72,7 +65,6 @@ public class TrailSuccessAnimationPhase : IQTEPhase
         yield return coroutineRunner.StartCoroutine(MoveToOrb());
         //yield return coroutineRunner.StartCoroutine(trailRenderer.FadeOut(fadeOutDuration));
 
-        isAnimating = false;
         OnPhaseComplete?.Invoke(true);
     }
 

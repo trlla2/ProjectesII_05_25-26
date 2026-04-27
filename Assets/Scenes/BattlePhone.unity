@@ -6947,7 +6947,6 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   enemyDeletionDuration: 1
-  blockDuration: 1
   tutorialManager: {fileID: 0}
 --- !u!224 &190367787
 RectTransform:
@@ -6965,7 +6964,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.13, y: -0.45}
+  m_AnchoredPosition: {x: -0.13, y: -0.49}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &190367790
@@ -6981,7 +6980,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 1229394492}
-  explosionDuration: 0.5
   pipeBombSFX: {fileID: 1566942693}
 --- !u!82 &190367791
 AudioSource:
@@ -15283,8 +15281,8 @@ MonoBehaviour:
   bossManager: {fileID: 0}
   isBossBattle: 0
   BossWeakElement: 0
-  isEnemyTypeForced: 0
-  forcedEnemyType: {fileID: 11400000, guid: f6597793e434c104088e3144d54542b6, type: 2}
+  isEnemyTypeForced: 1
+  forcedEnemyType: {fileID: 11400000, guid: a0254dff86a5a8f4a8554eb97930585b, type: 2}
 --- !u!4 &733892386
 Transform:
   m_ObjectHideFlags: 0
@@ -15811,6 +15809,7 @@ GameObject:
   m_Component:
   - component: {fileID: 806185222}
   - component: {fileID: 806185221}
+  - component: {fileID: 806185223}
   m_Layer: 0
   m_Name: --------------------- GAME MANAGER
   m_TagString: Untagged
@@ -15847,6 +15846,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &806185223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 806185220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5089faa8aa8f981468d790dfeaa1fece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  items:
+  - {fileID: 11400000, guid: 168d1ae2559b7b447a6d464e99611891, type: 2}
+  ForceSpells: 1
+  spells:
+  - {fileID: 11400000, guid: d65283c45b7504446948b1b821bc9cb0, type: 2}
+  - {fileID: 11400000, guid: 98775d4b99fca9a4ebdc3c97d92ecfff, type: 2}
+  - {fileID: 11400000, guid: e9afe958fcdfa78458bbde73be344e18, type: 2}
+  - {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
+  knownSpells: []
 --- !u!1 &809243521
 GameObject:
   m_ObjectHideFlags: 0
@@ -31784,6 +31804,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 244508973}
     - target: {fileID: 753431409773059168, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
+      propertyPath: thunderMarkerSprite
+      value: 
+      objectReference: {fileID: 1961714728009579694, guid: bc471d9694c1bc94dba621824b22386f, type: 3}
+    - target: {fileID: 753431409773059168, guid: bef983a2aa14d764ea1287a647f0910b, type: 3}
       propertyPath: 'spellEffects.Array.data[0].VFXPrefab.Array.data[0]'
       value: 
       objectReference: {fileID: 1534566563}
@@ -32041,6 +32065,10 @@ PrefabInstance:
       propertyPath: grid
       value: 
       objectReference: {fileID: 190367786}
+    - target: {fileID: 8116796911541987023, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
+      propertyPath: enemyType
+      value: 
+      objectReference: {fileID: 11400000, guid: a0254dff86a5a8f4a8554eb97930585b, type: 2}
     - target: {fileID: 8116796911541987023, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: hiddenEnemyAttackSelect
       value: 

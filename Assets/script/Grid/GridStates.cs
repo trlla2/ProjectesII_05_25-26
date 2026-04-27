@@ -48,6 +48,7 @@ public class IdleState : IGridState
 
     public void Enter()
     {
+        grid.VisualGrid.ShowInactiveGrid(false);
         idleTimer = 0f;
         hintPlaying = false;
         currentHintPath = null;
@@ -70,6 +71,7 @@ public class IdleState : IGridState
 
     public void Exit()
     {
+        grid.VisualGrid.ShowInactiveGrid(true);
         StopHint();
     }
 

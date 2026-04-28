@@ -97,7 +97,7 @@ public class PlayerStats
             AddItemToInventory(debugItem);
         }
     }
-    private void ResetLevelStats()
+    public void ResetLevelStats()
     {
         experiencePoints = 0;
         level = 1;
@@ -142,7 +142,7 @@ public class PlayerStats
     {
         RemoveAllItems();
         ResetCombatStats();
-        ResetLevelStats();
+        //ResetLevelStats();
     }
 
 
@@ -223,6 +223,7 @@ public class PlayerStats
             OnLevelUp.Invoke();
             
     }
+    
 
     private void LevelUp()
     {

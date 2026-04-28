@@ -32,7 +32,6 @@ public class BattlePassBarHandler : MonoBehaviour
         battlePassBar.maxValue = 1f;
 
         UpdateVisuals();
-        UpdateBattlePass(100);
     }
 
     public void UpdateBattlePass(int amount)
@@ -98,7 +97,6 @@ public class BattlePassBarHandler : MonoBehaviour
             {
                 playerStats.AddCurrency(CurrencyType.EXP, expNeededToLevelUp);
                 pendingExp -= expNeededToLevelUp;
-
                 ClaimRewards();
 
                 if (pendingExp > 0)
@@ -162,7 +160,8 @@ public class BattlePassBarHandler : MonoBehaviour
         {
             int expCost = reward.expCost;
             int currentExp = playerStats.GetCurrency(CurrencyType.EXP);
-            battlePassBar.value = (float)currentExp / expCost;
+
+            battlePassBar.value = Mathf.Clamp01(currentExp / expCost);
         }
     }
 

@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(TMP_Text))]
 public class MoneyUIHandler : MonoBehaviour
@@ -8,6 +9,10 @@ public class MoneyUIHandler : MonoBehaviour
 
     [Header("Setup")]
     public bool useGameManager = true;
+    [SerializeField]
+    private Currency currency = null;
+    [SerializeField]
+    private Image currencyIcon = null;
 
     [Header("Fade")]
     [SerializeField]
@@ -25,13 +30,14 @@ public class MoneyUIHandler : MonoBehaviour
    
 
 
+
+
     private void Start()
     {
         moneyText = GetComponent<TMP_Text>();
         if(useGameManager)
             GameManager.Instance.PlayerStats.OnCurrencyChange += UpdateMoneyUI;
 
-        UpdateMoneyUI(CurrencyType.GOLD, 0);
 
 
         if (!showAlways)
@@ -40,6 +46,24 @@ public class MoneyUIHandler : MonoBehaviour
             isFading = false;
             parentFader.ResetToOrigin();
         }
+
+        UpdateVisuals();
+
+        UpdateMoneyUI();
+    }
+
+    private void UpdateVisuals()
+    {
+        if (!currency)
+        {
+             Debug.LogError("Currency reference is missing in MoneyUIHandler on " + gameObject.name);
+            return;
+        }
+
+        moneyText.color = currency.Color;
+        currencyIcon.sprite = currency.Icon;
+        if(moneyAddedGO)
+            moneyAddedGO.GetComponent<TMP_Text>().color = currency.Color;
 
     }
 
@@ -60,6 +84,9 @@ public class MoneyUIHandler : MonoBehaviour
 
     public void UpdateMoneyUI(CurrencyType type, int amount)
     {
+        if(type != currency.CurrencyType)
+            return;
+
         if(!showAlways && amount > 0)
         {
             time = 0;
@@ -78,7 +105,7 @@ public class MoneyUIHandler : MonoBehaviour
         }
 
         if (GameManager.Instance != null)
-            moneyText.text = GameManager.Instance.PlayerStats.GetCurrency(CurrencyType.GOLD).ToString();
+            moneyText.text = GameManager.Instance.PlayerStats.GetCurrency(currency.CurrencyType).ToString();
     }
 
 
@@ -95,7 +122,7 @@ public class MoneyUIHandler : MonoBehaviour
             isFading = true;
 
         }
-        moneyText.text = GameManager.Instance.PlayerStats.GetCurrency(CurrencyType.GOLD).ToString();
+        moneyText.text = GameManager.Instance.PlayerStats.GetCurrency(currency.CurrencyType).ToString();
     }
 
     private void Update()

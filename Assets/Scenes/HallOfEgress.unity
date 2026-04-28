@@ -8707,7 +8707,7 @@ RectTransform:
   m_GameObject: {fileID: 721114910}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.0000103, y: 1.0000103, z: 1.0000103}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 91185923}
@@ -10397,7 +10397,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useGameManager: 1
-  showAlways: 0
+  currency: {fileID: 11400000, guid: ab3fe0ca615b69d44bfd2047de6636d4, type: 2}
+  currencyIcon: {fileID: 592615198}
+  showAlways: 1
   parentFader: {fileID: 721114912}
   duration: 3
   moneyAddedGO: {fileID: 415694782}

@@ -32,7 +32,9 @@ public class EnemyType : ScriptableObject
 
     [Header("Rewards")]
     [SerializeField] private int goldReward = 100;
+    [SerializeField] private int expReward = 4;
     public int GoldReward => goldReward;
+    public int ExpReward => expReward;
 
     [Header("Timed Enemy Settings")]
     [SerializeField] private float attackTimer = 6f;

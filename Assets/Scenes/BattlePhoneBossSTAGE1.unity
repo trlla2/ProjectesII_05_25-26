@@ -6829,6 +6829,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   loseScene: HallOfEgress
   sceneToUnload: BattlePhoneBossSTAGE1
+  forceToHallOfEgress: 0
   bgFader: {fileID: 208736676}
   winColor: {r: 0.12941177, g: 0.6156863, b: 0.80392164, a: 1}
   loseColor: {r: 0.9725491, g: 0, b: 0.43137258, a: 1}
@@ -27716,6 +27717,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useGameManager: 0
+  currency: {fileID: 11400000, guid: d5172e611d5f99a459847affd34c655b, type: 2}
+  currencyIcon: {fileID: 1612114005}
   showAlways: 0
   parentFader: {fileID: 1135691001}
   duration: 3

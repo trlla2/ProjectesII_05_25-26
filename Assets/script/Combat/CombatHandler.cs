@@ -6,9 +6,6 @@ public class CombatHandler : MonoBehaviour
 
     private SpellHoverHandler spellHoverHandler;
 
-    private int expMultiplyer = 4;
-    private int moneyMultiplyer = 4;
-
     //Boss
     public BossManager bossManager;
     [HideInInspector] public bool isBossBattle = false;
@@ -114,7 +111,7 @@ public class CombatHandler : MonoBehaviour
 
     public void OnEnemyDead()
     {
-        int exp = GameManager.Instance.StageLevel * expMultiplyer;
+        int exp = enemyInCombat.GetEnemyType().ExpReward;
         Debug.Log($"aaaaaaaaaaaaaaa {enemyInCombat.GetEnemyType().GetSpellDrop()}"); // GetSpellDrop return nothing 
 
         Spell drop = enemyInCombat.GetEnemyType().GetSpellDrop();

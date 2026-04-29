@@ -92,8 +92,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 100
-  m_fontSizeBase: 100
+  m_fontSize: 140
+  m_fontSizeBase: 140
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -230,8 +230,9 @@ MonoBehaviour:
   textBox: {fileID: 5737551675175066660}
   messages:
   - THIS ENEMY BLOCKS YOUR MANA!!!
-  - TRY TO CAST SPELLS USING THE MANA ELEMENTS AROUND THE BLOCKED ONE
-  - WHENEVER YOU BREAK A BLOCK, THE ENEMY WILL RECEIVE A BIG AMOUNT OF DAMAGE!!
+  - THE BLOCKED MANA CAN'T BE USED TO CAST SPELLS
+  - USE THE MANA ELEMENTS AROUND THE BLOCKED ONE TO BREAK IT
+  - THE ENEMY WILL RECEIVE A BIG AMOUNT OF DAMAGE WHEN YOU UNBLOCK AN ELEMENT!!!!!
   charDisplayDelay: 0.05
 --- !u!114 &7976740629107743911
 MonoBehaviour:

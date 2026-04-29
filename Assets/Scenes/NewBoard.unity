@@ -1877,6 +1877,7 @@ MonoBehaviour:
   bossTileData: {fileID: 11400000, guid: bc3587d48929d3347ab647196bf11cde, type: 2}
   stairsTileData: {fileID: 11400000, guid: 5109a009fed6a2d4595e73f54ebbf5c4, type: 2}
   chestOfEgressTileData: {fileID: 11400000, guid: ed969576c0b28114788ef96d425d97a6, type: 2}
+  goldTileData: {fileID: 11400000, guid: 200018cec36a81b44a8285caf3c1347d, type: 2}
   boardGenerator: {fileID: 1101005419}
   _player: {fileID: 2033243885}
   generatedTiles: []
@@ -2020,7 +2021,7 @@ MonoBehaviour:
   _config:
     EndZoneReservedTiles: 6
     BossTileDistanceFromEnd: 4
-    StartZoneReserveTiles: 5
+    StartZoneReserveTiles: 3
     MinDistBetweenPaths: 2
     AllowBranchUp: 1
     AllowBranchDown: 0
@@ -2053,8 +2054,8 @@ MonoBehaviour:
   - {fileID: 5110594593294184157, guid: f89590fbf54342640bb15759a4e55e46, type: 3}
   - {fileID: 5110594593294184157, guid: c98d0c2341cced84c875b4d959cc9ba6, type: 3}
   _decorationCount: 20
-  _spawnMargin: 5
-  _spawnPadding: 3
+  _spawnMargin: 3
+  _spawnPadding: 2
   _minHeight: -2
   _maxHeight: 2
 --- !u!1 &1106537844

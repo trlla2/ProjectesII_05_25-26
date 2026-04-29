@@ -23,6 +23,7 @@ public class BoardManager : MonoBehaviour
     public BoardTileData bossTileData;
     public BoardTileData stairsTileData;
     public BoardTileData chestOfEgressTileData;
+    public BoardTileData goldTileData;
 
     [SerializeField] private BoardGenerator boardGenerator;
     [SerializeField] private PlayerMovement _player;

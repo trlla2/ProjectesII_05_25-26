@@ -4,11 +4,15 @@ using UnityEngine;
 
 public class BoardTilePopulator
 {
-    private readonly BoardManager _boardManager;
-    private readonly BoardGenerationConfig _config;
-    private readonly List<BoardPath> _allPaths;
+    private BoardManager _boardManager;
+    private BoardGenerationConfig _config;
+    private List<BoardPath> _allPaths;
+    private HashSet<Vector2Int> _occupiedBySpecial = new HashSet<Vector2Int>();
 
-    private readonly HashSet<Vector2Int> _occupiedBySpecial = new HashSet<Vector2Int>();
+    private HashSet<BoardTile> _startZoneSet;
+    private HashSet<BoardTile> StartZoneSet => _startZoneSet ??= _allPaths.Count > 0
+        ? _allPaths[0].GetStartZone(_config.StartZoneReserveTiles).ToHashSet()
+        : new HashSet<BoardTile>();
 
     public BoardTilePopulator(BoardManager boardManager, BoardGenerationConfig config, List<BoardPath> allPaths)
     {
@@ -19,21 +23,17 @@ public class BoardTilePopulator
 
     public void AssignEndZones(Transform parent)
     {
-        HashSet<BoardTile> startZoneSet = _allPaths.Count > 0
-            ? _allPaths[0].GetStartZone(_config.StartZoneReserveTiles).ToHashSet()
-            : new HashSet<BoardTile>();
-
         foreach (BoardPath path in _allPaths)
         {
             if (path == null || path.Tiles.Count == 0) continue;
-            CreateEndZoneForPath(path, parent, startZoneSet);
+            CreateEndZoneForPath(path, parent);
         }
     }
 
-    private void CreateEndZoneForPath(BoardPath path, Transform parent, HashSet<BoardTile> startZoneSet)
+    private void CreateEndZoneForPath(BoardPath path, Transform parent)
     {
         if (path.Tiles.Count < _config.EndZoneReservedTiles) return;
-        if (startZoneSet.Contains(path.EndTile)) return;
+        if (StartZoneSet.Contains(path.EndTile)) return;
         if (!path.IsTerminal(_boardManager)) return;
 
         Vector2Int stairsPos = path.EndTile.GetGridPosition() + new Vector2Int(0, 1);
@@ -57,19 +57,16 @@ public class BoardTilePopulator
             return;
         }
 
-        TryPlaceSpecialTileAt(path, path.Tiles.Count - _config.BossTileDistanceFromEnd,
-            _boardManager.bossTileData, startZoneSet);
-
-        TryPlaceSpecialTileAt(path, path.Tiles.Count - _config.ChestOfEgressTileDistFromEnd,
-            _boardManager.chestOfEgressTileData, startZoneSet);
+        TryPlaceSpecialTileAt(path, path.Tiles.Count - _config.BossTileDistanceFromEnd, _boardManager.bossTileData);
+        TryPlaceSpecialTileAt(path, path.Tiles.Count - _config.ChestOfEgressTileDistFromEnd, _boardManager.chestOfEgressTileData);
     }
 
-    private void TryPlaceSpecialTileAt(BoardPath path, int index, BoardTileData data, HashSet<BoardTile> startZoneSet)
+    private void TryPlaceSpecialTileAt(BoardPath path, int index, BoardTileData data)
     {
         if (index < 0 || index >= path.Tiles.Count) return;
 
         BoardTile tile = path.Tiles[index];
-        if (startZoneSet.Contains(tile)) return;
+        if (StartZoneSet.Contains(tile)) return;
         if (tile.GetData() == _boardManager.stairsTileData) return;
         if (tile.GetData() == _boardManager.bossTileData) return;
         if (tile.GetData() == _boardManager.chestOfEgressTileData) return;
@@ -79,16 +76,14 @@ public class BoardTilePopulator
             _boardManager.UpdateNeighbors(path.Tiles[index]);
     }
 
-    public void AssignEnemiesAndSpecialTiles(int numEnemies)
+    public void AssignEnemies(int numEnemies)
     {
         if (_allPaths == null || _allPaths.Count == 0) return;
-
         RebuildOccupiedCache();
 
         BoardPath mainPath = _allPaths[0];
-        HashSet<BoardTile> startZoneSet = mainPath.GetStartZone(_config.StartZoneReserveTiles).ToHashSet();
 
-        List<BoardTile> mainCandidates = GetValidEnemyPositions(mainPath, startZoneSet);
+        List<BoardTile> mainCandidates = GetValidEnemyPositions(mainPath);
         PlaceEnemiesOnPath(mainCandidates, numEnemies);
 
         for (int b = 1; b < _allPaths.Count; b++)
@@ -107,44 +102,112 @@ public class BoardTilePopulator
             int enemiesNeeded = numEnemies - enemiesInSharedSegment;
             if (enemiesNeeded <= 0) continue;
 
-            List<BoardTile> branchCandidates = GetValidEnemyPositions(branch, startZoneSet)
+            List<BoardTile> branchCandidates = GetValidEnemyPositions(branch)
                 .Where(t => t != originOnMain)
                 .ToList();
 
             PlaceEnemiesOnPath(branchCandidates, enemiesNeeded);
         }
-
-        AssignSpecialTilesFromPool(startZoneSet);
     }
 
-    private void AssignSpecialTilesFromPool(HashSet<BoardTile> startZoneSet)
+    public void AssignSeparatorsBetweenEnemies()
+    {
+        StageLevelData stageData = _boardManager.currentStageLevelData;
+        if (stageData == null) return;
+
+        Dictionary<BoardTileData, int> placedCounts = BuildCurrentSpecialTileCounts();
+
+        foreach (BoardPath path in _allPaths)
+        {
+            if (path == null || path.Tiles.Count == 0) continue;
+
+            int lastEnemyIdx = -1;
+            bool hasSpecialBetween = false;
+
+            for (int i = 0; i < path.Tiles.Count; i++)
+            {
+                BoardTile tile = path.Tiles[i];
+                if (tile == null) continue;
+
+                if (IsEnemyTile(tile))
+                {
+                    if (lastEnemyIdx >= 0 && !hasSpecialBetween)
+                        ForceSeparatorInRange(path, lastEnemyIdx + 1, i - 1, stageData, placedCounts);
+
+                    lastEnemyIdx = i;
+                    hasSpecialBetween = false;
+                }
+                else if (lastEnemyIdx >= 0 && IsSpecialInteractableTile(tile))
+                {
+                    hasSpecialBetween = true;
+                }
+            }
+        }
+    }
+
+    private void ForceSeparatorInRange(
+        BoardPath path, int from, int to,
+        StageLevelData stageData,
+        Dictionary<BoardTileData, int> placedCounts)
+    {
+        for (int i = from; i <= to; i++)
+        {
+            if (i < 0 || i >= path.Tiles.Count) continue;
+
+            BoardTile tile = path.Tiles[i];
+            if (tile == null || !IsPlainEmptyTile(tile)) continue;
+            if (StartZoneSet.Contains(tile)) continue;
+
+            // Reroll until a valid tiletype is found or mucho intento muchacho
+            const int maxRerolls = 10;
+            BoardTileData rolled = null;
+            for (int attempt = 0; attempt < maxRerolls; attempt++)
+            {
+                BoardTileData candidate = stageData.RollSpecialTile(placedCounts);
+                if (candidate == null) return;
+                if (IsValidSeparatorTile(candidate)) { rolled = candidate; break; }
+            }
+            if (rolled == null) return;
+
+            ReplaceTileAndUpdatePaths(tile, rolled);
+            if (!placedCounts.ContainsKey(rolled)) placedCounts[rolled] = 0;
+            placedCounts[rolled]++;
+            return;
+        }
+    }
+
+    public void AssignSpecialTiles()
     {
         StageLevelData stageData = _boardManager.currentStageLevelData;
 
         if (stageData == null || !stageData.HasSpecialTilePool())
         {
-            // fallback => chest tile spawns
-            PlaceSpecialTilesFixed(startZoneSet, _boardManager.chestTileData, stageData?.GetNumOfChestTiles() ?? 0);
+            PlaceSpecialTilesFixed(_boardManager.goldTileData, stageData?.GetNumOfChestTiles() ?? 0);
             return;
         }
 
-        List<BoardTile> candidates = BuildSpecialTileCandidatePool(startZoneSet);
+        List<BoardTile> candidates = BuildSpecialTileCandidatePool();
         Shuffle(candidates);
+
+        // volver a construir el conteo de specialTiles para respetar maxInstances contando las tiles forzadas entre encounters
+        Dictionary<BoardTileData, int> placedCounts = BuildCurrentSpecialTileCounts();
 
         foreach (BoardTile tile in candidates)
         {
             if (HasSpecialNeighbor(tile)) continue;
 
-            BoardTileData rolled = stageData.RollSpecialTile();
-            if (rolled == null) continue;
+            BoardTileData rolled = stageData.RollSpecialTile(placedCounts);
+            if (rolled == null) break;
 
             ReplaceTileAndUpdatePaths(tile, rolled);
+            if (!placedCounts.ContainsKey(rolled)) placedCounts[rolled] = 0;
+            placedCounts[rolled]++;
         }
     }
 
-    private void PlaceSpecialTilesFixed(HashSet<BoardTile> startZoneSet, BoardTileData tileData, int count)
+    private void PlaceSpecialTilesFixed(BoardTileData tileData, int count)
     {
-        List<BoardTile> available = BuildSpecialTileCandidatePool(startZoneSet);
+        List<BoardTile> available = BuildSpecialTileCandidatePool();
         Shuffle(available);
 
         int placed = 0;
@@ -157,26 +220,6 @@ public class BoardTilePopulator
         }
 
         Debug.Log($"[Fallback] {tileData?.name} colocadas: {placed}");
-    }
-
-    private List<BoardTile> BuildSpecialTileCandidatePool(HashSet<BoardTile> startZoneSet)
-    {
-        HashSet<BoardTile> allEndZones = new HashSet<BoardTile>();
-        foreach (BoardPath path in _allPaths)
-        {
-            if (path == null || path.Tiles.Count == 0) continue;
-            allEndZones.UnionWith(path.GetEndZone(_config.EndZoneReservedTiles));
-        }
-
-        return _boardManager.generatedTiles
-            .Where(t =>
-                t != null &&
-                !startZoneSet.Contains(t) &&
-                !allEndZones.Contains(t) &&
-                t != _boardManager.startingTile &&
-                t.GetData() == _boardManager.emptyTileData &&
-                t.IsWalkable())
-            .ToList();
     }
 
     public void EnsureBranchEntriesAreEmpty()
@@ -192,11 +235,7 @@ public class BoardTilePopulator
             int swapIdx = -1;
             for (int i = 2; i < branch.Tiles.Count; i++)
             {
-                if (branch.Tiles[i] is EmptyTile)
-                {
-                    swapIdx = i;
-                    break;
-                }
+                if (branch.Tiles[i] is EmptyTile) { swapIdx = i; break; }
             }
 
             if (swapIdx != -1)
@@ -204,7 +243,6 @@ public class BoardTilePopulator
         }
     }
 
-    //helpers
     private void RebuildOccupiedCache()
     {
         _occupiedBySpecial.Clear();
@@ -216,8 +254,63 @@ public class BoardTilePopulator
         }
     }
 
+    private List<BoardTile> BuildSpecialTileCandidatePool()
+    {
+        HashSet<BoardTile> allEndZones = new HashSet<BoardTile>();
+        foreach (BoardPath path in _allPaths)
+        {
+            if (path == null || path.Tiles.Count == 0) continue;
+            allEndZones.UnionWith(path.GetEndZone(_config.EndZoneReservedTiles));
+        }
+
+        return _boardManager.generatedTiles
+            .Where(t =>
+                t != null &&
+                !StartZoneSet.Contains(t) &&
+                !allEndZones.Contains(t) &&
+                t != _boardManager.startingTile &&
+                t.GetData() == _boardManager.emptyTileData &&
+                t.IsWalkable())
+            .ToList();
+    }
+
+    private Dictionary<BoardTileData, int> BuildCurrentSpecialTileCounts()
+    {
+        var counts = new Dictionary<BoardTileData, int>();
+        foreach (BoardTile tile in _boardManager.generatedTiles)
+        {
+            if (tile == null || !IsSpecialInteractableTile(tile)) continue;
+            BoardTileData data = tile.GetData();
+            if (!counts.ContainsKey(data)) counts[data] = 0;
+            counts[data]++;
+        }
+        return counts;
+    }
+
     private bool IsPlainEmptyTile(BoardTile tile) =>
         tile is EmptyTile && tile.GetData() == _boardManager.emptyTileData;
+
+    private bool IsEnemyTile(BoardTile tile) =>
+        tile != null && tile.GetData() == _boardManager.enemyTileData;
+
+    private bool IsSpecialInteractableTile(BoardTile tile)
+    {
+        if (tile == null) return false;
+        BoardTileData data = tile.GetData();
+        return data != _boardManager.emptyTileData
+            && data != _boardManager.enemyTileData
+            && data != _boardManager.stairsTileData
+            && data != _boardManager.bossTileData
+            && data != _boardManager.chestOfEgressTileData
+            && data != _boardManager.GetFogTileData();
+    }
+
+    private bool IsValidSeparatorTile(BoardTileData data)
+    {
+        if (data?.tilePrefab == null) return true;
+        return data.tilePrefab.GetComponent<GoldTile>() == null
+            && data.tilePrefab.GetComponent<SlotMachineTile>() == null;
+    }
 
     private void PlaceEnemiesOnPath(List<BoardTile> candidates, int count)
     {
@@ -258,12 +351,12 @@ public class BoardTilePopulator
         }
     }
 
-    private List<BoardTile> GetValidEnemyPositions(BoardPath path, HashSet<BoardTile> startZoneSet)
+    private List<BoardTile> GetValidEnemyPositions(BoardPath path)
     {
         HashSet<BoardTile> endZone = path.GetEndZone(_config.EndZoneReservedTiles);
         return path.Tiles.Where(t =>
             t != null &&
-            !startZoneSet.Contains(t) &&
+            !StartZoneSet.Contains(t) &&
             !endZone.Contains(t) &&
             !IsEnemyTile(t) &&
             t.GetData() != _boardManager.stairsTileData &&
@@ -283,9 +376,6 @@ public class BoardTilePopulator
 
         return newTile;
     }
-
-    private bool IsEnemyTile(BoardTile tile) =>
-        tile != null && tile.GetData() == _boardManager.enemyTileData;
 
     private bool HasSpecialNeighbor(BoardTile tile)
     {

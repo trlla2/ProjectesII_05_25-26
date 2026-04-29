@@ -222,6 +222,30 @@ public class BoardTilePopulator
         Debug.Log($"[Fallback] {tileData?.name} colocadas: {placed}");
     }
 
+    public void AssignGoldTiles()
+    {
+        StageLevelData stageData = _boardManager.currentStageLevelData;
+        GoldTileSpawnConfig config = stageData?.GetGoldTileConfig();
+
+        if (config?.tileData == null) return;
+
+        int count = config.RollCount();
+        if (count <= 0) return;
+
+        List<BoardTile> candidates = BuildSpecialTileCandidatePool();
+        Shuffle(candidates);
+
+        int placed = 0;
+        foreach (BoardTile tile in candidates)
+        {
+            if (placed >= count) break;
+            //if (HasSpecialNeighbor(tile)) continue;
+
+            ReplaceTileAndUpdatePaths(tile, config.tileData);
+            placed++;
+        }
+    }
+
     public void EnsureBranchEntriesAreEmpty()
     {
         for (int b = 1; b < _allPaths.Count; b++)

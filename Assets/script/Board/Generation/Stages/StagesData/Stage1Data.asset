@@ -26,9 +26,10 @@ MonoBehaviour:
   - tileData: {fileID: 11400000, guid: b50cf9a671c937d499492507682b5f82, type: 2}
     weight: 30
     maxInstances: 1
-  - tileData: {fileID: 11400000, guid: 200018cec36a81b44a8285caf3c1347d, type: 2}
-    weight: 80
-    maxInstances: 0
+  _goldTileConfig:
+    tileData: {fileID: 11400000, guid: 200018cec36a81b44a8285caf3c1347d, type: 2}
+    minInstances: 6
+    maxInstances: 10
   _minBranches: 1
   _maxBranches: 2
   _minBranchLengthBeforeRejoin: 9

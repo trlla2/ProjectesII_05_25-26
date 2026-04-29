@@ -11,6 +11,17 @@ public class SpecialTileEntry
     [Min(0f)] public int maxInstances; // 0 = unlimited
 }
 
+[System.Serializable]
+public class GoldTileSpawnConfig
+{
+    public BoardTileData tileData;
+    [Min(0)] public int minInstances;
+    [Min(0)] public int maxInstances;
+
+    public int RollCount() =>
+        tileData != null ? Random.Range(minInstances, maxInstances + 1) : 0;
+}
+
 [CreateAssetMenu(fileName = "NewStageLevelData", menuName = "Game/Stage Level Data")]
 public class StageLevelData : ScriptableObject
 {
@@ -22,6 +33,9 @@ public class StageLevelData : ScriptableObject
 
     [Header("Special Tiles Pool")]
     [SerializeField] private List<SpecialTileEntry> _specialTilePool = new List<SpecialTileEntry>();
+
+    [Header("Gold Tile")]
+    [SerializeField] private GoldTileSpawnConfig _goldTileConfig;
 
     [Header("Branched Paths")]
     [SerializeField] int _minBranches;
@@ -93,6 +107,7 @@ public class StageLevelData : ScriptableObject
     public bool HasSpecialTilePool() =>
         _specialTilePool != null && _specialTilePool.Any(e => e.tileData != null && e.weight > 0f);
 
+    public GoldTileSpawnConfig GetGoldTileConfig() => _goldTileConfig;
 
     public ItemRarity GetPullItemRarity()
     {
@@ -127,7 +142,7 @@ public class StageLevelData : ScriptableObject
     private ItemRarity RollShopRarity()
     {
         float total = ShopCommonChance + ShopRareChance + ShopEpicChance + ShopLegendaryChance;
-        float roll  = Random.Range(0f, total);
+        float roll = Random.Range(0f, total);
 
         if (roll < ShopCommonChance)
             return ItemRarity.COMMON;

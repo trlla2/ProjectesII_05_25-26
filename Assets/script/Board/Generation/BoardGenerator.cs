@@ -80,6 +80,9 @@ public class BoardGenerator : MonoBehaviour
         // Step 5 – Fill remaining valid positions with special tiles
         populator.AssignSpecialTiles();
 
+        // Step 6 – Gold tiles (independent spawn, random count from StageLevelData range)
+        populator.AssignGoldTiles();
+
         populator.EnsureBranchEntriesAreEmpty();
 
         foreach (BoardPath path in Paths)

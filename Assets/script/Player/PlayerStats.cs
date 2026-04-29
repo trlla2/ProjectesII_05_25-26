@@ -92,7 +92,6 @@ public class PlayerStats
 
         // currency 
         currencyAmounts[CurrencyType.GOLD] = 50;
-        currencyAmounts[CurrencyType.RUBY] = 5000;
 
         // spells  & Items
         spellBook = new Spell[spellBookSize];

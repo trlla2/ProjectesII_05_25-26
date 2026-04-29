@@ -71,7 +71,7 @@ public class PlayerStats
     //Skins
     private HashSet<SkinType> unlockedSkins = new HashSet<SkinType>() { SkinType.Default };
     public HashSet<SkinType> UnlockedSkins => unlockedSkins;
-    private SkinType currentSkin = SkinType.Default;
+    private SkinType currentSkin = SkinType.Necromancer;
     public SkinType CurrentSkin => currentSkin;
 
     //Events

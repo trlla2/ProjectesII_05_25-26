@@ -24,6 +24,12 @@ public class SkinShop : MonoBehaviour
     [SerializeField]
     private TMP_Text buttonText;
 
+    [Header("SFX")]
+    [SerializeField]
+    private AudioSource buySFX;
+    [SerializeField]
+    private AudioSource errorSFX;
+
     private int currentPage = 0;
     private int maxPage = 3;
     private int minPage = 0;
@@ -122,18 +128,17 @@ public class SkinShop : MonoBehaviour
                 player.UseCurrency(CurrencyType.RUBY,currentSkin.Cost);
                 player.AddNewSkin(currentSkin.SkinType);
                 UpdatePage();
-                //SFXManager.Instance.PlaySFXByName("Buy");
+                buySFX.Play();
             }
             else
             {
-                //SFXManager.Instance.PlaySFXByName("Error");
+                errorSFX.Play();
             }
         }
         else
         {
             player.ChangeSkin(currentSkin.SkinType);
             Close();
-            //SFXManager.Instance.PlaySFXByName("Select");
         }
     }
 }

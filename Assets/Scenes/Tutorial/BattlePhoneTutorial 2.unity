@@ -6555,7 +6555,6 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   enemyDeletionDuration: 1
-  blockDuration: 1
   tutorialManager: {fileID: 819166028}
 --- !u!224 &190367787
 RectTransform:
@@ -8871,6 +8870,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 336436451}
   m_CullTransparentMesh: 1
+--- !u!1 &340262789
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 340262791}
+  - component: {fileID: 340262790}
+  m_Layer: 0
+  m_Name: -------------------------- SKIN MANAGER
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &340262790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 340262789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7575c26771b04f44bb0828d08264fad0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skinDB: {fileID: 11400000, guid: 05defb6c9e8abe644abc667312b0a4bd, type: 2}
+--- !u!4 &340262791
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 340262789}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 123.30925, y: 2132.2502, z: -0.59398496}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &342805359
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -33045,3 +33089,4 @@ SceneRoots:
   - {fileID: 889931752}
   - {fileID: 786346079}
   - {fileID: 766494794}
+  - {fileID: 340262791}

@@ -7,30 +7,20 @@ using static UnityEngine.Rendering.DebugUI;
 [CreateAssetMenu(fileName = "NewSkinDB", menuName = "Game/SkinDB")]
 public class SkinDB : ScriptableObject
 {
-    [SerializeField] private List<SkinType> type = new List<SkinType>();
     [SerializeField] private List<Skin> skin = new List<Skin>();
-    
-    public Dictionary<SkinType, Skin> Skins;
 
-    public void OnBeforeSerialize()
+    public List<Skin> Skins = new List<Skin>();
+
+    public Skin GetSkin(SkinType type)
     {
-        type.Clear();
-        skin.Clear();
-
-        foreach (var kvp in Skins)
+        foreach (var item in skin)
         {
-            type.Add(kvp.Key);
-            skin.Add(kvp.Value);
+            if (item.SkinType == type)
+            {
+                return item;
+            }
         }
-    }
 
-    public void OnAfterDeserialize()
-    {
-        Skins = new Dictionary<SkinType, Skin>();
-
-        for (int i = 0; i != Math.Min(type.Count, skin.Count); i++)
-        {
-            Skins.Add(type[i], skin[i]);
-        }
+        return null;
     }
 }

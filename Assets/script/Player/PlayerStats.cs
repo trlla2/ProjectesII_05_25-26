@@ -71,7 +71,7 @@ public class PlayerStats
     //Skins
     private HashSet<SkinType> unlockedSkins = new HashSet<SkinType>() { SkinType.Default };
     public HashSet<SkinType> UnlockedSkins => unlockedSkins;
-    private SkinType currentSkin = SkinType.Necromancer;
+    private SkinType currentSkin = SkinType.Default;
     public SkinType CurrentSkin => currentSkin;
 
     //Events
@@ -80,6 +80,7 @@ public class PlayerStats
     public event System.Action<CurrencyType, int> OnCurrencyChange;
     public event System.Action OnInventoryChange;
     public event System.Action OnSpellBookChange;
+    public event System.Action OnSkinChange;
 
 
     public event System.Action<ModificableStat, int> OnStatUpgradeLevelChanged;
@@ -91,6 +92,7 @@ public class PlayerStats
 
         // currency 
         currencyAmounts[CurrencyType.GOLD] = 50;
+        currencyAmounts[CurrencyType.RUBY] = 5000;
 
         // spells  & Items
         spellBook = new Spell[spellBookSize];
@@ -388,6 +390,7 @@ public class PlayerStats
             return;
         }
         currentSkin = skinType;
+        OnSkinChange?.Invoke();
     }
 
     public int GetElementLevel(ElementType t) { return elementalLevels[t]; }

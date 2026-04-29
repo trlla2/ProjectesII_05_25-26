@@ -11,7 +11,19 @@ public class BoardPlayerAnimationHandler : MonoBehaviour
     private Skin skin;
 
     private bool oldMoving = false;
+
+
     private void Start()
+    {
+        UpdateSkin();
+
+        pMovemnt = GetComponent<PlayerMovement>();
+
+        oldMoving = pMovemnt.isMoving;
+        GameManager.Instance.PlayerStats.OnSkinChange += UpdateSkin;
+    }
+
+    private void UpdateSkin()
     {
         SkinType currentSkin = GameManager.Instance.PlayerStats.CurrentSkin;
 
@@ -19,10 +31,6 @@ public class BoardPlayerAnimationHandler : MonoBehaviour
 
         spriteRenderer.sprite = skin.SkinSprite;
         animator.runtimeAnimatorController = skin.AnimatorController;
-
-        pMovemnt = GetComponent<PlayerMovement>();
-
-        oldMoving = pMovemnt.isMoving;
     }
 
     private void Update()
@@ -34,6 +42,12 @@ public class BoardPlayerAnimationHandler : MonoBehaviour
         oldMoving = pMovemnt.isMoving;
     }
 
-
+    private void OnDestroy()
+    {
+        if (GameManager.Instance != null && GameManager.Instance.PlayerStats != null)
+        {
+            GameManager.Instance.PlayerStats.OnSkinChange -= UpdateSkin;
+        }
+    }
 
 }

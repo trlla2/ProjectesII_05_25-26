@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SkinManager : MonoBehaviour
@@ -31,5 +32,15 @@ public class SkinManager : MonoBehaviour
             return null;
         }
         return skinDB.GetSkin(skinType);
+    }
+
+    public List<Skin> GetAllSkins()
+    {
+        if (skinDB == null)
+        {
+            Debug.LogWarning("SkinDB is not assigned in SkinManager.");
+            return null;
+        }
+        return skinDB.Skins;
     }
 }

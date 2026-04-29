@@ -19,11 +19,14 @@ public class Skin : ScriptableObject
     private Sprite skinSprite;
     [SerializeField]
     private RuntimeAnimatorController animatorController;
+    [SerializeField]
+    private RuntimeAnimatorController animatorControllerUI;
    
     public string SkinName => skinName;
     public int Cost => cost;
     public SkinType SkinType => skinType; 
     public Sprite SkinSprite => skinSprite;
+    public RuntimeAnimatorController AnimatorControllerUI => animatorControllerUI; 
     public RuntimeAnimatorController AnimatorController => animatorController;
     
 }

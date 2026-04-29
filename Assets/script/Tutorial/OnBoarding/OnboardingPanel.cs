@@ -31,11 +31,15 @@ public class OnboardingPanel : MonoBehaviour
     private void Update()
     {
         if (textBox == null)
+        {
+            this.gameObject.GetComponent<Image>().raycastTarget = false;
             if (Input.GetMouseButtonDown(0))
             {
                 _fullExplanationCompleted = true;
                 Dismiss();
             }
+        }
+            
     }
 
     public void Initialize(OnBoardingKey key)
@@ -99,14 +103,14 @@ public class OnboardingPanel : MonoBehaviour
         _fullExplanationCompleted = true;
     }
 
-    private void OnMouseDown()
-    {
-        if (textBox == null)
-        {
-            _fullExplanationCompleted = true;
-            Dismiss();
-        }
-    }
+    //private void OnMouseDown()
+    //{
+    //    if (textBox == null)
+    //    {
+    //        _fullExplanationCompleted = true;
+    //        Dismiss();
+    //    }
+    //}
 
     private void ForceCompleteText()
     {
@@ -114,6 +118,11 @@ public class OnboardingPanel : MonoBehaviour
         //StopAllCoroutines();
         textBox.maxVisibleCharacters = textBox.text.Length;
         _activeTextisFullyDisplayed = true;
+        if (_fullExplanationCompleted == false && textBox.text == messages[messages.Count - 1])
+        {
+            _fullExplanationCompleted = true;
+            _isWaitingForDismiss = false;
+        }
         //if (textBox.text == messages[messages.Count - 1])
         //{
         //    _fullExplanationCompleted = true;

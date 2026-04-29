@@ -6230,7 +6230,6 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   enemyDeletionDuration: 1
-  blockDuration: 1
   tutorialManager: {fileID: 0}
 --- !u!224 &190367787
 RectTransform:
@@ -9068,7 +9067,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lineRenderer: {fileID: 565765725}
-  trailWidth: 5
   trailColor: {r: 0.6, g: 0.3, b: 1, a: 1}
   trailMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   trailParticlesPrefab: {fileID: 1767301791}
@@ -56715,6 +56713,51 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &2053974776
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2053974778}
+  - component: {fileID: 2053974777}
+  m_Layer: 0
+  m_Name: -------------------------- SKIN MANAGER
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2053974777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2053974776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7575c26771b04f44bb0828d08264fad0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skinDB: {fileID: 11400000, guid: 05defb6c9e8abe644abc667312b0a4bd, type: 2}
+--- !u!4 &2053974778
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2053974776}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 123.30925, y: 2132.2502, z: -0.59398496}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2056249888
 GameObject:
   m_ObjectHideFlags: 0
@@ -59539,3 +59582,4 @@ SceneRoots:
   - {fileID: 1412890608}
   - {fileID: 1199659596}
   - {fileID: 2080957858}
+  - {fileID: 2053974778}

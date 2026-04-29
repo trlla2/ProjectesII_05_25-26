@@ -68,6 +68,12 @@ public class PlayerStats
     public List<Item> Inventory => inventory;
     private int limitInventory;
 
+    //Skins
+    private HashSet<SkinType> unlockedSkins = new HashSet<SkinType>() { SkinType.Default };
+    public HashSet<SkinType> UnlockedSkins => unlockedSkins;
+    private SkinType currentSkin = SkinType.Necromancer;
+    public SkinType CurrentSkin => currentSkin;
+
     //Events
     public event System.Action OnEXPChange;
     public event System.Action OnLevelUp;
@@ -365,6 +371,25 @@ public class PlayerStats
 
         return 0;
     }
+
+    public bool AddNewSkin(SkinType skinType)
+    {
+        if (unlockedSkins.Contains(skinType))
+            return false;
+        unlockedSkins.Add(skinType);
+        return true;
+    }
+
+    public void ChangeSkin(SkinType skinType)
+    {
+        if (!unlockedSkins.Contains(skinType))
+        {
+            Debug.LogWarning($"Skin {skinType} not unlocked!");
+            return;
+        }
+        currentSkin = skinType;
+    }
+
     public int GetElementLevel(ElementType t) { return elementalLevels[t]; }
     public int GetElementUpgradeLevel(ElementType t) { return elementalUpgrades[t]; }
     public int GetEXPForNextLevel() { return (int)Math.Pow(4, level); }

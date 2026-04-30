@@ -115,6 +115,11 @@ public class SpellPathAnimator : MonoBehaviour
         cloneTrailMap.Clear();
     }
 
+    private bool IsBlockerSpell()
+    {
+        return GameManager.Instance?.CombatHandler?.GetEnemyRef()?.ActiveSpell is BlockerSpell;
+    }
+
     private IEnumerator AnimateSpellPath(Vector2Int[] pathPositions, List<Element> elements, System.Action onComplete)
     {
         List<GameObject> clones = CreateClones(pathPositions, elements);
@@ -125,13 +130,18 @@ public class SpellPathAnimator : MonoBehaviour
             yield break;
         }
 
+        bool isBlocker = IsBlockerSpell();
+        float spacing = isBlocker ? 0f : elementSpacing;
+
         for (int i = 0; i < clones.Count; i++)
         {
-            StartCoroutine(AnimateSingleClone(clones[i], i * elementSpacing));
+            StartCoroutine(AnimateSingleClone(clones[i], i * spacing));
         }
 
-        float totalDuration = CalculateTotalAnimationDuration();
-        yield return new WaitForSeconds(totalDuration + (clones.Count * elementSpacing));
+        float totalDuration = isBlocker ? 0.15f : CalculateTotalAnimationDuration();
+        float totalWait = totalDuration + (clones.Count * spacing);
+
+        yield return new WaitForSeconds(totalWait);
 
         foreach (GameObject clone in clones)
         {
@@ -144,6 +154,14 @@ public class SpellPathAnimator : MonoBehaviour
         activeClones.RemoveAll(obj => obj == null);
         cloneElementMap.Clear();
         cloneTrailMap.Clear();
+        
+        if (isBlocker)
+        {
+            // Wait for any operations left before continouing
+            yield return null;
+            yield return null;
+        }
+        
         OnAttack?.Invoke();
         onComplete?.Invoke();
     }
@@ -152,7 +170,10 @@ public class SpellPathAnimator : MonoBehaviour
     {
         yield return new WaitForSeconds(startDelay);
 
-        AttachTrailToClone(clone);
+        bool isBlocker = IsBlockerSpell();
+
+        if (!isBlocker)
+            AttachTrailToClone(clone);
 
         Sequence animationSequence = DOTween.Sequence();
 
@@ -167,19 +188,25 @@ public class SpellPathAnimator : MonoBehaviour
             if (waypoints.Count == 0)
                 continue;
 
+            float duration = isBlocker ? 0.01f : section.duration;
+
             switch (section.mode)
             {
                 case SpellPathMode.CurvedLinear:
-                    AnimateCurvedPath(animationSequence, clone, waypoints, section);
+                    AnimateCurvedPath(animationSequence, clone, waypoints, section, duration);
                     break;
 
                 case SpellPathMode.Loop:
-                    AnimateLoopPath(animationSequence, clone, waypoints, section);
+                    AnimateLoopPath(animationSequence, clone, waypoints, section, duration);
                     break;
             }
         }
 
-        animationSequence.OnComplete(() => OnCloneAnimationComplete(clone, startDelay));
+        if (!isBlocker)
+            animationSequence.OnComplete(() => OnCloneAnimationComplete(clone, startDelay));
+        else
+            animationSequence.OnComplete(() => OnCloneAnimationCompleteInstant(clone));
+
         animationSequence.Play();
     }
 
@@ -235,7 +262,7 @@ public class SpellPathAnimator : MonoBehaviour
         };
     }
 
-    private void AnimateCurvedPath(Sequence sequence, GameObject clone, List<Transform> waypoints, PathSection section)
+    private void AnimateCurvedPath(Sequence sequence, GameObject clone, List<Transform> waypoints, PathSection section, float duration)
     {
         Vector3[] pathPositions = new Vector3[waypoints.Count];
         for (int i = 0; i < waypoints.Count; i++)
@@ -246,14 +273,14 @@ public class SpellPathAnimator : MonoBehaviour
         sequence.Append(
             clone.transform.DOPath(
                 pathPositions,
-                section.duration,
+                duration,
                 PathType.CatmullRom
             )
             .SetEase(section.animCurve)
         );
     }
 
-    private void AnimateLoopPath(Sequence sequence, GameObject clone, List<Transform> waypoints, PathSection section)
+    private void AnimateLoopPath(Sequence sequence, GameObject clone, List<Transform> waypoints, PathSection section, float duration)
     {
         if (waypoints.Count >= 2)
         {
@@ -272,7 +299,7 @@ public class SpellPathAnimator : MonoBehaviour
             Vector3[] circlePoints = CreateCircularPathBetweenPoints(center, radius, startAngle, 8, clockwise);
 
             sequence.Append(
-                clone.transform.DOPath(circlePoints, section.duration, PathType.CatmullRom)
+                clone.transform.DOPath(circlePoints, duration, PathType.CatmullRom)
                     .SetEase(section.animCurve)
             );
         }
@@ -286,9 +313,39 @@ public class SpellPathAnimator : MonoBehaviour
             Vector3[] circlePoints = CreateCircularPath(center, radius, 8, clockwise);
 
             sequence.Append(
-                clone.transform.DOPath(circlePoints, section.duration, PathType.CatmullRom)
+                clone.transform.DOPath(circlePoints, duration, PathType.CatmullRom)
                     .SetEase(section.animCurve)
             );
+        }
+    }
+
+    private void OnCloneAnimationCompleteInstant(GameObject clone)
+    {
+        if (GameManager.Instance != null && cloneElementMap.ContainsKey(clone))
+        {
+            if (isPlayerAnimator)
+            {
+                ElementType element = cloneElementMap[clone].Type;
+
+                element = element switch
+                {
+                    ElementType.Orange => ElementType.Red,
+                    ElementType.Melon  => ElementType.Green,
+                    _                  => element
+                };
+
+                GameManager.Instance.CombatHandler.AttackEnemy(element);
+            }
+            else
+            {
+                GameManager.Instance.CombatHandler.AttackPlayer(damagePerElement);
+            }
+        }
+
+        if (clone != null)
+        {
+            cloneElementMap.Remove(clone);
+            Destroy(clone);
         }
     }
 
@@ -402,6 +459,7 @@ public class SpellPathAnimator : MonoBehaviour
                     clones.Add(clone);
                     activeClones.Add(clone);
                     cloneElementMap[clone] = element;
+
                 }
             }
         }
@@ -421,6 +479,12 @@ public class SpellPathAnimator : MonoBehaviour
         {
             renderer.sprite = element.Sprite;
             renderer.color = element.Color;
+        }
+
+        bool isBlocker = IsBlockerSpell();
+        if (isBlocker && renderer != null)
+        {
+            renderer.enabled = false;
         }
 
         clone.transform.localScale = Vector3.one * elementScale;

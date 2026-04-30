@@ -110,9 +110,7 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
         expiredQueue.Enqueue(id);
     }
 
-    /// <summary>
-    /// Call this every frame to drive visual state from timer state.
-    /// </summary>
+    // Call this every frame to drive visual state from timer state.
     public void UpdateVisuals()
     {
         if (cachedGrid == null || isPaused) return;
@@ -141,10 +139,10 @@ public abstract class MultipleTimedSpellBase : EnemySpellBase
                 continue;
             }
 
-            // DOTween drives the fill — no per-frame SetTimedCountdownProgress needed
+            // DOTween drives the fill
         }
 
-        // Handle cleared targets — remove all first, then apply bonus time
+        // Handle cleared targets
         if (invalidTargets != null)
         {
             foreach (int id in invalidTargets)

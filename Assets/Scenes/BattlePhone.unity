@@ -15281,8 +15281,8 @@ MonoBehaviour:
   bossManager: {fileID: 0}
   isBossBattle: 0
   BossWeakElement: 0
-  isEnemyTypeForced: 0
-  forcedEnemyType: {fileID: 11400000, guid: a0254dff86a5a8f4a8554eb97930585b, type: 2}
+  isEnemyTypeForced: 1
+  forcedEnemyType: {fileID: 11400000, guid: 180abdd2e6772184ea34564cdd50fd5a, type: 2}
 --- !u!4 &733892386
 Transform:
   m_ObjectHideFlags: 0
@@ -15853,19 +15853,19 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 806185220}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5089faa8aa8f981468d790dfeaa1fece, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   items:
   - {fileID: 11400000, guid: 168d1ae2559b7b447a6d464e99611891, type: 2}
-  ForceSpells: 0
+  ForceSpells: 1
   spells:
-  - {fileID: 11400000, guid: d65283c45b7504446948b1b821bc9cb0, type: 2}
+  - {fileID: 11400000, guid: f2d76385d929f2c468f123b9f7d24042, type: 2}
   - {fileID: 11400000, guid: 98775d4b99fca9a4ebdc3c97d92ecfff, type: 2}
   - {fileID: 11400000, guid: e9afe958fcdfa78458bbde73be344e18, type: 2}
-  - {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
+  - {fileID: 11400000, guid: 7bcb7841072f0e846992f0ad4f6bfd2e, type: 2}
   knownSpells: []
 --- !u!1 &809243521
 GameObject:
@@ -32041,8 +32041,12 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5489592239911627731, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
+      propertyPath: pathSections.Array.data[0].duration
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 5489592239911627731, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: pathSections.Array.data[1].duration
-      value: 0.3
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 5489592239911627731, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: pathSections.Array.data[2].duration

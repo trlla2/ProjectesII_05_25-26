@@ -15282,7 +15282,7 @@ MonoBehaviour:
   isBossBattle: 0
   BossWeakElement: 0
   isEnemyTypeForced: 1
-  forcedEnemyType: {fileID: 11400000, guid: f6597793e434c104088e3144d54542b6, type: 2}
+  forcedEnemyType: {fileID: 11400000, guid: 180abdd2e6772184ea34564cdd50fd5a, type: 2}
 --- !u!4 &733892386
 Transform:
   m_ObjectHideFlags: 0
@@ -32041,8 +32041,12 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5489592239911627731, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
+      propertyPath: pathSections.Array.data[0].duration
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 5489592239911627731, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: pathSections.Array.data[1].duration
-      value: 0.3
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 5489592239911627731, guid: 13064d7c299a4ec42ad6bba00911e489, type: 3}
       propertyPath: pathSections.Array.data[2].duration

@@ -1,4 +1,5 @@
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,11 +30,13 @@ public class MoneyUIHandler : MonoBehaviour
     private GameObject moneyAddedGO;
    
 
-
+    private bool firstTime = true;
 
 
     private void Start()
     {
+        firstTime = true;
+
         moneyText = GetComponent<TMP_Text>();
         if(useGameManager)
             GameManager.Instance.PlayerStats.OnCurrencyChange += UpdateMoneyUI;
@@ -50,6 +53,11 @@ public class MoneyUIHandler : MonoBehaviour
         UpdateVisuals();
 
         UpdateMoneyUI();
+    }
+
+    private void OnEnable()
+    {
+        firstTime = true;
     }
 
     private void UpdateVisuals()
@@ -100,12 +108,14 @@ public class MoneyUIHandler : MonoBehaviour
         {
             moneyAddedGO.GetComponent<TMP_Text>().text = $"+{amount}";
             moneyAddedGO.GetComponent<TranslatorUI>().ToTarget();
-            if (SFXManager.Instance != null)
+            if (SFXManager.Instance != null && !firstTime)
                 SFXManager.Instance.PlaySFXByName("GetCoins");
         }
 
         if (GameManager.Instance != null)
             moneyText.text = GameManager.Instance.PlayerStats.GetCurrency(currency.CurrencyType).ToString();
+
+        firstTime = false;
     }
 
 
@@ -115,7 +125,7 @@ public class MoneyUIHandler : MonoBehaviour
 
         if (!showAlways)
         {
-            if (SFXManager.Instance != null)
+            if (SFXManager.Instance != null && !firstTime)
                 SFXManager.Instance.PlaySFXByName("GetCoins");
             time = 0;
             parentFader.ToTarget();
@@ -123,6 +133,7 @@ public class MoneyUIHandler : MonoBehaviour
 
         }
         moneyText.text = GameManager.Instance.PlayerStats.GetCurrency(currency.CurrencyType).ToString();
+        firstTime = false;
     }
 
     private void Update()

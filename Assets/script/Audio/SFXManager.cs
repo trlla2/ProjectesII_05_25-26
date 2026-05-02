@@ -35,6 +35,7 @@ public class SFXManager : MonoBehaviour
             Debug.LogError($"SFX MANAGER: THere is no sfx called \"{name}\"");
             return;
         }
+        Debug.Log($"SFX MANAGER: Playing sfx \"{name}\"");
 
         sfxAS.PlayOneShot(sfx);
     }

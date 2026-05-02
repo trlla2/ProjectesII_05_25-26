@@ -39,7 +39,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.25, y: 0.075}
   m_AnchorMax: {x: 0.75, y: 0.175}
-  m_AnchoredPosition: {x: 0, y: -0.0000009536743}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: -0.0000019073486}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6323506116308347955
@@ -909,7 +909,6 @@ GameObject:
   - component: {fileID: 1598438666754541899}
   - component: {fileID: 5583812689237297437}
   - component: {fileID: 1450792895167648132}
-  - component: {fileID: 9190444942520593425}
   m_Layer: 5
   m_Name: OpenChest
   m_TagString: Untagged
@@ -996,29 +995,28 @@ MonoBehaviour:
   _itemNameText: {fileID: 2670757347580969994}
   _itemDescriptionText: {fileID: 836796098706722170}
   _itemsPool:
-  - {fileID: 11400000, guid: e047397be666a1b4d9643b4a3ec57c55, type: 2}
   - {fileID: 11400000, guid: a785f2fc7cdab0b4b85fd01c2b46ec55, type: 2}
+  - {fileID: 11400000, guid: 7a2e9d56b64e7864ca1fdaeb5115c5f0, type: 2}
+  - {fileID: 11400000, guid: e047397be666a1b4d9643b4a3ec57c55, type: 2}
+  - {fileID: 11400000, guid: bb57a1f526a6f9f4396e3a98e5bab451, type: 2}
   - {fileID: 11400000, guid: ef79256ca3e204e4cb33bc2532e89133, type: 2}
   - {fileID: 11400000, guid: fa17eac532c173e4e82b8a71b2782204, type: 2}
-  - {fileID: 11400000, guid: bb57a1f526a6f9f4396e3a98e5bab451, type: 2}
-  - {fileID: 11400000, guid: 1ce31f216c45c0b4f9ea35b7a04b23a5, type: 2}
-  - {fileID: 11400000, guid: 204f23811e876154f8511d084523a845, type: 2}
-  - {fileID: 11400000, guid: 888b9766e822cfc4f97b0846a83cc2f5, type: 2}
-  - {fileID: 11400000, guid: 3147ab06220296b4e881c1a01f75861c, type: 2}
-  - {fileID: 11400000, guid: 05f0fc09978945945b01c612d14f2b75, type: 2}
-  - {fileID: 11400000, guid: 839d03372d573c2419f4aef6b8fbc6dc, type: 2}
-  - {fileID: 11400000, guid: 8b68972cefc7b7d4c9527281ada3b3dc, type: 2}
-  - {fileID: 11400000, guid: 93774a36ff7519f42aa79897e071d16d, type: 2}
-  - {fileID: 11400000, guid: 9be36c3ab0a487c48b578a701bcaa92f, type: 2}
-  - {fileID: 11400000, guid: 168d1ae2559b7b447a6d464e99611891, type: 2}
-  - {fileID: 11400000, guid: 7cd5832ad2ba6f047afb5d20c1e07dc8, type: 2}
-  - {fileID: 11400000, guid: e0c71afb2015e4144926da16fd9c690d, type: 2}
-  - {fileID: 11400000, guid: 6a1c637a87b98f24593d5a86d2b9ad85, type: 2}
   - {fileID: 11400000, guid: 0b07743ebec0aeb4594b65ad4d5a5506, type: 2}
   - {fileID: 11400000, guid: 40c4a473f2a63ff4eb0b20b6b67de2ef, type: 2}
   - {fileID: 11400000, guid: f8e7dff0b4ed7ad4896a6fc50c076569, type: 2}
   - {fileID: 11400000, guid: 6248b61c3d15be746888344045123e2e, type: 2}
-  - {fileID: 11400000, guid: 888b9766e822cfc4f97b0846a83cc2f5, type: 2}
+  - {fileID: 11400000, guid: 6a1c637a87b98f24593d5a86d2b9ad85, type: 2}
+  - {fileID: 11400000, guid: e0c71afb2015e4144926da16fd9c690d, type: 2}
+  - {fileID: 11400000, guid: 7cd5832ad2ba6f047afb5d20c1e07dc8, type: 2}
+  - {fileID: 11400000, guid: 168d1ae2559b7b447a6d464e99611891, type: 2}
+  - {fileID: 11400000, guid: 3147ab06220296b4e881c1a01f75861c, type: 2}
+  - {fileID: 11400000, guid: 05f0fc09978945945b01c612d14f2b75, type: 2}
+  - {fileID: 11400000, guid: 839d03372d573c2419f4aef6b8fbc6dc, type: 2}
+  - {fileID: 11400000, guid: 93774a36ff7519f42aa79897e071d16d, type: 2}
+  - {fileID: 11400000, guid: 9be36c3ab0a487c48b578a701bcaa92f, type: 2}
+  - {fileID: 11400000, guid: 8b68972cefc7b7d4c9527281ada3b3dc, type: 2}
+  - {fileID: 11400000, guid: 1ce31f216c45c0b4f9ea35b7a04b23a5, type: 2}
+  - {fileID: 11400000, guid: 204f23811e876154f8511d084523a845, type: 2}
   _removeItemPanel: {fileID: 5008397289641054711}
   _animationHandler: {fileID: 0}
 --- !u!114 &1450792895167648132
@@ -1033,7 +1031,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9045006f78d19d84296ebbe511703e51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animationDuration: 0.5
+  animationDuration: 0.25
   currentTime: 0
   curve:
     serializedVersion: 2
@@ -1041,8 +1039,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
+      inSlope: 2
+      outSlope: 2
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
@@ -1080,10 +1078,10 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 2559998848902052241}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 3003044396767403888}
+        m_TargetAssemblyTypeName: TranslatorUI, Assembly-CSharp
+        m_MethodName: ResetTranslator
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1092,27 +1090,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  OnChange:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &9190444942520593425
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2559998848902052241}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd9fde938b4f986468baeaec9122467f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  onEnableCall:
-    m_PersistentCalls:
-      m_Calls: []
-  onDisableCall:
-    m_PersistentCalls:
-      m_Calls:
       - m_Target: {fileID: 1863066467664300935}
         m_TargetAssemblyTypeName: TranslatorUI, Assembly-CSharp
         m_MethodName: ResetTranslator
@@ -1149,6 +1126,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  OnChange:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3748217902045864563
 GameObject:
   m_ObjectHideFlags: 0

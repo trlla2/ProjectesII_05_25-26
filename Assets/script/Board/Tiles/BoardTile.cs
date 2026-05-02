@@ -87,6 +87,12 @@ public abstract class BoardTile : MonoBehaviour
 
     public abstract void Interact();
 
+    public virtual void Interact(System.Action onComplete)
+    {
+        Interact();
+        onComplete?.Invoke();
+    }
+
     protected void TryToRevealGeneratedBranchIfHasOne()
     {
         if (this is BranchOriginTile branchOrigin)

@@ -229,7 +229,6 @@ public class PlayerStats
         experiencePoints += amount;
 
         OnEXPChange?.Invoke();
-
         if (CanLevelUp())
             OnLevelUp.Invoke();
             

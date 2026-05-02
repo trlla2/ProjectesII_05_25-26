@@ -144,9 +144,11 @@ public class EndPanelHandler : MonoBehaviour
 
                 break;
             case EndBattleStage.STAGE2:
-                OnStage3Enter?.Invoke();
                 if (willLevelUp)
+                {
+                    OnStage3Enter?.Invoke();
                     currentStage++;
+                }
                 else
 
                     LoadWinScene();

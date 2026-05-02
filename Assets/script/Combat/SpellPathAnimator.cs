@@ -67,7 +67,7 @@ public class SpellPathAnimator : MonoBehaviour
         damagePerElement = damage;
     }
 
-    public void OnSpellCast(Vector2Int[] pathPositions, List<Element> elements, System.Action onComplete = null)
+    public void OnSpellCast(Vector2Int[] pathPositions, List<Element> elements, System.Action onComplete = null, bool forceFullAnimation = false)
     {
         if (!isPlayerAnimator)
         {
@@ -95,7 +95,7 @@ public class SpellPathAnimator : MonoBehaviour
             return;
         }
 
-        StartCoroutine(AnimateSpellPath(pathPositions, elements, onComplete));
+        StartCoroutine(AnimateSpellPath(pathPositions, elements, onComplete, forceFullAnimation));
     }
 
     public void CleanupAllAnimations()
@@ -120,7 +120,7 @@ public class SpellPathAnimator : MonoBehaviour
         return GameManager.Instance?.CombatHandler?.GetEnemyRef()?.ActiveSpell is BlockerSpell;
     }
 
-    private IEnumerator AnimateSpellPath(Vector2Int[] pathPositions, List<Element> elements, System.Action onComplete)
+    private IEnumerator AnimateSpellPath(Vector2Int[] pathPositions, List<Element> elements, System.Action onComplete, bool forceFullAnimation)
     {
         List<GameObject> clones = CreateClones(pathPositions, elements);
 
@@ -130,15 +130,18 @@ public class SpellPathAnimator : MonoBehaviour
             yield break;
         }
 
-        bool isBlocker = IsBlockerSpell();
-        float spacing = isBlocker ? 0f : elementSpacing;
+        //Skip instant animation if:
+        //-It's a blocker spell
+        //-AND it's NOT a forced anim
+        bool useInstantAnimation = IsBlockerSpell() && !forceFullAnimation;
+        float spacing = useInstantAnimation ? 0f : elementSpacing;
 
         for (int i = 0; i < clones.Count; i++)
         {
-            StartCoroutine(AnimateSingleClone(clones[i], i * spacing));
+            StartCoroutine(AnimateSingleClone(clones[i], i * spacing, useInstantAnimation));
         }
 
-        float totalDuration = isBlocker ? 0.15f : CalculateTotalAnimationDuration();
+        float totalDuration = useInstantAnimation ? 0.15f : CalculateTotalAnimationDuration();
         float totalWait = totalDuration + (clones.Count * spacing);
 
         yield return new WaitForSeconds(totalWait);
@@ -155,9 +158,9 @@ public class SpellPathAnimator : MonoBehaviour
         cloneElementMap.Clear();
         cloneTrailMap.Clear();
         
-        if (isBlocker)
+        if (useInstantAnimation)
         {
-            // Wait for any operations left before continouing
+            // Wait for any operations left before continuing
             yield return null;
             yield return null;
         }
@@ -166,13 +169,11 @@ public class SpellPathAnimator : MonoBehaviour
         onComplete?.Invoke();
     }
 
-    private IEnumerator AnimateSingleClone(GameObject clone, float startDelay)
+    private IEnumerator AnimateSingleClone(GameObject clone, float startDelay, bool useInstantAnimation)
     {
         yield return new WaitForSeconds(startDelay);
 
-        bool isBlocker = IsBlockerSpell();
-
-        if (!isBlocker)
+        if (!useInstantAnimation)
             AttachTrailToClone(clone);
 
         Sequence animationSequence = DOTween.Sequence();
@@ -188,7 +189,7 @@ public class SpellPathAnimator : MonoBehaviour
             if (waypoints.Count == 0)
                 continue;
 
-            float duration = isBlocker ? 0.01f : section.duration;
+            float duration = useInstantAnimation ? 0.01f : section.duration;
 
             switch (section.mode)
             {
@@ -202,7 +203,7 @@ public class SpellPathAnimator : MonoBehaviour
             }
         }
 
-        if (!isBlocker)
+        if (!useInstantAnimation)
             animationSequence.OnComplete(() => OnCloneAnimationComplete(clone, startDelay));
         else
             animationSequence.OnComplete(() => OnCloneAnimationCompleteInstant(clone));
@@ -479,12 +480,6 @@ public class SpellPathAnimator : MonoBehaviour
         {
             renderer.sprite = element.Sprite;
             renderer.color = element.Color;
-        }
-
-        bool isBlocker = IsBlockerSpell();
-        if (isBlocker && renderer != null)
-        {
-            renderer.enabled = false;
         }
 
         clone.transform.localScale = Vector3.one * elementScale;

@@ -234,6 +234,9 @@ public class ItemUIButton : MonoBehaviour
             baseEffect.SetUIPosition(playerPos);
         }
 
+        if (button != null)
+            button.interactable = false;
+
         item.Activate(context, () =>
         {
             if (item.ConsumeOnUse)

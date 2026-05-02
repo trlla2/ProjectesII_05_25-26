@@ -163,7 +163,10 @@ public class PlayerPathing : MonoBehaviour
         // Disable pathing during cooldown
         if (Time.time < lastCastTime + castCooldown)
         {
-            grid.VisualGrid.ShowInactiveGrid(true);
+            if (grid.CurrentState == GridStateType.Idle && GameManager.Instance.CombatHandler.GetEnemyRef().ActiveSpell is not BlockerSpell)
+            {
+                grid.VisualGrid.ShowInactiveGrid(true);
+            }
             return;
         }
 

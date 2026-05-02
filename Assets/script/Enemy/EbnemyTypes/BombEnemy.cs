@@ -13,26 +13,13 @@ public class BombSpell : EnemySpellBase
     //This became more complicated than it should, but with the gravity now moving verything around we have to track which visuals correspond to which offsets in order to determine if the player cleared them or if they just moved due to gravity. This dictionary allows us to check if the visual we originally targeted for a given offset still exists after gravity.
     private Dictionary<Vector2Int, ElementVisual> targetedVisualsByOffset = new Dictionary<Vector2Int, ElementVisual>();
 
-    private Vector2Int[] CardinalOffsets = new Vector2Int[]
+    private Vector2Int[] Offsets = new Vector2Int[]
     {
         new Vector2Int(0, 1), 
         new Vector2Int(0, -1),
         new Vector2Int(1, 0),
         new Vector2Int(-1, 0)  
     };
-
-    private Vector2Int[] AllAdjacentOffsets = new Vector2Int[]
-    {
-        new Vector2Int(0, 1),
-        new Vector2Int(0, -1),
-        new Vector2Int(1, 0),
-        new Vector2Int(-1, 0),
-        new Vector2Int(1, 1),
-        new Vector2Int(-1, 1),
-        new Vector2Int(1, -1),
-        new Vector2Int(-1, -1)
-    };
-
     public BombSpell(float damagePerElement, int moveCount = 4)
     {
         this.damagePerElement = damagePerElement;
@@ -49,7 +36,7 @@ public class BombSpell : EnemySpellBase
 
         targetedPositions.Clear();
         cardinalPositions.Clear();
-        activeCardinalOffsets = new List<Vector2Int>(CardinalOffsets);
+        activeCardinalOffsets = new List<Vector2Int>(Offsets);
         clearedCardinalOffsets.Clear();
         targetedVisualsByOffset.Clear();
 
@@ -315,7 +302,7 @@ public class BombSpell : EnemySpellBase
     {
         targetedPositions.Clear();
 
-        foreach (var offset in AllAdjacentOffsets)
+        foreach (var offset in Offsets)
         {
             Vector2Int pos = bombPosition + offset;
             if (!grid.IsPositionValid(pos)) continue;

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   steps:
   - type: 0
-    text: The enemy selects targets to attack, Use them before it hits you!
+    text: The enemy selects targets to attack you!!
     autoDismissTime: 1
     highlightPositions: []
     allowedPath: []
@@ -35,7 +35,7 @@ MonoBehaviour:
     - {x: 0, y: 3}
     - {x: 0, y: 2}
     - {x: 0, y: 1}
-    showHand: 0
+    showHand: 1
     handPath:
     - {x: 0, y: 3}
     - {x: 0, y: 2}
@@ -68,22 +68,6 @@ MonoBehaviour:
     advanceCondition: 2
     pauseEnemyTimers: 1
     lockInput: 0
-  - type: 0
-    text: You have 2 more moves to defend yourself!
-    autoDismissTime: 0
-    highlightPositions: []
-    allowedPath: []
-    showHand: 0
-    handPath:
-    - {x: 0, y: 3}
-    - {x: 0, y: 2}
-    - {x: 0, y: 1}
-    - {x: 0, y: 3}
-    - {x: 0, y: 1}
-    handDuration: 0
-    advanceCondition: 0
-    pauseEnemyTimers: 1
-    lockInput: 1
   - type: 2
     text: 
     autoDismissTime: 0
@@ -122,21 +106,6 @@ MonoBehaviour:
     advanceCondition: 2
     pauseEnemyTimers: 1
     lockInput: 0
-  - type: 0
-    text: If you fail to clear all targeted elements, the enemy will attack!
-    autoDismissTime: 0
-    highlightPositions: []
-    allowedPath: []
-    showHand: 0
-    handPath:
-    - {x: 1, y: 2}
-    - {x: 2, y: 2}
-    - {x: 1, y: 2}
-    - {x: 2, y: 2}
-    handDuration: 3
-    advanceCondition: 0
-    pauseEnemyTimers: 1
-    lockInput: 1
   - type: 2
     text: 
     autoDismissTime: 0
@@ -195,7 +164,7 @@ MonoBehaviour:
     pauseEnemyTimers: 1
     lockInput: 1
   - type: 0
-    text: You got hit! Kill him before he does
+    text: You got hit!
     autoDismissTime: 0
     highlightPositions: []
     allowedPath: []

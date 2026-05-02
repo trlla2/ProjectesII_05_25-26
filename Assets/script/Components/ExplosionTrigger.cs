@@ -10,6 +10,7 @@ public class ExplosionTrigger : MonoBehaviour
     {
         Debug.Log("KABOOOM");
         GameObject explosion = Instantiate(explosionPrefab, position, Quaternion.identity);
+        explosion.transform.Rotate(100,0,0); //it looks better
         pipeBombSFX.Play();
 
     }

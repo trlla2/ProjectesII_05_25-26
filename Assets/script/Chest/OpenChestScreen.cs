@@ -11,7 +11,9 @@ public class OpenChestScreen : MonoBehaviour
 
     [Header("Items Setup")]
     [SerializeField] TMP_Text _itemNameText;
+    [SerializeField] TranslatorUI _itemNameTranslator;
     [SerializeField] TMP_Text _itemDescriptionText;
+    [SerializeField] TranslatorUI _itemDescriptionTranslator;
     
     [SerializeField] private List<Item> _itemsPool;
 

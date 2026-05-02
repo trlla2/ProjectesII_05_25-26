@@ -16,6 +16,11 @@ MonoBehaviour:
   _numOfEnemyTiles: 8
   _numOfMiniBossTiles: 0
   _numOfChestTiles: 8
+  _specialTilePool: []
+  _goldTileConfig:
+    tileData: {fileID: 0}
+    minInstances: 0
+    maxInstances: 0
   _minBranches: 3
   _maxBranches: 4
   _minBranchLengthBeforeRejoin: 24
@@ -31,5 +36,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0f615755cce1d3b409215e446884a96d, type: 2}
   _bossList:
   - {fileID: 11400000, guid: 9168d9f4aa1ee834ea1164744d0e797d, type: 2}
-  encountersOrder: 03000000040000000500000006000000030000000400000003000000
+  encountersOrder: 030000000400000005000000030000000400000003000000
   interactableTiles: []
+  commonRarityPercentage: 0
+  rareRarityPercentage: 0
+  epicRarityPercentage: 0
+  legendaryRarityPercentage: 0
+  _shopItemPool: []

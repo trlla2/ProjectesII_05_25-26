@@ -12,19 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f429702b582c65949ae43bcdb3c40145, type: 3}
   m_Name: Stage2Data
   m_EditorClassIdentifier: 
-  _numOfEmptyTiles: 21
+  _numOfEmptyTiles: 28
   _numOfEnemyTiles: 5
   _numOfMiniBossTiles: 0
   _numOfChestTiles: 5
   _specialTilePool:
   - tileData: {fileID: 11400000, guid: d22ce5231cab6564988711f5ec7898de, type: 2}
     weight: 40
+    maxInstances: 8
   - tileData: {fileID: 11400000, guid: b50cf9a671c937d499492507682b5f82, type: 2}
     weight: 50
+    maxInstances: 2
   - tileData: {fileID: 11400000, guid: a55434f9ea7c4bb43aeb42e620185353, type: 2}
     weight: 30
-  - tileData: {fileID: 11400000, guid: 200018cec36a81b44a8285caf3c1347d, type: 2}
-    weight: 40
+    maxInstances: 2
+  _goldTileConfig:
+    tileData: {fileID: 11400000, guid: 200018cec36a81b44a8285caf3c1347d, type: 2}
+    minInstances: 10
+    maxInstances: 15
   _minBranches: 1
   _maxBranches: 3
   _minBranchLengthBeforeRejoin: 14

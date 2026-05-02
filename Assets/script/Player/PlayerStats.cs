@@ -263,8 +263,9 @@ public class PlayerStats
         inventory.Add(item);
         item.ApplyEffects(this);
 
-        OnInventoryChange?.Invoke();
+        OnBoardingManager.Instance.TriggerIfNewWithDelay(OnBoardingKey.FIRST_ITEM_PICKUP);
 
+        OnInventoryChange?.Invoke();
 
         return true;// the item was added
     }

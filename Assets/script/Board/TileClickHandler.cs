@@ -69,16 +69,16 @@ public class TileClickHandler : MonoBehaviour
     {
         if (IsPointerOverUI()) return;
 
-        _boardManager.Player.MoveUntilStop(arrivedTile =>
+        _boardManager.Player.MoveForward(/*arrivedTile*/() =>
         {
-            if (arrivedTile == null) return;
+            //if (arrivedTile == null) return;
 
-            arrivedTile.OnPlayerArrive();
+            //arrivedTile.OnPlayerArrive();
 
-            if (arrivedTile.IsBranchOrigin())
-            {
-                arrivedTile.Interact();
-            }
+            //if (arrivedTile.IsBranchOrigin())
+            //{
+            //    arrivedTile.Interact();
+            //}
         });
     }
 

@@ -51,17 +51,18 @@ public class BranchChoicePanelHandler : MonoBehaviour
         if (firstTileOfChosenPath == null) return;
 
         Hide();
-
-        _player.MoveUntilStopFrom(firstTileOfChosenPath, arrivedTile =>
+        _player.TryMoveTo(firstTileOfChosenPath, () =>
         {
-            if (arrivedTile == null) return;
-
-            arrivedTile.OnPlayerArrive();
-
-            if (arrivedTile.IsBranchOrigin())
+            firstTileOfChosenPath.OnPlayerArrive();
+            _player.MoveForward(/*arrivedTile*/() =>
             {
-                arrivedTile.Interact();
-            }
+                //if (arrivedTile == null) return;
+                //arrivedTile.OnPlayerArrive();
+                //if (arrivedTile.IsBranchOrigin())
+                //{
+                //    arrivedTile.Interact();
+                //}
+            });
         });
     }
 }

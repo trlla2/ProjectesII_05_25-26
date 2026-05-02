@@ -16,7 +16,20 @@ MonoBehaviour:
   _numOfEnemyTiles: 6
   _numOfMiniBossTiles: 0
   _numOfChestTiles: 6
-  _specialTilePool: []
+  _specialTilePool:
+  - tileData: {fileID: 11400000, guid: d22ce5231cab6564988711f5ec7898de, type: 2}
+    weight: 40
+    maxInstances: 10
+  - tileData: {fileID: 11400000, guid: b50cf9a671c937d499492507682b5f82, type: 2}
+    weight: 50
+    maxInstances: 2
+  - tileData: {fileID: 11400000, guid: a55434f9ea7c4bb43aeb42e620185353, type: 2}
+    weight: 30
+    maxInstances: 3
+  _goldTileConfig:
+    tileData: {fileID: 11400000, guid: 200018cec36a81b44a8285caf3c1347d, type: 2}
+    minInstances: 6
+    maxInstances: 10
   _minBranches: 2
   _maxBranches: 4
   _minBranchLengthBeforeRejoin: 19
@@ -32,7 +45,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0f615755cce1d3b409215e446884a96d, type: 2}
   _bossList:
   - {fileID: 11400000, guid: 9168d9f4aa1ee834ea1164744d0e797d, type: 2}
-  encountersOrder: 030000000400000005000000060000000400000003000000
+  encountersOrder: 0300000004000000050000000400000003000000
   interactableTiles: []
   commonRarityPercentage: 35
   rareRarityPercentage: 30

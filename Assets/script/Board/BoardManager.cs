@@ -314,7 +314,7 @@ public class BoardManager : MonoBehaviour
         if (openChestPanel == null) return;
         openChestPanel.openedChest = chestTile;
         openChestPanel.Pull(currentStageLevelData.GetPullItemRarity());
-        openChestPanel.gameObject.SetActive(true);
+        openChestPanel.Open();
     }
 
     public void OpenChestOfEgress(ChestOfEgressTile tile)

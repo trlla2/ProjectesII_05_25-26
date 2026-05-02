@@ -25,12 +25,7 @@ public class OpenChestScreen : MonoBehaviour
     private TranslatorUI _translator;
 
     private void Awake() {  _translator = GetComponent<TranslatorUI>(); }
-
-    private void Start()
-    {
-        _translator.ToTarget();
-    }
-    private void OnEnable() { _translator.ToTarget(); }
+    public void Open() { _translator.ToTarget(); }
     public void Pull(ItemRarity rarity)
     {
         List<Item> candidates = new List<Item>();

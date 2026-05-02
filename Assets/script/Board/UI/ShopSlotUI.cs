@@ -17,6 +17,9 @@ public class ShopSlotUI : MonoBehaviour
     [SerializeField]
     private Image itemBG = null;
 
+    [SerializeField]
+    private GameObject itemLegendaryEffect = null;
+
     [Header("ItemRarity Header")]
     [SerializeField]
     private Sprite commonHeader;
@@ -69,18 +72,22 @@ public class ShopSlotUI : MonoBehaviour
                         case ItemRarity.COMMON:
                             itemBaner.sprite = commonHeader;
                             itemBG.sprite = commonBG;
+                            itemLegendaryEffect.SetActive(false);
                             break;
                         case ItemRarity.RARE:
                             itemBaner.sprite = rareHeader;
                             itemBG.sprite = rareBG;
+                            itemLegendaryEffect.SetActive(false);
                             break;
                         case ItemRarity.EPIC:
                             itemBaner.sprite = epicHeader;
                             itemBG.sprite = epicBG;
+                            itemLegendaryEffect.SetActive(false);
                             break;
                         case ItemRarity.LEGENDARY:
                             itemBaner.sprite = legendaryHeader;
                             itemBG.sprite = legendaryBG;
+                            itemLegendaryEffect.SetActive(true);
                             break;
                     }
                 }
@@ -106,6 +113,20 @@ public class ShopSlotUI : MonoBehaviour
         bool purchased = offer.IsPurchased;
         _buyButton.interactable = !purchased;
         _costText.text = purchased ? "SoldOut" : $"{offer.Cost}";
+
+        if (purchased)
+        {
+            _icon.color = new Color(_icon.color.r, _icon.color.g, _icon.color.b, 0.5f);
+
+
+            if (itemBaner != null && itemBG != null)
+            {
+                itemBaner.color = new Color(itemBaner.color.r, itemBaner.color.g, itemBaner.color.b, 0.5f);
+                itemBG.color = new Color(itemBG.color.r, itemBG.color.g, itemBG.color.b, 0.5f);
+                itemLegendaryEffect.SetActive(false);
+            }
+        }
+
     }
 
     private void OnBuyClicked()

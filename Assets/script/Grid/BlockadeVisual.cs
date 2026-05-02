@@ -89,11 +89,15 @@ public class BlockadeVisual : MonoBehaviour
     {     
         if (progressParticles != null)
         {
-            ParticleSystem particles;
-            particles = Instantiate(progressParticles, transform.position, Quaternion.identity);
-            particles.transform.position = transform.position;
+            ParticleSystem particles = Instantiate(progressParticles, transform.position, Quaternion.identity);
+            particles.transform.SetParent(null); // Ensure it's independent from the blockade
+
+            //Clear any existing particles and start fresh
+            ParticleSystem.MainModule main = particles.main;
+            particles.Clear();
             particles.Play();
-            Destroy(particles.gameObject, progressParticles.main.duration);
+            
+            Destroy(particles.gameObject, main.duration + main.startLifetime.constantMax);
         }
         if (progresSoundClip != null)
         {

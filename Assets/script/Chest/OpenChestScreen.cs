@@ -11,7 +11,9 @@ public class OpenChestScreen : MonoBehaviour
 
     [Header("Items Setup")]
     [SerializeField] TMP_Text _itemNameText;
+    [SerializeField] TranslatorUI _itemNameTranslator;
     [SerializeField] TMP_Text _itemDescriptionText;
+    [SerializeField] TranslatorUI _itemDescriptionTranslator;
     
     [SerializeField] private List<Item> _itemsPool;
 
@@ -25,12 +27,7 @@ public class OpenChestScreen : MonoBehaviour
     private TranslatorUI _translator;
 
     private void Awake() {  _translator = GetComponent<TranslatorUI>(); }
-
-    private void Start()
-    {
-        _translator.ToTarget();
-    }
-    private void OnEnable() { _translator.ToTarget(); }
+    public void Open() { _translator.ToTarget(); }
     public void Pull(ItemRarity rarity)
     {
         List<Item> candidates = new List<Item>();

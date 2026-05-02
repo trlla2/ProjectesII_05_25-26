@@ -11,6 +11,7 @@ public class ItemUIButton : MonoBehaviour
     private Button button;
     private CanvasGroup canvasGroup;
     private ParticleSystem glow;
+    private bool isActivating = false; 
 
     [Header("UI")]
     [SerializeField] private Color backgroundActiveColor = Color.white;
@@ -74,6 +75,16 @@ public class ItemUIButton : MonoBehaviour
         item = itemData;
         itemImage.sprite = item.Sprite;
 
+        // Ensure all components are assigned
+        if (button == null)
+            button = GetComponent<Button>();
+        if (canvasGroup == null)
+            canvasGroup = GetComponent<CanvasGroup>();
+        if (glow == null)
+            glow = GetComponentInChildren<ParticleSystem>();
+        if (playerRef == null)
+            playerRef = FindFirstObjectByType<PlayerPathing>();
+
         button.onClick.AddListener(OnItemClicked);
 
         UpdateVisualState();
@@ -81,7 +92,7 @@ public class ItemUIButton : MonoBehaviour
 
     private void Update()
     {
-        if (item != null && item.IsActivatable)
+        if (item != null && item.IsActivatable && !isActivating)
         {
             UpdateVisualState();
         }
@@ -89,14 +100,17 @@ public class ItemUIButton : MonoBehaviour
 
     private void UpdateVisualState()
     {
-        if (item == null) return;
+        if (item == null || isActivating) return;
+
+        if (button == null || canvasGroup == null) return;
 
         if (!item.IsActivatable || !IsInCombatScene())
         {
             button.interactable = false;
             canvasGroup.alpha = 0.7f;
             //itemImage.color = inactiveColor;
-            bg.color = new Color(0,0,0,0);
+            if (bg != null)
+                bg.color = new Color(0,0,0,0);
             return;
         }
 
@@ -113,28 +127,37 @@ public class ItemUIButton : MonoBehaviour
         if (item.IsOnCooldown())
         {
             canvasGroup.alpha = 0.5f;
-            bg.color = backgroundCooldownColor;
-            glow.Stop();
+            if (bg != null)
+                bg.color = backgroundCooldownColor;
+            if (glow != null)
+                glow.Stop();
         }
         if (canActivate)
         {
             canvasGroup.alpha = 1f;
-            glow.Play();
-            bg.color = backgroundActiveColor;
+            if (glow != null)
+                glow.Play();
+            if (bg != null)
+                bg.color = backgroundActiveColor;
         }
         else
         {
             canvasGroup.alpha = 0.7f;
-            glow.Stop();
-            glow.Clear();
-            bg.color = backgroundInactiveColor;
-            itemImage.color = inactiveColor;
+            if (glow != null)
+            {
+                glow.Stop();
+                glow.Clear();
+            }
+            if (bg != null)
+                bg.color = backgroundInactiveColor;
+            if (itemImage != null)
+                itemImage.color = inactiveColor;
         }
     }
 
     public void OnItemClicked()
     {
-        if (item == null || !item.IsActivatable || !IsInCombatScene()) return;
+        if (item == null || !item.IsActivatable || !IsInCombatScene() || isActivating) return;
 
         ItemContext context = new ItemContext
         {
@@ -149,6 +172,10 @@ public class ItemUIButton : MonoBehaviour
             Debug.Log($"Cannot activate {item.NameItem} right now!");
             return;
         }
+
+        // Set flag immediately to prevent any reactivation
+        isActivating = true;
+        button.interactable = false;
         
         activateItem.Play();
 
@@ -234,9 +261,6 @@ public class ItemUIButton : MonoBehaviour
             baseEffect.SetUIPosition(playerPos);
         }
 
-        if (button != null)
-            button.interactable = false;
-
         item.Activate(context, () =>
         {
             if (item.ConsumeOnUse)
@@ -245,7 +269,11 @@ public class ItemUIButton : MonoBehaviour
             context.Grid.ChangeState(new IdleState(context.Grid));
 
             if (!item.ConsumeOnUse)
+            {
+                // Reset the flag for reusable items
+                isActivating = false;
                 UpdateVisualState();
+            }
         });
     }
 

@@ -6296,85 +6296,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 267137243710918097, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1139451280469580930, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1186279799380550078, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2676907855610476040, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2967791266640278429, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4060680714189452362, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5994169781622799023, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
       propertyPath: m_Name
       value: AnimeExplosion
       objectReference: {fileID: 0}
-    - target: {fileID: 6350318342335015098, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
-      propertyPath: m_SortingLayer
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6350318342335015098, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
-      propertyPath: m_SortingLayerID
-      value: -2047655367
-      objectReference: {fileID: 0}
-    - target: {fileID: 6952935832944003458, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8068453946973367875, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8070909926830698686, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8211975739669771302, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8213626344643356703, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8499754546534712583, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 2.550861
-      objectReference: {fileID: 0}
-    - target: {fileID: 8499754546534712583, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 2.550861
-      objectReference: {fileID: 0}
-    - target: {fileID: 8499754546534712583, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 2.550861
+    - target: {fileID: 5994169781622799023, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8499754546534712583, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10.62
+      value: 14.75
       objectReference: {fileID: 0}
     - target: {fileID: 8499754546534712583, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.31
+      value: -11.94
       objectReference: {fileID: 0}
     - target: {fileID: 8499754546534712583, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.15
+      value: 2.07
       objectReference: {fileID: 0}
     - target: {fileID: 8499754546534712583, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
       propertyPath: m_LocalRotation.w
@@ -6402,14 +6342,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8499754546534712583, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8933491841282600290, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9009131213676461035, guid: 3fd4f4a70252fe940aa09834467733bf, type: 3}
-      propertyPath: playOnAwake
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -15281,8 +15213,8 @@ MonoBehaviour:
   bossManager: {fileID: 0}
   isBossBattle: 0
   BossWeakElement: 0
-  isEnemyTypeForced: 1
-  forcedEnemyType: {fileID: 11400000, guid: f6597793e434c104088e3144d54542b6, type: 2}
+  isEnemyTypeForced: 0
+  forcedEnemyType: {fileID: 11400000, guid: 0f615755cce1d3b409215e446884a96d, type: 2}
 --- !u!4 &733892386
 Transform:
   m_ObjectHideFlags: 0
@@ -15809,7 +15741,6 @@ GameObject:
   m_Component:
   - component: {fileID: 806185222}
   - component: {fileID: 806185221}
-  - component: {fileID: 806185223}
   m_Layer: 0
   m_Name: --------------------- GAME MANAGER
   m_TagString: Untagged
@@ -15830,9 +15761,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _stageDatas: []
-  _debugItemsInInventory:
-  - {fileID: 11400000, guid: 93774a36ff7519f42aa79897e071d16d, type: 2}
-  - {fileID: 11400000, guid: 888b9766e822cfc4f97b0846a83cc2f5, type: 2}
+  _debugItemsInInventory: []
 --- !u!4 &806185222
 Transform:
   m_ObjectHideFlags: 0
@@ -15848,26 +15777,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &806185223
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 806185220}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5089faa8aa8f981468d790dfeaa1fece, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  items: []
-  ForceSpells: 1
-  spells:
-  - {fileID: 11400000, guid: 98775d4b99fca9a4ebdc3c97d92ecfff, type: 2}
-  - {fileID: 11400000, guid: e9afe958fcdfa78458bbde73be344e18, type: 2}
-  - {fileID: 11400000, guid: 7bcb7841072f0e846992f0ad4f6bfd2e, type: 2}
-  - {fileID: 11400000, guid: f2d76385d929f2c468f123b9f7d24042, type: 2}
-  knownSpells: []
 --- !u!1 &809243521
 GameObject:
   m_ObjectHideFlags: 0
@@ -32442,6 +32351,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BreackBlockade
       objectReference: {fileID: 0}
+    - target: {fileID: 7542516628715453530, guid: 4d65ffd0602418e4b98a4bcdc1c3f4a4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -32459,17 +32372,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: tickBlockade
       objectReference: {fileID: 0}
+    - target: {fileID: 5299855936368787771, guid: 8e5d86e9c891cef44a1b5c0d4fbf6361, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7370044706905059650, guid: 8e5d86e9c891cef44a1b5c0d4fbf6361, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.202
+      value: 6.27
       objectReference: {fileID: 0}
     - target: {fileID: 7370044706905059650, guid: 8e5d86e9c891cef44a1b5c0d4fbf6361, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.814
+      value: -0.322
       objectReference: {fileID: 0}
     - target: {fileID: 7370044706905059650, guid: 8e5d86e9c891cef44a1b5c0d4fbf6361, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7370044706905059650, guid: 8e5d86e9c891cef44a1b5c0d4fbf6361, type: 3}
       propertyPath: m_LocalRotation.w

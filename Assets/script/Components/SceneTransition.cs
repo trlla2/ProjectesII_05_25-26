@@ -28,7 +28,7 @@ public class SceneTransition : MonoBehaviour
         fadePanel.color = c;
     }
 
-    public void LoadScene(string sceneName, bool isAdditive)
+    public void LoadScene(string sceneName, bool isAdditive = false)
     {
         StartCoroutine(TransitionToScene(sceneName, isAdditive));
     }

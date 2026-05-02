@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -81,6 +80,10 @@ public class PlayerStats
     public event System.Action OnInventoryChange;
     public event System.Action OnSpellBookChange;
     public event System.Action OnSkinChange;
+    public event System.Action OnUnlockedSkinsChange;
+    public event System.Action OnBattlePassLevelUp;
+    public event System.Action OnKnownSpellChange;
+
 
 
     public event System.Action<ModificableStat, int> OnStatUpgradeLevelChanged;
@@ -135,7 +138,7 @@ public class PlayerStats
         _maxHealthBaseUpgrades = 0;
         _damageBaseUpgrades = 0;
         _defenseBaseUpgrades = 0;
-        //
+
         _evasionModifier = 0;
         _maxHealthModifier = 0;
         _damageModifier = 0;
@@ -218,6 +221,7 @@ public class PlayerStats
     public void AddBattlePassLevel()
     {
         battlePassLevel ++;
+        OnBattlePassLevelUp?.Invoke();
     }
 
     public void AddExp(int amount)
@@ -363,6 +367,7 @@ public class PlayerStats
             return;
 
         knownSpells.Add(spell);
+        OnKnownSpellChange?.Invoke();
     }
 
     public int GetEXPForLastLevel()
@@ -378,6 +383,7 @@ public class PlayerStats
         if (unlockedSkins.Contains(skinType))
             return false;
         unlockedSkins.Add(skinType);
+        OnUnlockedSkinsChange?.Invoke();
         return true;
     }
 

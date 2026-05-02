@@ -101,8 +101,8 @@ public class ShopSlotUI : MonoBehaviour
             case ShopOffer.OfferType.StatUpgrade:
                 if (offer.StatType == StatUpgradeType.Defense)
                     _icon.sprite = _shopScreen._statUpgradeData.Where(s => s.Type == StatUpgradeType.Defense).FirstOrDefault().Icon;
-                else if (offer.StatType == StatUpgradeType.Evasion)
-                    _icon.sprite = _shopScreen._statUpgradeData.Where(s => s.Type == StatUpgradeType.Evasion).FirstOrDefault().Icon;
+                //else if (offer.StatType == StatUpgradeType.Evasion)
+                //    _icon.sprite = _shopScreen._statUpgradeData.Where(s => s.Type == StatUpgradeType.Evasion).FirstOrDefault().Icon;
                 else if (offer.StatType == StatUpgradeType.ExtraDamage)
                     _icon.sprite = _shopScreen._statUpgradeData.Where(s => s.Type == StatUpgradeType.ExtraDamage).FirstOrDefault().Icon;
                 else if (offer.StatType == StatUpgradeType.MaxHealth)
@@ -124,6 +124,15 @@ public class ShopSlotUI : MonoBehaviour
                 itemBaner.color = new Color(itemBaner.color.r, itemBaner.color.g, itemBaner.color.b, 0.5f);
                 itemBG.color = new Color(itemBG.color.r, itemBG.color.g, itemBG.color.b, 0.5f);
                 itemLegendaryEffect.SetActive(false);
+            }
+        }
+        else
+        {
+            _icon.color = new Color(_icon.color.r, _icon.color.g, _icon.color.b, 1f);
+            if (itemBaner != null && itemBG != null)
+            {
+                itemBaner.color = new Color(itemBaner.color.r, itemBaner.color.g, itemBaner.color.b, 1f);
+                itemBG.color = new Color(itemBG.color.r, itemBG.color.g, itemBG.color.b, 1f);
             }
         }
 

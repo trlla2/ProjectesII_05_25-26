@@ -285,7 +285,8 @@ public class BlockerSpell : IEnemySpell
         }
 
         Vector2Int[] pathArray = brokenPositions.ToArray();
-        animator.OnSpellCast(pathArray, elements, onComplete);
+        // Pass forceFullAnimation = true to play full animation even though it's a blocker spell
+        animator.OnSpellCast(pathArray, elements, onComplete, forceFullAnimation: true);
     }
 
     private void CompleteBreakBlock(Grid grid, Vector2Int position)

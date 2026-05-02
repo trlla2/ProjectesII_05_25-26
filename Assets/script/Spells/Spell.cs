@@ -5,6 +5,7 @@ using UnityEngine.Events;
 [CreateAssetMenu(fileName = "Spell", menuName = "ScriptableObjects/Spells", order = 2)]
 public class Spell : ScriptableObject
 {
+    public int id;
     public string Name;
     public string Description;
     public List<Element> Recipe;

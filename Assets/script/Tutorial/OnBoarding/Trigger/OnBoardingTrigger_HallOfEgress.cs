@@ -44,4 +44,9 @@ public class OnBoardingTrigger_HallOfEgress : MonoBehaviour
         yield return new WaitUntil(() => OnBoardingManager.Instance.IsPanelExplainedWithKey(OnBoardingKey.HALL_OF_EGRESS_GO_INTO_DUNGEON));
         OnBoardingManager.Instance.TriggerIfNew(OnBoardingKey.HALL_OF_EGRESS_GO_INTO_DUNGEON_DEDICO);
     }
+
+    public void ResetAllOnBoardings()
+    {
+        OnBoardingManager.Instance.ResetOnBoardingDataFromPlayerPrefs();
+    }
 }

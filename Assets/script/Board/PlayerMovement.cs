@@ -24,6 +24,7 @@ public class PlayerMovement : MonoBehaviour
     public UnityEvent OnStep;
 
     public bool isMoving { get; private set; } = false;
+    private bool _canMove = true;
 
 
     void Start()
@@ -36,11 +37,14 @@ public class PlayerMovement : MonoBehaviour
         currentTile = _boardManager.startingTile;
         if (!_boardManager.IsTutorial)
             transform.position = _boardManager.startingTile.transform.position;
+        else
+            _canMove = false;
         _jumpParticlesDuration = jumpParticles.main.duration;
     }
 
     public void TryMoveTo(BoardTile target, System.Action onArrive = null)
     {
+        if (!_canMove) return;
         if (currentTile == null || currentTile.GetGridPosition() != GetPlayerGridPosition()) ResetCurrentTile();
 
         var path = Pathfinding.FindPath(currentTile, target);
@@ -63,7 +67,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void MoveForward(System.Action/*<BoardTile>*/ onStop = null)
     {
-        if (isMoving) return;
+        if (isMoving || !_canMove) return;
         if (currentTile == null || currentTile.GetGridPosition() != GetPlayerGridPosition()) ResetCurrentTile();
 
         StartCoroutine(MoveForwardCoroutine(onStop));
@@ -255,6 +259,7 @@ public class PlayerMovement : MonoBehaviour
         this.gameObject.GetComponent<Rigidbody2D>().simulated = false;
         this.gameObject.GetComponent<BoxCollider2D>().enabled = false;
         collision.gameObject.GetComponent<BoxCollider2D>().enabled = false;
+        _canMove = true;
         OnStartingTileTouchedWhileFalling?.Invoke();
         //
         Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(true);

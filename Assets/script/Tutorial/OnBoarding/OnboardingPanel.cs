@@ -82,7 +82,6 @@ public class OnboardingPanel : MonoBehaviour
 
     private IEnumerator ShowTextCharByChar()
     {
-        
         foreach (string message in messages)
         {
             int textMaxVisibleChars = 0;
@@ -114,6 +113,7 @@ public class OnboardingPanel : MonoBehaviour
 
     private void ForceCompleteText()
     {
+        if (textBox == null) return;
         //StopCoroutine(ShowTextCharByChar());
         //StopAllCoroutines();
         textBox.maxVisibleCharacters = textBox.text.Length;

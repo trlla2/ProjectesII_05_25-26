@@ -248,7 +248,7 @@ public class BoardManager : MonoBehaviour
     public void ShowBranchChoice(BranchOriginTile originTile)
     {
         if (branchChoicePanel == null || originTile.GeneratedBranch == null
-            || originTile.GeneratedBranch.Count < 2) return;
+            /*|| originTile.GeneratedBranch.Count < 2*/) return;
 
         Vector2Int originPos     = originTile.GetGridPosition();
         Vector2Int branchNextPos = originTile.GeneratedBranch[1].GetGridPosition();

@@ -97,7 +97,7 @@ public class OnBoardingPanelList : ScriptableObject
                 panelPrefab = onBoardingFeatures[i].panelPrefab,
                 isExplained = isExplained
             };
-            if (!isExplained)
+            //if (!isExplained)
             {
                 GameObject panelInstance = Instantiate(onBoardingFeatures[i].panelPrefab, panelsParent);
                 panelInstance.SetActive(false);

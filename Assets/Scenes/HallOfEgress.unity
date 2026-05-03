@@ -15647,9 +15647,33 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 303309302}
+        m_TargetAssemblyTypeName: OnBoardingTrigger_HallOfEgress, Assembly-CSharp
+        m_MethodName: ResetAllOnBoardings
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 1397979610}
         m_TargetAssemblyTypeName: TutorialButton, Assembly-CSharp
         m_MethodName: LoadTutorial
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 963884064}
+        m_TargetAssemblyTypeName: UISpellBook_Behaviour, Assembly-CSharp
+        m_MethodName: ClearEquippedSpells
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -16494,6 +16518,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6589521188963450581, guid: a1270754a31f863419500470b6d9dc2b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7382497764808895526, guid: a1270754a31f863419500470b6d9dc2b, type: 3}
+      propertyPath: _resetOnBoardingFromPlayerPrefs
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8374543522997888960, guid: a1270754a31f863419500470b6d9dc2b, type: 3}

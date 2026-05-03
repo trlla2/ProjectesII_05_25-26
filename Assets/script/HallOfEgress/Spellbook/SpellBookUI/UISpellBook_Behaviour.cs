@@ -37,4 +37,9 @@ public class UISpellBook_Behaviour : MonoBehaviour
 
     }
 
+    public void ClearEquippedSpells()
+    {
+        GameManager.Instance.PlayerStats.ClearSpellBook();
+    }
+
 }

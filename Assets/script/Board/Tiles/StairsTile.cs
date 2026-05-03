@@ -20,7 +20,7 @@ public class StairsTile : BoardTile
 
     public override void Interact()
     {
-        if (_boardManager.IsTutorial || GameManager.Instance.StageLevel >= 3)
+        if (_boardManager.IsTutorial || GameManager.Instance.StageLevel >= 2)
         {
             GameManager.Instance.ResetStageLevel();
             SceneTransition.Instance.LoadScene("HallOfEgress", false);

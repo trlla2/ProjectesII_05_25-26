@@ -18,8 +18,10 @@ public class OnBoardingFingerAnimation : MonoBehaviour
         PlayAnimation();
     }
 
+
     private void OnDisable()
     {
+        transform.localPosition = _initialLocalPosition;
         _currentTween?.Kill();
     }
 

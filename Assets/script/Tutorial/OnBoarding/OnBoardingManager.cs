@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class OnBoardingManager : MonoBehaviour
@@ -47,10 +48,16 @@ public class OnBoardingManager : MonoBehaviour
         return instancedPanels.Find(panel => panel._key == key);
     }
 
-    // debug
-    private void ResetOnBoardingDataFromPlayerPrefs()
+    public void ResetOnBoardingDataFromPlayerPrefs()
     {
         panelList.ResetAllSavedData();
+        ReloadAllOnBoardingPanels();
+    }
+
+    private void ReloadAllOnBoardingPanels()
+    {
+        transform.GetComponentsInChildren<OnboardingPanel>().ToListPooled().ForEach(panel => Destroy(panel.gameObject));
+        instancedPanels = panelList.LoadPrefsData(this.transform);
     }
 
     public void TriggerIfNewWithDelay(OnBoardingKey key)

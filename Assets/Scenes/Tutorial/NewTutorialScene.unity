@@ -12196,6 +12196,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: AcceptButton
       objectReference: {fileID: 0}
+    - target: {fileID: 7292700906018293328, guid: 951ca64ad6bd99a4cb0b099e07ab8c05, type: 3}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7292700906018293328, guid: 951ca64ad6bd99a4cb0b099e07ab8c05, type: 3}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1847735487}
+    - target: {fileID: 7292700906018293328, guid: 951ca64ad6bd99a4cb0b099e07ab8c05, type: 3}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ToTarget
+      objectReference: {fileID: 0}
+    - target: {fileID: 7292700906018293328, guid: 951ca64ad6bd99a4cb0b099e07ab8c05, type: 3}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: TranslatorUI, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 7484824422513257272, guid: 951ca64ad6bd99a4cb0b099e07ab8c05, type: 3}
       propertyPath: m_text
       value: Skip Tutorial
@@ -12238,7 +12254,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fb67072fc2170e42ab632fdcc523204, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneTransition: {fileID: 877783420}
+--- !u!114 &1847735487 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4615084680586136583, guid: 951ca64ad6bd99a4cb0b099e07ab8c05, type: 3}
+  m_PrefabInstance: {fileID: 1847735483}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1847735485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9045006f78d19d84296ebbe511703e51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1932593056
 PrefabInstance:
   m_ObjectHideFlags: 0

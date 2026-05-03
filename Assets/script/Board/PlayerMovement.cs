@@ -107,6 +107,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (currentTile.IsBranchOrigin())
             {
+                yield return new WaitForSeconds(0.2f);
                 currentTile.Interact();
                 break;
             }

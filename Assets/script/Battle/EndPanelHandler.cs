@@ -168,7 +168,7 @@ public class EndPanelHandler : MonoBehaviour
     {
         if(forceToHallOfEgress)
         {
-            SceneTransition.Instance.UnloadScene(loseScene);
+            SceneTransition.Instance.LoadScene(loseScene);
             return;
         }
         SceneTransition.Instance.UnloadScene(sceneToUnload);

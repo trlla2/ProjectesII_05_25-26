@@ -7,6 +7,9 @@ public interface IDropeable
 
     string RewardName { get; }
     Sprite Icon { get; }
+    Sprite[] sprites { get; }
+    Color[] Colors { get; }
+
     RewardType Type { get; }
 
     void ClaimReward();

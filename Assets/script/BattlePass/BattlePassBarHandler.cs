@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.InputSystem.LowLevel.InputStateHistory;
 
 public class BattlePassBarHandler : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class BattlePassBarHandler : MonoBehaviour
     [SerializeField] private TMP_Text rewardText;
     [SerializeField] private Image rewardImage;
     [SerializeField] private GameObject rewardBG;
+    [SerializeField] private Sprite spellBG;
 
     [Header("BattlePass")]
     [SerializeField] private BattlePassType battlePassType;
@@ -17,7 +19,7 @@ public class BattlePassBarHandler : MonoBehaviour
     [SerializeField] private float interpolationDuration = 1.0f;
     [SerializeField] private AnimationCurve interpolationCurve;
 
-    [SerializeField] private Image rewardClone;
+    [SerializeField] private GameObject rewardClone;
 
     private float interpolationTime = 0.0f;
     private bool isInterpolating = false;
@@ -119,9 +121,51 @@ public class BattlePassBarHandler : MonoBehaviour
         var cost = battlePassType.Rewards[level].expCost;
 
         if (!playerStats.UseCurrency(CurrencyType.EXP, cost)) return;
-        rewardClone.sprite = battlePassType.Rewards[level].RewardDrop.Icon;
 
-        if (rewardClone.IsActive())
+        Image tmp = rewardClone.GetComponentInChildren<Image>();
+
+        if (tmp != null && battlePassType.Rewards[level].RewardDrop.Icon != null)
+        {
+            tmp.sprite = battlePassType.Rewards[level].RewardDrop.Icon;
+
+            foreach (Transform child in tmp.transform)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+        else if (tmp != null && battlePassType.Rewards[level].RewardDrop.sprites != null && battlePassType.Rewards[level].RewardDrop.sprites.Length > 0)
+        {
+            tmp.sprite = spellBG;
+
+            var sprites = battlePassType.Rewards[level].RewardDrop.sprites;
+            var colors = battlePassType.Rewards[level].RewardDrop.Colors;
+            int count = Mathf.Min(sprites.Length, colors != null ? colors.Length : 0);
+
+            for (int i = 0; i < count; i++)
+            {
+                GameObject tmpObj = Instantiate(new GameObject(), tmp.transform);
+                Image img = tmpObj.AddComponent<Image>();
+                img.sprite = sprites[i];
+                img.color = colors[i];
+            }
+        }
+        else
+        {
+            Debug.LogError("Reward has no valid sprite: " + battlePassType.Rewards[level].RewardDrop.RewardName);
+            rewardImage.sprite = null;
+        }
+
+        TMP_Text tmpText = rewardClone.GetComponentInChildren<TMP_Text>();
+        if (battlePassType.Rewards[level].quantity > 1)
+        {
+            tmpText.text = "x" + battlePassType.Rewards[level].quantity;
+        }
+        else
+        {
+            tmpText.text = "";
+        }
+
+        if (rewardClone.activeSelf)
         {
             rewardClone.GetComponent<TranslatorUI>().ResetTranslator();
             rewardClone.GetComponent<CanvasGroupFader>().ResetToOrigin();
@@ -147,14 +191,48 @@ public class BattlePassBarHandler : MonoBehaviour
         if (level >= battlePassType.Rewards.Count) return;
 
         var reward = battlePassType.Rewards[level];
-
-        rewardImage.sprite = reward.RewardDrop.Icon;
-        rewardText.text = reward.quantity > 1 ? "x" + reward.quantity : "";
-
-        if (reward.RewardDrop.Type == RewardType.SKIN || reward.RewardDrop.Type == RewardType.SPELL)
+        if(reward.quantity > 1)
         {
-            rewardBG.SetActive(true);
+            rewardText.text = "x" + reward.quantity;
         }
+        else
+        {
+            rewardText.text = "";
+        }
+
+        if(reward.RewardDrop.Icon != null)
+        {
+            rewardImage.sprite = reward.RewardDrop.Icon;
+
+            foreach (Transform child in rewardImage.transform)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+        else if (reward.RewardDrop.sprites != null && reward.RewardDrop.sprites.Length > 0)
+        {
+            rewardImage.sprite = spellBG;
+
+            var sprites = reward.RewardDrop.sprites;
+            var colors = reward.RewardDrop.Colors;
+            int count = Mathf.Min(sprites.Length, colors != null ? colors.Length : 0);
+
+            for (int i = 0; i < count; i++)
+            {
+                GameObject tmp = Instantiate(new GameObject(), rewardImage.transform);
+                Image img = tmp.AddComponent<Image>();
+                img.sprite = sprites[i];
+                img.color = colors[i];
+            }
+        }
+        else
+        {
+            Debug.LogError("Reward has no valid sprite: " + reward.RewardDrop.RewardName);
+            rewardImage.sprite = null;
+        }
+
+
+        rewardBG.SetActive(reward.RewardDrop.Type == RewardType.SKIN || reward.RewardDrop.Type == RewardType.SPELL);
 
         if (!isInterpolating)
         {

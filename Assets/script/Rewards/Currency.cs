@@ -14,9 +14,11 @@ public class Currency : ScriptableObject, IDropeable
 
     public string RewardName => currencyName;
     public Sprite Icon => icon;
+    public Sprite[] sprites => null;
     public RewardType Type => RewardType.CURRENCY;
     public CurrencyType CurrencyType => currencyType;   
     public Color Color => color;
+    public Color[] Colors => null;
 
     public void ClaimReward()
     {

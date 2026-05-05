@@ -3,13 +3,48 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [CreateAssetMenu(fileName = "Spell", menuName = "ScriptableObjects/Spells", order = 2)]
-public class Spell : ScriptableObject
+public class Spell : ScriptableObject, IDropeable
 {
     public int id;
     public string Name;
     public string Description;
     public List<Element> Recipe;
     public UnityEvent OnCast;
+
+    public string RewardName => Name;
+    public RewardType Type => RewardType.SPELL;
+
+    public Sprite Icon => null;
+    public Sprite[] sprites
+    {
+        get
+        {
+            Sprite[] elementSprites = new Sprite[Recipe.Count];
+            for (int i = 0; i < Recipe.Count; i++)
+            {
+                elementSprites[i] = Recipe[i].Sprite;
+            }
+            return elementSprites;
+        }
+    }
+    public Color[] Colors
+    {
+        get { 
+            Color[] elementColors = new Color[Recipe.Count];
+            for (int i = 0; i < Recipe.Count; i++)
+            {
+                elementColors[i] = Recipe[i].Color;
+            }
+            return elementColors;
+        }
+    }
+
+
+
+    public void ClaimReward()
+    {
+        GameManager.Instance.PlayerStats.AddKnownSpell(this);
+    }
 
     private static bool TypeMatches(ElementType pathType, ElementType recipeType)
     {

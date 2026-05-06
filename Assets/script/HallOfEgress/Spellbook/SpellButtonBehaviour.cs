@@ -9,6 +9,7 @@ public class SpellButtonBehaviour : MonoBehaviour
     [SerializeField] private TMP_Text _spellDescription;
     [SerializeField] private GameObject recipieParent;
     [SerializeField] private GameObject ElementPrefab;
+    [SerializeField] private GameObject warning;
    
     public void SetButtonToSpellValues(Spell spell)
     {
@@ -18,6 +19,20 @@ public class SpellButtonBehaviour : MonoBehaviour
         {
             GameObject temp = Instantiate(ElementPrefab, recipieParent.transform);
             temp.GetComponent<UIElement_Behaviour>().SetupElementUI(spell.Recipe[i]);
+        }
+
+        if(!SaveManager.Instance.HasUsedSpell(spell))
+        {
+            warning.SetActive(true);
+
+            this.GetComponent<Button>().onClick.AddListener(() => {
+                SaveManager.Instance.AddUsedSpell(spell);
+                warning.SetActive(false);
+            });
+        }
+        else
+        {
+            warning.SetActive(false);
         }
     }
 }

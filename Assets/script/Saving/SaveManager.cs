@@ -136,6 +136,7 @@ public class SaveManager : MonoBehaviour
         PlayerPrefs.DeleteKey("UnlockedSkins");
         PlayerPrefs.DeleteKey("CurrentSkin");
         PlayerPrefs.DeleteKey("TutorialCompleted");
+        PlayerPrefs.DeleteKey("UsedSpells");
 
         PlayerPrefs.Save();
     }
@@ -149,4 +150,36 @@ public class SaveManager : MonoBehaviour
         }
         set { PlayerPrefs.SetInt("TutorialCompleted", value ? 1 : 0); PlayerPrefs.Save(); }
     }
+
+    public bool HasUsedSpell(Spell s)
+    {
+        string UsedSpellsString = PlayerPrefs.GetString("UsedSpells", "");
+        
+        if(!string.IsNullOrEmpty(UsedSpellsString))
+        {
+            foreach (string key in UsedSpellsString.Split(','))
+            {
+                if (key == s.id.ToString())
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public void AddUsedSpell(Spell s)
+    {
+        string UsedSpellsString = PlayerPrefs.GetString("UsedSpells", "");
+        List<string> usedSpellsList = new List<string>(UsedSpellsString.Split(','));
+    
+        if (!usedSpellsList.Contains(s.id.ToString()))
+        {
+            usedSpellsList.Add(s.id.ToString());
+            PlayerPrefs.SetString("UsedSpells", string.Join(",", usedSpellsList));
+            PlayerPrefs.Save();
+        }
+    }
+
 }

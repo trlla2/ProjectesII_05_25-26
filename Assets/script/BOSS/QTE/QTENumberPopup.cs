@@ -69,7 +69,7 @@ public class QTENumberPopup : MonoBehaviour
         text.text = number.ToString();
 
         Color numberColor = (number - 1 < numberColors.Length) ? numberColors[number - 1] : Color.white;
-        text.color = numberColor * numberGlowIntensity;
+        //text.color = numberColor * numberGlowIntensity;
 
         Image bgImage = popup.GetComponent<Image>();
         if (bgImage != null)

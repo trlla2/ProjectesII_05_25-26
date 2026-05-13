@@ -28,10 +28,14 @@ public class BattlePassBarHandler : MonoBehaviour
     private float targetPercentage;
     private int pendingExp;
 
+    private float baseWidth;
+    private float spellWidth = 124.0f;
     private void Start()
     {
         battlePassBar.minValue = 0f;
         battlePassBar.maxValue = 1f;
+
+        baseWidth = rewardImage.rectTransform.sizeDelta.x;
 
         UpdateVisuals();
     }
@@ -123,6 +127,7 @@ public class BattlePassBarHandler : MonoBehaviour
         if (!playerStats.UseCurrency(CurrencyType.EXP, cost)) return;
 
         Image tmp = rewardClone.GetComponentInChildren<Image>();
+        rewardImage.rectTransform.sizeDelta = new Vector2(baseWidth, rewardImage.rectTransform.sizeDelta.y);
 
         if (tmp != null && battlePassType.Rewards[level].RewardDrop.Icon != null)
         {
@@ -147,6 +152,8 @@ public class BattlePassBarHandler : MonoBehaviour
                 Image img = tmpObj.AddComponent<Image>();
                 img.sprite = sprites[i];
                 img.color = colors[i];
+                img.rectTransform.sizeDelta = new Vector2(25, 25);
+                rewardImage.rectTransform.sizeDelta = new Vector2(spellWidth, rewardImage.rectTransform.sizeDelta.y);
             }
         }
         else
@@ -199,8 +206,8 @@ public class BattlePassBarHandler : MonoBehaviour
         {
             rewardText.text = "";
         }
-
-        if(reward.RewardDrop.Icon != null)
+        rewardImage.rectTransform.sizeDelta = new Vector2(baseWidth, rewardImage.rectTransform.sizeDelta.y);
+        if (reward.RewardDrop.Icon != null)
         {
             rewardImage.sprite = reward.RewardDrop.Icon;
 
@@ -223,6 +230,8 @@ public class BattlePassBarHandler : MonoBehaviour
                 Image img = tmp.AddComponent<Image>();
                 img.sprite = sprites[i];
                 img.color = colors[i];
+                img.rectTransform.sizeDelta = new Vector2(25, 25);
+                rewardImage.rectTransform.sizeDelta = new Vector2(spellWidth, rewardImage.rectTransform.sizeDelta.y);
             }
         }
         else

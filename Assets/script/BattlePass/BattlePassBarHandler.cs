@@ -146,6 +146,9 @@ public class BattlePassBarHandler : MonoBehaviour
             var colors = battlePassType.Rewards[level].RewardDrop.Colors;
             int count = Mathf.Min(sprites.Length, colors != null ? colors.Length : 0);
 
+            if (count > 2)
+                rewardImage.rectTransform.sizeDelta = new Vector2(spellWidth, rewardImage.rectTransform.sizeDelta.y);
+
             for (int i = 0; i < count; i++)
             {
                 GameObject tmpObj = Instantiate(new GameObject(), tmp.transform);
@@ -153,7 +156,6 @@ public class BattlePassBarHandler : MonoBehaviour
                 img.sprite = sprites[i];
                 img.color = colors[i];
                 img.rectTransform.sizeDelta = new Vector2(25, 25);
-                rewardImage.rectTransform.sizeDelta = new Vector2(spellWidth, rewardImage.rectTransform.sizeDelta.y);
             }
         }
         else
@@ -220,9 +222,14 @@ public class BattlePassBarHandler : MonoBehaviour
         {
             rewardImage.sprite = spellBG;
 
+            
             var sprites = reward.RewardDrop.sprites;
             var colors = reward.RewardDrop.Colors;
             int count = Mathf.Min(sprites.Length, colors != null ? colors.Length : 0);
+
+            if(count > 2)
+               rewardImage.rectTransform.sizeDelta = new Vector2(spellWidth, rewardImage.rectTransform.sizeDelta.y);
+
 
             for (int i = 0; i < count; i++)
             {
@@ -231,7 +238,6 @@ public class BattlePassBarHandler : MonoBehaviour
                 img.sprite = sprites[i];
                 img.color = colors[i];
                 img.rectTransform.sizeDelta = new Vector2(25, 25);
-                rewardImage.rectTransform.sizeDelta = new Vector2(spellWidth, rewardImage.rectTransform.sizeDelta.y);
             }
         }
         else

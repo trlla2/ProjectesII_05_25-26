@@ -8080,6 +8080,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4133574283550264647, guid: 787ec70e2601c0449a2d5c3a756da31d, type: 3}
   m_PrefabInstance: {fileID: 389824467}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &389824469 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2244791035161764954, guid: 787ec70e2601c0449a2d5c3a756da31d, type: 3}
+  m_PrefabInstance: {fileID: 389824467}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c90420fc7935cc48b36884d8db1495d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &400659542 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9130769808447433027, guid: 3a12eb215c4bbc44981b4a0fa95357f1, type: 3}
@@ -11777,7 +11788,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 389824469}
         m_TargetAssemblyTypeName: MoneyUIHandler, Assembly-CSharp
         m_MethodName: UpdateMoneyUI
         m_Mode: 1

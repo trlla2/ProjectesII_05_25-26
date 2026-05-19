@@ -58,6 +58,8 @@ public class MoneyUIHandler : MonoBehaviour
     private void OnEnable()
     {
         firstTime = true;
+
+        UpdateMoneyUI();
     }
 
     private void UpdateVisuals()

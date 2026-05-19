@@ -112,7 +112,6 @@ public class CombatHandler : MonoBehaviour
     public void OnEnemyDead()
     {
         int exp = enemyInCombat.GetEnemyType().ExpReward;
-        Debug.Log($"aaaaaaaaaaaaaaa {enemyInCombat.GetEnemyType().GetSpellDrop()}"); // GetSpellDrop return nothing 
 
         Spell drop = enemyInCombat.GetEnemyType().GetSpellDrop();
 

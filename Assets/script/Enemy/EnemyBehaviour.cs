@@ -243,11 +243,11 @@ public class EnemyBehaviour : MonoBehaviour
         while (grid != null && grid.CurrentState != GridStateType.Idle)
             yield return null;
 
-        // BombSpell needs to wait for secondary effect processing (e.g. thunder) to
-        // fully complete before checking the cable count / deciding to explode.
-        if (activeSpell is BombSpell)
+        // BombSpell and DoubleBomberSpell need to wait for secondary effect processing
+        // (e.g. thunder, item effects) to fully complete before checking cable count / deciding to explode.
+        if (activeSpell is BombSpell || activeSpell is DoubleBomberSpell)
         {
-            yield return null;//wait one frame first to ensure no state fights
+            yield return null; // wait one frame first to ensure no state fights
             while (grid != null && grid.CurrentState != GridStateType.Idle)
                 yield return null;
         }
@@ -283,10 +283,6 @@ public class EnemyBehaviour : MonoBehaviour
         activeSpell.Tick(grid, () =>
         {
             StartCoroutine(RerollAndRetarget());
-            if(activeSpell is BombSpell)
-            {
-                
-            }
         });
     }
 

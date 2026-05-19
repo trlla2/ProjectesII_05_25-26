@@ -595,6 +595,10 @@ public class EnemySpellState : IGridState
             yield return grid.StartCoroutine(visualGrid.AnimateGravity(movedPositions, refillDuration));
         }
 
+        // Update bomb (and any other persistent spell) state after gravity has settled,
+        // mirroring what RefillState does so cleared offsets are recorded before Tick runs.
+        grid.RetargetActiveSpell();
+
         List<Vector2Int> emptyPositions = GetEmptyPositions();
 
         if (emptyPositions.Count > 0)

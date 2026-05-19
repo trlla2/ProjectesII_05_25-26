@@ -152,6 +152,9 @@ public class EnemyType : ScriptableObject
             case EnemySpellType.SnakeLineTimedTarget:
                 return new ContinousLineTimedEnemy(continuousSelectionInterval, attackTimer, damagePerElement, lvl2BonusTimeOnClear);
 
+            case EnemySpellType.DoubleBombAttack:
+                return new DoubleBomberSpell(damagePerElement, moveCount);
+
             default:
                 return new ColumnDestroySpell(damagePerElement, moveCount);
         }
@@ -199,5 +202,6 @@ public enum EnemySpellType
     BlockerAttack,
     SwapperAttack,
     HalfScreenHiddenDestroy,
-    SnakeLineTimedTarget
+    SnakeLineTimedTarget,
+    DoubleBombAttack
 }

@@ -10,29 +10,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1ab529a0c12673a408eb38b86a880060, type: 3}
-  m_Name: SnakeContinousEnemy
+  m_Name: DoubbleBomber
   m_EditorClassIdentifier: 
-  name: 
-  health: 200
+  name: DoubbleBomber
+  health: 250
   damage: 10
   elementCount: 3
   level: 0
-  difficulty: 3
+  difficulty: 5
   weaknesses: 
   weaknessMultiplier: 2
   resistances: 
   resistanceMultiplier: 0.5
   enemySprite: {fileID: 0}
   animatorController: {fileID: 0}
-  spellType: 16
+  spellType: 17
   damagePerElement: 4
-  moveCount: 2
+  moveCount: 4
   goldReward: 100
   expReward: 4
-  attackTimer: 5.5
+  attackTimer: 6
   lvl2Countdown: 8
   lvl2BonusTimeOnClear: 2
-  continuousSelectionInterval: 1.33
+  continuousSelectionInterval: 2.5
   visibilityDuration: 2.5
   hiddenSprite: {fileID: 0}
   blockerCount: 2

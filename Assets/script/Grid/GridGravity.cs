@@ -60,6 +60,9 @@ public class GridGravity
                         // A bomb cannot fall into the bottom row
                         if (aboveElement.Type == ElementType.Bomb && row < 1)
                             break;
+                        // A bomb cannot fall if the enemy has the double bomber spell active
+                        if (aboveElement.Type == ElementType.Bomb && GameManager.Instance.CombatHandler.GetEnemyRef().ActiveSpell is DoubleBomberSpell)
+                            break;
 
                         gridData.SetElementAt(currentPos, aboveElement);
                         gridData.SetElementAt(abovePos, emptyElement);

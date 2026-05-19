@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ab529a0c12673a408eb38b86a880060, type: 3}
+  m_Name: LargeSnakeContinousEnemy
+  m_EditorClassIdentifier: 
+  name: 
+  health: 200
+  damage: 10
+  elementCount: 3
+  level: 0
+  difficulty: 3
+  weaknesses: 
+  weaknessMultiplier: 2
+  resistances: 
+  resistanceMultiplier: 0.5
+  enemySprite: {fileID: 0}
+  animatorController: {fileID: 0}
+  spellType: 16
+  damagePerElement: 4
+  moveCount: 2
+  goldReward: 100
+  expReward: 4
+  attackTimer: 7
+  lvl2Countdown: 7
+  lvl2BonusTimeOnClear: 1
+  continuousSelectionInterval: 1
+  visibilityDuration: 2.5
+  hiddenSprite: {fileID: 0}
+  blockerCount: 2
+  blockerDamagePercent: 0.25
+  haveDrops: 0
+  spellDrops: []
+  swapperSwapInterval: 2.5

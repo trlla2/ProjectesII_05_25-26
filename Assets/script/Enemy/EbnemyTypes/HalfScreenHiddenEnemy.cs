@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class HalfScreenHiddenDestroySpell : HiddenDestroySpell
 {
-    public enum HalfScreenPattern { Left, Right, Top, Bottom }
+    public enum HalfScreenPattern { TopLeft, TopRight, BottomLeft, BottomRight }
 
     private HalfScreenPattern? forcedPattern;
 
@@ -24,42 +24,47 @@ public class HalfScreenHiddenDestroySpell : HiddenDestroySpell
     {
         if (grid == null) return;
 
-        HalfScreenPattern pattern = forcedPattern ?? (HalfScreenPattern)Random.Range(0, 4);
-
         int size = grid.GridSize;
-        int half = size / 2;
 
-        List<Vector2Int> candidates = new List<Vector2Int>();
-
-        for (int x = 0; x < size; x++)
+        // Define all 4 corner 2x2 origins
+        Vector2Int[] cornerOrigins = new Vector2Int[]
         {
-            for (int y = 0; y < size; y++)
+            new Vector2Int(0,        size - 2), // TopLeft
+            new Vector2Int(size - 2, size - 2), // TopRight
+            new Vector2Int(0,        0),         // BottomLeft
+            new Vector2Int(size - 2, 0),         // BottomRight
+        };
+
+        // Pick any 2 distinct corners
+        int firstIndex = forcedPattern.HasValue
+            ? (int)forcedPattern.Value
+            : Random.Range(0, 4);
+
+        int secondIndex;
+        do { secondIndex = Random.Range(0, 4); } while (secondIndex == firstIndex);
+
+        Vector2Int[] selectedOrigins = new Vector2Int[] { cornerOrigins[firstIndex], cornerOrigins[secondIndex] };
+
+        foreach (Vector2Int origin in selectedOrigins)
+        {
+            for (int dx = 0; dx < 2; dx++)
             {
-                bool inHalf = pattern switch
+                for (int dy = 0; dy < 2; dy++)
                 {
-                    HalfScreenPattern.Left   => x < half,
-                    HalfScreenPattern.Right  => x >= half,
-                    HalfScreenPattern.Bottom => y < half,
-                    HalfScreenPattern.Top    => y >= half,
-                    _                        => false
-                };
+                    Vector2Int pos = new Vector2Int(origin.x + dx, origin.y + dy);
 
-                if (!inHalf) continue;
+                    if (pos.x < 0 || pos.x >= size || pos.y < 0 || pos.y >= size) continue;
 
-                Vector2Int pos = new Vector2Int(x, y);
-                Element element = grid.GetElementAt(pos);
-                if (element != null && element != grid.EmptyElement)
-                    candidates.Add(pos);
+                    Element element = grid.GetElementAt(pos);
+                    if (element == null || element == grid.EmptyElement) continue;
+
+                    targetedPositions.Add(pos);
+
+                    ElementVisual visual = grid.GetElementVisualAt(pos);
+                    if (visual != null)
+                        visual.SetTargetedByEnemy(true);
+                }
             }
-        }
-
-        foreach (var pos in candidates)
-        {
-            targetedPositions.Add(pos);
-
-            ElementVisual visual = grid.GetElementVisualAt(pos);
-            if (visual != null)
-                visual.SetTargetedByEnemy(true);
         }
     }
 }

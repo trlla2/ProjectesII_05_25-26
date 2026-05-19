@@ -95,23 +95,15 @@ public class DoubleBomberSpell : EnemySpellBase
         ClearAllCurrentTargeting(grid);
         ClearAllCableVisuals();
 
-        // Re-pin or replace bomb cells
-        if (bombA.IsDefused)
-            ReplaceDefusedBomb(grid, bombA);
-        else
-            PlaceBombElement(grid, bombA);
-
-        if (bombB.IsDefused)
-            ReplaceDefusedBomb(grid, bombB);
-        else
-            PlaceBombElement(grid, bombB);
+        // Re-pin active bombs; defused bombs were already replaced in DetectAndMarkClearedOffsets
+        if (!bombA.IsDefused) PlaceBombElement(grid, bombA);
+        if (!bombB.IsDefused) PlaceBombElement(grid, bombB);
 
         targetedPositions.Clear();
 
         if (!bombA.IsDefused) RetargetBomb(grid, bombA);
         if (!bombB.IsDefused) RetargetBomb(grid, bombB);
 
-        // Only assign cable visuals to bombs that are still active
         BombCableVisual[] cables = GetCableVisuals();
         int cableIndex = 0;
         if (!bombA.IsDefused && cableIndex < cables.Length)
@@ -120,8 +112,12 @@ public class DoubleBomberSpell : EnemySpellBase
             bombB.SetupCableVisual(grid, cables[cableIndex++]);
     }
 
+    // Detects which offsets the player cleared. If the bomb drops to 1 connection
+    // it is considered defused and its cell is replaced with a random element immediately.
     private void DetectAndMarkClearedOffsets(Grid grid, BombInstance bomb)
     {
+        if (bomb.IsDefused) return;
+
         List<Vector2Int> copy = new List<Vector2Int>(bomb.activeCardinalOffsets);
 
         foreach (var offset in copy)
@@ -148,6 +144,19 @@ public class DoubleBomberSpell : EnemySpellBase
                     bomb.clearedCardinalOffsets.Add(offset);
                 bomb.targetedVisualsByOffset.Remove(offset);
                 bomb.cableVisual?.RemoveCable(offset);
+            }
+        }
+
+        // Defuse threshold: 1 or fewer active connections remaining
+        if (bomb.IsDefused)
+        {
+            Debug.Log($"[DoubleBomber] Bomb at {bomb.position} defused — replacing with random element.");
+            ReplaceDefusedBomb(grid, bomb);
+
+            if (bomb.cableVisual != null)
+            {
+                bomb.cableVisual.ClearAllLines();
+                bomb.cableVisual = null;
             }
         }
     }
@@ -193,7 +202,6 @@ public class DoubleBomberSpell : EnemySpellBase
     {
         if (grid == null) return;
 
-        // Both bombs defused by player — no damage, end early
         if (bombA.IsDefused && bombB.IsDefused)
         {
             FullCleanup(grid);
@@ -214,18 +222,11 @@ public class DoubleBomberSpell : EnemySpellBase
             if (!bombA.IsDefused) TriggerExplosion(grid, bombA);
             if (!bombB.IsDefused) TriggerExplosion(grid, bombB);
 
-            // Clear visuals for both bombs — defused bombs may still have
-            // residual cardinalPositions visuals that need sweeping
             ClearBombVisual(grid, bombA);
             ClearBombVisual(grid, bombB);
-
-            // RemoveBombElement is self-guarded: skips if cell is not BombElement
             RemoveBombElement(grid, bombA);
             RemoveBombElement(grid, bombB);
-
             ClearAllCableVisuals();
-
-            // Final sweep — catches any lingering targeted visuals on the grid
             ClearAllCurrentTargeting(grid);
 
             SelectExplosionTargets(grid);
@@ -302,7 +303,7 @@ public class DoubleBomberSpell : EnemySpellBase
         }
     }
 
-    // Replaces a defused bomb cell with a random playable element
+    //Replaces the bomb cell with a random spawnable element
     private void ReplaceDefusedBomb(Grid grid, BombInstance bomb)
     {
         Element replacement = grid.PickWeightedRandom(grid.SpawnableElements);
@@ -328,6 +329,9 @@ public class DoubleBomberSpell : EnemySpellBase
 
     private void ClearBombVisual(Grid grid, BombInstance bomb)
     {
+        // If the bomb was already defused its cell is now a normal element — nothing to clear
+        if (bomb.IsDefused) return;
+
         ElementVisual bombVisual = grid.GetElementVisualAt(bomb.position);
         if (bombVisual != null)
         {
@@ -349,6 +353,8 @@ public class DoubleBomberSpell : EnemySpellBase
 
     private void RemoveBombElement(Grid grid, BombInstance bomb)
     {
+        // Defused bombs already had their cell replaced — skip
+        if (bomb.IsDefused) return;
         if (grid.GetElementAt(bomb.position) != grid.BombElement) return;
         grid.InstantVisualEmpty(new List<Vector2Int> { bomb.position });
         ElementVisual visual = grid.GetElementVisualAt(bomb.position);
@@ -401,7 +407,8 @@ public class DoubleBomberSpell : EnemySpellBase
         public Dictionary<Vector2Int, ElementVisual> targetedVisualsByOffset = new Dictionary<Vector2Int, ElementVisual>();
         public BombCableVisual cableVisual;
 
-        public bool IsDefused => activeCardinalOffsets.Count == 0;
+        // Defused when only 1 or fewer connections remain
+        public bool IsDefused => activeCardinalOffsets.Count <= 1;
 
         public BombInstance(Vector2Int pos) { position = pos; }
 

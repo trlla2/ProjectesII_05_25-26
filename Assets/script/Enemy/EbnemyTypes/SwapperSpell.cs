@@ -153,7 +153,7 @@ public class SwapperSpell : EnemySpellBase
             grid.GetElementVisualAt(info.PositionA)?.StopTimedCountdown();
             grid.GetElementVisualAt(info.PositionB)?.StopTimedCountdown();
 
-            // DON'T pause all pairs here - let grid state changes handle it
+            // DON'T pause all pairs here; let grid state changes handle it
             grid.StartCoroutine(ExecuteSwapAndAttack(info, onComplete));
             return;
         }

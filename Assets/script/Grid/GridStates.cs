@@ -5,7 +5,7 @@ using DG.Tweening;
 
 public enum GridStateType
 {
-    Initialize,
+
     Idle,
     Refill,
     Reroll,
@@ -97,7 +97,7 @@ public class IdleState : IGridState
         }
         else
         {
-            idleTimer = 0f;
+            grid.ChangeState(new ValidateSpellState(grid, spells));
         }
     }
 

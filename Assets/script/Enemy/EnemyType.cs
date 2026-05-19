@@ -146,6 +146,9 @@ public class EnemyType : ScriptableObject
             case EnemySpellType.SwapperAttack:
                 return new SwapperSpell( swapperSwapInterval, attackTimer, damagePerElement, lvl2BonusTimeOnClear);
 
+            case EnemySpellType.HalfScreenHiddenDestroy:
+                return new HalfScreenHiddenDestroySpell(damagePerElement, attackTimer, visibilityDuration, hiddenSprite, lvl2BonusTimeOnClear);
+
             default:
                 return new ColumnDestroySpell(damagePerElement, moveCount);
         }
@@ -191,5 +194,6 @@ public enum EnemySpellType
     TutorialStage2TimedSpell,
     ContinuouslyTimedTarget,
     BlockerAttack,
-    SwapperAttack
+    SwapperAttack,
+    HalfScreenHiddenDestroy
 }

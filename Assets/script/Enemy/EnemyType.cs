@@ -149,6 +149,9 @@ public class EnemyType : ScriptableObject
             case EnemySpellType.HalfScreenHiddenDestroy:
                 return new HalfScreenHiddenDestroySpell(damagePerElement, attackTimer, visibilityDuration, hiddenSprite, lvl2BonusTimeOnClear);
 
+            case EnemySpellType.SnakeLineTimedTarget:
+                return new ContinousLineTimedEnemy(continuousSelectionInterval, attackTimer, damagePerElement, lvl2BonusTimeOnClear);
+
             default:
                 return new ColumnDestroySpell(damagePerElement, moveCount);
         }
@@ -195,5 +198,6 @@ public enum EnemySpellType
     ContinuouslyTimedTarget,
     BlockerAttack,
     SwapperAttack,
-    HalfScreenHiddenDestroy
+    HalfScreenHiddenDestroy,
+    SnakeLineTimedTarget
 }

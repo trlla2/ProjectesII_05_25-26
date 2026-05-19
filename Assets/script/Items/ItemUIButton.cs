@@ -157,6 +157,8 @@ public class ItemUIButton : MonoBehaviour
 
     public void OnItemClicked()
     {
+        Debug.Log($"Clicked on {item.NameItem} button!");
+
         if (item == null || !item.IsActivatable || !IsInCombatScene() || isActivating) return;
 
         ItemContext context = new ItemContext

@@ -12162,7 +12162,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loseScene: HallOfEgress
-  sceneToUnload: BattlePhoneTutorial4
+  sceneToUnload: BattlePhoneTutorial 4
   forceToHallOfEgress: 0
   bgFader: {fileID: 203372066}
   winColor: {r: 0.12941177, g: 0.6156863, b: 0.80392164, a: 1}
@@ -13577,9 +13577,9 @@ MonoBehaviour:
   toastText: {fileID: 1659543799}
   arrowLabelText: {fileID: 205417798}
   popupDismissButton: {fileID: 676986883}
-  playerHPBarAnchor: {fileID: 0}
-  enemyHPBarAnchor: {fileID: 0}
-  spellHUDAnchor: {fileID: 0}
+  playerHPBarAnchor: {fileID: 986394855}
+  enemyHPBarAnchor: {fileID: 181687324}
+  spellHUDAnchor: {fileID: 170637767}
   handCanvasRoot: {fileID: 2041476982}
   worldCamera: {fileID: 519420031}
 --- !u!4 &333972972
@@ -21917,7 +21917,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 015165dcbb2c79c4ead1b5605a7a9e3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiController: {fileID: 0}
+  uiController: {fileID: 333972971}
   grid: {fileID: 190367786}
   enemyBehaviour: {fileID: 1982195253204217192}
   activeSequence: {fileID: 11400000, guid: 8d9ad87d07c24cb4caa3965b81edec59, type: 2}
@@ -27175,18 +27175,6 @@ PrefabInstance:
     - target: {fileID: 2244791035161764954, guid: 787ec70e2601c0449a2d5c3a756da31d, type: 3}
       propertyPath: showAlways
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2244791035161764954, guid: 787ec70e2601c0449a2d5c3a756da31d, type: 3}
-      propertyPath: parentFader
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 2244791035161764954, guid: 787ec70e2601c0449a2d5c3a756da31d, type: 3}
-      propertyPath: currencyIcon
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 2244791035161764954, guid: 787ec70e2601c0449a2d5c3a756da31d, type: 3}
-      propertyPath: moneyAddedGO
-      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2244791035161764954, guid: 787ec70e2601c0449a2d5c3a756da31d, type: 3}
       propertyPath: useGameManager

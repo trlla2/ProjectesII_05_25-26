@@ -7259,18 +7259,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2244791035161764954, guid: 787ec70e2601c0449a2d5c3a756da31d, type: 3}
-      propertyPath: parentFader
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 2244791035161764954, guid: 787ec70e2601c0449a2d5c3a756da31d, type: 3}
-      propertyPath: currencyIcon
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 2244791035161764954, guid: 787ec70e2601c0449a2d5c3a756da31d, type: 3}
-      propertyPath: moneyAddedGO
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 2244791035161764954, guid: 787ec70e2601c0449a2d5c3a756da31d, type: 3}
       propertyPath: useGameManager
       value: 0
       objectReference: {fileID: 0}
@@ -16590,7 +16578,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 015165dcbb2c79c4ead1b5605a7a9e3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiController: {fileID: 0}
+  uiController: {fileID: 980053422}
   grid: {fileID: 190367786}
   enemyBehaviour: {fileID: 1982195253204217192}
   activeSequence: {fileID: 11400000, guid: 38ca6ec02844d5c40b6f3ac627d31a15, type: 2}
@@ -17181,7 +17169,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loseScene: HallOfEgress
-  sceneToUnload: BattlePhoneTutoiral1.5
+  sceneToUnload: BattlePhoneTutorial 1.5
   forceToHallOfEgress: 0
   bgFader: {fileID: 883590102}
   winColor: {r: 0.12941177, g: 0.6156863, b: 0.80392164, a: 1}

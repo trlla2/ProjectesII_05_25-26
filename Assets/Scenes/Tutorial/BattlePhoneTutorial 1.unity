@@ -7983,18 +7983,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2244791035161764954, guid: 787ec70e2601c0449a2d5c3a756da31d, type: 3}
-      propertyPath: parentFader
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 2244791035161764954, guid: 787ec70e2601c0449a2d5c3a756da31d, type: 3}
-      propertyPath: currencyIcon
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 2244791035161764954, guid: 787ec70e2601c0449a2d5c3a756da31d, type: 3}
-      propertyPath: moneyAddedGO
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 2244791035161764954, guid: 787ec70e2601c0449a2d5c3a756da31d, type: 3}
       propertyPath: useGameManager
       value: 0
       objectReference: {fileID: 0}
@@ -13671,7 +13659,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loseScene: HallOfEgress
-  sceneToUnload: BattlePhoneTutorial1
+  sceneToUnload: BattlePhoneTutorial 1
   forceToHallOfEgress: 0
   bgFader: {fileID: 1265487212}
   winColor: {r: 0.12941177, g: 0.6156863, b: 0.80392164, a: 1}
@@ -29287,9 +29275,9 @@ MonoBehaviour:
   toastText: {fileID: 1910787750}
   arrowLabelText: {fileID: 1232904186}
   popupDismissButton: {fileID: 1255857139}
-  playerHPBarAnchor: {fileID: 0}
-  enemyHPBarAnchor: {fileID: 0}
-  spellHUDAnchor: {fileID: 0}
+  playerHPBarAnchor: {fileID: 427122238}
+  enemyHPBarAnchor: {fileID: 1970018463}
+  spellHUDAnchor: {fileID: 1279394080}
   handCanvasRoot: {fileID: 156972379}
   worldCamera: {fileID: 519420031}
 --- !u!4 &1961935835

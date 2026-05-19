@@ -1,13 +1,14 @@
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FreezeVignette : MonoBehaviour
 {
-    SpriteRenderer sr;
+    Image sr;
 
     void Start()
     {
-        sr = GetComponent<SpriteRenderer>();
+        sr = GetComponent<Image>();
 
         if (sr == null) return;
         sr.DOFade(0.0f, 0);

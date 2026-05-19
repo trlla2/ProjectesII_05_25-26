@@ -25,7 +25,6 @@ public class SkinManager : MonoBehaviour
 
     public Skin GetSkin(SkinType skinType)
     {
-        Debug.Log($"Attempting to retrieve skin of type: {skinType}");
         if (skinDB == null || !skinDB.GetSkin(skinType))
         {
             Debug.LogWarning($"Skin of type {skinType} not found in SkinDB.");

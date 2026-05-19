@@ -17,6 +17,13 @@ public class OpenChestScreen : MonoBehaviour
     
     [SerializeField] private List<Item> _itemsPool;
 
+    [Header("SETUP ART")]
+    [SerializeField] private Image _headerImage;
+    [SerializeField] private Sprite _legendaryHeader;
+    [SerializeField] private Sprite _epicHeader;
+    [SerializeField] private Sprite _rareHeader;
+    [SerializeField] private Sprite _commonHeader;
+
     [Header("RemovePanel")]
     [SerializeField] RemoveItemPanelHandler _removeItemPanel;
 
@@ -39,7 +46,21 @@ public class OpenChestScreen : MonoBehaviour
         }
         _selectedItem = candidates[Random.Range(0, candidates.Count)];
 
-        
+        switch (_selectedItem.Rarity)
+        {
+            case ItemRarity.LEGENDARY:
+                _headerImage.sprite = _legendaryHeader;
+                break;
+            case ItemRarity.EPIC:
+                _headerImage.sprite = _epicHeader;
+                break;
+            case ItemRarity.RARE:
+                _headerImage.sprite = _rareHeader;
+                break;
+            case ItemRarity.COMMON:
+                _headerImage.sprite = _commonHeader;
+                break;
+        }
 
         Debug.Log("New item pulled");
     }

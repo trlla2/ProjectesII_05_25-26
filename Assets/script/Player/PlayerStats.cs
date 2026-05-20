@@ -152,7 +152,7 @@ public class PlayerStats
     {
         RemoveAllItems();
         ResetCombatStats();
-        //ResetLevelStats();
+        ResetLevelStats();
     }
 
 

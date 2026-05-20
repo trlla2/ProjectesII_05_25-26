@@ -7315,6 +7315,7 @@ GameObject:
   - component: {fileID: 598481650}
   - component: {fileID: 598481652}
   - component: {fileID: 598481651}
+  - component: {fileID: 598481653}
   m_Layer: 5
   m_Name: Stage lvl
   m_TagString: Untagged
@@ -7440,6 +7441,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 598481649}
   m_CullTransparentMesh: 1
+--- !u!114 &598481653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 598481649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fd25775b79de28428fef80917b44e8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stageText: {fileID: 598481651}
 --- !u!1 &604941631
 GameObject:
   m_ObjectHideFlags: 0
@@ -19910,7 +19924,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1803586519
 MonoBehaviour:
   m_ObjectHideFlags: 0

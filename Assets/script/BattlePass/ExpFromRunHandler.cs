@@ -28,6 +28,6 @@ public class ExpFromRunHandler : MonoBehaviour
     {
         
         battlePassBarHandler.UpdateBattlePass(GameManager.Instance.PlayerStats.ExperiencePoints);
-        GameManager.Instance.PlayerStats.ResetLevelStats();
+        //GameManager.Instance.PlayerStats.ResetLevelStats();
     }
 }

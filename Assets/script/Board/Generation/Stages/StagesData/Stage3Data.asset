@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Stage3Data
   m_EditorClassIdentifier: 
   _numOfEmptyTiles: 41
-  _numOfEnemyTiles: 6
+  _numOfEnemyTiles: 8
   _numOfMiniBossTiles: 0
-  _numOfChestTiles: 6
+  _numOfChestTiles: 8
   _specialTilePool:
   - tileData: {fileID: 11400000, guid: d22ce5231cab6564988711f5ec7898de, type: 2}
     weight: 40
-    maxInstances: 10
+    maxInstances: 12
   - tileData: {fileID: 11400000, guid: b50cf9a671c937d499492507682b5f82, type: 2}
     weight: 50
     maxInstances: 2
@@ -28,24 +28,22 @@ MonoBehaviour:
     maxInstances: 3
   _goldTileConfig:
     tileData: {fileID: 11400000, guid: 200018cec36a81b44a8285caf3c1347d, type: 2}
-    minInstances: 6
-    maxInstances: 10
+    minInstances: 15
+    maxInstances: 20
   _minBranches: 2
   _maxBranches: 4
   _minBranchLengthBeforeRejoin: 19
   _maxBranchLength: 25
   _branchProbabilityPerCandidate: 0.3
   _enemyList:
-  - {fileID: 11400000, guid: 7825248ffb3a9fe4bad66a1ac0583bc4, type: 2}
-  - {fileID: 11400000, guid: 5a68dbd4268eb7749b497b05fa080c5c, type: 2}
-  - {fileID: 11400000, guid: 3ddc38c9790bdd44bacbeb43cb61cada, type: 2}
-  - {fileID: 11400000, guid: 8da2630b56083c44abb033c12f629f0e, type: 2}
-  - {fileID: 11400000, guid: 5d98f1c5df92ad7479bd352825842b75, type: 2}
-  - {fileID: 11400000, guid: 79d07f17a589c324d9832fa0d07aa8f0, type: 2}
-  - {fileID: 11400000, guid: 0f615755cce1d3b409215e446884a96d, type: 2}
+  - {fileID: 11400000, guid: 671539bc3a1552b40a0d502c7e102ca2, type: 2}
+  - {fileID: 11400000, guid: fcb69580765646446bf9bdb656e03a32, type: 2}
+  - {fileID: 11400000, guid: 6229cdfe3b6e5274283cded207202362, type: 2}
+  - {fileID: 11400000, guid: 65b10bca2bf178c4992c21486cb5624d, type: 2}
+  - {fileID: 11400000, guid: a75531c67b1cfb943adeccd6a03bf9a7, type: 2}
   _bossList:
-  - {fileID: 11400000, guid: 9168d9f4aa1ee834ea1164744d0e797d, type: 2}
-  encountersOrder: 0300000004000000050000000400000003000000
+  - {fileID: 11400000, guid: 6505ef003dd938f45aa35be7714db78d, type: 2}
+  encountersOrder: 0300000004000000050000000400000003000000050000000400000005000000
   interactableTiles: []
   commonRarityPercentage: 35
   rareRarityPercentage: 30

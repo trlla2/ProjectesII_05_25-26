@@ -155,6 +155,12 @@ public class PlayerStats
         ResetLevelStats();
     }
 
+    public void ResetStatsOnFinishRun()
+    {
+        ResetCombatStats();
+        ResetLevelStats();
+    }
+
 
     public DamageType AttackWithElement(ElementType elementType)
     {

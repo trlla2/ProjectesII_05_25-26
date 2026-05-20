@@ -12,18 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ab529a0c12673a408eb38b86a880060, type: 3}
   m_Name: DoubbleBomber
   m_EditorClassIdentifier: 
-  name: DoubbleBomber
+  name: Terrorist Goblin
   health: 350
   damage: 10
   elementCount: 3
-  level: 0
+  level: 2
   difficulty: 5
   weaknesses: 
   weaknessMultiplier: 2
   resistances: 
   resistanceMultiplier: 0.5
-  enemySprite: {fileID: 0}
-  animatorController: {fileID: 0}
+  enemySprite: {fileID: 21300000, guid: 1d40c2026f4a37640b225e4e2eaff164, type: 3}
+  animatorController: {fileID: 9100000, guid: ee35ba5421caff849858167d420ce40e, type: 2}
   spellType: 17
   damagePerElement: 4
   moveCount: 4

@@ -37,7 +37,7 @@ public class ItemUIButton : MonoBehaviour
     private AudioSource activateItem;
     PlayerPathing playerRef;
 
-    private static Vector2 centerOffset = new Vector2(900, 2000); //we need it be the ItemUi is in the inventorycanvas  
+    private static Vector2 centerOffset = new Vector2(90, 200); //we need it be the ItemUi is in the inventorycanvas  
 
     private Scene currentScene;
 

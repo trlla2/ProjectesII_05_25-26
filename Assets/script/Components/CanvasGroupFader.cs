@@ -21,10 +21,7 @@ public class CanvasGroupFader : MonoBehaviour
 
     private void Awake()
     {
-        if (canvasGroup == null)
-        {
-            canvasGroup = GetComponent<CanvasGroup>();
-        }
+        canvasGroup = GetComponent<CanvasGroup>();
     }
 
     private void Update()

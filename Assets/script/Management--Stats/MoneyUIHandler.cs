@@ -32,12 +32,14 @@ public class MoneyUIHandler : MonoBehaviour
 
     private bool firstTime = true;
 
-
+    private void Awake()
+    {
+        moneyText = GetComponent<TMP_Text>();
+    }
     private void Start()
     {
         firstTime = true;
 
-        moneyText = GetComponent<TMP_Text>();
         if(useGameManager)
             GameManager.Instance.PlayerStats.OnCurrencyChange += UpdateMoneyUI;
 
@@ -58,6 +60,8 @@ public class MoneyUIHandler : MonoBehaviour
     private void OnEnable()
     {
         firstTime = true;
+
+        UpdateMoneyUI();
     }
 
     private void UpdateVisuals()

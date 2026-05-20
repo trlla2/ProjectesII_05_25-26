@@ -28,10 +28,14 @@ public class BattlePassBarHandler : MonoBehaviour
     private float targetPercentage;
     private int pendingExp;
 
+    private float baseWidth;
+    private float spellWidth = 124.0f;
     private void Start()
     {
         battlePassBar.minValue = 0f;
         battlePassBar.maxValue = 1f;
+
+        baseWidth = rewardImage.rectTransform.sizeDelta.x;
 
         UpdateVisuals();
     }
@@ -123,6 +127,7 @@ public class BattlePassBarHandler : MonoBehaviour
         if (!playerStats.UseCurrency(CurrencyType.EXP, cost)) return;
 
         Image tmp = rewardClone.GetComponentInChildren<Image>();
+        rewardImage.rectTransform.sizeDelta = new Vector2(baseWidth, rewardImage.rectTransform.sizeDelta.y);
 
         if (tmp != null && battlePassType.Rewards[level].RewardDrop.Icon != null)
         {
@@ -141,12 +146,16 @@ public class BattlePassBarHandler : MonoBehaviour
             var colors = battlePassType.Rewards[level].RewardDrop.Colors;
             int count = Mathf.Min(sprites.Length, colors != null ? colors.Length : 0);
 
+            if (count > 2)
+                rewardImage.rectTransform.sizeDelta = new Vector2(spellWidth, rewardImage.rectTransform.sizeDelta.y);
+
             for (int i = 0; i < count; i++)
             {
                 GameObject tmpObj = Instantiate(new GameObject(), tmp.transform);
                 Image img = tmpObj.AddComponent<Image>();
                 img.sprite = sprites[i];
                 img.color = colors[i];
+                img.rectTransform.sizeDelta = new Vector2(25, 25);
             }
         }
         else
@@ -199,8 +208,8 @@ public class BattlePassBarHandler : MonoBehaviour
         {
             rewardText.text = "";
         }
-
-        if(reward.RewardDrop.Icon != null)
+        rewardImage.rectTransform.sizeDelta = new Vector2(baseWidth, rewardImage.rectTransform.sizeDelta.y);
+        if (reward.RewardDrop.Icon != null)
         {
             rewardImage.sprite = reward.RewardDrop.Icon;
 
@@ -213,9 +222,14 @@ public class BattlePassBarHandler : MonoBehaviour
         {
             rewardImage.sprite = spellBG;
 
+            
             var sprites = reward.RewardDrop.sprites;
             var colors = reward.RewardDrop.Colors;
             int count = Mathf.Min(sprites.Length, colors != null ? colors.Length : 0);
+
+            if(count > 2)
+               rewardImage.rectTransform.sizeDelta = new Vector2(spellWidth, rewardImage.rectTransform.sizeDelta.y);
+
 
             for (int i = 0; i < count; i++)
             {
@@ -223,6 +237,7 @@ public class BattlePassBarHandler : MonoBehaviour
                 Image img = tmp.AddComponent<Image>();
                 img.sprite = sprites[i];
                 img.color = colors[i];
+                img.rectTransform.sizeDelta = new Vector2(25, 25);
             }
         }
         else

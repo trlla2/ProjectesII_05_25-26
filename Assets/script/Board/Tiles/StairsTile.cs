@@ -24,6 +24,8 @@ public class StairsTile : BoardTile
 
     public override void Interact()
     {
+        OnInteract?.Invoke();
+
         if (_boardManager.IsHallOfEgress)
         {
             if (GameManager.Instance.PlayerStats.GetSpellBook().Count != GameManager.Instance.PlayerStats.SpellBookSize 
@@ -55,7 +57,6 @@ public class StairsTile : BoardTile
         //GameManager.Instance.ResetStageLevel();
         //return;
         
-        OnInteract?.Invoke();
 
     }
 

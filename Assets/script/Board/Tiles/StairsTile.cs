@@ -1,5 +1,6 @@
 //using UnityEditor.SearchService;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 public class StairsTile : BoardTile
@@ -7,6 +8,9 @@ public class StairsTile : BoardTile
     [SerializeField] string _sceneToLoadWhenInteract;
 
     [SerializeField] private EmptySpellBookAlertHandler _emptySpellbookAlert;
+
+
+    public UnityEvent OnInteract;
 
     //private int _stageLevel;
 
@@ -51,8 +55,8 @@ public class StairsTile : BoardTile
         //GameManager.Instance.ResetStageLevel();
         //return;
         
+        OnInteract?.Invoke();
 
-        
     }
 
 }

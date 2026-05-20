@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public PlayerStats PlayerStats => playerStats;
 
     private int stageLevel = 1;
+    [SerializeField] public int MaxStageLevel { get; private set; } = 3;
     public int StageLevel => stageLevel;
 
     [SerializeField] private List<StageLevelData> _stageDatas;
@@ -56,7 +57,8 @@ public class GameManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(this.gameObject);
 
-        playerStats = new PlayerStats();
+        if (stageLevel == 1)
+            playerStats = new PlayerStats();
     }
 
     public void SetCombatHandler(CombatHandler cHRef) { cH = cHRef; }

@@ -36,9 +36,6 @@ public class StairsTile : BoardTile
                 return;
             }
 
-            if (GameManager.Instance.StageLevel >= GameManager.Instance.MaxStageLevel)
-                GameManager.Instance.ResetStageLevel();
-
             SceneTransition.Instance.LoadScene(_sceneToLoadWhenInteract, false);
             return;
         }
@@ -51,8 +48,13 @@ public class StairsTile : BoardTile
 
         if (GameManager.Instance.StageLevel < GameManager.Instance.MaxStageLevel)
             GameManager.Instance.AdvanceStageLevel();
+        else
+        {
+            GameManager.Instance.ResetStageLevel();
+            GameManager.Instance.PlayerStats.ResetStatsOnFinishRun();
+        }
 
-        SceneTransition.Instance.LoadScene("HallOfEgress", false);
+            SceneTransition.Instance.LoadScene("HallOfEgress", false);
 
         //GameManager.Instance.ResetStageLevel();
         //return;

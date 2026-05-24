@@ -3,10 +3,14 @@ using UnityEngine;
 public class ResetVariablesOnEnenter : MonoBehaviour
 {
     
-    private void Start()
+    private void Awake()
     {
-        GameManager.Instance.PlayerStats.ResetStatsOnDeath();
-        GameManager.Instance.ResetStageLevel();
+        if (!GameManager.Instance.PlayerStats.IsAlive())
+        {
+            Debug.Log("Player is dead, resetting stats and stage level.");
+            GameManager.Instance.PlayerStats.ResetStatsOnDeath();
+            GameManager.Instance.ResetStageLevel();
+        }
     }
 
     

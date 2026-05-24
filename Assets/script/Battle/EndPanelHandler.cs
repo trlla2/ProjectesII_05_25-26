@@ -49,6 +49,8 @@ public class EndPanelHandler : MonoBehaviour
     private string winText = "you win";
     [SerializeField]
     private string loseText = "you lose";
+    [SerializeField]
+    private float stage1Duration = 1.5f;
 
     [Header("Audio")]
     [SerializeField]
@@ -74,7 +76,7 @@ public class EndPanelHandler : MonoBehaviour
     }
     private void Update()
     {
-        if (currentStage < EndBattleStage.STAGE3 && currentStage != EndBattleStage.UNDEFINED)
+        if (currentStage == EndBattleStage.STAGE2)
         {
 
             if (continueTime < continueDuration)
@@ -84,6 +86,15 @@ public class EndPanelHandler : MonoBehaviour
                 continueFader.Loop = true;
                 continueFader.ToTarget();
             }
+        }
+
+
+        if(currentStage == EndBattleStage.STAGE1)
+        {
+            if (stage1Duration > 0f)
+                stage1Duration -= Time.deltaTime;
+            else
+                NextStage();
         }
     }
     private void OnDestroy()
@@ -126,7 +137,7 @@ public class EndPanelHandler : MonoBehaviour
 
     public void NextStage()
     {
-        if (continueTime < continueDuration && currentStage != EndBattleStage.STAGE3 )
+        if (continueTime < continueDuration && currentStage == EndBattleStage.STAGE2 )
             return;
 
         continueFader.ResetToOrigin();

@@ -4,7 +4,7 @@ public class LoadHallOfEgress : MonoBehaviour
 {
     public void LoadScene()
     {
-        GameManager.Instance.ResetStageLevel();
-        SceneTransition.Instance.LoadScene("HallOfEgress", false);
+        //GameManager.Instance.ResetStageLevel();
+        //SceneTransition.Instance.LoadScene("HallOfEgress", false);
     }
 }

@@ -11,6 +11,7 @@ public class PlayerStats
     public float MaxHp => maxHp;
     private float hp;
     public float Hp => hp;
+    private bool hasDied = false;
 
     private int _evasionBaseUpgrades = 0;
     private int _evasionModifier = 0;
@@ -18,7 +19,7 @@ public class PlayerStats
 
     private int _maxHealthBaseUpgrades = 0;
     private float _maxHealthModifier = 0;
-    private float extraHealth => 0 + _maxHealthModifier + (2 * _maxHealthBaseUpgrades);
+    private float extraHealth => 0 + _maxHealthModifier + (4 * _maxHealthBaseUpgrades);
 
     private int _damageBaseUpgrades = 0;
     private int _damageModifier = 0;
@@ -26,7 +27,7 @@ public class PlayerStats
 
     private int _defenseBaseUpgrades = 0;
     private float _defenseModifier = 0;
-    private float defense => 0 + _defenseModifier + (1 * _defenseBaseUpgrades);
+    private float defense => 0 + _defenseModifier + (0.5f * _defenseBaseUpgrades);
 
     private int _critBaseUpgrades = 0;
     private int _critPercentModifier = 0;
@@ -153,6 +154,7 @@ public class PlayerStats
         RemoveAllItems();
         ResetCombatStats();
         ResetLevelStats();
+        hasDied = false;
     }
 
     public void ResetStatsOnFinishRun()
@@ -185,12 +187,20 @@ public class PlayerStats
             return;
         HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.HeavyImpact);
         hp -= damage;
+        if (hp < 0)
+            Die();
     }
 
     public void Heal(float amount)
     {
         hp += amount;
         if (hp > maxHp + extraHealth) hp = maxHp + extraHealth;
+    }
+
+    public void Die()
+    {
+        if (hasDied) return;
+        hasDied = true;
     }
 
     public void AddCurrency(CurrencyType currencyType, int amount) 
@@ -408,7 +418,7 @@ public class PlayerStats
     public int GetElementUpgradeLevel(ElementType t) { return elementalUpgrades[t]; }
     public int GetEXPForNextLevel() { return (int)Math.Pow(4, level); }
     public bool CanLevelUp() { return experiencePoints >= GetEXPForNextLevel(); }
-    public bool IsAlive() { return hp > 0; }
+    public bool IsAlive() { return hp > 0 || !hasDied; }
     public float GetHPPercentage() => Hp / (MaxHp + extraHealth);
     public void ModifyExtraHealth(float amount) { _maxHealthModifier += amount; }
     public void ModifyEvasion(int amount) { _evasionModifier += amount; }

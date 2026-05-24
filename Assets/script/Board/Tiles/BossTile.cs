@@ -15,7 +15,7 @@ public class BossTile : EnemyTile
         }
         else if(GameManager.Instance.StageLevel == 3)
         {
-            Debug.Log("Aun no");
+            _combatSceneName = "BattlePhoneBossSTAGE3";
         }
         if (_boardManager == null || _boardManager.EncountersManager == null)
         {

@@ -32,6 +32,14 @@ public class SaveManager : MonoBehaviour
         SaveUnlockedSkins();
 
         SaveCurrentSkin();
+
+        SaveStageLevel();
+    }
+
+    public void SaveStageLevel()
+    {
+        PlayerPrefs.SetInt("StageLevel", GameManager.Instance.StageLevel);
+        PlayerPrefs.Save();
     }
 
     public void SaveCurrency(CurrencyType type)
@@ -122,6 +130,14 @@ public class SaveManager : MonoBehaviour
 
         string currentSkinString = PlayerPrefs.GetString("CurrentSkin", "Default");
         stats.ChangeSkin((SkinType)System.Enum.Parse(typeof(SkinType), currentSkinString));
+
+        LoadStageLevel();
+    }
+
+    public void LoadStageLevel()
+    {
+        int savedStage = PlayerPrefs.GetInt("StageLevel", 1);
+        GameManager.Instance.SetStageLevel(savedStage);
     }
 
     public void ResetSavedStats()
@@ -137,6 +153,7 @@ public class SaveManager : MonoBehaviour
         PlayerPrefs.DeleteKey("CurrentSkin");
         PlayerPrefs.DeleteKey("TutorialCompleted");
         PlayerPrefs.DeleteKey("UsedSpells");
+        PlayerPrefs.DeleteKey("StageLevel");
 
         PlayerPrefs.Save();
     }

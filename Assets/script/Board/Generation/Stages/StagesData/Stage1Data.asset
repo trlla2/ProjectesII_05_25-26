@@ -14,13 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _displayName: 1
   _numOfEmptyTiles: 21
-  _numOfEnemyTiles: 0
+  _numOfEnemyTiles: 4
   _numOfMiniBossTiles: 0
   _numOfChestTiles: 4
   _specialTilePool:
   - tileData: {fileID: 11400000, guid: d22ce5231cab6564988711f5ec7898de, type: 2}
     weight: 50
     maxInstances: 7
+  - tileData: {fileID: 11400000, guid: a55434f9ea7c4bb43aeb42e620185353, type: 2}
+    weight: 30
+    maxInstances: 1
+  - tileData: {fileID: 11400000, guid: b50cf9a671c937d499492507682b5f82, type: 2}
+    weight: 30
+    maxInstances: 1
   _goldTileConfig:
     tileData: {fileID: 11400000, guid: 200018cec36a81b44a8285caf3c1347d, type: 2}
     minInstances: 6

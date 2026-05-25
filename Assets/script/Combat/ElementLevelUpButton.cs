@@ -1,10 +1,8 @@
-using NUnit.Framework;
+using DG.Tweening;
 using System;
-using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.U2D;
 using UnityEngine.UI;
 
 public class ElementLevelUpButton : MonoBehaviour
@@ -17,11 +15,26 @@ public class ElementLevelUpButton : MonoBehaviour
     [SerializeField]
     private AnimationCurve interpolationCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
+    [Header("Level Up Animation")]
+    [SerializeField]
+    private float punchStrength = 0.4f;
+    [SerializeField]
+    private float punchDuration = 0.4f;
+    [SerializeField]
+    private int punchVibrato = 5;
+
     private float interpolationTime = 0.0f;
+    private float currentPhaseDuration;
     private bool isInterpolating = false;
 
     private float initialScaleX;
     private float targetScaleX;
+
+    // when a level-up happens, we animate in two phases:
+    // phase 1: bar goes to 1.0, phase 2: bar goes to new position
+    private bool levelUpPhase1Active = false;
+    private bool levelUpPhase2Active = false;
+    private float levelUpFinalTargetScaleX;
 
     [Header("ElementSetup")]
     [SerializeField]
@@ -38,6 +51,7 @@ public class ElementLevelUpButton : MonoBehaviour
 
     public UnityEvent OnBarReach;
     public UnityEvent OnElementLevelUp;
+    public UnityEvent OnLevelUpAnimationComplete;
 
     private int oldLevel;
     private Vector3 lastClickWorldPosition;
@@ -86,28 +100,46 @@ public class ElementLevelUpButton : MonoBehaviour
         elementImage.sprite = currentElement.Sprite;
         elementImage.color = currentElement.Color;
         lvl.color = currentElement.Color;
-        lvl.text = $"Lvl {GameManager.Instance.PlayerStats.GetElementLevel(currentElement.Type)}";
         upgradesBar.GetComponent<Image>().color = currentElement.Color;
+
+        bool leveledUp = oldLevel != GameManager.Instance.PlayerStats.GetElementLevel(currentElement.Type);
 
         float upgradesRequired = (float)Math.Pow(2, GameManager.Instance.PlayerStats.GetElementLevel(currentElement.Type) - 1);
         float currentUpgrades = GameManager.Instance.PlayerStats.GetElementUpgradeLevel(currentElement.Type);
 
-        targetScaleX = (upgradesRequired > 0) ? (currentUpgrades / upgradesRequired) : 0f;
+        // +1 to both so the bar is never empty (min is 1/(max+1) instead of 0/max)
+        float newTargetScaleX = (upgradesRequired > 0) ? ((currentUpgrades + 1) / (upgradesRequired + 1)) : 0f;
 
         if (instant)
         {
-            upgradesBar.transform.localScale = new Vector3(targetScaleX, 1, 1);
+            lvl.text = $"Lvl {GameManager.Instance.PlayerStats.GetElementLevel(currentElement.Type)}";
+            upgradesBar.transform.localScale = new Vector3(newTargetScaleX, 1, 1);
             isInterpolating = false;
+            levelUpPhase1Active = false;
+        }
+        else if (leveledUp)
+        {
+            OnElementLevelUp.Invoke();
+
+            // phase 1: fill bar to 1.0 first, then update text and go to new position
+            levelUpPhase1Active = true;
+            levelUpFinalTargetScaleX = newTargetScaleX;
+
+            initialScaleX = upgradesBar.transform.localScale.x;
+            targetScaleX = 1.0f;
+            interpolationTime = 0.0f;
+            currentPhaseDuration = interpolationDuration * 0.5f;
+            isInterpolating = true;
         }
         else
         {
+            lvl.text = $"Lvl {GameManager.Instance.PlayerStats.GetElementLevel(currentElement.Type)}";
+
             initialScaleX = upgradesBar.transform.localScale.x;
+            targetScaleX = newTargetScaleX;
             interpolationTime = 0.0f;
+            currentPhaseDuration = interpolationDuration;
             isInterpolating = true;
-        }
-        if (oldLevel != GameManager.Instance.PlayerStats.GetElementLevel(currentElement.Type))
-        {
-            OnElementLevelUp.Invoke();
         }
     }
 
@@ -117,24 +149,53 @@ public class ElementLevelUpButton : MonoBehaviour
 
         interpolationTime += Time.deltaTime;
 
-        float timeRatio = Mathf.Clamp01(interpolationTime / interpolationDuration);
-
+        float timeRatio = Mathf.Clamp01(interpolationTime / currentPhaseDuration);
         float curveValue = interpolationCurve.Evaluate(timeRatio);
-
         float currentScaleX = Mathf.LerpUnclamped(initialScaleX, targetScaleX, curveValue);
 
         upgradesBar.transform.localScale = new Vector3(currentScaleX, 1, 1);
 
-        if (interpolationTime >= interpolationDuration)
+        if (interpolationTime >= currentPhaseDuration)
         {
             isInterpolating = false;
             upgradesBar.transform.localScale = new Vector3(targetScaleX, 1, 1);
-            OnBarReach.Invoke();
 
-            if (oldLevel != GameManager.Instance.PlayerStats.GetElementLevel(currentElement.Type))
+            if (levelUpPhase1Active)
             {
-                SpawnLevelUpParticles(lastClickWorldPosition);
+                FinishLevelUpPhase1();
+            }
+            else if (levelUpPhase2Active)
+            {
+                levelUpPhase2Active = false;
+                OnBarReach.Invoke();
+                OnLevelUpAnimationComplete.Invoke();
+            }
+            else
+            {
+                OnBarReach.Invoke();
             }
         }
+    }
+
+    private void FinishLevelUpPhase1()
+    {
+        levelUpPhase1Active = false;
+
+        // update level text and punch scale it
+        lvl.text = $"Lvl {GameManager.Instance.PlayerStats.GetElementLevel(currentElement.Type)}";
+        lvl.transform.DOKill();
+        lvl.transform.DOPunchScale(Vector3.one * punchStrength, punchDuration * 0.5f, punchVibrato);
+
+        oldLevel = GameManager.Instance.PlayerStats.GetElementLevel(currentElement.Type);
+
+        SpawnLevelUpParticles(lastClickWorldPosition);
+
+        // phase 2: animate bar from 1.0 to new position
+        levelUpPhase2Active = true;
+        initialScaleX = 1.0f;
+        targetScaleX = levelUpFinalTargetScaleX;
+        interpolationTime = 0.0f;
+        currentPhaseDuration = interpolationDuration * 0.5f;
+        isInterpolating = true;
     }
 }

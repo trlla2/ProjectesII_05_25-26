@@ -88,7 +88,6 @@ public class CombatHandler : MonoBehaviour
             enemyInCombat?.DealDamage(new DamageType(ElementType.EMPTY, GameManager.Instance.PlayerStats.SpikeDamage));
 
         GameManager.Instance.PlayerStats.Damage(damage);
-        Camera.main.GetComponent<CameraShake>().Shake(0.2f);
 
         OnPlayerHitRecived?.Invoke();
 

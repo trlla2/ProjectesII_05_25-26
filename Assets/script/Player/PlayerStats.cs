@@ -190,7 +190,6 @@ public class PlayerStats
         float totalDamage = damage - defense;
         if (totalDamage <= 0f)
             return;
-        HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.HeavyImpact);
         hp -= damage;
         if (hp < 0)
             Die();

@@ -36,7 +36,7 @@ public class PlayerStats
     private int spikeDamage;
     public int SpikeDamage => spikeDamage;
 
-    // Combay Stats 
+    // Combay Stats
     private int experiencePoints;
     public int ExperiencePoints => experiencePoints;
     private int level;
@@ -44,6 +44,10 @@ public class PlayerStats
     private Dictionary<ElementType, int> elementalLevels;
     private Dictionary<ElementType, int> elementalUpgrades;
     private int elementalLevelMultiplyer;
+
+    // Persisted elemental data saved on HallOfEgress entry
+    private Dictionary<ElementType, int> _savedElementalLevels;
+    private Dictionary<ElementType, int> _savedElementalUpgrades;
 
     // currency 
     private Dictionary<CurrencyType, int> currencyAmounts = new Dictionary<CurrencyType, int>()
@@ -154,6 +158,7 @@ public class PlayerStats
         RemoveAllItems();
         ResetCombatStats();
         ResetLevelStats();
+        RestoreElementalProgress();
         hasDied = false;
     }
 
@@ -426,6 +431,34 @@ public class PlayerStats
     public void ModifyDefense(float amount) { _defenseModifier += amount; }
     public void ModifyCritPercentage(int amount) { _critPercentModifier += amount; }
     public void ModifySipkeDamage(int amount) { spikeDamage += amount; }
+
+    public void ResetHpToMax()
+    {
+        hp = maxHp + extraHealth;
+    }
+
+    public void SetCurrency(CurrencyType currencyType, int amount)
+    {
+        if (!currencyAmounts.ContainsKey(currencyType))
+            currencyAmounts[currencyType] = 0;
+
+        int delta = amount - currencyAmounts[currencyType];
+        currencyAmounts[currencyType] = amount;
+        OnCurrencyChange?.Invoke(currencyType, delta);
+    }
+
+    public void SaveElementalProgress()
+    {
+        _savedElementalLevels = new Dictionary<ElementType, int>(elementalLevels);
+        _savedElementalUpgrades = new Dictionary<ElementType, int>(elementalUpgrades);
+    }
+
+    private void RestoreElementalProgress()
+    {
+        if (_savedElementalLevels == null) return;
+        elementalLevels = new Dictionary<ElementType, int>(_savedElementalLevels);
+        elementalUpgrades = new Dictionary<ElementType, int>(_savedElementalUpgrades);
+    }
     public int GetCurrentElementUpgrades(ElementType elementType) { return elementalUpgrades[elementType]; }
     public int GetCurrentElementLevels(ElementType elementType) { return elementalLevels[elementType]; }
 

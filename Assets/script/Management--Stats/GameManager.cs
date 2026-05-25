@@ -98,4 +98,15 @@ public class GameManager : MonoBehaviour
     {
         stageLevel = 1;
     }
+
+    public void SetStageLevel(int level)
+    {
+        stageLevel = Mathf.Clamp(level, 1, MaxStageLevel);
+    }
+
+    public StageLevelData GetStageData(int level)
+    {
+        if (level < 0 || level >= _stageDatas.Count) return null;
+        return _stageDatas[level];
+    }
 }

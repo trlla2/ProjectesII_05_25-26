@@ -25,6 +25,10 @@ public class GoldTileSpawnConfig
 [CreateAssetMenu(fileName = "NewStageLevelData", menuName = "Game/Stage Level Data")]
 public class StageLevelData : ScriptableObject
 {
+    [Header("Stage")]
+    [SerializeField] private string _displayName;
+    public string DisplayName => string.IsNullOrEmpty(_displayName) ? name : _displayName;
+
     [Header("Board")]
     [SerializeField] int _numOfEmptyTiles;
     [SerializeField] int _numOfEnemyTiles;

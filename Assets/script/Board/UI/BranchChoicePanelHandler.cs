@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,10 +14,17 @@ public class BranchChoicePanelHandler : MonoBehaviour
     private BoardTile _rightTile;
     private BoardTile _leftTile;
 
-    private void Awake()
+    private void Start()
     {
         _rightButton.onClick.AddListener(OnRightChosen);
         _leftButton.onClick.AddListener(OnLeftChosen);
+        StartCoroutine(DisableNextFrame());
+    }
+
+    // SetActive(false) deferred one frame so UI mesh generation can finish first
+    private IEnumerator DisableNextFrame()
+    {
+        yield return null;
         gameObject.SetActive(false);
     }
 

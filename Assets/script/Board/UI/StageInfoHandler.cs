@@ -16,13 +16,14 @@ public class StageInfoHandler : MonoBehaviour
 
     private void Start()
     {
-        if (boardManager != null)
+        if (boardManager != null && boardManager.EncountersManager != null)
             SetDifficultyMessage();
     }
 
     private void OnEnable()
     {
-        if (boardManager != null && boardManager.Player.GetCurrentTile() != boardManager.startingTile)
+        if (boardManager != null && boardManager.EncountersManager != null &&
+            boardManager.Player != null && boardManager.Player.GetCurrentTile() != boardManager.startingTile)
             SetDifficultyMessage();
     }
 

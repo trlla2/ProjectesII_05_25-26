@@ -83,7 +83,7 @@ public class TranslatorUI : MonoBehaviour
 
             SetPositionForCurrentTime();
 
-            yield return new WaitForEndOfFrame();
+            yield return null;
         }
 
         currentTime = animationDuration;
@@ -103,7 +103,7 @@ public class TranslatorUI : MonoBehaviour
 
             SetPositionForCurrentTime();
 
-            yield return new WaitForEndOfFrame();
+            yield return null;
         }
 
         currentTime = 0f;
@@ -117,6 +117,8 @@ public class TranslatorUI : MonoBehaviour
 
     private void SetPositionForCurrentTime()
     {
+        if (rectTransform == null) return;
+
         float interpolatedValue = currentTime / animationDuration;
 
         interpolatedValue = curve.Evaluate(interpolatedValue);

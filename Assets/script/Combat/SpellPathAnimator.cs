@@ -73,7 +73,7 @@ public class SpellPathAnimator : MonoBehaviour
         {
             onComplete += (() =>
             {
-                GameManager.Instance?.CombatHandler.GetEnemyRef().animator.SetTrigger("Attack");
+                GameManager.Instance?.CombatHandler?.GetEnemyRef()?.animator?.SetTrigger("Attack");
             });
         }
         if (pathPositions == null || pathPositions.Length == 0)

@@ -4,19 +4,9 @@ public class BossTile : EnemyTile
 {
     protected override EnemyType ResolveEnemy()
     {
+        int bossIndex = GameManager.Instance.GetBossSceneIndex();
+        _combatSceneName = $"BattlePhoneBossSTAGE{bossIndex}";
 
-        if(GameManager.Instance.StageLevel == 1)
-        {
-            _combatSceneName = "BattlePhoneBossSTAGE1";
-        }
-        else if(GameManager.Instance.StageLevel == 2)
-        {
-            _combatSceneName = "BattlePhoneBossSTAGE2";
-        }
-        else if(GameManager.Instance.StageLevel == 3)
-        {
-            _combatSceneName = "BattlePhoneBossSTAGE3";
-        }
         if (_boardManager == null || _boardManager.EncountersManager == null)
         {
             Debug.LogError("EnemyTile: BoardManager o EncountersManager es null.");

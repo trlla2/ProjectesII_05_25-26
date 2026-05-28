@@ -118,4 +118,23 @@ public class GameManager : MonoBehaviour
         if (level < 0 || level >= _stageDatas.Count) return null;
         return _stageDatas[level];
     }
+
+    /// <summary>
+    /// Returns the 1-based index of the current stage among boss stages only.
+    /// Stages whose StageLevelData.HasBoss is false are not counted.
+    /// Returns 0 if the current stage has no boss.
+    /// </summary>
+    public int GetBossSceneIndex()
+    {
+        StageLevelData current = GetCurrentStageData();
+        if (current == null || !current.HasBoss) return 0;
+
+        int bossIndex = 0;
+        for (int i = 0; i <= stageLevel && i < _stageDatas.Count; i++)
+        {
+            if (_stageDatas[i] != null && _stageDatas[i].HasBoss)
+                bossIndex++;
+        }
+        return bossIndex;
+    }
 }

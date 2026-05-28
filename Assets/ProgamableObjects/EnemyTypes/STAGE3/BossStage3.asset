@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ab529a0c12673a408eb38b86a880060, type: 3}
+  m_Name: BossStage3
+  m_EditorClassIdentifier: 
+  name: 
+  health: 2200
+  damage: 10
+  elementCount: 3
+  level: 0
+  difficulty: 7
+  weaknesses: 02000000
+  weaknessMultiplier: 2
+  resistances: 00000000
+  resistanceMultiplier: 0.5
+  enemySprite: {fileID: 21300000, guid: cefe4d25822aa0549bc3e8df2b5c5bdb, type: 3}
+  animatorController: {fileID: 9100000, guid: ec974c1c65137954ea5132595eed6d02, type: 2}
+  spellType: 15
+  damagePerElement: 4
+  moveCount: 2
+  goldReward: 2000
+  expReward: 150
+  attackTimer: 4.5
+  lvl2Countdown: 8
+  lvl2BonusTimeOnClear: 3
+  continuousSelectionInterval: 2.5
+  visibilityDuration: 2
+  hiddenSprite: {fileID: 6712546136909991794, guid: d1c5380f5a856cc46b31e69ab4116190, type: 3}
+  blockerCount: 2
+  blockerDamagePercent: 0.25
+  haveDrops: 1
+  spellDrops:
+  - {fileID: 11400000, guid: e0425829627e713429caa4f607152677, type: 2}
+  swapperSwapInterval: 2.5

@@ -14,9 +14,14 @@ public class QTETrailRenderer : MonoBehaviour
 
     [SerializeField] private Material trailMaterial;
     [SerializeField] private GameObject trailParticlesPrefab;
-    [SerializeField] private float minPointDistance = 1f; // Minimum distance between points
+    [SerializeField] private float minPointDistance = 1f;
 
     private List<Vector3> committedPoints = new List<Vector3>();
+
+    // Local-space offsets set by PrepareForAnimation, used to rebuild world positions each frame
+    private List<Vector3> localBasePoints = new List<Vector3>();
+    private bool isAnimationMode = false;
+
     private GameObject activeTrailParticles;
     private Vector3 currentPreviewPosition;
     private bool hasPreview = false;
@@ -25,12 +30,12 @@ public class QTETrailRenderer : MonoBehaviour
     {
         initialColor = trailColor;
     }
+
     public void AddPoint(Vector3 worldPosition)
     {
         committedPoints.Add(worldPosition);
         UpdateRenderer();
 
-        // Update trail particles
         if (trailParticlesPrefab != null)
         {
             if (activeTrailParticles == null)
@@ -39,6 +44,42 @@ public class QTETrailRenderer : MonoBehaviour
             }
             activeTrailParticles.transform.position = worldPosition;
         }
+    }
+
+    public void PrepareForAnimation()
+    {
+        if (committedPoints.Count == 0) return;
+
+        // Compute centroid in world space
+        Vector3 centroid = Vector3.zero;
+        foreach (Vector3 p in committedPoints)
+            centroid += p;
+        centroid /= committedPoints.Count;
+
+        // Move transform to centroid, reset rotation and scale
+        transform.position = centroid;
+        transform.rotation = Quaternion.identity;
+        transform.localScale = Vector3.one;
+
+        // Store local offsets relative to centroid
+        localBasePoints.Clear();
+        foreach (Vector3 p in committedPoints)
+            localBasePoints.Add(p - centroid);
+
+        isAnimationMode = true;
+
+        // Push initial world positions to the LineRenderer
+        RefreshWorldPositions();
+    }
+
+    public void RefreshWorldPositions()
+    {
+        if (!isAnimationMode || lineRenderer == null) return;
+
+        lineRenderer.positionCount = localBasePoints.Count;
+        Matrix4x4 trs = transform.localToWorldMatrix;
+        for (int i = 0; i < localBasePoints.Count; i++)
+            lineRenderer.SetPosition(i, trs.MultiplyPoint3x4(localBasePoints[i]));
     }
 
     public void UpdatePreview(Vector3 worldPosition)
@@ -51,7 +92,6 @@ public class QTETrailRenderer : MonoBehaviour
             if (distance < minPointDistance)
             {
                 Vector3 direction = (worldPosition - lastPoint).normalized;
-                //Move the preview at minPointDistance to avoid jaggered edges
                 worldPosition = lastPoint + direction * minPointDistance;
             }
         }
@@ -72,18 +112,13 @@ public class QTETrailRenderer : MonoBehaviour
         if (lineRenderer == null) return;
 
         List<Vector3> pointsToRender = new List<Vector3>(committedPoints);
-        
-        //Always add the preview position if we have committed points and a preview
+
         if (committedPoints.Count > 0 && hasPreview)
-        {
             pointsToRender.Add(currentPreviewPosition);
-        }
 
         lineRenderer.positionCount = pointsToRender.Count;
         for (int i = 0; i < pointsToRender.Count; i++)
-        {
             lineRenderer.SetPosition(i, pointsToRender[i]);
-        }
     }
 
     public IEnumerator SolidifyTrail()
@@ -133,13 +168,16 @@ public class QTETrailRenderer : MonoBehaviour
     public void Clear()
     {
         committedPoints.Clear();
+        localBasePoints.Clear();
+        isAnimationMode = false;
         hasPreview = false;
-        
+
         if (lineRenderer != null)
         {
             lineRenderer.positionCount = 0;
             lineRenderer.startColor = initialColor;
             lineRenderer.endColor = initialColor;
+            lineRenderer.widthMultiplier = 1f;
         }
 
         if (activeTrailParticles != null)
@@ -153,15 +191,8 @@ public class QTETrailRenderer : MonoBehaviour
         transform.rotation = Quaternion.identity;
     }
 
-    public int GetPointCount()
-    {
-        return committedPoints.Count;
-    }
-
-    public Color GetTrailColor()
-    {
-        return trailColor;
-    }
+    public int GetPointCount() => committedPoints.Count;
+    public Color GetTrailColor() => trailColor;
 
     internal void SetTrailColor(Color currentColor)
     {
@@ -172,6 +203,4 @@ public class QTETrailRenderer : MonoBehaviour
             lineRenderer.endColor = currentColor;
         }
     }
-
-
 }

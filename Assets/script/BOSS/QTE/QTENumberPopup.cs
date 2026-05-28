@@ -16,7 +16,6 @@ public class QTENumberPopup : MonoBehaviour
         Color.cyan, Color.magenta, Color.yellow, 
         Color.green, Color.red, Color.white 
     };
-    [SerializeField] private float numberGlowIntensity = 2f;
 
     [Header("References")]
     [SerializeField] private Canvas qteCanvas;

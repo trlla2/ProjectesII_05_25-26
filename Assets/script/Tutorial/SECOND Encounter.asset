@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   steps:
   - type: 0
-    text: The enemy selects targets to attack you!!
+    text: Combat3-ExplainText1
     autoDismissTime: 1
     highlightPositions: []
     allowedPath: []
@@ -130,7 +130,7 @@ MonoBehaviour:
     pauseEnemyTimers: 1
     lockInput: 0
   - type: 4
-    text: If you fail to clear all targeted elements, the enemy will attack!
+    text: Combat3-ExplainText2
     autoDismissTime: 0
     highlightPositions:
     - {x: 1, y: 0}
@@ -164,7 +164,7 @@ MonoBehaviour:
     pauseEnemyTimers: 1
     lockInput: 1
   - type: 0
-    text: You got hit!
+    text: Combat3-GotHitText
     autoDismissTime: 0
     highlightPositions: []
     allowedPath: []

@@ -109,6 +109,7 @@ public class PlayerMovement : MonoBehaviour
             //ResetCurrentTile();
             if (currentTile == null || currentTile.GetGridPosition() != GetPlayerGridPosition()) ResetCurrentTile();
 
+            Debug.LogWarning($"[BRANCH] MoveForward step on {currentTile.GetGridPosition()} isBranchOrigin={currentTile.IsBranchOrigin()}");
             if (currentTile.IsBranchOrigin())
             {
                 yield return new WaitForSeconds(0.2f);

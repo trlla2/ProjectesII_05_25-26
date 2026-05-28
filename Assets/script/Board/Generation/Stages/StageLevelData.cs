@@ -173,4 +173,11 @@ public class StageLevelData : ScriptableObject
     public List<BoardTile> GetinteractableTiles() { return interactableTiles; }
     public List<EnemyType> GetEnemyEncounters() { return _enemyList; }
     public List<EnemyType> GetBossEncounters() { return _bossList; }
+
+    [Header("Boss")]
+    [SerializeField] private bool _hasBoss = true;
+    public bool HasBoss => _hasBoss;
+
+    [SerializeField] private bool _hasChestOfEgress = true;
+    public bool HasChestOfEgress => _hasChestOfEgress;
 }

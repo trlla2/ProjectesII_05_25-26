@@ -12,10 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f429702b582c65949ae43bcdb3c40145, type: 3}
   m_Name: TutorialStageData
   m_EditorClassIdentifier: 
+  _displayName: 
   _numOfEmptyTiles: 15
   _numOfEnemyTiles: 0
   _numOfMiniBossTiles: 0
   _numOfChestTiles: 0
+  _specialTilePool: []
+  _goldTileConfig:
+    tileData: {fileID: 0}
+    minInstances: 0
+    maxInstances: 0
   _minBranches: 0
   _maxBranches: 0
   _minBranchLengthBeforeRejoin: 0
@@ -29,3 +35,6 @@ MonoBehaviour:
   rareRarityPercentage: 0
   epicRarityPercentage: 0
   legendaryRarityPercentage: 0
+  _shopItemPool: []
+  _hasBoss: 0
+  _hasChestOfEgress: 0

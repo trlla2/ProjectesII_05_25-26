@@ -57,8 +57,11 @@ public class BoardTilePopulator
             return;
         }
 
-        TryPlaceSpecialTileAt(path, path.Tiles.Count - _config.BossTileDistanceFromEnd, _boardManager.bossTileData);
-        TryPlaceSpecialTileAt(path, path.Tiles.Count - _config.ChestOfEgressTileDistFromEnd, _boardManager.chestOfEgressTileData);
+        if (_boardManager.currentStageLevelData != null && _boardManager.currentStageLevelData.HasBoss)
+            TryPlaceSpecialTileAt(path, path.Tiles.Count - _config.BossTileDistanceFromEnd, _boardManager.bossTileData);
+
+        if (_boardManager.currentStageLevelData != null && _boardManager.currentStageLevelData.HasChestOfEgress)
+            TryPlaceSpecialTileAt(path, path.Tiles.Count - _config.ChestOfEgressTileDistFromEnd, _boardManager.chestOfEgressTileData);
     }
 
     private void TryPlaceSpecialTileAt(BoardPath path, int index, BoardTileData data)

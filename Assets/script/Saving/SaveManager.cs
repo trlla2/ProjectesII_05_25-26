@@ -34,11 +34,19 @@ public class SaveManager : MonoBehaviour
         SaveCurrentSkin();
 
         SaveStageLevel();
+
+        SaveMaxUnlockedStage();
     }
 
     public void SaveStageLevel()
     {
         PlayerPrefs.SetInt("StageLevel", GameManager.Instance.StageLevel);
+        PlayerPrefs.Save();
+    }
+
+    public void SaveMaxUnlockedStage()
+    {
+        PlayerPrefs.SetInt("MaxUnlockedStage", GameManager.Instance.MaxUnlockedStage);
         PlayerPrefs.Save();
     }
 
@@ -132,12 +140,20 @@ public class SaveManager : MonoBehaviour
         stats.ChangeSkin((SkinType)System.Enum.Parse(typeof(SkinType), currentSkinString));
 
         LoadStageLevel();
+
+        LoadMaxUnlockedStage();
     }
 
     public void LoadStageLevel()
     {
         int savedStage = PlayerPrefs.GetInt("StageLevel", 1);
         GameManager.Instance.SetStageLevel(savedStage);
+    }
+
+    public void LoadMaxUnlockedStage()
+    {
+        int savedMax = PlayerPrefs.GetInt("MaxUnlockedStage", 1);
+        GameManager.Instance.SetMaxUnlockedStage(savedMax);
     }
 
     public void ResetSavedStats()
@@ -154,6 +170,7 @@ public class SaveManager : MonoBehaviour
         PlayerPrefs.DeleteKey("TutorialCompleted");
         PlayerPrefs.DeleteKey("UsedSpells");
         PlayerPrefs.DeleteKey("StageLevel");
+        PlayerPrefs.DeleteKey("MaxUnlockedStage");
 
         PlayerPrefs.Save();
     }

@@ -247,8 +247,15 @@ public class BoardManager : MonoBehaviour
 
     public void ShowBranchChoice(BranchOriginTile originTile)
     {
+        Debug.LogWarning($"[BRANCH] ShowBranchChoice called. panel={(branchChoicePanel!=null)} " +
+            $"branch={(originTile.GeneratedBranch!=null)} count={(originTile.GeneratedBranch!=null?originTile.GeneratedBranch.Count:-1)}");
+
         if (branchChoicePanel == null || originTile.GeneratedBranch == null
-            /*|| originTile.GeneratedBranch.Count < 2*/) return;
+            /*|| originTile.GeneratedBranch.Count < 2*/)
+        {
+            Debug.LogWarning("[BRANCH] RETURN: panel null or branch null");
+            return;
+        }
 
         Vector2Int originPos     = originTile.GetGridPosition();
         Vector2Int branchNextPos = originTile.GeneratedBranch[1].GetGridPosition();
@@ -270,12 +277,20 @@ public class BoardManager : MonoBehaviour
             }
         }
 
-        if (mainNext == null) return;
+        if (mainNext == null)
+        {
+            Debug.LogWarning($"[BRANCH] RETURN: mainNext null. originPos={originPos} branchNextPos={branchNextPos} neighbors={originTile.neighbors.Count}");
+            return;
+        }
 
         RevealBranch(originTile.GeneratedBranch);
 
         BoardTile freshBranchNext = generatedTiles.Find(t => t.GetGridPosition() == branchNextPos);
-        if (freshBranchNext == null) return;
+        if (freshBranchNext == null)
+        {
+            Debug.LogWarning($"[BRANCH] RETURN: freshBranchNext null at {branchNextPos}");
+            return;
+        }
 
 
         BoardTile rightTile, leftTile;
@@ -306,7 +321,8 @@ public class BoardManager : MonoBehaviour
             }
         }
 
-            branchChoicePanel.Show(rightTile, leftTile);
+        Debug.LogWarning($"[BRANCH] Showing panel. right={rightTile.GetGridPosition()} left={leftTile.GetGridPosition()}");
+        branchChoicePanel.Show(rightTile, leftTile);
     }
 
     public void OpenChest(ChestTile chestTile)
@@ -334,7 +350,7 @@ public class BoardManager : MonoBehaviour
         if (shopPanel != null)
             shopPanel.Open(tile);
         else
-            Debug.LogWarning("BoardManager: shopPanel no está asignado.");
+            Debug.LogWarning("BoardManager: shopPanel no estï¿½ asignado.");
     }
 
     public void OpenSlotMachineScreen(SlotMachineTile tile)

@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
     public PlayerStats PlayerStats => playerStats;
 
     private int stageLevel = 1;
-    [SerializeField] public int MaxStageLevel { get; private set; } = 3;
+    [SerializeField] public int MaxStageLevel { get; private set; } = 4;
     public int StageLevel => stageLevel;
 
     [SerializeField] private List<StageLevelData> _stageDatas;

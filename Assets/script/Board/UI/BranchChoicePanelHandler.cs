@@ -25,6 +25,7 @@ public class BranchChoicePanelHandler : MonoBehaviour
     private IEnumerator DisableNextFrame()
     {
         yield return null;
+        Debug.LogWarning("[BRANCH] DisableNextFrame -> SetActive(false)");
         gameObject.SetActive(false);
     }
 
@@ -36,12 +37,14 @@ public class BranchChoicePanelHandler : MonoBehaviour
 
     public void Show(BoardTile rightTile, BoardTile leftTile)
     {
+        Debug.LogWarning($"[BRANCH] Panel.Show called. activeBefore={gameObject.activeSelf}");
         _rightTile = rightTile;
         _leftTile = leftTile;
 
         _tileClickHandler.HandleBoardRaycast(false);
         gameObject.SetActive(true);
         _boardCameraController?.ZoomIn();
+        Debug.LogWarning($"[BRANCH] Panel.Show done. activeAfter={gameObject.activeSelf} activeInHierarchy={gameObject.activeInHierarchy}");
     }
 
     private void Hide()

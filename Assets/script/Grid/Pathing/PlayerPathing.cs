@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //Grid no coneix a playerpahing, 
-//Desde aquí gestionem la logica de pathing, validació i cast de spells,
-//així com les visuals associades (linies, highlight dels elements seleccionats, etc)
+//Desde aquï¿½ gestionem la logica de pathing, validaciï¿½ i cast de spells,
+//aixï¿½ com les visuals associades (linies, highlight dels elements seleccionats, etc)
 
-//Les dependencies més importants son SpellEffectHandler, que gestiona els efectes i visuals de les spells un cop castades,
-//i el SpellPathAnimator, que gestiona les animacions dels elements anant cap a l'enemic. Es desde aquí on cridem enemyHit
+//Les dependencies mï¿½s importants son SpellEffectHandler, que gestiona els efectes i visuals de les spells un cop castades,
+//i el SpellPathAnimator, que gestiona les animacions dels elements anant cap a l'enemic. Es desde aquï¿½ on cridem enemyHit
 
 [RequireComponent(typeof(LineRenderer))]
 public class PlayerPathing : MonoBehaviour
@@ -106,7 +106,7 @@ public class PlayerPathing : MonoBehaviour
 
     private void UnsubscribeFromEvents()
     {
-        if (GameManager.Instance != null)
+        if (GameManager.Instance != null && GameManager.Instance.CombatHandler != null)
         {
             GameManager.Instance.CombatHandler.OnEndBattle -= HandleBattleEnd;
         }

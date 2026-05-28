@@ -190,6 +190,14 @@ public class PlayerStats
         float totalDamage = damage - defense;
         if (totalDamage <= 0f)
             return;
+
+        // modo richard: infinite life
+        if (ModoRichard.Instance != null && ModoRichard.Instance.IsActive)
+        {
+            hp = Mathf.Max(hp - damage, 1f);
+            return;
+        }
+
         hp -= damage;
         if (hp < 0)
             Die();

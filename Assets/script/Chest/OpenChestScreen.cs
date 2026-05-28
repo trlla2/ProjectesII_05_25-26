@@ -45,6 +45,11 @@ public class OpenChestScreen : MonoBehaviour
             if(item.Rarity == rarity)
                 candidates.Add(item);
         }
+        if (candidates.Count == 0)
+        {
+            Debug.LogError($"No items found with rarity {rarity} in _itemsPool");
+            return;
+        }
         _selectedItem = candidates[Random.Range(0, candidates.Count)];
 
         switch (_selectedItem.Rarity)

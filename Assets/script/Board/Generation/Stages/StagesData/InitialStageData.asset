@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f429702b582c65949ae43bcdb3c40145, type: 3}
+  m_Name: InitialStageData
+  m_EditorClassIdentifier: 
+  _displayName: 0
+  _numOfEmptyTiles: 10
+  _numOfEnemyTiles: 3
+  _numOfMiniBossTiles: 0
+  _numOfChestTiles: 1
+  _specialTilePool: []
+  _goldTileConfig:
+    tileData: {fileID: 11400000, guid: 200018cec36a81b44a8285caf3c1347d, type: 2}
+    minInstances: 6
+    maxInstances: 10
+  _minBranches: 0
+  _maxBranches: 0
+  _minBranchLengthBeforeRejoin: 9
+  _maxBranchLength: 15
+  _branchProbabilityPerCandidate: 0
+  _enemyList:
+  - {fileID: 11400000, guid: 3147f99c7cdb838489d05caed7aabe20, type: 2}
+  - {fileID: 11400000, guid: 231132fa00b16f040beb41df0a4e8cb4, type: 2}
+  - {fileID: 11400000, guid: 4170a7146780aa14aa8a273cea04ff61, type: 2}
+  _bossList: []
+  encountersOrder: 030000000400000005000000
+  interactableTiles: []
+  commonRarityPercentage: 35
+  rareRarityPercentage: 30
+  epicRarityPercentage: 30
+  legendaryRarityPercentage: 0
+  _shopItemPool:
+  - {fileID: 11400000, guid: a785f2fc7cdab0b4b85fd01c2b46ec55, type: 2}
+  - {fileID: 11400000, guid: 7a2e9d56b64e7864ca1fdaeb5115c5f0, type: 2}
+  - {fileID: 11400000, guid: e047397be666a1b4d9643b4a3ec57c55, type: 2}
+  - {fileID: 11400000, guid: bb57a1f526a6f9f4396e3a98e5bab451, type: 2}
+  - {fileID: 11400000, guid: ef79256ca3e204e4cb33bc2532e89133, type: 2}
+  - {fileID: 11400000, guid: fa17eac532c173e4e82b8a71b2782204, type: 2}
+  - {fileID: 11400000, guid: 0b07743ebec0aeb4594b65ad4d5a5506, type: 2}
+  - {fileID: 11400000, guid: 40c4a473f2a63ff4eb0b20b6b67de2ef, type: 2}
+  - {fileID: 11400000, guid: f8e7dff0b4ed7ad4896a6fc50c076569, type: 2}
+  - {fileID: 11400000, guid: 6248b61c3d15be746888344045123e2e, type: 2}
+  - {fileID: 11400000, guid: 6a1c637a87b98f24593d5a86d2b9ad85, type: 2}
+  - {fileID: 11400000, guid: e0c71afb2015e4144926da16fd9c690d, type: 2}
+  - {fileID: 11400000, guid: 7cd5832ad2ba6f047afb5d20c1e07dc8, type: 2}
+  - {fileID: 11400000, guid: 168d1ae2559b7b447a6d464e99611891, type: 2}
+  - {fileID: 11400000, guid: 3147ab06220296b4e881c1a01f75861c, type: 2}
+  - {fileID: 11400000, guid: 05f0fc09978945945b01c612d14f2b75, type: 2}
+  - {fileID: 11400000, guid: 839d03372d573c2419f4aef6b8fbc6dc, type: 2}
+  - {fileID: 11400000, guid: 93774a36ff7519f42aa79897e071d16d, type: 2}
+  - {fileID: 11400000, guid: 9be36c3ab0a487c48b578a701bcaa92f, type: 2}
+  - {fileID: 11400000, guid: 8b68972cefc7b7d4c9527281ada3b3dc, type: 2}
+  - {fileID: 11400000, guid: 1ce31f216c45c0b4f9ea35b7a04b23a5, type: 2}
+  - {fileID: 11400000, guid: 204f23811e876154f8511d084523a845, type: 2}
+  - {fileID: 11400000, guid: 888b9766e822cfc4f97b0846a83cc2f5, type: 2}

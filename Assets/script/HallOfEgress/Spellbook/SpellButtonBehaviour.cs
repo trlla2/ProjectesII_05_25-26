@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine.Localization.Settings;
 
 public class SpellButtonBehaviour : MonoBehaviour
 {
@@ -10,11 +11,14 @@ public class SpellButtonBehaviour : MonoBehaviour
     [SerializeField] private GameObject recipieParent;
     [SerializeField] private GameObject ElementPrefab;
     [SerializeField] private GameObject warning;
-   
+
+    [SerializeField] private string spellNamesTableName;
+    [SerializeField] private string spellDescriptionTableName;
+
     public void SetButtonToSpellValues(Spell spell)
     {
-        _spellname.text = spell.Name;
-        _spellDescription.text = spell.Description;
+        _spellname.text = LocalizationSettings.StringDatabase.GetLocalizedString(spellNamesTableName, spell.Name);
+        _spellDescription.text = LocalizationSettings.StringDatabase.GetLocalizedString(spellDescriptionTableName, spell.Name);
         for (int i = 0; i < spell.Recipe.Count; i++)
         {
             GameObject temp = Instantiate(ElementPrefab, recipieParent.transform);

@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
 
 public class NewSpellPanelBehaviour : MonoBehaviour
 {
@@ -34,8 +35,10 @@ public class NewSpellPanelBehaviour : MonoBehaviour
             o.GetComponent<UIElement_Behaviour>().SetupElementUI(e);
         }
 
-        spellName.text = spell.Name;
-        description.text = spell.Description;
+        //spellName.text = spell.Name;
+        //description.text = spell.Description;
+        spellName.text = LocalizationSettings.StringDatabase.GetLocalizedString("SpellNames", spell.Name);
+        description.text = LocalizationSettings.StringDatabase.GetLocalizedString("SpellDescriptions", spell.Name);
     }
 
     public void ClearRecipeDisplay()

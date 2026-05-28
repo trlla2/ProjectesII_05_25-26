@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
 
 [RequireComponent(typeof(TranslatorUI))]
 public class SpellHoverHandler : MonoBehaviour
@@ -9,6 +10,10 @@ public class SpellHoverHandler : MonoBehaviour
     private TMP_Text spellName;
     [SerializeField]
     private TMP_Text description;
+    [SerializeField]
+    private string spellNamesTableName = "SpellNames";
+    [SerializeField]
+    private string spellDescriptionTableName = "SpellDescriptions";
 
     [Header("Recipie")]
     [SerializeField]
@@ -34,8 +39,10 @@ public class SpellHoverHandler : MonoBehaviour
             o.GetComponent<UIElement_Behaviour>().SetupElementUI(e);
         }
 
-        spellName.text = spell.Name;
-        description.text = spell.Description;
+        //spellName.text = spell.Name;
+        //description.text = spell.Description;
+        spellName.text = LocalizationSettings.StringDatabase.GetLocalizedString(spellNamesTableName, spell.Name);
+        description.text = LocalizationSettings.StringDatabase.GetLocalizedString(spellDescriptionTableName, spell.Name);
     }
 
     public void ClearRecipeDisplay()

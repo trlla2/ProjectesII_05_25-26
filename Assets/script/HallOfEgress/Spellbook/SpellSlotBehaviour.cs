@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Localization.Settings;
 [RequireComponent(typeof(Button))]
 public class SpellSlotBehaviour : MonoBehaviour
 {
@@ -14,6 +15,8 @@ public class SpellSlotBehaviour : MonoBehaviour
     private GameObject recipieParent;
     [SerializeField]
     private GameObject elementSpellSlot;
+    [SerializeField]
+    private string spellNamesTableName = "SpellNames";
 
     [Header("animation")]
     [SerializeField]
@@ -82,7 +85,8 @@ public class SpellSlotBehaviour : MonoBehaviour
 
         currentSpell = spell;
 
-        spellNameText.text = spell.Name;
+        //spellNameText.text = spell.Name;
+        spellNameText.text = LocalizationSettings.StringDatabase.GetLocalizedString(spellNamesTableName, currentSpell.Name);
 
         foreach (Transform child in recipieParent.transform)
             Destroy(child.gameObject);

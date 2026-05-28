@@ -9,8 +9,10 @@ public class GameManager : MonoBehaviour
     public PlayerStats PlayerStats => playerStats;
 
     private int stageLevel = 1;
+    private int _maxUnlockedStage = 1;
     [SerializeField] public int MaxStageLevel { get; private set; } = 4;
     public int StageLevel => stageLevel;
+    public int MaxUnlockedStage => _maxUnlockedStage;
 
     [SerializeField] private List<StageLevelData> _stageDatas;
 
@@ -92,6 +94,8 @@ public class GameManager : MonoBehaviour
     public void AdvanceStageLevel()
     {
         stageLevel++;
+        if (stageLevel > _maxUnlockedStage)
+            _maxUnlockedStage = stageLevel;
     }
 
     public void ResetStageLevel()
@@ -102,6 +106,11 @@ public class GameManager : MonoBehaviour
     public void SetStageLevel(int level)
     {
         stageLevel = Mathf.Clamp(level, 1, MaxStageLevel);
+    }
+
+    public void SetMaxUnlockedStage(int level)
+    {
+        _maxUnlockedStage = Mathf.Clamp(level, 1, MaxStageLevel);
     }
 
     public StageLevelData GetStageData(int level)

@@ -23,7 +23,7 @@ public class StageSelectManager : MonoBehaviour
 
     private void Start()
     {
-        _selectedStage = GameManager.Instance.StageLevel;
+        _selectedStage = GameManager.Instance.MaxUnlockedStage;
 
         BuildStageList();
 
@@ -32,7 +32,7 @@ public class StageSelectManager : MonoBehaviour
 
     private void BuildStageList()
     {
-        int currentStage = GameManager.Instance.StageLevel;
+        int maxUnlocked = GameManager.Instance.MaxUnlockedStage;
         int maxStage = GameManager.Instance.MaxStageLevel;
 
         // padding arriba y abajo para que los botones extremos no queden recortados
@@ -52,8 +52,8 @@ public class StageSelectManager : MonoBehaviour
             Vector2 pos = new Vector2(x, y);
             positions.Add(pos);
 
-            bool isLocked = i > currentStage;
-            bool isDefault = i == currentStage;
+            bool isLocked = i > maxUnlocked;
+            bool isDefault = i == maxUnlocked;
 
             StageButton btn = Instantiate(_stageButtonPrefab, _scrollContent);
             btn.GetComponent<RectTransform>().anchoredPosition = pos;

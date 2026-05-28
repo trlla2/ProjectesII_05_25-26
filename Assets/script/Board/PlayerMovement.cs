@@ -222,12 +222,14 @@ public class PlayerMovement : MonoBehaviour
     IEnumerator JumpToTile(Vector3 targetPos)
     {
         Vector3 startPos = transform.position;
+        float distance = Vector3.Distance(startPos, targetPos);
+        float duration = moveSpeed > 0f ? distance / moveSpeed : jumpDuration;
         float elapsed = 0f;
 
-        while (elapsed < jumpDuration)
+        while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / jumpDuration);
+            float t = Mathf.Clamp01(elapsed / duration);
 
             Vector3 horizontalPos = Vector3.Lerp(startPos, targetPos, t);
             float height = Mathf.Sin(t * Mathf.PI) * jumpHeight;

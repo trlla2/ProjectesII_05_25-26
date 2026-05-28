@@ -3,9 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
 
 public class TutorialManager : MonoBehaviour
 {
+    private const string TutorialLocalizationTable = "TutorialFixedTexts";
+
     [SerializeField] private TutorialUIController uiController;
     [SerializeField] private Grid grid;
     [SerializeField] private EnemyBehaviour enemyBehaviour;
@@ -156,7 +159,8 @@ public class TutorialManager : MonoBehaviour
         switch (step.type)
         {
             case TutorialStepType.Popup:
-                uiController.ShowPopup(step.text, step.autoDismissTime, OnPopupDismissed);
+                string localizedText = LocalizationSettings.StringDatabase.GetLocalizedString("TutorialFixedTexts", step.text);
+                uiController.ShowPopup(localizedText, step.autoDismissTime, OnPopupDismissed);
                 break;
 
             case TutorialStepType.Toast:

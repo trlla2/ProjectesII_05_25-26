@@ -47,7 +47,10 @@ public class StairsTile : BoardTile
         }
 
         if (GameManager.Instance.StageLevel < GameManager.Instance.MaxStageLevel)
+        {
             GameManager.Instance.AdvanceStageLevel();
+            SaveManager.Instance.SaveMaxUnlockedStage();
+        }
         else
         {
             GameManager.Instance.ResetStageLevel();

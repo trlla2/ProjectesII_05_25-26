@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
+using UnityEngine.Localization.Settings;
 
 public class TutorialUIController : MonoBehaviour
 {

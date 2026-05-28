@@ -192,6 +192,17 @@ public class PlayerMovement : MonoBehaviour
             currentTile = tile;
             OnStep.Invoke();
 
+            // Stop at branch origins so the path choice panel can take over
+            if (currentTile.IsBranchOrigin())
+            {
+                SpawnStepParticles(tile);
+                yield return new WaitForSeconds(0.2f);
+                currentTile.Interact();
+                isMoving = false;
+                onComplete?.Invoke();
+                yield break;
+            }
+
             bool isLastTile = i == path.Count - 1;
             if (!isLastTile || interactTarget == null)
                 currentTile.Interact();

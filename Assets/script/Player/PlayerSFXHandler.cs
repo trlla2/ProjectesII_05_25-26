@@ -25,6 +25,7 @@ public class PlayerSFXHandler : MonoBehaviour
         
     private void OnDestroy()
     {
-        GameManager.Instance.CombatHandler.OnPlayerHitRecived -= HandlePlayerHit;
+        if (GameManager.Instance != null && GameManager.Instance.CombatHandler != null)
+            GameManager.Instance.CombatHandler.OnPlayerHitRecived -= HandlePlayerHit;
     }
 }

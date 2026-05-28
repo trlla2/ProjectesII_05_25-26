@@ -6646,64 +6646,6 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
---- !u!1 &455337356
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 455337358}
-  - component: {fileID: 455337357}
-  m_Layer: 0
-  m_Name: --------------------- Tutorial UI
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &455337357
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 455337356}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51b8cc4888749684caf9ced1fc0fcb25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dimOverlay: {fileID: 0}
-  popupPanel: {fileID: 0}
-  toastPanel: {fileID: 0}
-  handIcon: {fileID: 0}
-  highlightRingPrefab: {fileID: 7338625739307313264, guid: 25f049769420cc8408d1058b64535787, type: 3}
-  popupText: {fileID: 0}
-  toastText: {fileID: 0}
-  arrowLabelText: {fileID: 0}
-  popupDismissButton: {fileID: 0}
-  playerHPBarAnchor: {fileID: 1898107645}
-  enemyHPBarAnchor: {fileID: 627286979}
-  spellHUDAnchor: {fileID: 189374399}
-  handCanvasRoot: {fileID: 0}
-  worldCamera: {fileID: 519420031}
---- !u!4 &455337358
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 455337356}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.73384404, y: 0.44357774, z: 0.024379237}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &508001528
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8558,7 +8500,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 015165dcbb2c79c4ead1b5605a7a9e3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiController: {fileID: 455337357}
+  uiController: {fileID: 1261048628}
   grid: {fileID: 190367786}
   enemyBehaviour: {fileID: 1982195253204217192}
   activeSequence: {fileID: 11400000, guid: 4a752b737e50d3a4eabbdeef904f9c00, type: 2}
@@ -10712,6 +10654,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: df198ad1cc749474a874fed9bb49d9fb, type: 3}
+--- !u!114 &1261048628 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1209955072764898490, guid: df198ad1cc749474a874fed9bb49d9fb, type: 3}
+  m_PrefabInstance: {fileID: 1261048627}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51b8cc4888749684caf9ced1fc0fcb25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1273594223
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25231,7 +25184,6 @@ SceneRoots:
   - {fileID: 1311944232}
   - {fileID: 327775794}
   - {fileID: 1276368603}
-  - {fileID: 455337358}
   - {fileID: 1370878447}
   - {fileID: 1411861165}
   - {fileID: 1985522325}

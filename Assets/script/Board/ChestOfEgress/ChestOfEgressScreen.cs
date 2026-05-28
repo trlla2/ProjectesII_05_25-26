@@ -1,8 +1,9 @@
-using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine;
+using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
-using System.Collections;
 
 [RequireComponent(typeof(CanvasGroup))]
 public class ChestOfEgressScreen : MonoBehaviour
@@ -171,8 +172,8 @@ public class ChestOfEgressScreen : MonoBehaviour
 
         string hexColor = ColorUtility.ToHtmlStringRGBA(targetColor);
 
-        itemName.text = $"<color=#{hexColor}>{i.NameItem}</color>:";
-        itemInfo.text = i.Description;
+        itemName.text = $"<color=#{hexColor}>{LocalizationSettings.StringDatabase.GetLocalizedString("ItemNames", i.NameItem)}</color>:";
+        itemInfo.text = LocalizationSettings.StringDatabase.GetLocalizedString("ItemDescriptions", i.NameItem);
     }
 
     public IEnumerator ShowOnBoardingIfFirstTime()

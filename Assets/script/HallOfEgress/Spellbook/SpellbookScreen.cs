@@ -1,6 +1,9 @@
 using TMPro;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
+using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
 
 public class SpellbookScreen : MonoBehaviour
@@ -25,6 +28,7 @@ public class SpellbookScreen : MonoBehaviour
 
     public UnityEvent OnCloseButtonPressed;
 
+    [SerializeField] private string spellbookErrorsTableName = "Spellbook-ErrorTexts";
 
     private TranslatorUI translator;
     private void Awake() 
@@ -49,7 +53,9 @@ public class SpellbookScreen : MonoBehaviour
             {
                 if(GameManager.Instance.PlayerStats.ExistSpellOnSpellBook(spell))
                 {
-                    SendErrorMessage("You cant have repeated spells on your spellbook.");
+                    //SendErrorMessage("You cant have repeated spells on your spellbook.");
+                    string key = "spellsRepeated";
+                    SendErrorMessage(LocalizationSettings.StringDatabase.GetLocalizedString(spellbookErrorsTableName, key));
                     return;
                 }
 
@@ -127,7 +133,9 @@ public class SpellbookScreen : MonoBehaviour
         {
             if (s == null)
             {
-                SendErrorMessage("You must have 4 spells.");
+                //SendErrorMessage("You must have 4 spells.");
+                string key = "4Spells";
+                SendErrorMessage(LocalizationSettings.StringDatabase.GetLocalizedString(spellbookErrorsTableName, key));
                 return;
             }
 
@@ -156,6 +164,11 @@ public class SpellbookScreen : MonoBehaviour
         if(thereIsRed && thereIsBlue && thereIsGreen && thereIsYellow)
             OnCloseButtonPressed.Invoke();
         else
-            SendErrorMessage("You must have all the elements selected through the 4 selected spells.");
+        {
+            string key = "allElements";
+            SendErrorMessage(LocalizationSettings.StringDatabase.GetLocalizedString(spellbookErrorsTableName, key));
+
+        }
+            
     }
 }

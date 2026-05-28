@@ -1,9 +1,10 @@
-using UnityEngine;
-using TMPro;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using UnityEngine.Rendering;
+using TMPro;
 using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.Localization.Settings;
+using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 public class OpenChestScreen : MonoBehaviour
 {
@@ -71,8 +72,8 @@ public class OpenChestScreen : MonoBehaviour
 
         _animationHandler.OnOpen.AddListener(() =>
         {
-            _itemNameText.text = _selectedItem.NameItem;
-            _itemDescriptionText.text = _selectedItem.Description;
+            _itemNameText.text = LocalizationSettings.StringDatabase.GetLocalizedString("ItemNames", _selectedItem.NameItem);
+            _itemDescriptionText.text = LocalizationSettings.StringDatabase.GetLocalizedString("ItemDescriptions", _selectedItem.NameItem);
         });
     }
 

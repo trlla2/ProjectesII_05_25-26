@@ -2,6 +2,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Localization.Settings;
 
 public class ShopSlotUI : MonoBehaviour
 {
@@ -60,8 +61,8 @@ public class ShopSlotUI : MonoBehaviour
         switch (offer.Type)
         {
             case ShopOffer.OfferType.Item:
-                _titleText.text = offer.Item.NameItem;
-                _descriptionText.text = offer.Item.Description;
+                _titleText.text = LocalizationSettings.StringDatabase.GetLocalizedString("ItemNames", offer.Item.NameItem);
+                _descriptionText.text = LocalizationSettings.StringDatabase.GetLocalizedString("ItemDescriptions", offer.Item.NameItem);
                 if (_icon != null && offer.Item.Sprite != null)
                     _icon.sprite = offer.Item.Sprite;
 

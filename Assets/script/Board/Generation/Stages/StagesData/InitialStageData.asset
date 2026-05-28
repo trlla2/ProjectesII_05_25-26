@@ -13,29 +13,20 @@ MonoBehaviour:
   m_Name: InitialStageData
   m_EditorClassIdentifier: 
   _displayName: 0
-  _numOfEmptyTiles: 15
+  _numOfEmptyTiles: 10
   _numOfEnemyTiles: 3
   _numOfMiniBossTiles: 0
   _numOfChestTiles: 1
-  _specialTilePool:
-  - tileData: {fileID: 11400000, guid: d22ce5231cab6564988711f5ec7898de, type: 2}
-    weight: 50
-    maxInstances: 7
-  - tileData: {fileID: 11400000, guid: a55434f9ea7c4bb43aeb42e620185353, type: 2}
-    weight: 30
-    maxInstances: 1
-  - tileData: {fileID: 11400000, guid: b50cf9a671c937d499492507682b5f82, type: 2}
-    weight: 30
-    maxInstances: 1
+  _specialTilePool: []
   _goldTileConfig:
     tileData: {fileID: 11400000, guid: 200018cec36a81b44a8285caf3c1347d, type: 2}
     minInstances: 6
     maxInstances: 10
-  _minBranches: 1
-  _maxBranches: 1
+  _minBranches: 0
+  _maxBranches: 0
   _minBranchLengthBeforeRejoin: 9
   _maxBranchLength: 15
-  _branchProbabilityPerCandidate: 0.25
+  _branchProbabilityPerCandidate: 0
   _enemyList:
   - {fileID: 11400000, guid: 3147f99c7cdb838489d05caed7aabe20, type: 2}
   - {fileID: 11400000, guid: 231132fa00b16f040beb41df0a4e8cb4, type: 2}

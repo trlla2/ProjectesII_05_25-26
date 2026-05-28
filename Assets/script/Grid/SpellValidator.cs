@@ -174,7 +174,6 @@ public class SpellValidator : ISpellValidator
         {
             if (spell.Matches(elements))
             {
-                Debug.Log($"Found VALID matching spell: {spell.Name}");
                 return true;
             }
         }

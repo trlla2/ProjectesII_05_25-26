@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using DG.Tweening;
 using UnityEngine.UI;
+using UnityEngine.Localization.Settings;
 
 public class SlotMachineScreen : MonoBehaviour
 {
@@ -47,7 +48,9 @@ public class SlotMachineScreen : MonoBehaviour
 
     void Update()
     {
-        _betAmountText.text = $"BET: {_currentBet} GOLDS";
+        _betAmountText.text = $"{LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "BetText")} " +
+            $"{_currentBet} ";
+            //$"{LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "GoldsText")}";
 
         if (!_rows[0].rowStopped || !_rows[1].rowStopped || !_rows[2].rowStopped || !_rows[3].rowStopped)
         {
@@ -62,7 +65,7 @@ public class SlotMachineScreen : MonoBehaviour
                 StartCoroutine(ClosePanelCoroutine());
         }
 
-        _tries.text = $"Tries Left: {_avaliablePulls}";
+        _tries.text = $"{LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "TriesText")} {_avaliablePulls}";
     }
 
     public void TryPull()
@@ -100,7 +103,10 @@ public class SlotMachineScreen : MonoBehaviour
         if (_rows[0].stoppedSlot == _rows[1].stoppedSlot && _rows[1].stoppedSlot == _rows[2].stoppedSlot && _rows[2].stoppedSlot == _rows[3].stoppedSlot)
         {
             // 4 of the same
-            _prizeText.text = $"YOU WON {_currentBet * _jackpotMult} GOLDS!!!";
+            _prizeText.text = $"{LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "WinText")}" +
+                $" {_currentBet * _jackpotMult} " +
+                $"{LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "GoldsText")}!!!";
+
             _jackPotAnimation.StartAnimation();
             GameManager.Instance.PlayerStats.AddCurrency(CurrencyType.GOLD, Mathf.RoundToInt(_currentBet * _jackpotMult));
             _isJackpot = true;
@@ -114,7 +120,10 @@ public class SlotMachineScreen : MonoBehaviour
             _rows[0].stoppedSlot == _rows[2].stoppedSlot && _rows[2].stoppedSlot == _rows[3].stoppedSlot)
         {
             // 3 of the same
-            _prizeText.text = $"YOU WON {_currentBet * _threeMult} GOLDS!!!";
+            _prizeText.text = $"{LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "WinText")}" +
+                $"{_currentBet * _threeMult} " +
+                $"{LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "GoldsText")}!!!";
+
             GameManager.Instance.PlayerStats.AddCurrency(CurrencyType.GOLD, Mathf.RoundToInt(_currentBet * _threeMult));
             _isJackpot = false;
             AnimateThreeOfAKind();
@@ -128,7 +137,10 @@ public class SlotMachineScreen : MonoBehaviour
                  _rows[1].stoppedSlot != _rows[3].stoppedSlot)
         {
             // Full house
-            _prizeText.text = $"YOU WON {_currentBet * _fullHouse} GOLDS \n + EXTRA ROLL!!!";
+            _prizeText.text = $"{LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "WinText")}" +
+                $"{_currentBet * _fullHouse} " +
+                $"{LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "GoldsText")}" +
+                $"\n {LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "ExtraRollText")}!!!";
             GameManager.Instance.PlayerStats.AddCurrency(CurrencyType.GOLD, Mathf.RoundToInt(_currentBet * _fullHouse));
             _avaliablePulls++;
             _isJackpot = false;
@@ -138,7 +150,7 @@ public class SlotMachineScreen : MonoBehaviour
         else
         {
             // 2 of the same
-            _prizeText.text = "YOU LOST";
+            _prizeText.text = $"{LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "LoseText")}";
             _isJackpot = false;
         }
         _resultsChecked = true;

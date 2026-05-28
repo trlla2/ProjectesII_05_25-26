@@ -26,7 +26,10 @@ public class ModoRichard : MonoBehaviour
         IsActive = !IsActive;
 
         if (IsActive)
+        {
             GameManager.Instance.SetMaxUnlockedStage(GameManager.Instance.MaxStageLevel);
+            GameManager.Instance.PlayerStats?.SetHpCheat(10000f);
+        }
 
         Debug.Log($"[ModoRichard] {(IsActive ? "ON" : "OFF")}");
     }

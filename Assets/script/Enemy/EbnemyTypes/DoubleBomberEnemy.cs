@@ -401,10 +401,15 @@ public class DoubleBomberSpell : EnemySpellBase
     {
         ClearAllCableVisuals();
         BombCableVisual[] cables = GetCableVisuals();
+
+        if (cables.Length < 2)
+            Debug.LogWarning($"[DoubleBomberSpell] Expected 2 BombCableVisual components on enemy, found {cables.Length}. Add a second one to the prefab.");
+
         int idx = 0;
 
         if (!bombA.IsDefused && !bombA.IsExploded && idx < cables.Length)
             bombA.SetupCable(grid, cables[idx++]);
+
 
         if (!bombB.IsDefused && !bombB.IsExploded && idx < cables.Length)
             bombB.SetupCable(grid, cables[idx]);

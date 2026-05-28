@@ -507,4 +507,9 @@ public class PlayerStats
     //    return _evasionBaseUpgrades > 0 || _maxHealthBaseUpgrades > 0 || _damageBaseUpgrades > 0 || _defenseBaseUpgrades > 0;
     //}
 
+    public void SetHpCheat(float amount)
+    {
+        maxHp = amount;
+        hp    = amount;
+    }
 }

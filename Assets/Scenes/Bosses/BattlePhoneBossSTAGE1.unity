@@ -13946,6 +13946,7 @@ GameObject:
   m_Component:
   - component: {fileID: 806185222}
   - component: {fileID: 806185221}
+  - component: {fileID: 806185223}
   m_Layer: 0
   m_Name: --------------------- GAME MANAGER
   m_TagString: Untagged
@@ -13982,6 +13983,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &806185223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 806185220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5089faa8aa8f981468d790dfeaa1fece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  items: []
+  ForceSpells: 1
+  spells:
+  - {fileID: 11400000, guid: 7bcb7841072f0e846992f0ad4f6bfd2e, type: 2}
+  - {fileID: 11400000, guid: bb7b1e70b6071f74887ecae91a6e9dfc, type: 2}
+  - {fileID: 11400000, guid: 98775d4b99fca9a4ebdc3c97d92ecfff, type: 2}
+  - {fileID: 11400000, guid: e9afe958fcdfa78458bbde73be344e18, type: 2}
+  knownSpells: []
 --- !u!1 &822420874
 GameObject:
   m_ObjectHideFlags: 0
@@ -22425,7 +22446,8 @@ MonoBehaviour:
   CurrentCharge: 0
   State: 0
   OrbIndex: 0
-  qteController: {fileID: 1279878346}
+  orb1QTEController: {fileID: 1992799288}
+  orb2QTEController: {fileID: 0}
   IsActive: 0
 --- !u!114 &1279878346
 MonoBehaviour:
@@ -28735,7 +28757,6 @@ MonoBehaviour:
   - {r: 0, g: 1, b: 0, a: 1}
   - {r: 1, g: 0, b: 0, a: 1}
   - {r: 1, g: 1, b: 1, a: 1}
-  numberGlowIntensity: 3
   qteCanvas: {fileID: 822420877}
   mainCamera: {fileID: 0}
 --- !u!1001 &1567724197
@@ -44946,7 +44967,8 @@ MonoBehaviour:
   CurrentCharge: 0
   State: 0
   OrbIndex: 0
-  qteController: {fileID: 1992799288}
+  orb1QTEController: {fileID: 1992799288}
+  orb2QTEController: {fileID: 0}
   IsActive: 0
 --- !u!114 &1992799288
 MonoBehaviour:
@@ -47088,9 +47110,13 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 311587fea259dac49a8b98c6c30db5b0, type: 3}
   numberTouchSound: {fileID: 8300000, guid: 31b82e2de6dd4c441892bc8715228ac8, type: 3}
   trailCompleteSound: {fileID: 8300000, guid: bd79fdc30760d3f49a9551eba429327b, type: 3}
+  timingHitSound: {fileID: 0}
+  timingMissSound: {fileID: 0}
+  timingPerfectSound: {fileID: 0}
   qteCanvas: {fileID: 822420877}
   grid: {fileID: 190367786}
   mainCamera: {fileID: 519420031}
+  timingRingUI: {fileID: 0}
 --- !u!114 &2144799610
 MonoBehaviour:
   m_ObjectHideFlags: 0

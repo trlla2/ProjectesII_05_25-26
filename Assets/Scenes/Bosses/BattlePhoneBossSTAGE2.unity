@@ -19723,7 +19723,8 @@ MonoBehaviour:
   CurrentCharge: 0
   State: 0
   OrbIndex: 0
-  qteController: {fileID: 857361261}
+  orb1QTEController: {fileID: 857361261}
+  orb2QTEController: {fileID: 0}
   IsActive: 0
 --- !u!114 &857361263
 MonoBehaviour:
@@ -20071,7 +20072,8 @@ MonoBehaviour:
   CurrentCharge: 0
   State: 0
   OrbIndex: 0
-  qteController: {fileID: 889156406}
+  orb1QTEController: {fileID: 889156406}
+  orb2QTEController: {fileID: 0}
   IsActive: 0
 --- !u!114 &889156408
 MonoBehaviour:
@@ -21827,6 +21829,70 @@ PrefabInstance:
     - target: {fileID: 2383409773752661289, guid: 4ff38b2eff6d93b478d8668701dd7df2, type: 3}
       propertyPath: sceneToUnload
       value: BattlePhoneBossSTAGE2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2604940287529659260, guid: 4ff38b2eff6d93b478d8668701dd7df2, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2604940287529659260, guid: 4ff38b2eff6d93b478d8668701dd7df2, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2604940287529659260, guid: 4ff38b2eff6d93b478d8668701dd7df2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2604940287529659260, guid: 4ff38b2eff6d93b478d8668701dd7df2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147173908614136181, guid: 4ff38b2eff6d93b478d8668701dd7df2, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147173908614136181, guid: 4ff38b2eff6d93b478d8668701dd7df2, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147173908614136181, guid: 4ff38b2eff6d93b478d8668701dd7df2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4147173908614136181, guid: 4ff38b2eff6d93b478d8668701dd7df2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4340005468589798400, guid: 4ff38b2eff6d93b478d8668701dd7df2, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4340005468589798400, guid: 4ff38b2eff6d93b478d8668701dd7df2, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4340005468589798400, guid: 4ff38b2eff6d93b478d8668701dd7df2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4340005468589798400, guid: 4ff38b2eff6d93b478d8668701dd7df2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6428701139656540141, guid: 4ff38b2eff6d93b478d8668701dd7df2, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6428701139656540141, guid: 4ff38b2eff6d93b478d8668701dd7df2, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6428701139656540141, guid: 4ff38b2eff6d93b478d8668701dd7df2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6428701139656540141, guid: 4ff38b2eff6d93b478d8668701dd7df2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7455255365297650711, guid: 4ff38b2eff6d93b478d8668701dd7df2, type: 3}
       propertyPath: m_Pivot.x
@@ -28845,7 +28911,6 @@ MonoBehaviour:
   - {r: 0.6509434, g: 0.003070495, b: 0.3392421, a: 1}
   - {r: 0.5, g: 0.49591666, b: 0.2570755, a: 1}
   - {r: 0.055843085, g: 0.26415092, b: 0, a: 1}
-  numberGlowIntensity: 5
   qteCanvas: {fileID: 822420877}
   mainCamera: {fileID: 0}
 --- !u!1 &1564005435
@@ -51939,9 +52004,13 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 311587fea259dac49a8b98c6c30db5b0, type: 3}
   numberTouchSound: {fileID: 8300000, guid: 31b82e2de6dd4c441892bc8715228ac8, type: 3}
   trailCompleteSound: {fileID: 8300000, guid: bd79fdc30760d3f49a9551eba429327b, type: 3}
+  timingHitSound: {fileID: 0}
+  timingMissSound: {fileID: 0}
+  timingPerfectSound: {fileID: 0}
   qteCanvas: {fileID: 822420877}
   grid: {fileID: 190367786}
   mainCamera: {fileID: 519420031}
+  timingRingUI: {fileID: 0}
 --- !u!114 &2144799610
 MonoBehaviour:
   m_ObjectHideFlags: 0

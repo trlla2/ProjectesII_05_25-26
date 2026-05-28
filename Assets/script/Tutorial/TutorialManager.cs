@@ -159,7 +159,7 @@ public class TutorialManager : MonoBehaviour
         switch (step.type)
         {
             case TutorialStepType.Popup:
-                string localizedText = LocalizationSettings.StringDatabase.GetLocalizedString("TutorialFixedTexts", step.text);
+                string localizedText = LocalizationSettings.StringDatabase.GetLocalizedString(TutorialLocalizationTable, step.text);
                 uiController.ShowPopup(localizedText, step.autoDismissTime, OnPopupDismissed);
                 break;
 

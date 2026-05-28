@@ -27,15 +27,13 @@ public class Orb1QTE : MonoBehaviour, IQTE
     public bool IsActive => isActive;
 
     public event Action<bool> OnQTEComplete;
-    
-    //Global events for QTE state changes (player pathing needs it)
+
     public static event Action OnQTEStarted;
     public static event Action OnQTEEnded;
 
     private void Awake()
     {
         Phases = new List<IQTEPhase>();
-        
         visualController.Initialize(grid);
     }
 
@@ -56,7 +54,7 @@ public class Orb1QTE : MonoBehaviour, IQTE
 
         if (!ValidateReferences())
         {
-            Debug.LogError("Cannot start QTE,,missing  references!");
+            Debug.LogError("Cannot start QTE, missing references!");
             return;
         }
 
@@ -115,7 +113,6 @@ public class Orb1QTE : MonoBehaviour, IQTE
 
         currentPhase.update();
 
-        //Update timer UI only for sequential phase
         if (currentPhase is SequentialTracePhase sequentialPhase && timerUI != null)
         {
             timerUI.UpdateTimer(sequentialPhase.GetRemainingTime(), sequentialInputTime);
@@ -125,7 +122,6 @@ public class Orb1QTE : MonoBehaviour, IQTE
     public void Cancel()
     {
         if (!isActive) return;
-
         HandleFinalComplete(false);
     }
 
@@ -176,7 +172,7 @@ public class Orb1QTE : MonoBehaviour, IQTE
             visualController,
             targetOrbPosition,
             this
-            );
+        );
 
         animPhase.OnPhaseComplete += HandleSuccessAnimationComplete;
         Phases.Add(animPhase);
@@ -197,7 +193,6 @@ public class Orb1QTE : MonoBehaviour, IQTE
         isWaitingForSuccessAnimation = false;
         HandleFinalComplete(true);
     }
-
 
     private void HandleFinalComplete(bool success)
     {

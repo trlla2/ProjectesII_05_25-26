@@ -94,6 +94,8 @@ public class PlayerPathing : MonoBehaviour
 
         Orb1QTE.OnQTEStarted += HandleQTEStarted;
         Orb1QTE.OnQTEEnded += HandleQTEEnded;
+        Orb2QTE.OnQTEStarted += HandleQTEStarted;
+        Orb2QTE.OnQTEEnded += HandleQTEEnded;
 
         if (grid != null)
         {
@@ -111,6 +113,8 @@ public class PlayerPathing : MonoBehaviour
 
         Orb1QTE.OnQTEStarted -= HandleQTEStarted;
         Orb1QTE.OnQTEEnded -= HandleQTEEnded;
+        Orb2QTE.OnQTEStarted -= HandleQTEStarted;
+        Orb2QTE.OnQTEEnded -= HandleQTEEnded;
 
         if (grid != null)
         {

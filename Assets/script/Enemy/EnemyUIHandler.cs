@@ -1,6 +1,7 @@
 using System.Collections.Generic; 
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
 
 public class EnemyUIHandler : MonoBehaviour
@@ -86,7 +87,9 @@ public class EnemyUIHandler : MonoBehaviour
         enemyBehaviour = reference;
         enemyBehaviour.OnHitRecived += ChangeHealthBar;
         enemyBehaviour.OnGetDamage += AddDamageToQueue;
-        nameText.text = enemyBehaviour.GetEnemyType().Name + ", Level " + enemyBehaviour.GetEnemyType().Level;
+        nameText.text = LocalizationSettings.StringDatabase.GetLocalizedString("EnemyNames", enemyBehaviour.GetEnemyType().Name) 
+            + ", " + LocalizationSettings.StringDatabase.GetLocalizedString("FixedUITexts", "Combat-LevelText") + " "
+            + enemyBehaviour.GetEnemyType().Level;
 
         ChangeHealthBar(enemyBehaviour.GetMaxHP());
 

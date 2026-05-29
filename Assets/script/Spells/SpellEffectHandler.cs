@@ -175,6 +175,7 @@ public class SpellEffectHandler : MonoBehaviour
             {
                 markers.Add(SpawnThunderMarker(worldPos));
                 ElementVisual visual = grid.GridData.GetVisualAt(capturedPos);
+                visual?.ShowInactive(false);
                 visual?.transform.DOPunchScale(Vector3.one * 0.4f, 0.3f, 5, 0.5f);
                 SFXManager.Instance.PlaySFXByName("ActivateObliderateElement");
             });
@@ -211,7 +212,7 @@ public class SpellEffectHandler : MonoBehaviour
         GameObject markerObj = new GameObject("Thunder_Marker");
         SpriteRenderer sr = markerObj.AddComponent<SpriteRenderer>();
         sr.sprite = thunderMarkerSprite;
-        sr.color = new Color(1f, 0.9f, 0.1f);
+        sr.color = new Color(0.9f, 0.7f, 0.2f, 0.7f);
         sr.sortingOrder = 101;
         markerObj.transform.position = worldPos;
         markerObj.transform.localScale = Vector3.zero;

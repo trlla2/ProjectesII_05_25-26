@@ -1,6 +1,7 @@
 using System.Collections.Generic; 
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
 
 public class EnemyUIHandler : MonoBehaviour
@@ -40,17 +41,42 @@ public class EnemyUIHandler : MonoBehaviour
     private float currentWeaknessTimer = 0;
     private bool isShowingWeakness = false;
 
-    private EnemyBehaviour enemyBehaviour;
+    private EnemyBehaviour enemyBehaviour = null;
 
     private void Awake()
     {
-        GameManager.Instance.CombatHandler.OnSetEnemyReference += SetEnemyRef;
-
+        
         critImage.SetActive(false);
+    }
+
+    private void Start()
+    {
+        if (GameManager.Instance != null && GameManager.Instance.CombatHandler != null)
+        {
+            GameManager.Instance.CombatHandler.OnSetEnemyReference += SetEnemyRef;
+
+
+            // check if is already set the enemy
+            EnemyBehaviour currentEnemy = GameManager.Instance.CombatHandler.GetEnemyRef();
+            if (currentEnemy != null)
+            {
+                SetEnemyRef(currentEnemy);
+            }
+
+        }
+        else
+        {
+            Debug.LogError("EnemyUIHandler: GameManager o CombatHandler no están listos en el Start.");
+        }
+
+
     }
 
     private void SetEnemyRef(EnemyBehaviour reference)
     {
+        if (reference == null) return;
+
+
         if (enemyBehaviour != null)
         {
             enemyBehaviour.OnHitRecived -= ChangeHealthBar;
@@ -61,7 +87,11 @@ public class EnemyUIHandler : MonoBehaviour
         enemyBehaviour = reference;
         enemyBehaviour.OnHitRecived += ChangeHealthBar;
         enemyBehaviour.OnGetDamage += AddDamageToQueue;
-        nameText.text = enemyBehaviour.GetEnemyType().Name + ", Level " + enemyBehaviour.GetEnemyType().Level;
+        nameText.text = LocalizationSettings.StringDatabase.GetLocalizedString("EnemyNames", enemyBehaviour.GetEnemyType().Name) 
+            + ", " + LocalizationSettings.StringDatabase.GetLocalizedString("FixedUITexts", "Combat-LevelText") + " "
+            + enemyBehaviour.GetEnemyType().Level;
+
+        ChangeHealthBar(enemyBehaviour.GetMaxHP());
 
     }
 

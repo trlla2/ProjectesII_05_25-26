@@ -11,7 +11,8 @@ public enum OnBoardingKey
     SPELLBOOK_DEDICO,
     SHOP, // 
     BOMB_ENEMY, // 
-    HIDDEN_ENEMY, //
+    HIDDEN_ENEMY_SELECT, //
+    HIDDEN_ENEMY_CAST,
     BOSS_STAGE1_START, //
     BOSS_STAGE1_ORBCHARGED, //
     BUFFS_N_DEBUFFS, //
@@ -19,7 +20,10 @@ public enum OnBoardingKey
     HALL_OF_EGRESS_INTRO,
     HALL_OF_EGRESS_GOTOSPELLBOOK,
     HALL_OF_EGRESS_GOTOSPELLBOOK_DEDICO,
-    BLOCKER_ENEMY
+    BLOCKER_ENEMY,
+    HALL_OF_EGRESS_GO_INTO_DUNGEON,
+    HALL_OF_EGRESS_GO_INTO_DUNGEON_DEDICO,
+    FIRST_ITEM_PICKUP,
 
 
 }
@@ -93,7 +97,7 @@ public class OnBoardingPanelList : ScriptableObject
                 panelPrefab = onBoardingFeatures[i].panelPrefab,
                 isExplained = isExplained
             };
-            if (!isExplained)
+            //if (!isExplained)
             {
                 GameObject panelInstance = Instantiate(onBoardingFeatures[i].panelPrefab, panelsParent);
                 panelInstance.SetActive(false);

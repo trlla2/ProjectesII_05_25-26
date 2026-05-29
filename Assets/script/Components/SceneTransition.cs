@@ -28,7 +28,7 @@ public class SceneTransition : MonoBehaviour
         fadePanel.color = c;
     }
 
-    public void LoadScene(string sceneName, bool isAdditive)
+    public void LoadScene(string sceneName, bool isAdditive = false)
     {
         StartCoroutine(TransitionToScene(sceneName, isAdditive));
     }
@@ -47,7 +47,6 @@ public class SceneTransition : MonoBehaviour
             AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
             while (!asyncLoad.isDone)
                 yield return null;
-            //BoardManager.instance?.HandleBoardCamera(false); // FORCED CHANGE!!!!!!
         }
         else
             SceneManager.LoadScene(sceneName);
@@ -61,8 +60,8 @@ public class SceneTransition : MonoBehaviour
     private IEnumerator TransitionUnloadScene(string sceneName)
     {
         yield return StartCoroutine(Fade(1f));
+        Debug.Log($"Unloading scene: {sceneName}");
         SceneManager.UnloadSceneAsync(sceneName);
-        //BoardManager.instance.HandleBoardCamera(true); // FORCED CHANGE!!!!!!
         yield return StartCoroutine(Fade(0f));
     }
 

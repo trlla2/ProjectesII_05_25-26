@@ -37,7 +37,7 @@ public class BlockerSpell : IEnemySpell
 
     public override string GetSpellName() => "Blocker";
 
-    public void Execute(Grid grid)
+    public override void Execute(Grid grid)
     {
         if (grid == null) return;
 
@@ -285,7 +285,8 @@ public class BlockerSpell : IEnemySpell
         }
 
         Vector2Int[] pathArray = brokenPositions.ToArray();
-        animator.OnSpellCast(pathArray, elements, onComplete);
+        // Pass forceFullAnimation = true to play full animation even though it's a blocker spell
+        animator.OnSpellCast(pathArray, elements, onComplete, forceFullAnimation: true);
     }
 
     private void CompleteBreakBlock(Grid grid, Vector2Int position)

@@ -12,6 +12,9 @@ public class DecorationTile : MonoBehaviour
     private void Start()
     {
         PlayFloatAnimation();
+
+        int randomRotation = Random.Range(0, 4) * 90; // 0, 90, 180, or 270 degrees
+        transform.localRotation = Quaternion.Euler(0f, randomRotation, 0f);
     }
 
     private void PlayFloatAnimation()

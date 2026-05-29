@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 7292700906018293328}
   - component: {fileID: 2615811028796864978}
   - component: {fileID: 4615084680586136583}
+  - component: {fileID: 3832954320604523910}
   m_Layer: 5
   m_Name: AcceptButton
   m_TagString: Untagged
@@ -29,7 +30,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6322494551455286472}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -189,7 +190,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9045006f78d19d84296ebbe511703e51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animationDuration: 0.15
+  animationDuration: 0.125
   currentTime: 0
   curve:
     serializedVersion: 2
@@ -225,7 +226,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   displacement: {x: 0, y: 0, z: 0}
-  scale: {x: -0.7, y: -0.7, z: 0}
+  scale: {x: -0.4, y: -0.4, z: 0}
   rotation: {x: 0, y: 0, z: 0}
   OnTargetReach:
     m_PersistentCalls:
@@ -246,6 +247,45 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   OnChange:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &3832954320604523910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6322494551455286472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd9fde938b4f986468baeaec9122467f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onAwakeCall:
+    m_PersistentCalls:
+      m_Calls: []
+  onStartCall:
+    m_PersistentCalls:
+      m_Calls: []
+  onEnableCall:
+    m_PersistentCalls:
+      m_Calls: []
+  onDisableCall:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4615084680586136583}
+        m_TargetAssemblyTypeName: TranslatorUI, Assembly-CSharp
+        m_MethodName: ResetTranslator
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onDestroyCall:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &9222693660170011585
@@ -313,7 +353,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: acept
+  m_text: CHOSE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5a799bb99edc88b43a186ef37e6e59bd, type: 2}
   m_sharedMaterial: {fileID: 6455172422824163580, guid: 5a799bb99edc88b43a186ef37e6e59bd, type: 2}
@@ -340,8 +380,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 250
-  m_fontSizeBase: 250
+  m_fontSize: 62.5
+  m_fontSizeBase: 62.5
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

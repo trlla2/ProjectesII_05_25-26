@@ -5,7 +5,8 @@ using UnityEngine;
 public class EnemyType : ScriptableObject
 {
     [Header("Data")]
-    [SerializeField] private string name;
+    //new bc we override the default name from obj
+    [SerializeField] new private string name;
 
     [Header("Basic Stats")]
     [SerializeField] private float health = 100f;
@@ -31,7 +32,9 @@ public class EnemyType : ScriptableObject
 
     [Header("Rewards")]
     [SerializeField] private int goldReward = 100;
+    [SerializeField] private int expReward = 4;
     public int GoldReward => goldReward;
+    public int ExpReward => expReward;
 
     [Header("Timed Enemy Settings")]
     [SerializeField] private float attackTimer = 6f;
@@ -143,6 +146,15 @@ public class EnemyType : ScriptableObject
             case EnemySpellType.SwapperAttack:
                 return new SwapperSpell( swapperSwapInterval, attackTimer, damagePerElement, lvl2BonusTimeOnClear);
 
+            case EnemySpellType.HalfScreenHiddenDestroy:
+                return new HalfScreenHiddenDestroySpell(damagePerElement, attackTimer, visibilityDuration, hiddenSprite, lvl2BonusTimeOnClear);
+
+            case EnemySpellType.SnakeLineTimedTarget:
+                return new ContinousLineTimedEnemy(continuousSelectionInterval, attackTimer, damagePerElement, lvl2BonusTimeOnClear);
+
+            case EnemySpellType.DoubleBombAttack:
+                return new DoubleBomberSpell(damagePerElement, moveCount);
+
             default:
                 return new ColumnDestroySpell(damagePerElement, moveCount);
         }
@@ -188,5 +200,8 @@ public enum EnemySpellType
     TutorialStage2TimedSpell,
     ContinuouslyTimedTarget,
     BlockerAttack,
-    SwapperAttack
+    SwapperAttack,
+    HalfScreenHiddenDestroy,
+    SnakeLineTimedTarget,
+    DoubleBombAttack
 }

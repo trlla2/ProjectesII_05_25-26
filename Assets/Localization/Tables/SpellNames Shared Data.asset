@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: SpellNames Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: SpellNames
+  m_TableCollectionNameGuidString: a4d16335138462c4c9dfc076b3cb2840
+  m_Entries:
+  - m_Id: 196482494464
+    m_Key: FIREBALL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 239931289600
+    m_Key: FREEZE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 242330431488
+    m_Key: HEAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 244477915136
+    m_Key: INCINERATE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 247137103872
+    m_Key: MAGIC WATER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 251620814848
+    m_Key: OBSIDIAN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 253793464320
+    m_Key: SPIKY SHIELD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 271573118976
+    m_Key: THUNDER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 539371040768
+    m_Key: WATER BLAST
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 3629324655995650430
+  references:
+    version: 2
+    RefIds:
+    - rid: 3629324655995650430
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1779942988774

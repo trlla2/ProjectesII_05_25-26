@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6413519073938463677}
   - component: {fileID: 4986227104369630078}
   - component: {fileID: 5737551675175066660}
+  - component: {fileID: 4337520723597737321}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -92,8 +93,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 100
-  m_fontSizeBase: 100
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -136,6 +137,46 @@ MonoBehaviour:
   m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4337520723597737321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 399206842915285648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5737551675175066660}
+        m_TargetAssemblyTypeName: TMPro.TextMeshProUGUI, Unity.TextMeshPro
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &3482077875920168302
 GameObject:
   m_ObjectHideFlags: 0
@@ -199,7 +240,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -230,6 +271,7 @@ MonoBehaviour:
   dismissButton: {fileID: 7976740629107743911}
   textBox: {fileID: 0}
   messages: []
+  _localizationTableName: 
   charDisplayDelay: 0.05
 --- !u!114 &7976740629107743911
 MonoBehaviour:
@@ -325,11 +367,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8943415689564931065, guid: 38d411897595e7f45ae9ddcac2a7a720, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 400
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 8943415689564931065, guid: 38d411897595e7f45ae9ddcac2a7a720, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 400
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 8943415689564931065, guid: 38d411897595e7f45ae9ddcac2a7a720, type: 3}
       propertyPath: m_LocalPosition.x
@@ -361,11 +403,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8943415689564931065, guid: 38d411897595e7f45ae9ddcac2a7a720, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 293
+      value: 58.6
       objectReference: {fileID: 0}
     - target: {fileID: 8943415689564931065, guid: 38d411897595e7f45ae9ddcac2a7a720, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 22
+      value: 4.4
       objectReference: {fileID: 0}
     - target: {fileID: 8943415689564931065, guid: 38d411897595e7f45ae9ddcac2a7a720, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

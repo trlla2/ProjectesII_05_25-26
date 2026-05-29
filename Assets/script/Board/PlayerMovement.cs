@@ -24,6 +24,7 @@ public class PlayerMovement : MonoBehaviour
     public UnityEvent OnStep;
 
     public bool isMoving { get; private set; } = false;
+    private bool _canMove = true;
 
 
     void Start()
@@ -36,12 +37,15 @@ public class PlayerMovement : MonoBehaviour
         currentTile = _boardManager.startingTile;
         if (!_boardManager.IsTutorial)
             transform.position = _boardManager.startingTile.transform.position;
+        else
+            _canMove = false;
         _jumpParticlesDuration = jumpParticles.main.duration;
     }
 
     public void TryMoveTo(BoardTile target, System.Action onArrive = null)
     {
-        if (currentTile == null) ResetCurrentTile();
+        if (!_canMove) return;
+        if (currentTile == null || currentTile.GetGridPosition() != GetPlayerGridPosition()) ResetCurrentTile();
 
         var path = Pathfinding.FindPath(currentTile, target);
         if (path == null)
@@ -61,136 +65,81 @@ public class PlayerMovement : MonoBehaviour
         StartCoroutine(MoveAlongPath(path, () => onArrive?.Invoke(), captured));
     }
 
-    public void MoveOneStepForward(System.Action onArrive = null)
+    public void MoveForward(System.Action/*<BoardTile>*/ onStop = null)
     {
-        if (isMoving) return;
-        if (currentTile == null) ResetCurrentTile();
+        if (isMoving || !_canMove) return;
+        if (currentTile == null || currentTile.GetGridPosition() != GetPlayerGridPosition()) ResetCurrentTile();
 
-        BoardTile walkableNext = GetNextForwardTile(walkableOnly: true);
-        if (walkableNext != null)
-        {
-            BoardTile nonWalkableAfter = !walkableNext.IsBranchOrigin()
-                ? GetNextForwardTileFrom(walkableNext, walkableOnly: false)
-                : null;
-
-            StartCoroutine(MoveAlongPath(new List<BoardTile> { walkableNext }, () =>
-            {
-                onArrive?.Invoke();
-            }, nonWalkableAfter));
-            return;
-        }
-
-        BoardTile nonWalkableNext = GetNextForwardTile(walkableOnly: false);
-        if (nonWalkableNext != null)
-        {
-            nonWalkableNext.Interact();
-            return;
-        }
-
-        Debug.Log("No hay forward tile disponible");
+        StartCoroutine(MoveForwardCoroutine(onStop));
     }
 
-    public void MoveUntilStop(System.Action<BoardTile> onStop = null)
+    private IEnumerator MoveForwardCoroutine(System.Action/*<BoardTile>*/ onStop)
     {
-        if (isMoving) return;
-        if (currentTile == null) ResetCurrentTile();
+        isMoving = true;
+        bool firstStep = true;
 
-        List<BoardTile> path = BuildAutoAdvancePath();
-
-        BoardTile endTile = path.Count > 0 ? path[path.Count - 1] : currentTile;
-        BoardTile nextNonWalkable = (endTile != null && !endTile.IsBranchOrigin())
-            ? GetNextForwardTileFrom(endTile, walkableOnly: false)
-            : null;
-
-        if (path.Count == 0)
-        {
-            nextNonWalkable?.Interact();
-            onStop?.Invoke(currentTile);
-            return;
-        }
-
-        StartCoroutine(MoveAlongPath(path, () =>
-        {
-            onStop?.Invoke(currentTile);
-        }, nextNonWalkable));
-    }
-
-    public void MoveUntilStopFrom(BoardTile firstTile, System.Action<BoardTile> onStop = null)
-    {
-        if (isMoving) return;
-        if (currentTile == null) ResetCurrentTile();
-
-        List<BoardTile> path = BuildAutoAdvancePathFrom(firstTile);
-
-        BoardTile endTile = path.Count > 0 ? path[path.Count - 1] : firstTile;
-        BoardTile nextNonWalkable = (endTile != null && !endTile.IsBranchOrigin())
-            ? GetNextForwardTileFrom(endTile, walkableOnly: false)
-            : null;
-
-        if (path.Count == 0)
-        {
-            if (firstTile != null && firstTile.IsWalkable())
-            {
-                BoardTile nonWalkableAfterFirst = !firstTile.IsBranchOrigin()
-                    ? GetNextForwardTileFrom(firstTile, walkableOnly: false)
-                    : null;
-
-                StartCoroutine(MoveAlongPath(new List<BoardTile> { firstTile }, () =>
-                {
-                    onStop?.Invoke(currentTile);
-                }, nonWalkableAfterFirst));
-            }
-            else
-            {
-                nextNonWalkable?.Interact();
-                onStop?.Invoke(currentTile);
-            }
-            return;
-        }
-
-        StartCoroutine(MoveAlongPath(path, () =>
-        {
-            onStop?.Invoke(currentTile);
-        }, nextNonWalkable));
-    }
-
-    private List<BoardTile> BuildAutoAdvancePath()
-    {
-        return BuildAutoAdvancePathFrom(currentTile);
-    }
-
-    private List<BoardTile> BuildAutoAdvancePathFrom(BoardTile startFrom)
-    {
-        List<BoardTile> path = new List<BoardTile>();
-        BoardTile current = currentTile;
-
-        if (startFrom != null && startFrom != currentTile)
-        {
-            path.Add(startFrom);
-            current = startFrom;
-        }
-
+        BoardTile nonWalkableAhead = null;
         while (true)
         {
-            BoardTile next = GetNextForwardTileFrom(current, walkableOnly: true);
+            BoardTile nextWalkable = GetNextForwardTile(walkableOnly: true);
 
-            if (next == null)
-                break;
-
-            if (next.IsBranchOrigin())
+            if (nextWalkable == null)
             {
-                path.Add(next);
+                BoardTile nonWalkable = GetNextForwardTile(walkableOnly: false);
+                nonWalkable?.Interact();
                 break;
             }
 
-            if (!next.IsWalkable())
-                break;
+            if (!firstStep)
+                yield return new WaitForSeconds(waitTimeBetweenTilesInSeconds);
 
-            path.Add(next);
-            current = next;
+            firstStep = false;
+
+            yield return StartCoroutine(JumpToTile(nextWalkable.transform.position));
+            yield return new WaitUntil(() => transform.position == nextWalkable.transform.position);
+            currentTile = nextWalkable;
+            OnStep.Invoke();
+            SpawnStepParticles(currentTile);
+
+            bool interactionDone = false;
+            currentTile.Interact(() => interactionDone = true);
+            yield return new WaitUntil(() => interactionDone);
+            //yield return new WaitForSeconds(0.1f); // Small delay to ensure interactions are fully processed
+
+            //ResetCurrentTile();
+            if (currentTile == null || currentTile.GetGridPosition() != GetPlayerGridPosition()) ResetCurrentTile();
+
+            Debug.LogWarning($"[BRANCH] MoveForward step on {currentTile.GetGridPosition()} isBranchOrigin={currentTile.IsBranchOrigin()}");
+            if (currentTile.IsBranchOrigin())
+            {
+                yield return new WaitForSeconds(0.2f);
+                currentTile.Interact();
+                break;
+            }
+
+            nonWalkableAhead = GetNextForwardTileFrom(currentTile, walkableOnly: false);
+            if (nonWalkableAhead != null)
+            {
+                yield return new WaitForSeconds(0.2f);
+                nonWalkableAhead.Interact();
+                break;
+            }
+            else
+                nonWalkableAhead = null;
         }
 
-        return path;
+        isMoving = false;
+        onStop?.Invoke(/*nonWalkableAhead*/);
+    }
+
+    private void SpawnStepParticles(BoardTile tile)
+    {
+        GameObject newParticles = Instantiate(
+            jumpParticles.gameObject,
+            tile.transform.position,
+            tile.transform.rotation,
+            tile.transform);
+        Destroy(newParticles, _jumpParticlesDuration);
     }
 
     private BoardTile GetNextForwardTile(bool walkableOnly)
@@ -244,16 +193,22 @@ public class PlayerMovement : MonoBehaviour
             currentTile = tile;
             OnStep.Invoke();
 
+            // Stop at branch origins so the path choice panel can take over
+            if (currentTile.IsBranchOrigin())
+            {
+                SpawnStepParticles(tile);
+                yield return new WaitForSeconds(0.2f);
+                currentTile.Interact();
+                isMoving = false;
+                onComplete?.Invoke();
+                yield break;
+            }
+
             bool isLastTile = i == path.Count - 1;
             if (!isLastTile || interactTarget == null)
                 currentTile.Interact();
 
-            GameObject newParticles = Instantiate(
-                jumpParticles.gameObject,
-                tile.transform.position,
-                tile.transform.rotation,
-                tile.transform);
-            Destroy(newParticles, _jumpParticlesDuration);
+            SpawnStepParticles(tile);
 
             if (i < path.Count - 1)
                 yield return new WaitForSeconds(waitTimeBetweenTilesInSeconds);
@@ -268,12 +223,14 @@ public class PlayerMovement : MonoBehaviour
     IEnumerator JumpToTile(Vector3 targetPos)
     {
         Vector3 startPos = transform.position;
+        float distance = Vector3.Distance(startPos, targetPos);
+        float duration = moveSpeed > 0f ? distance / moveSpeed : jumpDuration;
         float elapsed = 0f;
 
-        while (elapsed < jumpDuration)
+        while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / jumpDuration);
+            float t = Mathf.Clamp01(elapsed / duration);
 
             Vector3 horizontalPos = Vector3.Lerp(startPos, targetPos, t);
             float height = Mathf.Sin(t * Mathf.PI) * jumpHeight;
@@ -292,10 +249,20 @@ public class PlayerMovement : MonoBehaviour
 
     private void ResetCurrentTile()
     {
-        currentTile = _boardManager.generatedTiles[_boardManager.generatedTiles.Count - 1];
+        currentTile = _boardManager.generatedTiles
+            .Where(tile => tile.GetGridPosition() == GetPlayerGridPosition())
+            .FirstOrDefault();
+        //currentTile = _boardManager.generatedTiles[_boardManager.generatedTiles.Count - 1];
     }
 
     public BoardTile GetCurrentTile() => currentTile;
+
+    private Vector2Int GetPlayerGridPosition()
+    {
+        return new Vector2Int(
+            Mathf.RoundToInt(transform.position.x),
+            Mathf.RoundToInt(transform.position.z));
+    }
 
     // FORCED!!!
     private void OnCollisionEnter2D(Collision2D collision)
@@ -306,6 +273,9 @@ public class PlayerMovement : MonoBehaviour
         this.gameObject.GetComponent<Rigidbody2D>().simulated = false;
         this.gameObject.GetComponent<BoxCollider2D>().enabled = false;
         collision.gameObject.GetComponent<BoxCollider2D>().enabled = false;
+        _canMove = true;
         OnStartingTileTouchedWhileFalling?.Invoke();
+        //
+        Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(true);
     }
 }

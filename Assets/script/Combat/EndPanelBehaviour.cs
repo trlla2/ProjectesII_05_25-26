@@ -34,10 +34,16 @@ public class EndPanelBehaviour : MonoBehaviour
 
     private void Start()
     {
+        if (GameManager.Instance == null || GameManager.Instance.CombatHandler == null)
+        {
+            Debug.LogWarning("EndPanelBehaviour: GameManager or CombatHandler not ready yet.");
+            return;
+        }
+
         GameManager.Instance.CombatHandler.OnEndBattle += SetWinLosePanel;
 
-        winPanel.SetActive(false);
-        losePanel.SetActive(false);
+        if (winPanel != null) winPanel.SetActive(false);
+        if (losePanel != null) losePanel.SetActive(false);
     }
 
     private void SetWinLosePanel(bool isWin, int exp, int g, Spell drop)

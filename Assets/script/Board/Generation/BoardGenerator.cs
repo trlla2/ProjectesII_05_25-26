@@ -57,6 +57,7 @@ public class BoardGenerator : MonoBehaviour
 
         Paths.Clear();
 
+        // Step 1 – Generate paths
         BoardPath mainPath = GenerateMainPath(parent);
         Paths.Add(mainPath);
 
@@ -66,8 +67,22 @@ public class BoardGenerator : MonoBehaviour
             _minBranchLengthBeforeRejoin, _maxBranchLength);
 
         BoardTilePopulator populator = new BoardTilePopulator(_boardManager, _config, Paths);
+
+        // Step 2 – Reserved zones (start zone & end zone)
         populator.AssignEndZones(parent);
-        populator.AssignEnemiesAndSpecialTiles(_numOfEnemyTiles);
+
+        // Step 3 – Enemies
+        populator.AssignEnemies(_numOfEnemyTiles);
+
+        // Step 4 – One valid separator between every pair of consecutive enemies
+        populator.AssignSeparatorsBetweenEnemies();
+
+        // Step 5 – Fill remaining valid positions with special tiles
+        populator.AssignSpecialTiles();
+
+        // Step 6 – Gold tiles (independent spawn, random count from StageLevelData range)
+        populator.AssignGoldTiles();
+
         populator.EnsureBranchEntriesAreEmpty();
 
         foreach (BoardPath path in Paths)

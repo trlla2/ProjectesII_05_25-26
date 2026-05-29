@@ -1,10 +1,12 @@
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class OnBoardingManager : MonoBehaviour
 {
+    [SerializeField] private bool _resetOnBoardingFromPlayerPrefs; // DEBUG ONLY!!! // seto to false for build
     public static OnBoardingManager Instance { get; private set; }
 
     [SerializeField] private OnBoardingPanelList panelList;
@@ -12,14 +14,16 @@ public class OnBoardingManager : MonoBehaviour
 
     private OnboardingPanel currentPanel;
     public void RegisterPanel(OnboardingPanel _panel) => currentPanel = _panel;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Awake()
     {
         if (Instance != null) { Destroy(this.gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(this.gameObject);
 
-        //ResetOnBoardingDataFromPlayerPrefs(); // DEBUG ONLY!!! // remove for build
+        if (_resetOnBoardingFromPlayerPrefs)
+            ResetOnBoardingDataFromPlayerPrefs();
+
         instancedPanels = panelList.LoadPrefsData(this.transform);
     }
 
@@ -44,10 +48,16 @@ public class OnBoardingManager : MonoBehaviour
         return instancedPanels.Find(panel => panel._key == key);
     }
 
-    // debug
-    private void ResetOnBoardingDataFromPlayerPrefs()
+    public void ResetOnBoardingDataFromPlayerPrefs()
     {
         panelList.ResetAllSavedData();
+        ReloadAllOnBoardingPanels();
+    }
+
+    private void ReloadAllOnBoardingPanels()
+    {
+        transform.GetComponentsInChildren<OnboardingPanel>().ToListPooled().ForEach(panel => Destroy(panel.gameObject));
+        instancedPanels = panelList.LoadPrefsData(this.transform);
     }
 
     public void TriggerIfNewWithDelay(OnBoardingKey key)

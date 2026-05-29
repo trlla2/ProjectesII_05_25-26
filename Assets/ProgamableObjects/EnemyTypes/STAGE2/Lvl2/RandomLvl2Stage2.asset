@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RandomLvl2Stage2
   m_EditorClassIdentifier: 
   name: Small Spirit
-  health: 90
+  health: 130
   damage: 10
   elementCount: 3
   level: 2
@@ -28,9 +28,10 @@ MonoBehaviour:
   damagePerElement: 4
   moveCount: 2
   goldReward: 100
+  expReward: 4
   attackTimer: 5
-  lvl2Countdown: 7
-  lvl2BonusTimeOnClear: 2.5
+  lvl2Countdown: 6
+  lvl2BonusTimeOnClear: 2
   continuousSelectionInterval: 2.5
   visibilityDuration: 2.5
   hiddenSprite: {fileID: 0}

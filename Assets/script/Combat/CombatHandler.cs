@@ -2,12 +2,9 @@ using UnityEngine;
 
 public class CombatHandler : MonoBehaviour
 {
-    private EnemyBehaviour enemyInCombat;
+    private EnemyBehaviour enemyInCombat = null;
 
     private SpellHoverHandler spellHoverHandler;
-
-    private int expMultiplyer = 4;
-    private int moneyMultiplyer = 4;
 
     //Boss
     public BossManager bossManager;
@@ -61,8 +58,8 @@ public class CombatHandler : MonoBehaviour
         }
 
         enemyInCombat.SetEnemyType(typeToUse);
-        enemyInCombat.StartBattle();
         OnSetEnemyReference?.Invoke(enemyRef);
+        enemyInCombat.StartBattle();
     }
 
     private EnemyType ResolveEnemyType()
@@ -91,7 +88,6 @@ public class CombatHandler : MonoBehaviour
             enemyInCombat?.DealDamage(new DamageType(ElementType.EMPTY, GameManager.Instance.PlayerStats.SpikeDamage));
 
         GameManager.Instance.PlayerStats.Damage(damage);
-        Camera.main.GetComponent<CameraShake>().Shake(0.2f);
 
         OnPlayerHitRecived?.Invoke();
 
@@ -114,8 +110,7 @@ public class CombatHandler : MonoBehaviour
 
     public void OnEnemyDead()
     {
-        int exp = GameManager.Instance.StageLevel * expMultiplyer;
-        Debug.Log($"aaaaaaaaaaaaaaa {enemyInCombat.GetEnemyType().GetSpellDrop()}"); // GetSpellDrop return nothing 
+        int exp = enemyInCombat.GetEnemyType().ExpReward;
 
         Spell drop = enemyInCombat.GetEnemyType().GetSpellDrop();
 
@@ -124,7 +119,7 @@ public class CombatHandler : MonoBehaviour
             GameManager.Instance.PlayerStats.AddKnownSpell(drop);
 
         int gold = enemyInCombat.GetEnemyType().GoldReward;
-        GameManager.Instance.PlayerStats.AddMoney(gold);
+        GameManager.Instance.PlayerStats.AddCurrency(CurrencyType.GOLD, gold);
 
         DeleteEnemyRef();
         //_boardClickHandler.HandleBoardRaycast(true);

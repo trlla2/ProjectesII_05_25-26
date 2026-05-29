@@ -12,19 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f429702b582c65949ae43bcdb3c40145, type: 3}
   m_Name: Stage2Data
   m_EditorClassIdentifier: 
-  _numOfEmptyTiles: 21
+  _displayName: 2
+  _numOfEmptyTiles: 28
   _numOfEnemyTiles: 5
   _numOfMiniBossTiles: 0
   _numOfChestTiles: 5
   _specialTilePool:
   - tileData: {fileID: 11400000, guid: d22ce5231cab6564988711f5ec7898de, type: 2}
     weight: 40
+    maxInstances: 8
   - tileData: {fileID: 11400000, guid: b50cf9a671c937d499492507682b5f82, type: 2}
     weight: 50
+    maxInstances: 2
   - tileData: {fileID: 11400000, guid: a55434f9ea7c4bb43aeb42e620185353, type: 2}
     weight: 30
-  - tileData: {fileID: 11400000, guid: 200018cec36a81b44a8285caf3c1347d, type: 2}
-    weight: 40
+    maxInstances: 2
+  _goldTileConfig:
+    tileData: {fileID: 11400000, guid: 200018cec36a81b44a8285caf3c1347d, type: 2}
+    minInstances: 10
+    maxInstances: 15
   _minBranches: 1
   _maxBranches: 3
   _minBranchLengthBeforeRejoin: 14
@@ -34,13 +40,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c6df23f55e485294da286c934bcd5fb8, type: 2}
   - {fileID: 11400000, guid: 8421013d247ddfe498a755cab4445ee1, type: 2}
   - {fileID: 11400000, guid: cc4883347e375764181a8b09e275d883, type: 2}
-  - {fileID: 11400000, guid: a0254dff86a5a8f4a8554eb97930585b, type: 2}
-  - {fileID: 11400000, guid: b58a165a179e5564c8881963ab38360b, type: 2}
+  - {fileID: 11400000, guid: 3b0268e6b0b02844db042c10ba199ed7, type: 2}
   - {fileID: 11400000, guid: f6597793e434c104088e3144d54542b6, type: 2}
   - {fileID: 11400000, guid: 180abdd2e6772184ea34564cdd50fd5a, type: 2}
   _bossList:
-  - {fileID: 11400000, guid: 9168d9f4aa1ee834ea1164744d0e797d, type: 2}
-  encountersOrder: 0300000005000000040000000300000005000000
+  - {fileID: 11400000, guid: 6505ef003dd938f45aa35be7714db78d, type: 2}
+  encountersOrder: 0300000005000000040000000300000004000000
   interactableTiles: []
   commonRarityPercentage: 35
   rareRarityPercentage: 30
@@ -69,3 +74,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8b68972cefc7b7d4c9527281ada3b3dc, type: 2}
   - {fileID: 11400000, guid: 1ce31f216c45c0b4f9ea35b7a04b23a5, type: 2}
   - {fileID: 11400000, guid: 204f23811e876154f8511d084523a845, type: 2}
+  - {fileID: 11400000, guid: 888b9766e822cfc4f97b0846a83cc2f5, type: 2}

@@ -14,6 +14,9 @@ public class QTEVisualController : MonoBehaviour
     [SerializeField] private AudioClip[] numberRevealSounds;
     [SerializeField] private AudioClip numberTouchSound;
     [SerializeField] private AudioClip trailCompleteSound;
+    [SerializeField] private AudioClip timingHitSound;
+    [SerializeField] private AudioClip timingMissSound;
+    [SerializeField] private AudioClip timingPerfectSound;
 
     [Header("Canvas Reference")]
     [SerializeField] private Canvas qteCanvas;
@@ -21,6 +24,9 @@ public class QTEVisualController : MonoBehaviour
     [Header("References")]
     [SerializeField] private Grid grid;
     [SerializeField] private Camera mainCamera;
+
+    [Header("Timing Phase")]
+    [SerializeField] private TimingRingUI timingRingUI;
 
     private bool isActive = false;
 
@@ -42,6 +48,11 @@ public class QTEVisualController : MonoBehaviour
         {
             numberPopupManager.Initialize(qteCanvas, mainCamera, null);
         }
+
+        if (timingRingUI != null)
+        {
+            timingRingUI.Initialize(qteCanvas, mainCamera);
+        }
     }
 
     public void StartQTE()
@@ -53,6 +64,11 @@ public class QTEVisualController : MonoBehaviour
     public void EndQTE()
     {
         isActive = false;
+    }
+
+    public void ResumeQTE()
+    {
+        isActive = true;
     }
 
     public void RevealNumbersSequential(List<(int number, Vector2Int position)> numbersToReveal, float delayBetween = 0.5f)
@@ -178,6 +194,61 @@ public class QTEVisualController : MonoBehaviour
         return trailRendererManager;
     }
 
+    public void ShowTimingBeat(int number, Vector3 worldPos)
+    {
+        if (!isActive) return;
+
+        if (numberPopupManager != null)
+        {
+            numberPopupManager.ClearAll();
+            numberPopupManager.CreatePopup(number, worldPos);
+        }
+
+        PlayNumberRevealAudio(number);
+
+        if (HapticsManager.Instance != null)
+            HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.Selection);
+    }
+    public void OnTimingBeatHit(int number, Vector2Int gridPos, bool isPerfect)
+    {
+        if (!isActive) return;
+
+        if (numberPopupManager != null)
+            numberPopupManager.ExplodePopup(0);
+
+        if (audioSource != null)
+        {
+            AudioClip clip = isPerfect && timingPerfectSound != null ? timingPerfectSound : timingHitSound;
+            if (clip != null)
+            {
+                Time.timeScale = 1f;
+                audioSource.PlayOneShot(clip);
+                Time.timeScale = 0f;
+            }
+        }
+
+        if (HapticsManager.Instance != null)
+            HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.LightImpact);
+    }
+
+    public void OnTimingBeatMissed(int number)
+    {
+        if (audioSource != null && timingMissSound != null)
+        {
+            Time.timeScale = 1f;
+            audioSource.PlayOneShot(timingMissSound);
+            Time.timeScale = 0f;
+        }
+
+        if (HapticsManager.Instance != null)
+            HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.Failure);
+
+        if (numberPopupManager != null)
+            numberPopupManager.ClearAll();
+    }
+
+    public TimingRingUI GetTimingRingUI() => timingRingUI;
+
     private void PlayNumberRevealAudio(int number)
     {
         if (audioSource != null && numberRevealSounds != null && number - 1 < numberRevealSounds.Length)
@@ -209,5 +280,20 @@ public class QTEVisualController : MonoBehaviour
     private void OnDestroy()
     {
         ClearAll();
+    }
+    public void BuildTrailFromPoints(List<Vector2Int> gridPositions)
+    {
+        if (trailRendererManager == null || grid == null) return;
+
+        trailRendererManager.Clear();
+
+        foreach (Vector2Int gridPos in gridPositions)
+        {
+            Vector3 worldPos = grid.VisualGrid.GridToWorldPosition(gridPos);
+            worldPos.z = 0;
+            trailRendererManager.AddPoint(worldPos);
+        }
+
+        trailRendererManager.PrepareForAnimation();
     }
 }

@@ -49,14 +49,16 @@ public class EndPanelHandler : MonoBehaviour
     private string winText = "you win";
     [SerializeField]
     private string loseText = "you lose";
+    [SerializeField]
+    private float stage1Duration = 1.5f;
 
     [Header("Audio")]
     [SerializeField]
-    private AudioClip winSFX;
+    private AudioClip winSFX = null;
     [SerializeField]
-    private AudioClip loseSFX;
+    private AudioClip loseSFX = null;
     [SerializeField]
-    private AudioSource aS;
+    private AudioSource aS = null;
 
     public UnityEvent OnStage1Enter;
     public UnityEvent OnStage2Enter;
@@ -74,7 +76,7 @@ public class EndPanelHandler : MonoBehaviour
     }
     private void Update()
     {
-        if (currentStage < EndBattleStage.STAGE3 && currentStage != EndBattleStage.UNDEFINED)
+        if (currentStage == EndBattleStage.STAGE2)
         {
 
             if (continueTime < continueDuration)
@@ -85,11 +87,27 @@ public class EndPanelHandler : MonoBehaviour
                 continueFader.ToTarget();
             }
         }
+
+
+        if(currentStage == EndBattleStage.STAGE1)
+        {
+            if (stage1Duration > 0f)
+                stage1Duration -= Time.deltaTime;
+            else
+                NextStage();
+        }
     }
     private void OnDestroy()
     {
-        GameManager.Instance.EnterBoard();
-        GameManager.Instance.CombatHandler.OnEndBattle -= SetWinLosePanel;
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.EnterBoard();
+
+            if (GameManager.Instance.CombatHandler != null)
+            {
+                GameManager.Instance.CombatHandler.OnEndBattle -= SetWinLosePanel;
+            }
+        }
     }
 
     private void SetWinLosePanel(bool isWin, int exp, int g, Spell drop)
@@ -101,14 +119,15 @@ public class EndPanelHandler : MonoBehaviour
             container.sprite = winContainer;
             title1.text = winText;
             title1.color = winColor;
-            aS.PlayOneShot(winSFX);
+
+            aS?.PlayOneShot(winSFX);
         }
         else
         {
             container.sprite = loseContainer;
             title1.text = loseText;
             title1.color = loseColor;
-            aS.PlayOneShot(loseSFX);
+            aS?.PlayOneShot(loseSFX);
         }
 
         bgFader.ToTarget();
@@ -118,12 +137,11 @@ public class EndPanelHandler : MonoBehaviour
 
     public void NextStage()
     {
-        if (continueTime < continueDuration && currentStage != EndBattleStage.STAGE3 )
+        if (continueTime < continueDuration && currentStage == EndBattleStage.STAGE2 )
             return;
 
         continueFader.ResetToOrigin();
         continueTime = 0;
-        Debug.Log($"Current stage: {currentStage}");
         if (!isWin)
         {
             SceneTransition.Instance.LoadScene(loseScene, false);
@@ -137,18 +155,20 @@ public class EndPanelHandler : MonoBehaviour
 
                 break;
             case EndBattleStage.STAGE2:
-                OnStage3Enter?.Invoke();
                 if (willLevelUp)
+                {
+                    OnStage3Enter?.Invoke();
                     currentStage++;
+                }
                 else
-                    
-                    SceneTransition.Instance.UnloadScene(sceneToUnload);
+
+                    LoadWinScene();
                 break;
             case EndBattleStage.STAGE3:
-                SceneTransition.Instance.UnloadScene(sceneToUnload);
+                LoadWinScene();
                 break;
             default:
-                SceneTransition.Instance.UnloadScene(sceneToUnload);
+                LoadWinScene();
                 break;
         }
 
@@ -159,10 +179,9 @@ public class EndPanelHandler : MonoBehaviour
     {
         if(forceToHallOfEgress)
         {
-            SceneTransition.Instance.UnloadScene(loseScene);
+            SceneTransition.Instance.LoadScene(loseScene);
             return;
         }
         SceneTransition.Instance.UnloadScene(sceneToUnload);
     }
-
 }

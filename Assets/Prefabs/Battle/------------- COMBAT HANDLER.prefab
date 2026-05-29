@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6532897446619720820}
   - component: {fileID: 6537319169006765825}
+  - component: {fileID: 6273939241881006024}
   m_Layer: 0
   m_Name: ------------- COMBAT HANDLER
   m_TagString: Untagged
@@ -49,3 +50,16 @@ MonoBehaviour:
   BossWeakElement: 0
   isEnemyTypeForced: 1
   forcedEnemyType: {fileID: 11400000, guid: 5a68dbd4268eb7749b497b05fa080c5c, type: 2}
+--- !u!114 &6273939241881006024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1568523605771365073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c08b6fcd93e44a458dd3ee143a53347, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitShakeIntensity: 0.2

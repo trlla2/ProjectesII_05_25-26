@@ -1,5 +1,7 @@
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(TMP_Text))]
 public class MoneyUIHandler : MonoBehaviour
@@ -8,6 +10,10 @@ public class MoneyUIHandler : MonoBehaviour
 
     [Header("Setup")]
     public bool useGameManager = true;
+    [SerializeField]
+    private Currency currency = null;
+    [SerializeField]
+    private Image currencyIcon = null;
 
     [Header("Fade")]
     [SerializeField]
@@ -24,14 +30,19 @@ public class MoneyUIHandler : MonoBehaviour
     private GameObject moneyAddedGO;
    
 
+    private bool firstTime = true;
 
-    private void Start()
+    private void Awake()
     {
         moneyText = GetComponent<TMP_Text>();
-        if(useGameManager)
-            GameManager.Instance.PlayerStats.OnMoneyChange += UpdateMoneyUI;
+    }
+    private void Start()
+    {
+        firstTime = true;
 
-        UpdateMoneyUI(0);
+        if(useGameManager)
+            GameManager.Instance.PlayerStats.OnCurrencyChange += UpdateMoneyUI;
+
 
 
         if (!showAlways)
@@ -40,6 +51,31 @@ public class MoneyUIHandler : MonoBehaviour
             isFading = false;
             parentFader.ResetToOrigin();
         }
+
+        UpdateVisuals();
+
+        UpdateMoneyUI();
+    }
+
+    private void OnEnable()
+    {
+        firstTime = true;
+
+        UpdateMoneyUI();
+    }
+
+    private void UpdateVisuals()
+    {
+        if (!currency)
+        {
+             Debug.LogError("Currency reference is missing in MoneyUIHandler on " + gameObject.name);
+            return;
+        }
+
+        moneyText.color = currency.Color;
+        currencyIcon.sprite = currency.Icon;
+        if(moneyAddedGO)
+            moneyAddedGO.GetComponent<TMP_Text>().color = currency.Color;
 
     }
 
@@ -58,38 +94,50 @@ public class MoneyUIHandler : MonoBehaviour
         parentFader.ToOrigin();
     }
 
-    public void UpdateMoneyUI(float amount)
+    public void UpdateMoneyUI(CurrencyType type, int amount)
     {
+        if(type != currency.CurrencyType)
+            return;
+
         if(!showAlways && amount > 0)
         {
             time = 0;
             parentFader.ToTarget();
             isFading = true;
-            SFXManager.Instance.PlaySFXByName("GetCoins");
+            if (SFXManager.Instance != null)
+                SFXManager.Instance.PlaySFXByName("GetCoins");
         }
 
         if (moneyAddedGO != null && amount > 0)
         {
             moneyAddedGO.GetComponent<TMP_Text>().text = $"+{amount}";
             moneyAddedGO.GetComponent<TranslatorUI>().ToTarget();
-            SFXManager.Instance.PlaySFXByName("GetCoins");
+            if (SFXManager.Instance != null && !firstTime)
+                SFXManager.Instance.PlaySFXByName("GetCoins");
         }
 
-        moneyText.text = GameManager.Instance.PlayerStats.Money.ToString();
+        if (GameManager.Instance != null)
+            moneyText.text = GameManager.Instance.PlayerStats.GetCurrency(currency.CurrencyType).ToString();
+
+        firstTime = false;
     }
 
 
     public void UpdateMoneyUI()
     {
+        if (GameManager.Instance == null) return;
+
         if (!showAlways)
         {
-            SFXManager.Instance.PlaySFXByName("GetCoins");
+            if (SFXManager.Instance != null && !firstTime)
+                SFXManager.Instance.PlaySFXByName("GetCoins");
             time = 0;
             parentFader.ToTarget();
             isFading = true;
 
         }
-        moneyText.text = GameManager.Instance.PlayerStats.Money.ToString();
+        moneyText.text = GameManager.Instance.PlayerStats.GetCurrency(currency.CurrencyType).ToString();
+        firstTime = false;
     }
 
     private void Update()
@@ -108,7 +156,7 @@ public class MoneyUIHandler : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (useGameManager)
-            GameManager.Instance.PlayerStats.OnMoneyChange -= UpdateMoneyUI;
+        if (useGameManager && GameManager.Instance != null)
+            GameManager.Instance.PlayerStats.OnCurrencyChange -= UpdateMoneyUI;
     }
 }

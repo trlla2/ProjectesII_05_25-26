@@ -2,8 +2,11 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
+using UnityEngine.Localization.Tables;
 using UnityEngine.UI;
 
 public class OnboardingPanel : MonoBehaviour
@@ -12,6 +15,8 @@ public class OnboardingPanel : MonoBehaviour
     [SerializeField] private Button dismissButton;
     [SerializeField] private TMP_Text textBox;
     [SerializeField] private List<string> messages;
+    [SerializeField] private string _localizationTableName; // key to fetch the tranlated messages list
+
     [SerializeField] private float charDisplayDelay = 0.05f;
     private bool _activeTextisFullyDisplayed = false;
     private bool _fullExplanationCompleted = false;
@@ -31,11 +36,15 @@ public class OnboardingPanel : MonoBehaviour
     private void Update()
     {
         if (textBox == null)
+        {
+            this.gameObject.GetComponent<Image>().raycastTarget = false;
             if (Input.GetMouseButtonDown(0))
             {
                 _fullExplanationCompleted = true;
                 Dismiss();
             }
+        }
+            
     }
 
     public void Initialize(OnBoardingKey key)
@@ -48,7 +57,7 @@ public class OnboardingPanel : MonoBehaviour
         _onDismiss = onDismiss;
         gameObject.SetActive(true);
         if (textBox != null)
-            StartCoroutine(ShowTextCharByChar());
+            StartCoroutine(LoadMessagesAndShow());
     }
 
     public void Dismiss()
@@ -76,10 +85,42 @@ public class OnboardingPanel : MonoBehaviour
         //}
     }
 
-    private IEnumerator ShowTextCharByChar()
+    private IEnumerator LoadMessagesAndShow()
     {
-        
-        foreach (string message in messages)
+        //if (LocalizationSettings.SelectedLocale == null) yield return null;
+
+        List<string> localizedMessages = null;
+
+        if (!string.IsNullOrEmpty(_localizationTableName))
+        {
+            var tableOp = LocalizationSettings.StringDatabase.GetTableAsync(_localizationTableName);
+            yield return tableOp;
+
+            if (tableOp.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+            {
+                StringTable table = tableOp.Result;
+                localizedMessages = table.Values
+                    .OrderBy(entry => int.TryParse(entry.Key, out int n) ? n : int.MaxValue)
+                    .Select(entry => entry.Value)
+                    .Where(value => !string.IsNullOrEmpty(value))
+                    .ToList();
+            }
+            else
+            {
+                Debug.LogWarning($"[OnboardingPanel] No se pudo cargar la tabla de localización: {_localizationTableName}");
+            }
+        }
+
+        // Fallback a los mensajes serializados si la localización no está disponible
+        if (localizedMessages == null || localizedMessages.Count == 0)
+            localizedMessages = messages;
+
+        StartCoroutine(ShowTextCharByChar(localizedMessages));
+    }
+
+    private IEnumerator ShowTextCharByChar(List<string> messagesToShow)
+    {
+        foreach (string message in messagesToShow)
         {
             int textMaxVisibleChars = 0;
             textBox.text = message + "\n";
@@ -99,21 +140,27 @@ public class OnboardingPanel : MonoBehaviour
         _fullExplanationCompleted = true;
     }
 
-    private void OnMouseDown()
-    {
-        if (textBox == null)
-        {
-            _fullExplanationCompleted = true;
-            Dismiss();
-        }
-    }
+    //private void OnMouseDown()
+    //{
+    //    if (textBox == null)
+    //    {
+    //        _fullExplanationCompleted = true;
+    //        Dismiss();
+    //    }
+    //}
 
     private void ForceCompleteText()
     {
+        if (textBox == null) return;
         //StopCoroutine(ShowTextCharByChar());
         //StopAllCoroutines();
         textBox.maxVisibleCharacters = textBox.text.Length;
         _activeTextisFullyDisplayed = true;
+        if (_fullExplanationCompleted == false && textBox.text == messages[messages.Count - 1])
+        {
+            _fullExplanationCompleted = true;
+            _isWaitingForDismiss = false;
+        }
         //if (textBox.text == messages[messages.Count - 1])
         //{
         //    _fullExplanationCompleted = true;

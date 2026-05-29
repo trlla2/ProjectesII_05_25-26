@@ -20,15 +20,15 @@ public class TileClickHandler : MonoBehaviour
 
     void Update()
     {
-        if (_boardManager.IsHallOfEgress)
-            mouseRay = cam.ScreenPointToRay(Input.mousePosition);
-
         if (!_boardManager.Player.isMoving && raycastActive)
         {
             if (Input.GetMouseButtonDown(0))
             {
                 if (_boardManager.IsHallOfEgress)
+                {
+                    mouseRay = cam.ScreenPointToRay(Input.mousePosition);
                     HandleTileClick();
+                }
                 else
                     HandleScreenClick();
             }
@@ -69,16 +69,16 @@ public class TileClickHandler : MonoBehaviour
     {
         if (IsPointerOverUI()) return;
 
-        _boardManager.Player.MoveUntilStop(arrivedTile =>
+        _boardManager.Player.MoveForward(/*arrivedTile*/() =>
         {
-            if (arrivedTile == null) return;
+            //if (arrivedTile == null) return;
 
-            arrivedTile.OnPlayerArrive();
+            //arrivedTile.OnPlayerArrive();
 
-            if (arrivedTile.IsBranchOrigin())
-            {
-                arrivedTile.Interact();
-            }
+            //if (arrivedTile.IsBranchOrigin())
+            //{
+            //    arrivedTile.Interact();
+            //}
         });
     }
 

@@ -4,10 +4,10 @@ using System.Collections;
 using System.Linq;
 
 
-/* l'Enemy behaviour es el cript de escene que controla el comportament de l'enemic, com els seus atacs, la seva vida, i la interacció amb el grid.
- * Cada enemic implementa el seu attack a través d'un EnemyType, que és un ScriptableObject que defineix les característiques de l'enemic i el seu atac.
- * cada enemyType te asociat un enemySpell, que implementa la interfície IEnemySpell, i defineix la lògica de l'atac (quines caselles ataca, quant de temps tarda, etc).
- * Tenim Enemics de moviments (Basats en EnemySpellbase), enemics de temps(SingleTimedDestroySpell), enemics de temps múltiples (MultipleTimedSpellBase), enemics bloquejants (BlockerSpell) i enemic swapper (SwapperSpell).
+/* l'Enemy behaviour es el cript de escene que controla el comportament de l'enemic, com els seus atacs, la seva vida, i la interacciï¿½ amb el grid.
+ * Cada enemic implementa el seu attack a travï¿½s d'un EnemyType, que ï¿½s un ScriptableObject que defineix les caracterï¿½stiques de l'enemic i el seu atac.
+ * cada enemyType te asociat un enemySpell, que implementa la interfï¿½cie IEnemySpell, i defineix la lï¿½gica de l'atac (quines caselles ataca, quant de temps tarda, etc).
+ * Tenim Enemics de moviments (Basats en EnemySpellbase), enemics de temps(SingleTimedDestroySpell), enemics de temps mï¿½ltiples (MultipleTimedSpellBase), enemics bloquejants (BlockerSpell) i enemic swapper (SwapperSpell).
  */
 [RequireComponent(typeof(SpriteRenderer))]
 public class EnemyBehaviour : MonoBehaviour
@@ -16,17 +16,11 @@ public class EnemyBehaviour : MonoBehaviour
     [SerializeField] private EnemyType enemyType;
     [SerializeField] private Grid grid;
 
-    [Header("Visual Effects")]
-    [SerializeField] private ParticleSystem deathParticles;
-
     [Header("Reroll Settings")]
     [SerializeField] private int rerollScrollTimes = 3;
 
     [Header("Tutorial")]
     [SerializeField] private TutorialManager tutorialManager;
-
-    [Header("VFX")]
-    [SerializeField] private ParticleSystem hiddenEnemyAttackSelect;
 
     private SpriteRenderer spriteRenderer;
     [HideInInspector]
@@ -44,7 +38,7 @@ public class EnemyBehaviour : MonoBehaviour
     private bool timersPaused;
     private bool isFrozen;
 
-    //Legacy System
+    // Legacy System
     public delegate void GetOnHitRecived(float health);
     public event GetOnHitRecived OnHitRecived;
 
@@ -52,6 +46,12 @@ public class EnemyBehaviour : MonoBehaviour
     public event GetOnDamageList OnGetDamage;
 
     public System.Action OnEnemyDeath;
+
+    // Fired just before a new spell is created â€” passes the outgoing spell (may be null)
+    public event System.Action<IEnemySpell> OnSpellAboutToExecute;
+
+    public bool IsTimersPaused => timersPaused;
+    public bool IsFrozen => isFrozen;
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -176,7 +176,7 @@ public class EnemyBehaviour : MonoBehaviour
         if (activeSpell is SwapperSpell existingSwapper && existingSwapper.IsActive)
             return;
 
-        HandleTargetVFX();  
+        OnSpellAboutToExecute?.Invoke(activeSpell);
         activeSpell = enemyType.CreateSpell();
         if (activeSpell != null)
         {
@@ -243,11 +243,11 @@ public class EnemyBehaviour : MonoBehaviour
         while (grid != null && grid.CurrentState != GridStateType.Idle)
             yield return null;
 
-        // BombSpell needs to wait for secondary effect processing (e.g. thunder) to
-        // fully complete before checking the cable count / deciding to explode.
-        if (activeSpell is BombSpell)
+        // BombSpell and DoubleBomberSpell need to wait for secondary effect processing
+        // (e.g. thunder, item effects) to fully complete before checking cable count / deciding to explode.
+        if (activeSpell is BombSpell || activeSpell is DoubleBomberSpell)
         {
-            yield return null;//wait one frame first to ensure no state fights
+            yield return null; // wait one frame first to ensure no state fights
             while (grid != null && grid.CurrentState != GridStateType.Idle)
                 yield return null;
         }
@@ -283,10 +283,6 @@ public class EnemyBehaviour : MonoBehaviour
         activeSpell.Tick(grid, () =>
         {
             StartCoroutine(RerollAndRetarget());
-            if(activeSpell is BombSpell)
-            {
-                
-            }
         });
     }
 
@@ -395,20 +391,8 @@ public class EnemyBehaviour : MonoBehaviour
         swapperSpell.ReapplyTargetingVisuals(grid);
     }
 
-    private void HandleTargetVFX()
-    {
-        if (activeSpell == null || grid == null) return;
-        if (activeSpell is HiddenDestroySpell)
-        {
-            if (hiddenEnemyAttackSelect != null)
-            {
-                hiddenEnemyAttackSelect.Play();
-            }
-        }
-    }
-
     //com que vaig fer la decisio de disseny de basar els enemics amb un sistema de "Ticks",
-    //on cada atac del jugador te progrés en el attack del enemic, necessito aquest sistema de monitorització per a controlar el flux de cada atac segons el seu tipus i les seves necessitats.
+    //on cada atac del jugador te progrï¿½s en el attack del enemic, necessito aquest sistema de monitoritzaciï¿½ per a controlar el flux de cada atac segons el seu tipus i les seves necessitats.
     private IEnumerator MonitorTimedSpell()
     {
         TimedDestroySpellBase timedSpell = activeSpell as TimedDestroySpellBase;
@@ -712,9 +696,6 @@ public class EnemyBehaviour : MonoBehaviour
             return;
         }
 
-        deathParticles.Play();
-        HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.MediumImpact);
-
         float damage = enemyType.CalculateDamageTaken(damageType.element, damageType.damage);
         currentHealth -= damage;
         currentHealth = Mathf.Max(0, currentHealth);
@@ -802,8 +783,6 @@ public class EnemyBehaviour : MonoBehaviour
 
         OnEnemyDeath?.Invoke();
 
-        deathParticles.Play();
-
         if (tutorialManager != null)
             tutorialManager.NotifyEnemyDeath();
 
@@ -823,35 +802,5 @@ public class EnemyBehaviour : MonoBehaviour
             ResumeActiveTimedSpell();
         else
             PauseActiveTimedSpell();
-    }
-
-    private void Update()
-    {
-        if (!inBattle || activeSpell == null || grid == null) return;
-
-        // Drive visual updates from spell timers every frame
-        UpdateSpellVisuals();
-    }
-
-    private void UpdateSpellVisuals()
-    {
-        if (timersPaused || isFrozen) return;
-
-        if (activeSpell is TimedDestroySpellBase timedSpell)
-        {
-            timedSpell.UpdateVisuals();
-        }
-        else if (activeSpell is MultipleTimedSpellBase multiSpell)
-        {
-            multiSpell.UpdateVisuals();
-        }
-        else if (activeSpell is BlockerSpell blockerSpell)
-        {
-            blockerSpell.UpdateVisuals();
-        }
-        else if (activeSpell is SwapperSpell swapperSpell)
-        {
-            swapperSpell.UpdateVisuals();
-        }
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,10 +14,18 @@ public class BranchChoicePanelHandler : MonoBehaviour
     private BoardTile _rightTile;
     private BoardTile _leftTile;
 
-    private void Awake()
+    private void Start()
     {
         _rightButton.onClick.AddListener(OnRightChosen);
         _leftButton.onClick.AddListener(OnLeftChosen);
+        StartCoroutine(DisableNextFrame());
+    }
+
+    // SetActive(false) deferred one frame so UI mesh generation can finish first
+    private IEnumerator DisableNextFrame()
+    {
+        yield return null;
+        Debug.LogWarning("[BRANCH] DisableNextFrame -> SetActive(false)");
         gameObject.SetActive(false);
     }
 
@@ -28,12 +37,14 @@ public class BranchChoicePanelHandler : MonoBehaviour
 
     public void Show(BoardTile rightTile, BoardTile leftTile)
     {
+        Debug.LogWarning($"[BRANCH] Panel.Show called. activeBefore={gameObject.activeSelf}");
         _rightTile = rightTile;
         _leftTile = leftTile;
 
         _tileClickHandler.HandleBoardRaycast(false);
         gameObject.SetActive(true);
         _boardCameraController?.ZoomIn();
+        Debug.LogWarning($"[BRANCH] Panel.Show done. activeAfter={gameObject.activeSelf} activeInHierarchy={gameObject.activeInHierarchy}");
     }
 
     private void Hide()
@@ -51,17 +62,18 @@ public class BranchChoicePanelHandler : MonoBehaviour
         if (firstTileOfChosenPath == null) return;
 
         Hide();
-
-        _player.MoveUntilStopFrom(firstTileOfChosenPath, arrivedTile =>
+        _player.TryMoveTo(firstTileOfChosenPath, () =>
         {
-            if (arrivedTile == null) return;
-
-            arrivedTile.OnPlayerArrive();
-
-            if (arrivedTile.IsBranchOrigin())
+            firstTileOfChosenPath.OnPlayerArrive();
+            _player.MoveForward(/*arrivedTile*/() =>
             {
-                arrivedTile.Interact();
-            }
+                //if (arrivedTile == null) return;
+                //arrivedTile.OnPlayerArrive();
+                //if (arrivedTile.IsBranchOrigin())
+                //{
+                //    arrivedTile.Interact();
+                //}
+            });
         });
     }
 }

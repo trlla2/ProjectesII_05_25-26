@@ -78,6 +78,7 @@ public class RewardsHandler : MonoBehaviour
 
     private void OnDestroy()
     {
-        GameManager.Instance.CombatHandler.OnEndBattle -= SetWinLoseReward;
+        if (GameManager.Instance != null && GameManager.Instance.CombatHandler != null)
+            GameManager.Instance.CombatHandler.OnEndBattle -= SetWinLoseReward;
     }
 }

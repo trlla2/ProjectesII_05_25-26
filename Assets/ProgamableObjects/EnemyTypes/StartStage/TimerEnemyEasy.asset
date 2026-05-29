@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ab529a0c12673a408eb38b86a880060, type: 3}
+  m_Name: TimerEnemyEasy
+  m_EditorClassIdentifier: 
+  name: Skull
+  health: 45
+  damage: 10
+  elementCount: 3
+  level: 1
+  difficulty: 4
+  weaknesses: 
+  weaknessMultiplier: 2
+  resistances: 
+  resistanceMultiplier: 0.5
+  enemySprite: {fileID: 21300000, guid: b9fe7e7cbfb1ec3488688579bc45211a, type: 3}
+  animatorController: {fileID: 9100000, guid: c07fdf3cb5e11db479e4aaffa8f34e0c, type: 2}
+  spellType: 3
+  damagePerElement: 4
+  moveCount: 3
+  goldReward: 100
+  expReward: 4
+  attackTimer: 8
+  lvl2Countdown: 8
+  lvl2BonusTimeOnClear: 2
+  continuousSelectionInterval: 2.5
+  visibilityDuration: 2.5
+  hiddenSprite: {fileID: 0}
+  blockerCount: 2
+  blockerDamagePercent: 0.25
+  haveDrops: 0
+  spellDrops: []
+  swapperSwapInterval: 2.5

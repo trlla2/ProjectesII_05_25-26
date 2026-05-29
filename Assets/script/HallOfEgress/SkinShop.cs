@@ -24,34 +24,36 @@ public class SkinShop : MonoBehaviour
     [SerializeField]
     private TMP_Text buttonText;
 
-    private int currentPage = 1;
-    private int maxPage = 3;
-    private int minPage = 1;
+    [Header("SFX")]
     [SerializeField]
-    private List<int> prices = new List<int>(3);
+    private AudioSource buySFX;
+    [SerializeField]
+    private AudioSource errorSFX;
+
+    private int currentPage = 0;
+    private int maxPage = 3;
+    private int minPage = 0;
+    
 
 
     private void Awake()
     {
         prevButton.onClick.AddListener(PreviousPage);
         nextButton.onClick.AddListener(NextPage);
-        buyButton.onClick.AddListener(Close);
+        buyButton.onClick.AddListener(BuyButtonPressed);
     }
 
-    //private void OnEnable()
-    //{
-    //    translator.ToTarget();
-    //    currentPage = 1;
-    //    UpdateVisuals();
-    //    Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(true);
-    //}
+    private void Start()
+    {
+        UpdateShop();
+    }
 
     public void PreviousPage()
     {
         if (currentPage > minPage)
         {
             currentPage--;
-            UpdateVisuals();
+            UpdatePage();
         }
     }   
     
@@ -60,15 +62,18 @@ public class SkinShop : MonoBehaviour
         if (currentPage < maxPage)
         {
             currentPage++;
-            UpdateVisuals();
+            UpdatePage();
         }
     }
 
-    private void UpdateVisuals()
+    private void UpdatePage()
     {
-        textMoney.text = $"{prices[currentPage - 1 ]}";
+        PlayerStats player = GameManager.Instance.PlayerStats;
+        
 
-        if (currentPage > minPage)
+        textMoney.text = $"{SkinManager.Instance.GetAllSkins()[currentPage].Cost}";
+
+        if (!player.UnlockedSkins.Contains(SkinManager.Instance.GetAllSkins()[currentPage].SkinType)) // Is ownted by the player?
         {
             imageSkin.color = Color.black;
             moneyGO.SetActive(true);
@@ -83,6 +88,9 @@ public class SkinShop : MonoBehaviour
 
         Debug.Log($"Current page {currentPage}");
 
+        imageSkin.sprite = SkinManager.Instance.GetAllSkins()[currentPage].SkinSprite;
+        imageSkin.GetComponent<Animator>().runtimeAnimatorController = SkinManager.Instance.GetAllSkins()[currentPage].AnimatorControllerUI;
+
         if (currentPage >= maxPage)
             nextButton.interactable = false;
         else
@@ -96,12 +104,41 @@ public class SkinShop : MonoBehaviour
             prevButton.interactable = true;
     }
 
-    private void Close()
+    private void UpdateShop()
     {
-        if (currentPage == minPage)
+        maxPage = SkinManager.Instance.GetAllSkins().Count;
+        currentPage = 0;
+    }
+
+    public void Close()
+    {
+        translator.ToOrigin();
+        Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(true);
+    }
+
+    private void BuyButtonPressed()
+    {
+        PlayerStats player = GameManager.Instance.PlayerStats;
+        Skin currentSkin = SkinManager.Instance.GetAllSkins()[currentPage];
+    
+        if (!player.UnlockedSkins.Contains(currentSkin.SkinType)) // Is ownted by the player?
         {
-            translator.ToOrigin();
-            Camera.main.GetComponent<TileClickHandler>().HandleBoardRaycast(true);
+            if (player.CanUseCurrency(CurrencyType.RUBY,currentSkin.Cost))
+            {
+                player.UseCurrency(CurrencyType.RUBY,currentSkin.Cost);
+                player.AddNewSkin(currentSkin.SkinType);
+                UpdatePage();
+                buySFX.Play();
+            }
+            else
+            {
+                errorSFX.Play();
+            }
+        }
+        else
+        {
+            player.ChangeSkin(currentSkin.SkinType);
+            Close();
         }
     }
 }

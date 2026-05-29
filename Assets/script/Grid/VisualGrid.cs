@@ -16,6 +16,8 @@ public class VisualGrid : MonoBehaviour
     private Grid grid;
     public bool isInitialized = false;
 
+    private bool isInactiveGridShowing = false;
+
     [Header("Spacing")]
     [SerializeField] private float xSpacing = 1.1f;
     [SerializeField] private float ySpacing = 1.1f;
@@ -35,22 +37,26 @@ public class VisualGrid : MonoBehaviour
 
     public void FillEmpty(List<Vector2Int> positions, float duration)
     {
+        if (!gameObject.activeInHierarchy) return;
         StartCoroutine(FillEmptyRoutine(positions, duration));
     }
 
     public void Swap(Vector2Int posA, Vector2Int posB, float duration)
     {
+        if (!gameObject.activeInHierarchy) return;
         StartCoroutine(SwapRoutine(posA, posB, duration));
     }
 
     public void Refill(float duration)
     {
+        if (!gameObject.activeInHierarchy) return;
         StartCoroutine(RefillRoutine(duration));
     }
 
     public IEnumerator PlayRerollAnimation(int scrollTimes, float scrollDuration, float columnDelay, 
                                             List<Element> availableElements, Element[,] finalGrid)
     {
+        if (!gameObject.activeInHierarchy) yield break;
         yield return StartCoroutine(RerollScrollRoutine(scrollTimes, scrollDuration, columnDelay, availableElements, finalGrid));
     }
 
@@ -84,6 +90,8 @@ public class VisualGrid : MonoBehaviour
     {
         if (!isInitialized || grid == null || grid.GridData == null)
             return;
+
+        isInactiveGridShowing = active;
 
         for (int x = 0; x < grid.GridData.GridSize; x++)
         {
@@ -130,6 +138,9 @@ public class VisualGrid : MonoBehaviour
             visual.ResetSpriteTransform();
             visual.SetWorldPosition(worldPos);
 
+            if (element.Type != ElementType.Bomb)
+                visual.ShowInactive(isInactiveGridShowing);
+
             grid.GridData.SetVisualAt(gridPosition, visual);
         }
         else
@@ -139,6 +150,9 @@ public class VisualGrid : MonoBehaviour
             existing.Initialize(gridPosition, element);
             existing.ResetSpriteTransform();
             existing.SetWorldPosition(worldPos);
+
+            if (element.Type != ElementType.Bomb)
+                existing.ShowInactive(isInactiveGridShowing);
         }
     }
 
@@ -147,40 +161,6 @@ public class VisualGrid : MonoBehaviour
         if (!isInitialized || grid == null || grid.GridData == null)
             return;
 
-        ElementVisual visual = grid.GridData.GetVisualAt(gridPosition);
-        if (visual != null)
-        {
-            Destroy(visual.gameObject);
-            grid.GridData.SetVisualAt(gridPosition, null);
-        }
-    }
-
-    public void UpdateAnchorsForPositions(List<Vector2Int> positions)
-    {
-        if (!isInitialized || grid == null || grid.GridData == null)
-            return;
-
-        if (positions == null || positions.Count == 0)
-            return;
-
-        foreach (var pos in positions)
-        {
-            if (!grid.GridData.IsPositionValid(pos))
-                continue;
-
-            ElementVisual visual = grid.GridData.GetVisualAt(pos);
-            if (visual != null)
-            {
-                visual.transform.position = GridToWorldPosition(pos);
-                visual.Initialize(pos, grid.GridData.GetElementAt(pos));
-                visual.ResetSpriteTransform();
-                visual.SetWorldPosition(GridToWorldPosition(pos));
-            }
-        }
-    }
-
-    private void DestroyElementVisual(Vector2Int gridPosition)
-    {
         ElementVisual visual = grid.GridData.GetVisualAt(gridPosition);
         if (visual != null)
         {
@@ -270,6 +250,7 @@ public class VisualGrid : MonoBehaviour
 
     public IEnumerator AnimateGravity(List<Vector2Int> movedPositions, float duration)
     {
+        if (!gameObject.activeInHierarchy) yield break;
         yield return StartCoroutine(GravityRoutine(movedPositions, duration));
     }
 
@@ -319,10 +300,14 @@ public class VisualGrid : MonoBehaviour
             item.visual.transform.position = item.target;
 
             Element element = grid.GridData.GetElementAt(item.targetGridPos);
+            // Updating the target Grid position triggers a visual element update resolving color to active.
             item.visual.Initialize(item.targetGridPos, element);
 
             item.visual.ResetSpriteTransform();
             item.visual.SetWorldPosition(item.target);
+
+            if (element != null && element.Type != ElementType.Bomb)
+                item.visual.ShowInactive(isInactiveGridShowing);
         }
     }
 
@@ -384,14 +369,36 @@ public class VisualGrid : MonoBehaviour
                     );
 
                     GameObject cloneObj = Instantiate(elementVisualPrefab, spawnPos, Quaternion.identity, transform);
+                    ElementVisual cloneVisual = cloneObj.GetComponent<ElementVisual>();
 
                     SpriteRenderer sr = cloneObj.GetComponentInChildren<SpriteRenderer>();
                     GameObject cloneBackground = cloneObj.transform.Find("Background")?.gameObject;
-                    if (sr != null && element != null)
+
+                    if (element != null)
                     {
-                        sr.sprite = element.Sprite;
-                        sr.color = element.Color;
-                        sr.enabled = false;
+                        if (cloneVisual != null)
+                        {
+                            cloneVisual.Initialize(new Vector2Int(col, row), element);
+                            if (element.Type != ElementType.Bomb)
+                                cloneVisual.ShowInactive(isInactiveGridShowing);
+                        }
+                        else if (sr != null)
+                        {
+                            sr.sprite = element.Sprite;
+                            sr.color = element.Color;
+                            
+                            // Rehydrate the opacity manually if no ElementVisual exists (a fail-safe).
+                            if (isInactiveGridShowing && element.Type != ElementType.Bomb)
+                            {
+                                Color c = sr.color;
+                                c.a = 0.5f;
+                                sr.color = c;
+                            }
+                        }
+
+                        if (sr != null)
+                            sr.enabled = false;
+
                         if (cloneBackground != null)
                             cloneBackground.SetActive(false);
                     }
@@ -506,10 +513,16 @@ public class VisualGrid : MonoBehaviour
             {
                 Vector3 finalPos = GridToWorldPosition(pos);
                 visual.transform.position = finalPos;
+                
+                // Initialize calls ElementVisual.UpdateVisual(element), setting the component base to clear / opaque
                 visual.Initialize(pos, element);
-                visual.UpdateVisual(element);
+                
                 visual.ResetSpriteTransform();
                 visual.SetWorldPosition(finalPos);
+                
+                // Then immediately enforce inactive
+                if (element != null && element.Type != ElementType.Bomb)
+                    visual.ShowInactive(isInactiveGridShowing);
 
                 SpriteRenderer sr = visual.GetComponentInChildren<SpriteRenderer>();
                 if (sr != null)
@@ -545,6 +558,7 @@ public class VisualGrid : MonoBehaviour
     {
         if (!isInitialized || grid == null || grid.GridData == null)
             yield break;
+        if (!gameObject.activeInHierarchy) yield break;
 
         var items = new List<(ElementVisual visual, Vector3 start, Vector3 target)>();
 

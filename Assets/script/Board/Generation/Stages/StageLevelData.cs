@@ -8,11 +8,27 @@ public class SpecialTileEntry
     public BoardTileData tileData;
 
     [Min(0f)] public float weight;
+    [Min(0f)] public int maxInstances; // 0 = unlimited
+}
+
+[System.Serializable]
+public class GoldTileSpawnConfig
+{
+    public BoardTileData tileData;
+    [Min(0)] public int minInstances;
+    [Min(0)] public int maxInstances;
+
+    public int RollCount() =>
+        tileData != null ? Random.Range(minInstances, maxInstances + 1) : 0;
 }
 
 [CreateAssetMenu(fileName = "NewStageLevelData", menuName = "Game/Stage Level Data")]
 public class StageLevelData : ScriptableObject
 {
+    [Header("Stage")]
+    [SerializeField] private string _displayName;
+    public string DisplayName => string.IsNullOrEmpty(_displayName) ? name : _displayName;
+
     [Header("Board")]
     [SerializeField] int _numOfEmptyTiles;
     [SerializeField] int _numOfEnemyTiles;
@@ -21,6 +37,9 @@ public class StageLevelData : ScriptableObject
 
     [Header("Special Tiles Pool")]
     [SerializeField] private List<SpecialTileEntry> _specialTilePool = new List<SpecialTileEntry>();
+
+    [Header("Gold Tile")]
+    [SerializeField] private GoldTileSpawnConfig _goldTileConfig;
 
     [Header("Branched Paths")]
     [SerializeField] int _minBranches;
@@ -52,34 +71,47 @@ public class StageLevelData : ScriptableObject
     [Header("Shop")]
     [SerializeField] private List<Item> _shopItemPool;
 
-    private const float ShopCommonChance    = 40f;
-    private const float ShopRareChance      = 30f;
-    private const float ShopEpicChance      = 15f;
+    private const float ShopCommonChance = 40f;
+    private const float ShopRareChance = 30f;
+    private const float ShopEpicChance = 15f;
     private const float ShopLegendaryChance = 5f;
 
-    public BoardTileData RollSpecialTile()
+    public BoardTileData RollSpecialTile(Dictionary<BoardTileData, int> placedCounts = null)
     {
         if (_specialTilePool == null || _specialTilePool.Count == 0) return null;
 
-        float totalWeight = _specialTilePool.Sum(e => e.weight);
+        List<SpecialTileEntry> available = _specialTilePool
+            .Where(e =>
+                e.tileData != null &&
+                e.weight > 0f &&
+                (e.maxInstances == 0 ||
+                 placedCounts == null ||
+                 !placedCounts.ContainsKey(e.tileData) ||
+                 placedCounts[e.tileData] < e.maxInstances))
+            .ToList();
+
+        if (available.Count == 0) return null;
+
+        float totalWeight = available.Sum(e => e.weight);
         if (totalWeight <= 0f) return null;
 
         float roll = Random.Range(0f, totalWeight);
         float cumulative = 0f;
 
-        foreach (SpecialTileEntry entry in _specialTilePool)
+        foreach (SpecialTileEntry entry in available)
         {
             cumulative += entry.weight;
             if (roll < cumulative)
                 return entry.tileData;
         }
 
-        return _specialTilePool[_specialTilePool.Count - 1].tileData;
+        return available[available.Count - 1].tileData;
     }
 
     public bool HasSpecialTilePool() =>
         _specialTilePool != null && _specialTilePool.Any(e => e.tileData != null && e.weight > 0f);
 
+    public GoldTileSpawnConfig GetGoldTileConfig() => _goldTileConfig;
 
     public ItemRarity GetPullItemRarity()
     {
@@ -114,7 +146,7 @@ public class StageLevelData : ScriptableObject
     private ItemRarity RollShopRarity()
     {
         float total = ShopCommonChance + ShopRareChance + ShopEpicChance + ShopLegendaryChance;
-        float roll  = Random.Range(0f, total);
+        float roll = Random.Range(0f, total);
 
         if (roll < ShopCommonChance)
             return ItemRarity.COMMON;
@@ -141,4 +173,11 @@ public class StageLevelData : ScriptableObject
     public List<BoardTile> GetinteractableTiles() { return interactableTiles; }
     public List<EnemyType> GetEnemyEncounters() { return _enemyList; }
     public List<EnemyType> GetBossEncounters() { return _bossList; }
+
+    [Header("Boss")]
+    [SerializeField] private bool _hasBoss = true;
+    public bool HasBoss => _hasBoss;
+
+    [SerializeField] private bool _hasChestOfEgress = true;
+    public bool HasChestOfEgress => _hasChestOfEgress;
 }

@@ -2,6 +2,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Localization.Settings;
 
 public class ShopSlotUI : MonoBehaviour
 {
@@ -16,6 +17,9 @@ public class ShopSlotUI : MonoBehaviour
     private Image itemBaner = null;
     [SerializeField]
     private Image itemBG = null;
+
+    [SerializeField]
+    private GameObject itemLegendaryEffect = null;
 
     [Header("ItemRarity Header")]
     [SerializeField]
@@ -57,8 +61,8 @@ public class ShopSlotUI : MonoBehaviour
         switch (offer.Type)
         {
             case ShopOffer.OfferType.Item:
-                _titleText.text = offer.Item.NameItem;
-                _descriptionText.text = offer.Item.Description;
+                _titleText.text = LocalizationSettings.StringDatabase.GetLocalizedString("ItemNames", offer.Item.NameItem);
+                _descriptionText.text = LocalizationSettings.StringDatabase.GetLocalizedString("ItemDescriptions", offer.Item.NameItem);
                 if (_icon != null && offer.Item.Sprite != null)
                     _icon.sprite = offer.Item.Sprite;
 
@@ -69,18 +73,22 @@ public class ShopSlotUI : MonoBehaviour
                         case ItemRarity.COMMON:
                             itemBaner.sprite = commonHeader;
                             itemBG.sprite = commonBG;
+                            itemLegendaryEffect.SetActive(false);
                             break;
                         case ItemRarity.RARE:
                             itemBaner.sprite = rareHeader;
                             itemBG.sprite = rareBG;
+                            itemLegendaryEffect.SetActive(false);
                             break;
                         case ItemRarity.EPIC:
                             itemBaner.sprite = epicHeader;
                             itemBG.sprite = epicBG;
+                            itemLegendaryEffect.SetActive(false);
                             break;
                         case ItemRarity.LEGENDARY:
                             itemBaner.sprite = legendaryHeader;
                             itemBG.sprite = legendaryBG;
+                            itemLegendaryEffect.SetActive(true);
                             break;
                     }
                 }
@@ -94,8 +102,8 @@ public class ShopSlotUI : MonoBehaviour
             case ShopOffer.OfferType.StatUpgrade:
                 if (offer.StatType == StatUpgradeType.Defense)
                     _icon.sprite = _shopScreen._statUpgradeData.Where(s => s.Type == StatUpgradeType.Defense).FirstOrDefault().Icon;
-                else if (offer.StatType == StatUpgradeType.Evasion)
-                    _icon.sprite = _shopScreen._statUpgradeData.Where(s => s.Type == StatUpgradeType.Evasion).FirstOrDefault().Icon;
+                //else if (offer.StatType == StatUpgradeType.Evasion)
+                //    _icon.sprite = _shopScreen._statUpgradeData.Where(s => s.Type == StatUpgradeType.Evasion).FirstOrDefault().Icon;
                 else if (offer.StatType == StatUpgradeType.ExtraDamage)
                     _icon.sprite = _shopScreen._statUpgradeData.Where(s => s.Type == StatUpgradeType.ExtraDamage).FirstOrDefault().Icon;
                 else if (offer.StatType == StatUpgradeType.MaxHealth)
@@ -106,6 +114,29 @@ public class ShopSlotUI : MonoBehaviour
         bool purchased = offer.IsPurchased;
         _buyButton.interactable = !purchased;
         _costText.text = purchased ? "SoldOut" : $"{offer.Cost}";
+
+        if (purchased)
+        {
+            _icon.color = new Color(_icon.color.r, _icon.color.g, _icon.color.b, 0.5f);
+
+
+            if (itemBaner != null && itemBG != null)
+            {
+                itemBaner.color = new Color(itemBaner.color.r, itemBaner.color.g, itemBaner.color.b, 0.5f);
+                itemBG.color = new Color(itemBG.color.r, itemBG.color.g, itemBG.color.b, 0.5f);
+                itemLegendaryEffect.SetActive(false);
+            }
+        }
+        else
+        {
+            _icon.color = new Color(_icon.color.r, _icon.color.g, _icon.color.b, 1f);
+            if (itemBaner != null && itemBG != null)
+            {
+                itemBaner.color = new Color(itemBaner.color.r, itemBaner.color.g, itemBaner.color.b, 1f);
+                itemBG.color = new Color(itemBG.color.r, itemBG.color.g, itemBG.color.b, 1f);
+            }
+        }
+
     }
 
     private void OnBuyClicked()

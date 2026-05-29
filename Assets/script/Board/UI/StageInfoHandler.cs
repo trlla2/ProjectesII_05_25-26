@@ -14,10 +14,17 @@ public class StageInfoHandler : MonoBehaviour
         info = GetComponent<TextMeshProUGUI>();
     }
 
+    private void Start()
+    {
+        if (boardManager != null && boardManager.EncountersManager != null)
+            SetDifficultyMessage();
+    }
 
     private void OnEnable()
     {
-        SetDifficultyMessage();
+        if (boardManager != null && boardManager.EncountersManager != null &&
+            boardManager.Player != null && boardManager.Player.GetCurrentTile() != boardManager.startingTile)
+            SetDifficultyMessage();
     }
 
 
@@ -48,6 +55,9 @@ public class StageInfoHandler : MonoBehaviour
                 break;
             case EnemyDifficulty.BOSS:
                 info.text = $"Next Battle:\r\n<color=red>Boss</color>";
+                break;
+            default:
+                info.text = $"Next Battle:\r\n<color=red></color>";
                 break;
         }
     }

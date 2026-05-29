@@ -66,6 +66,12 @@ public class TranslatorUI : MonoBehaviour
         }
 
         currentAnimation = newAnimation;
+
+        if (!gameObject.activeInHierarchy)
+        {
+            return;
+        }
+
         StartCoroutine(currentAnimation);
     }
 
@@ -77,7 +83,7 @@ public class TranslatorUI : MonoBehaviour
 
             SetPositionForCurrentTime();
 
-            yield return new WaitForEndOfFrame();
+            yield return null;
         }
 
         currentTime = animationDuration;
@@ -97,7 +103,7 @@ public class TranslatorUI : MonoBehaviour
 
             SetPositionForCurrentTime();
 
-            yield return new WaitForEndOfFrame();
+            yield return null;
         }
 
         currentTime = 0f;
@@ -111,6 +117,8 @@ public class TranslatorUI : MonoBehaviour
 
     private void SetPositionForCurrentTime()
     {
+        if (rectTransform == null) return;
+
         float interpolatedValue = currentTime / animationDuration;
 
         interpolatedValue = curve.Evaluate(interpolatedValue);
@@ -119,5 +127,10 @@ public class TranslatorUI : MonoBehaviour
         rectTransform.localScale = originScale + (scale * interpolatedValue);
         rectTransform.localEulerAngles = originRotation + (rotation * interpolatedValue);
         OnChange.Invoke(interpolatedValue);
+    }
+
+    private void OnDestroy()
+    {
+        
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,6 +11,7 @@ public class PlayerStats
     public float MaxHp => maxHp;
     private float hp;
     public float Hp => hp;
+    private bool hasDied = false;
 
     private int _evasionBaseUpgrades = 0;
     private int _evasionModifier = 0;
@@ -19,7 +19,7 @@ public class PlayerStats
 
     private int _maxHealthBaseUpgrades = 0;
     private float _maxHealthModifier = 0;
-    private float extraHealth => 0 + _maxHealthModifier + (2 * _maxHealthBaseUpgrades);
+    private float extraHealth => 0 + _maxHealthModifier + (4 * _maxHealthBaseUpgrades);
 
     private int _damageBaseUpgrades = 0;
     private int _damageModifier = 0;
@@ -27,7 +27,7 @@ public class PlayerStats
 
     private int _defenseBaseUpgrades = 0;
     private float _defenseModifier = 0;
-    private float defense => 0 + _defenseModifier + (1 * _defenseBaseUpgrades);
+    private float defense => 0 + _defenseModifier + (0.5f * _defenseBaseUpgrades);
 
     private int _critBaseUpgrades = 0;
     private int _critPercentModifier = 0;
@@ -36,7 +36,7 @@ public class PlayerStats
     private int spikeDamage;
     public int SpikeDamage => spikeDamage;
 
-    // level stats
+    // Combay Stats
     private int experiencePoints;
     public int ExperiencePoints => experiencePoints;
     private int level;
@@ -45,9 +45,20 @@ public class PlayerStats
     private Dictionary<ElementType, int> elementalUpgrades;
     private int elementalLevelMultiplyer;
 
+    // Persisted elemental data saved on HallOfEgress entry
+    private Dictionary<ElementType, int> _savedElementalLevels;
+    private Dictionary<ElementType, int> _savedElementalUpgrades;
+
     // currency 
-    private int money;
-    public int Money => money;
+    private Dictionary<CurrencyType, int> currencyAmounts = new Dictionary<CurrencyType, int>()
+    {
+        { CurrencyType.GOLD, 0 },
+        { CurrencyType.RUBY, 0 },
+        { CurrencyType.EXP, 0 }
+    };
+    private int battlePassLevel;
+    public int BattlePassLevel => battlePassLevel;
+
 
     // spells  & Items
     private const int spellBookSize = 4;
@@ -61,12 +72,23 @@ public class PlayerStats
     public List<Item> Inventory => inventory;
     private int limitInventory;
 
+    //Skins
+    private HashSet<SkinType> unlockedSkins = new HashSet<SkinType>() { SkinType.Default };
+    public HashSet<SkinType> UnlockedSkins => unlockedSkins;
+    private SkinType currentSkin = SkinType.Default;
+    public SkinType CurrentSkin => currentSkin;
+
     //Events
     public event System.Action OnEXPChange;
     public event System.Action OnLevelUp;
-    public event System.Action<float> OnMoneyChange;
+    public event System.Action<CurrencyType, int> OnCurrencyChange;
     public event System.Action OnInventoryChange;
     public event System.Action OnSpellBookChange;
+    public event System.Action OnSkinChange;
+    public event System.Action OnUnlockedSkinsChange;
+    public event System.Action OnBattlePassLevelUp;
+    public event System.Action OnKnownSpellChange;
+
 
 
     public event System.Action<ModificableStat, int> OnStatUpgradeLevelChanged;
@@ -77,7 +99,7 @@ public class PlayerStats
         ResetLevelStats();
 
         // currency 
-        money = 50;
+        currencyAmounts[CurrencyType.GOLD] = 50;
 
         // spells  & Items
         spellBook = new Spell[spellBookSize];
@@ -90,7 +112,7 @@ public class PlayerStats
             AddItemToInventory(debugItem);
         }
     }
-    private void ResetLevelStats()
+    public void ResetLevelStats()
     {
         experiencePoints = 0;
         level = 1;
@@ -121,17 +143,27 @@ public class PlayerStats
         _maxHealthBaseUpgrades = 0;
         _damageBaseUpgrades = 0;
         _defenseBaseUpgrades = 0;
-        //
+
         _evasionModifier = 0;
         _maxHealthModifier = 0;
         _damageModifier = 0;
         _defenseModifier = 0;
         _critPercentModifier = 0;
         spikeDamage = 0;
+
+        currencyAmounts[CurrencyType.GOLD] = 50;
     }
     public void ResetStatsOnDeath()
     {
         RemoveAllItems();
+        ResetCombatStats();
+        ResetLevelStats();
+        RestoreElementalProgress();
+        hasDied = false;
+    }
+
+    public void ResetStatsOnFinishRun()
+    {
         ResetCombatStats();
         ResetLevelStats();
     }
@@ -158,8 +190,17 @@ public class PlayerStats
         float totalDamage = damage - defense;
         if (totalDamage <= 0f)
             return;
-        HapticsManager.Instance.GenerateHapticFeedback(HapticsManager.HapticTypes.HeavyImpact);
+
+        // modo richard: infinite life
+        if (ModoRichard.Instance != null && ModoRichard.Instance.IsActive)
+        {
+            hp = Mathf.Max(hp - damage, 1f);
+            return;
+        }
+
         hp -= damage;
+        if (hp < 0)
+            Die();
     }
 
     public void Heal(float amount)
@@ -168,25 +209,47 @@ public class PlayerStats
         if (hp > maxHp + extraHealth) hp = maxHp + extraHealth;
     }
 
-    public void AddMoney(int amount) 
+    public void Die()
     {
-        money += amount;
-        OnMoneyChange?.Invoke(amount);
+        if (hasDied) return;
+        hasDied = true;
     }
-    public bool UseMoney(int amount)
+
+    public void AddCurrency(CurrencyType currencyType, int amount) 
     {
-        if (money >= amount)
+        if (!currencyAmounts.ContainsKey(currencyType))
+            currencyAmounts[currencyType] = 0;
+
+        currencyAmounts[currencyType] += amount;
+        OnCurrencyChange?.Invoke(currencyType ,amount);
+    }
+    public bool UseCurrency(CurrencyType currencyType, int amount)
+    {
+        if (currencyAmounts[currencyType] >= amount)
         {
-            money -= amount;
-            OnMoneyChange?.Invoke(-amount);
+            currencyAmounts[currencyType] -= amount;
+            OnCurrencyChange?.Invoke(currencyType, -amount);
             return true;
         }
         return false;
     }
 
-    public bool CanUseMoney(int amount)
+    public bool CanUseCurrency(CurrencyType currencyType, int amount)
     {
-        return money >= amount;
+        return currencyAmounts[currencyType] >= amount;
+    }
+
+    public int GetCurrency(CurrencyType currencyType)
+    {
+        if (currencyAmounts.ContainsKey(currencyType))
+            return currencyAmounts[currencyType];
+        return 0;
+    }
+
+    public void AddBattlePassLevel()
+    {
+        battlePassLevel ++;
+        OnBattlePassLevelUp?.Invoke();
     }
 
     public void AddExp(int amount)
@@ -194,11 +257,11 @@ public class PlayerStats
         experiencePoints += amount;
 
         OnEXPChange?.Invoke();
-
         if (CanLevelUp())
             OnLevelUp.Invoke();
             
     }
+    
 
     private void LevelUp()
     {
@@ -227,8 +290,9 @@ public class PlayerStats
         inventory.Add(item);
         item.ApplyEffects(this);
 
-        OnInventoryChange?.Invoke();
+        OnBoardingManager.Instance.TriggerIfNewWithDelay(OnBoardingKey.FIRST_ITEM_PICKUP);
 
+        OnInventoryChange?.Invoke();
 
         return true;// the item was added
     }
@@ -331,6 +395,7 @@ public class PlayerStats
             return;
 
         knownSpells.Add(spell);
+        OnKnownSpellChange?.Invoke();
     }
 
     public int GetEXPForLastLevel()
@@ -340,11 +405,32 @@ public class PlayerStats
 
         return 0;
     }
+
+    public bool AddNewSkin(SkinType skinType)
+    {
+        if (unlockedSkins.Contains(skinType))
+            return false;
+        unlockedSkins.Add(skinType);
+        OnUnlockedSkinsChange?.Invoke();
+        return true;
+    }
+
+    public void ChangeSkin(SkinType skinType)
+    {
+        if (!unlockedSkins.Contains(skinType))
+        {
+            Debug.LogWarning($"Skin {skinType} not unlocked!");
+            return;
+        }
+        currentSkin = skinType;
+        OnSkinChange?.Invoke();
+    }
+
     public int GetElementLevel(ElementType t) { return elementalLevels[t]; }
     public int GetElementUpgradeLevel(ElementType t) { return elementalUpgrades[t]; }
     public int GetEXPForNextLevel() { return (int)Math.Pow(4, level); }
     public bool CanLevelUp() { return experiencePoints >= GetEXPForNextLevel(); }
-    public bool IsAlive() { return hp > 0; }
+    public bool IsAlive() { return hp > 0 || !hasDied; }
     public float GetHPPercentage() => Hp / (MaxHp + extraHealth);
     public void ModifyExtraHealth(float amount) { _maxHealthModifier += amount; }
     public void ModifyEvasion(int amount) { _evasionModifier += amount; }
@@ -352,6 +438,34 @@ public class PlayerStats
     public void ModifyDefense(float amount) { _defenseModifier += amount; }
     public void ModifyCritPercentage(int amount) { _critPercentModifier += amount; }
     public void ModifySipkeDamage(int amount) { spikeDamage += amount; }
+
+    public void ResetHpToMax()
+    {
+        hp = maxHp + extraHealth;
+    }
+
+    public void SetCurrency(CurrencyType currencyType, int amount)
+    {
+        if (!currencyAmounts.ContainsKey(currencyType))
+            currencyAmounts[currencyType] = 0;
+
+        int delta = amount - currencyAmounts[currencyType];
+        currencyAmounts[currencyType] = amount;
+        OnCurrencyChange?.Invoke(currencyType, delta);
+    }
+
+    public void SaveElementalProgress()
+    {
+        _savedElementalLevels = new Dictionary<ElementType, int>(elementalLevels);
+        _savedElementalUpgrades = new Dictionary<ElementType, int>(elementalUpgrades);
+    }
+
+    private void RestoreElementalProgress()
+    {
+        if (_savedElementalLevels == null) return;
+        elementalLevels = new Dictionary<ElementType, int>(_savedElementalLevels);
+        elementalUpgrades = new Dictionary<ElementType, int>(_savedElementalUpgrades);
+    }
     public int GetCurrentElementUpgrades(ElementType elementType) { return elementalUpgrades[elementType]; }
     public int GetCurrentElementLevels(ElementType elementType) { return elementalLevels[elementType]; }
 
@@ -393,4 +507,9 @@ public class PlayerStats
     //    return _evasionBaseUpgrades > 0 || _maxHealthBaseUpgrades > 0 || _damageBaseUpgrades > 0 || _defenseBaseUpgrades > 0;
     //}
 
+    public void SetHpCheat(float amount)
+    {
+        maxHp = amount;
+        hp    = amount;
+    }
 }

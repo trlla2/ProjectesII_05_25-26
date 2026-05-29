@@ -11,13 +11,16 @@ public class Orb : MonoBehaviour
     public int OrbIndex;
 
     [Header("QTE Reference")]
-    [SerializeField] private Orb1QTE qteController;
+    [SerializeField] private Orb1QTE orb1QTEController;
+    [SerializeField] private Orb2QTE orb2QTEController;
+
+    private IQTE qteController;
 
     public event Action<int, int> OnChargeChanged;
     public event Action<OrbState> OnStateChanged;
     public event Action OnOrbActivated;
     public event Action OnOrbDepleted;
-    public bool HasBeenActivated {get; private set;} = false;
+    public bool HasBeenActivated { get; private set; } = false;
 
     [HideInInspector]
     public bool IsActive;
@@ -30,8 +33,15 @@ public class Orb : MonoBehaviour
         State = OrbState.Inactive;
 
         orbButton = GetComponent<Button>();
-
         orbButton.onClick.AddListener(OnOrbClicked);
+
+        // Use whichever controller is assigned; Orb1 takes priority
+        if (orb1QTEController != null)
+            qteController = orb1QTEController;
+        else if (orb2QTEController != null)
+            qteController = orb2QTEController;
+        else
+            Debug.LogError($"No QTE controller assigned on {gameObject.name}!");
     }
 
     private void OnDestroy()
@@ -71,8 +81,7 @@ public class Orb : MonoBehaviour
         OnOrbActivated?.Invoke();
 
         qteController.OnQTEComplete += HandleQTEComplete;
-
-        qteController.StartQTE();
+        qteController.start();
     }
 
     private void HandleQTEComplete(bool success)
@@ -90,11 +99,11 @@ public class Orb : MonoBehaviour
             int previousCharge = CurrentCharge;
             CurrentCharge = Mathf.Max(0, CurrentCharge - 4);
 
-            if (qteController != null)
-            {
-                qteController.ResetVisuals();
-            }
-            
+            if (orb1QTEController != null)
+                orb1QTEController.ResetVisuals();
+            else if (orb2QTEController != null)
+                orb2QTEController.ResetVisuals();
+
             if (CurrentCharge != previousCharge)
             {
                 OnChargeChanged?.Invoke(previousCharge, CurrentCharge);
@@ -122,7 +131,7 @@ public class Orb : MonoBehaviour
         State = OrbState.Activated;
         CurrentCharge = 0;
         OnStateChanged?.Invoke(State);
-        OnOrbDepleted?.Invoke(); // Notify that this orb is depleted
+        OnOrbDepleted?.Invoke();
     }
 
     public void ResetCharge()

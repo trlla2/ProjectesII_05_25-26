@@ -18,6 +18,14 @@ public class FreezeEffect : ActivatableEffectBase
     public override void Activate(ItemLevel level, ItemContext context, Action onComplete)
     {
         context.Enemy.FreezeForDuration(freezeDuration);
+        
+        // Play the same freeze visual effects (particles, audio, and vignette) as the spell
+        SpellEffectHandler effectHandler = context.Player.gameObject.GetComponent<SpellEffectHandler>();
+        if (effectHandler != null)
+        {
+            effectHandler.PlayEffectsForSpell("FREEZE");
+        }
+        
         onComplete?.Invoke();
     }
 }

@@ -30,7 +30,7 @@ public class DEBUG_Stats : MonoBehaviour
         {
             GameManager.Instance.PlayerStats.ClearSpellBook();
 
-            for (int i = 0; i < GameManager.Instance.PlayerStats.SpellBookSize; i++)
+            for (int i = 0; i < GameManager.Instance.PlayerStats.SpellBookSize && i < spells.Count; i++)
             {
 
                 if (spells[i] == null)

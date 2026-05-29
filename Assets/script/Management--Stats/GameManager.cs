@@ -9,7 +9,10 @@ public class GameManager : MonoBehaviour
     public PlayerStats PlayerStats => playerStats;
 
     private int stageLevel = 1;
+    private int _maxUnlockedStage = 1;
+    [SerializeField] public int MaxStageLevel { get; private set; } = 4;
     public int StageLevel => stageLevel;
+    public int MaxUnlockedStage => _maxUnlockedStage;
 
     [SerializeField] private List<StageLevelData> _stageDatas;
 
@@ -36,11 +39,13 @@ public class GameManager : MonoBehaviour
             if (thisDebugStats != null && thisDebugStats.HasDebugSpells())
             {
                 GameManager.Instance.PlayerStats.ClearSpellBook();
-                for (int i = 0; i < GameManager.Instance.PlayerStats.SpellBookSize; i++)
+                for (int i = 0; i < GameManager.Instance.PlayerStats.SpellBookSize && i < thisDebugStats.Spells.Count; i++)
                 {
                     if (thisDebugStats.Spells[i] == null)
                         continue;
-                    GameManager.Instance.gameObject.GetComponent<DEBUG_Stats>().SetDebugSpellList(thisDebugStats.Spells);
+                    DEBUG_Stats instanceDebugStats = GameManager.Instance.gameObject.GetComponent<DEBUG_Stats>();
+                    if (instanceDebugStats != null)
+                        instanceDebugStats.SetDebugSpellList(thisDebugStats.Spells);
                     GameManager.Instance.PlayerStats.AddSpellToSpellBook(thisDebugStats.Spells[i], i);
                 }
             }
@@ -48,10 +53,14 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        //This reads the screen's actual refresh rate and matches it automatically
+        Application.targetFrameRate = (int)Screen.currentResolution.refreshRateRatio.value;
+
         Instance = this;
         DontDestroyOnLoad(this.gameObject);
 
-        playerStats = new PlayerStats();
+        if (stageLevel == 1)
+            playerStats = new PlayerStats();
     }
 
     public void SetCombatHandler(CombatHandler cHRef) { cH = cHRef; }
@@ -85,6 +94,47 @@ public class GameManager : MonoBehaviour
     public void AdvanceStageLevel()
     {
         stageLevel++;
+        if (stageLevel > _maxUnlockedStage)
+            _maxUnlockedStage = stageLevel;
     }
 
+    public void ResetStageLevel()
+    {
+        stageLevel = 1;
+    }
+
+    public void SetStageLevel(int level)
+    {
+        stageLevel = Mathf.Clamp(level, 1, MaxStageLevel);
+    }
+
+    public void SetMaxUnlockedStage(int level)
+    {
+        _maxUnlockedStage = Mathf.Clamp(level, 1, MaxStageLevel);
+    }
+
+    public StageLevelData GetStageData(int level)
+    {
+        if (level < 0 || level >= _stageDatas.Count) return null;
+        return _stageDatas[level];
+    }
+
+    /// <summary>
+    /// Returns the 1-based index of the current stage among boss stages only.
+    /// Stages whose StageLevelData.HasBoss is false are not counted.
+    /// Returns 0 if the current stage has no boss.
+    /// </summary>
+    public int GetBossSceneIndex()
+    {
+        StageLevelData current = GetCurrentStageData();
+        if (current == null || !current.HasBoss) return 0;
+
+        int bossIndex = 0;
+        for (int i = 0; i <= stageLevel && i < _stageDatas.Count; i++)
+        {
+            if (_stageDatas[i] != null && _stageDatas[i].HasBoss)
+                bossIndex++;
+        }
+        return bossIndex;
+    }
 }

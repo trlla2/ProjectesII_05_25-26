@@ -12,19 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f429702b582c65949ae43bcdb3c40145, type: 3}
   m_Name: Stage1Data
   m_EditorClassIdentifier: 
+  _displayName: 1
   _numOfEmptyTiles: 21
   _numOfEnemyTiles: 4
   _numOfMiniBossTiles: 0
   _numOfChestTiles: 4
   _specialTilePool:
   - tileData: {fileID: 11400000, guid: d22ce5231cab6564988711f5ec7898de, type: 2}
-    weight: 60
-  - tileData: {fileID: 11400000, guid: a55434f9ea7c4bb43aeb42e620185353, type: 2}
-    weight: 40
-  - tileData: {fileID: 11400000, guid: b50cf9a671c937d499492507682b5f82, type: 2}
     weight: 50
-  - tileData: {fileID: 11400000, guid: 200018cec36a81b44a8285caf3c1347d, type: 2}
-    weight: 40
+    maxInstances: 7
+  - tileData: {fileID: 11400000, guid: a55434f9ea7c4bb43aeb42e620185353, type: 2}
+    weight: 30
+    maxInstances: 1
+  - tileData: {fileID: 11400000, guid: b50cf9a671c937d499492507682b5f82, type: 2}
+    weight: 30
+    maxInstances: 1
+  _goldTileConfig:
+    tileData: {fileID: 11400000, guid: 200018cec36a81b44a8285caf3c1347d, type: 2}
+    minInstances: 6
+    maxInstances: 10
   _minBranches: 1
   _maxBranches: 2
   _minBranchLengthBeforeRejoin: 9
@@ -39,7 +45,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a0254dff86a5a8f4a8554eb97930585b, type: 2}
   _bossList:
   - {fileID: 11400000, guid: 9168d9f4aa1ee834ea1164744d0e797d, type: 2}
-  encountersOrder: 03000000030000000400000005000000
+  encountersOrder: 03000000040000000300000005000000
   interactableTiles: []
   commonRarityPercentage: 35
   rareRarityPercentage: 30
@@ -68,3 +74,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8b68972cefc7b7d4c9527281ada3b3dc, type: 2}
   - {fileID: 11400000, guid: 1ce31f216c45c0b4f9ea35b7a04b23a5, type: 2}
   - {fileID: 11400000, guid: 204f23811e876154f8511d084523a845, type: 2}
+  - {fileID: 11400000, guid: 888b9766e822cfc4f97b0846a83cc2f5, type: 2}

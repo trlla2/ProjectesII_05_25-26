@@ -18,10 +18,10 @@ public class SequentialTracePhase : IQTEPhase
 
     private List<Vector2Int> tracePoints;
     private int currentTargetIndex;
+    private bool wasPressingLastFrame;
     private bool isInputPhase;
     private float timer;
     private bool isRevealing;
-    private bool wasPressingLastFrame;
     private Vector2Int? lastTouchedPosition;
 
     //radius for a correct touch

@@ -1,9 +1,10 @@
-using UnityEngine;
-using TMPro;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using UnityEngine.Rendering;
+using TMPro;
 using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.Localization.Settings;
+using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 public class OpenChestScreen : MonoBehaviour
 {
@@ -11,9 +12,18 @@ public class OpenChestScreen : MonoBehaviour
 
     [Header("Items Setup")]
     [SerializeField] TMP_Text _itemNameText;
+    [SerializeField] TranslatorUI _itemNameTranslator;
     [SerializeField] TMP_Text _itemDescriptionText;
+    [SerializeField] TranslatorUI _itemDescriptionTranslator;
     
     [SerializeField] private List<Item> _itemsPool;
+
+    [Header("SETUP ART")]
+    [SerializeField] private Image _headerImage;
+    [SerializeField] private Sprite _legendaryHeader;
+    [SerializeField] private Sprite _epicHeader;
+    [SerializeField] private Sprite _rareHeader;
+    [SerializeField] private Sprite _commonHeader;
 
     [Header("RemovePanel")]
     [SerializeField] RemoveItemPanelHandler _removeItemPanel;
@@ -25,12 +35,7 @@ public class OpenChestScreen : MonoBehaviour
     private TranslatorUI _translator;
 
     private void Awake() {  _translator = GetComponent<TranslatorUI>(); }
-
-    private void Start()
-    {
-        _translator.ToTarget();
-    }
-    private void OnEnable() { _translator.ToTarget(); }
+    public void Open() { _translator.ToTarget(); }
     public void Pull(ItemRarity rarity)
     {
         List<Item> candidates = new List<Item>();
@@ -40,9 +45,28 @@ public class OpenChestScreen : MonoBehaviour
             if(item.Rarity == rarity)
                 candidates.Add(item);
         }
+        if (candidates.Count == 0)
+        {
+            Debug.LogError($"No items found with rarity {rarity} in _itemsPool");
+            return;
+        }
         _selectedItem = candidates[Random.Range(0, candidates.Count)];
 
-        
+        switch (_selectedItem.Rarity)
+        {
+            case ItemRarity.LEGENDARY:
+                _headerImage.sprite = _legendaryHeader;
+                break;
+            case ItemRarity.EPIC:
+                _headerImage.sprite = _epicHeader;
+                break;
+            case ItemRarity.RARE:
+                _headerImage.sprite = _rareHeader;
+                break;
+            case ItemRarity.COMMON:
+                _headerImage.sprite = _commonHeader;
+                break;
+        }
 
         Debug.Log("New item pulled");
     }
@@ -53,8 +77,8 @@ public class OpenChestScreen : MonoBehaviour
 
         _animationHandler.OnOpen.AddListener(() =>
         {
-            _itemNameText.text = _selectedItem.NameItem;
-            _itemDescriptionText.text = _selectedItem.Description;
+            _itemNameText.text = LocalizationSettings.StringDatabase.GetLocalizedString("ItemNames", _selectedItem.NameItem);
+            _itemDescriptionText.text = LocalizationSettings.StringDatabase.GetLocalizedString("ItemDescriptions", _selectedItem.NameItem);
         });
     }
 

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TimerEnemy
   m_EditorClassIdentifier: 
   name: Skull
-  health: 50
+  health: 80
   damage: 10
   elementCount: 3
   level: 1
@@ -28,7 +28,8 @@ MonoBehaviour:
   damagePerElement: 4
   moveCount: 3
   goldReward: 100
-  attackTimer: 6
+  expReward: 4
+  attackTimer: 5
   lvl2Countdown: 8
   lvl2BonusTimeOnClear: 2
   continuousSelectionInterval: 2.5

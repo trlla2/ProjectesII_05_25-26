@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
 
 
 [Serializable]
@@ -9,7 +10,7 @@ public struct TutorialStep
     public TutorialStepType type;
 
     [Header("Popup / Toast")]
-    public string text;
+    public string text /*=> LocalizationSettings.StringDatabase.GetLocalizedString("TutorialFixedTexts", )*/;
     public float autoDismissTime; // 0 = manual dismiss
 
     [Header("Highlight")]

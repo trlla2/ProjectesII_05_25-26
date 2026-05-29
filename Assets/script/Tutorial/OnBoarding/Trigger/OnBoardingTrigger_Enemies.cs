@@ -6,7 +6,6 @@ public class OnBoardingTrigger_Enemies : MonoBehaviour
     [SerializeField] private EnemyBehaviour activeEnemy;
     private bool _isTriggered = false;
     private bool _isChecking = false;
-    private bool _hasWaited = false;
 
     void Start()
     {
@@ -54,7 +53,9 @@ public class OnBoardingTrigger_Enemies : MonoBehaviour
                     OnBoardingManager.Instance.TriggerIfNew(OnBoardingKey.BOMB_ENEMY);
                     break;
                 case EnemySpellType.HiddenDestroy:
-                    OnBoardingManager.Instance.TriggerIfNew(OnBoardingKey.HIDDEN_ENEMY);
+                    OnBoardingManager.Instance.TriggerIfNew(OnBoardingKey.HIDDEN_ENEMY_SELECT);
+                    yield return new WaitUntil(() => OnBoardingManager.Instance.IsPanelExplainedWithKey(OnBoardingKey.HIDDEN_ENEMY_SELECT));
+                    OnBoardingManager.Instance.TriggerIfNew(OnBoardingKey.HIDDEN_ENEMY_CAST);
                     break;
                 case EnemySpellType.BlockerAttack:
                     OnBoardingManager.Instance.TriggerIfNew(OnBoardingKey.BLOCKER_ENEMY);

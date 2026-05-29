@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2de90ffb221997447a171e015eca53c6, type: 3}
   m_Name: LigthningObliterate
   m_EditorClassIdentifier: 
-  nameItem: LigthningObliterate
+  nameItem: Star Obliterate
   description: Select Ligthning fire elements in the grid and attack the enemy with
     them
   rarity: 2
   sprite: {fileID: -5674857093772295806, guid: f7a9cb82f566129419581a22af63ad92, type: 3}
-  TargetSprite: {fileID: 21300000, guid: 9855830ce6184084b8a49a66bd923a4b, type: 3}
+  TargetSprite: {fileID: 1961714728009579694, guid: bc471d9694c1bc94dba621824b22386f, type: 3}
   effectType: 11
   extraDamageEffect:
     inspectorAmount: []
@@ -99,25 +99,21 @@ MonoBehaviour:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    fireElementType: 0
     delayBetweenElements: 0.15
   lightningObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    lightningElementType: 3
     delayBetweenElements: 0.15
   shamrockObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    shamrockElementType: 2
     delayBetweenElements: 0.15
   moonObliterateEffect:
     animationDuration: 0.6
     curveStrength: 1.5
     xSprite: {fileID: 0}
-    moonElementType: 1
     delayBetweenElements: 0.15
   freezeEffect:
     animationDuration: 0.6

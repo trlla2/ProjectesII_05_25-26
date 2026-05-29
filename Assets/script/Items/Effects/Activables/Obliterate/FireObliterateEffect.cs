@@ -45,6 +45,7 @@ public class FireObliterateEffect : ActivatableEffectBase
             {
                 xMarkers.Add(SpawnXMarker(targetWorldPos));
                 ElementVisual visual = grid.GridData.GetVisualAt(targetGridPos);
+                visual?.ShowInactive(false);
                 visual?.transform.DOPunchScale(Vector3.one * 0.4f, 0.3f, 5, 0.5f);
                 SFXManager.Instance.PlaySFXByName("ActivateObliderateElement");
             });

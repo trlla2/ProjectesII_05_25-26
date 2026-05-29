@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using DG.Tweening;
+using UnityEngine.UI;
+using UnityEngine.Localization.Settings;
 
 public class SlotMachineScreen : MonoBehaviour
 {
@@ -45,7 +48,9 @@ public class SlotMachineScreen : MonoBehaviour
 
     void Update()
     {
-        _betAmountText.text = $"BET: {_currentBet} GOLDS";
+        _betAmountText.text = $"{LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "BetText")} " +
+            $"{_currentBet} ";
+            //$"{LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "GoldsText")}";
 
         if (!_rows[0].rowStopped || !_rows[1].rowStopped || !_rows[2].rowStopped || !_rows[3].rowStopped)
         {
@@ -60,7 +65,7 @@ public class SlotMachineScreen : MonoBehaviour
                 StartCoroutine(ClosePanelCoroutine());
         }
 
-        _tries.text = $"Tries Left: {_avaliablePulls}";
+        _tries.text = $"{LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "TriesText")} {_avaliablePulls}";
     }
 
     public void TryPull()
@@ -74,10 +79,10 @@ public class SlotMachineScreen : MonoBehaviour
             }
         }
 
-        if(!GameManager.Instance.PlayerStats.CanUseMoney(_currentBet))
+        if(!GameManager.Instance.PlayerStats.CanUseCurrency(CurrencyType.GOLD, _currentBet))
             return;
 
-        GameManager.Instance.PlayerStats.UseMoney(_currentBet);
+        GameManager.Instance.PlayerStats.UseCurrency(CurrencyType.GOLD, _currentBet);
 
         _jackPotAnimation.UnShowText();
         _prizeText.text = "";
@@ -97,12 +102,16 @@ public class SlotMachineScreen : MonoBehaviour
         _prizeText.enabled = true;
         if (_rows[0].stoppedSlot == _rows[1].stoppedSlot && _rows[1].stoppedSlot == _rows[2].stoppedSlot && _rows[2].stoppedSlot == _rows[3].stoppedSlot)
         {
-            // 4 of the same // NEW SPELL (4-match spells)
-            _prizeText.text = $"YOU WON {_currentBet * _jackpotMult} GOLDS!!!";
+            // 4 of the same
+            _prizeText.text = $"{LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "WinText")}" +
+                $" {_currentBet * _jackpotMult} " +
+                $"{LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "GoldsText")}!!!";
+
             _jackPotAnimation.StartAnimation();
-            GameManager.Instance.PlayerStats.AddMoney(Mathf.RoundToInt(_currentBet * _jackpotMult));
+            GameManager.Instance.PlayerStats.AddCurrency(CurrencyType.GOLD, Mathf.RoundToInt(_currentBet * _jackpotMult));
             _isJackpot = true;
             SpawnJackpotParticles();
+            AnimateJackpot();
             OnJackpot.Invoke();
         }
         else if (_rows[0].stoppedSlot == _rows[1].stoppedSlot && _rows[1].stoppedSlot == _rows[2].stoppedSlot ||
@@ -111,9 +120,13 @@ public class SlotMachineScreen : MonoBehaviour
             _rows[0].stoppedSlot == _rows[2].stoppedSlot && _rows[2].stoppedSlot == _rows[3].stoppedSlot)
         {
             // 3 of the same
-            _prizeText.text = $"YOU WON {_currentBet * _threeMult} GOLDS!!!";
-            GameManager.Instance.PlayerStats.AddMoney(Mathf.RoundToInt(_currentBet * _threeMult));
+            _prizeText.text = $"{LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "WinText")}" +
+                $"{_currentBet * _threeMult} " +
+                $"{LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "GoldsText")}!!!";
+
+            GameManager.Instance.PlayerStats.AddCurrency(CurrencyType.GOLD, Mathf.RoundToInt(_currentBet * _threeMult));
             _isJackpot = false;
+            AnimateThreeOfAKind();
             OnWin.Invoke();
         }
         else if (_rows[0].stoppedSlot != _rows[1].stoppedSlot && 
@@ -123,19 +136,125 @@ public class SlotMachineScreen : MonoBehaviour
                  _rows[0].stoppedSlot != _rows[2].stoppedSlot &&
                  _rows[1].stoppedSlot != _rows[3].stoppedSlot)
         {
-            _prizeText.text = $"YOU WON {_currentBet * _fullHouse} GOLDS \n + EXTRA ROLL!!!";
-            GameManager.Instance.PlayerStats.AddMoney(Mathf.RoundToInt(_currentBet * _fullHouse));
+            // Full house
+            _prizeText.text = $"{LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "WinText")}" +
+                $"{_currentBet * _fullHouse} " +
+                $"{LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "GoldsText")}" +
+                $"\n {LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "ExtraRollText")}!!!";
+            GameManager.Instance.PlayerStats.AddCurrency(CurrencyType.GOLD, Mathf.RoundToInt(_currentBet * _fullHouse));
             _avaliablePulls++;
             _isJackpot = false;
+            AnimateFullHouse();
             OnWin.Invoke();
         }
         else
         {
             // 2 of the same
-            _prizeText.text = "YOU LOST";
+            _prizeText.text = $"{LocalizationSettings.StringDatabase.GetLocalizedString("SlotMachine-PrizesTexts", "LoseText")}";
             _isJackpot = false;
         }
         _resultsChecked = true;
+    }
+
+    private Image GetVisualElementForSlot(SlotMachineRow row, string slotName)
+    {
+        foreach (Transform child in row.transform)
+        {
+            //System.StringComparison.OrdinalIgnoreCase is to pass from lowercase to uppercase
+            if (child.name.Equals(slotName, System.StringComparison.OrdinalIgnoreCase))
+                return child.GetComponent<Image>();
+        }
+        
+        return null;
+    }
+
+    private void AnimateThreeOfAKind()
+    {
+        List<SlotMachineRow> matchingRows = GetMatchingRows(3);
+        string matchingSlot = matchingRows[0].stoppedSlot;
+        
+        foreach (var row in matchingRows)
+        {
+            Image visualElement = GetVisualElementForSlot(row, matchingSlot);
+            if (visualElement != null)
+            {
+                visualElement.rectTransform.DOPunchScale(Vector3.one * 0.3f, 0.5f, 5, 0.5f);
+            }
+        }
+    }
+
+    private void AnimateJackpot()
+    {
+        string matchingSlot = _rows[0].stoppedSlot;
+        
+        foreach (var row in _rows)
+        {
+            Image visualElement = GetVisualElementForSlot(row, matchingSlot);
+            if (visualElement != null)
+            {
+                visualElement.rectTransform.DOPunchScale(Vector3.one * 0.5f, 0.8f, 8, 0.7f);
+                StartCoroutine(BlinkElement(visualElement, 0.8f));
+            }
+        }
+    }
+
+    private IEnumerator BlinkElement(Image image, float duration)
+    {
+        float elapsed = 0f;
+        
+        while (elapsed < duration)
+        {
+            image.enabled = !image.enabled;
+            yield return new WaitForSeconds(0.1f);
+            elapsed += 0.1f;
+        }
+        
+        image.enabled = true;
+    }
+
+    private void AnimateFullHouse()
+    {
+        Sequence sequence = DOTween.Sequence();
+        
+        for (int i = 0; i < _rows.Count; i++)
+        {
+            string slotName = _rows[i].stoppedSlot;
+            Image visualElement = GetVisualElementForSlot(_rows[i], slotName);
+            
+            if (visualElement != null)
+            {
+                RectTransform rectTransform = visualElement.rectTransform;
+                Vector2 originalPos = rectTransform.anchoredPosition;
+                
+                sequence.Append(rectTransform.DOPunchScale(Vector3.one * 0.25f, 0.3f, 4, 0.5f));
+                sequence.Join(rectTransform.DOAnchorPosY(originalPos.y + 20f, 0.15f).SetLoops(2, LoopType.Yoyo));
+            }
+        }
+    }
+
+    private List<SlotMachineRow> GetMatchingRows(int count)
+    {
+        List<SlotMachineRow> matching = new List<SlotMachineRow>();
+        
+        // Check all possible 3-match combinations
+        if (_rows[0].stoppedSlot == _rows[1].stoppedSlot && _rows[1].stoppedSlot == _rows[2].stoppedSlot)
+        {
+            matching.AddRange(new[] { _rows[0], _rows[1], _rows[2] });
+        }
+        else if (_rows[1].stoppedSlot == _rows[2].stoppedSlot && _rows[2].stoppedSlot == _rows[3].stoppedSlot)
+        {
+            matching.AddRange(new[] { _rows[1], _rows[2], _rows[3] });
+        }
+        else if (_rows[0].stoppedSlot == _rows[1].stoppedSlot && _rows[1].stoppedSlot == _rows[3].stoppedSlot)
+        {
+            matching.AddRange(new[] { _rows[0], _rows[1], _rows[3] });
+        }
+        else if (_rows[0].stoppedSlot == _rows[2].stoppedSlot && _rows[2].stoppedSlot == _rows[3].stoppedSlot)
+        {
+            matching.AddRange(new[] { _rows[0], _rows[2], _rows[3] });
+        }
+        
+        return matching;
     }
 
     private void SpawnJackpotParticles()
@@ -146,6 +265,7 @@ public class SlotMachineScreen : MonoBehaviour
         Vector3 worldCenter = Camera.main.ScreenToWorldPoint(screenCenter);
 
         GameObject parts = Instantiate(_jackpotParticles, worldCenter, Quaternion.identity);
+        parts.transform.localScale *= 0.5f;
         ParticleSystem particles = parts.GetComponent<ParticleSystem>();
         particles.Stop();
         particles.Play();
@@ -153,7 +273,7 @@ public class SlotMachineScreen : MonoBehaviour
 
     public void IncreaseBet()
     {
-        if (!GameManager.Instance.PlayerStats.CanUseMoney(_currentBet + _bet))
+        if (!GameManager.Instance.PlayerStats.CanUseCurrency(CurrencyType.GOLD, _currentBet + _bet))
             return;
 
         _currentBet += _bet;

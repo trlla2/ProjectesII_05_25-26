@@ -119,7 +119,7 @@ public class SaveManager : MonoBehaviour
         {
             foreach (string key in knownSpellsString.Split(','))
             {
-                Spell spell = Resources.Load<Spell>(key);
+                Spell spell = FindSpellById(key);
                 if (spell != null)
                 {
                     stats.AddKnownSpell(spell);
@@ -154,6 +154,21 @@ public class SaveManager : MonoBehaviour
     {
         int savedMax = PlayerPrefs.GetInt("MaxUnlockedStage", 1);
         GameManager.Instance.SetMaxUnlockedStage(savedMax);
+    }
+
+    private Spell[] spellCatalog;
+
+    private Spell FindSpellById(string id)
+    {
+        if (spellCatalog == null)
+            spellCatalog = Resources.LoadAll<Spell>("Spells");
+
+        foreach (Spell spell in spellCatalog)
+        {
+            if (spell.id.ToString() == id)
+                return spell;
+        }
+        return null;
     }
 
     public void ResetSavedStats()

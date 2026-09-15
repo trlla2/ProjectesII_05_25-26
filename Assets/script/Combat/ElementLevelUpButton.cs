@@ -54,7 +54,13 @@ public class ElementLevelUpButton : MonoBehaviour
     public UnityEvent OnLevelUpAnimationComplete;
 
     private int oldLevel;
+    private Button button;
     private Vector3 lastClickWorldPosition;
+
+    private void Awake()
+    {
+        button = GetComponent<Button>();
+    }
 
     private void Start()
     {
@@ -67,6 +73,9 @@ public class ElementLevelUpButton : MonoBehaviour
     private void OnEnable()
     {
         oldLevel = GameManager.Instance.PlayerStats.GetElementLevel(currentElement.Type);
+
+        if (button != null)
+            button.interactable = !GameManager.Instance.PlayerStats.IsElementMaxLevel(currentElement.Type);
 
         UpdateVisuals();
     }
@@ -104,7 +113,25 @@ public class ElementLevelUpButton : MonoBehaviour
 
         bool leveledUp = oldLevel != GameManager.Instance.PlayerStats.GetElementLevel(currentElement.Type);
 
-        float upgradesRequired = (float)Math.Pow(2, GameManager.Instance.PlayerStats.GetElementLevel(currentElement.Type) - 1);
+        if (GameManager.Instance.PlayerStats.IsElementMaxLevel(currentElement.Type))
+        {
+            lvl.text = "Max";
+            upgradesBar.transform.localScale = new Vector3(1f, 1f, 1f);
+            if (button != null)
+                button.interactable = false;
+            isInterpolating = false;
+            levelUpPhase1Active = false;
+            levelUpPhase2Active = false;
+
+            if (leveledUp)
+            {
+                OnBarReach.Invoke();
+                OnLevelUpAnimationComplete.Invoke();
+            }
+            return;
+        }
+
+        float upgradesRequired = GameManager.Instance.PlayerStats.GetElementLevel(currentElement.Type);
         float currentUpgrades = GameManager.Instance.PlayerStats.GetElementUpgradeLevel(currentElement.Type);
 
         // +1 to both so the bar is never empty (min is 1/(max+1) instead of 0/max)

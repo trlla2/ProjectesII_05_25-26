@@ -11,6 +11,7 @@ public class SaveHandler : MonoBehaviour
         stats.OnSkinChange += SaveCurrentSkin;
         stats.OnUnlockedSkinsChange += SaveUnlockedSkins;
         stats.OnKnownSpellChange += SaveKnownSpells;
+        stats.OnElementLevelUp += SaveLevels;
     }
 
     private void SaveCurrency(CurrencyType currencyType, int amount)
@@ -37,6 +38,12 @@ public class SaveHandler : MonoBehaviour
         SaveManager.Instance.SaveBattlePassLevel();
     }
 
+    private void SaveLevels()
+    {
+        SaveManager.Instance.SavePlayerLevel();
+        SaveManager.Instance.SaveElementLevels();
+    }
+
     private void OnDestroy()
     {
         PlayerStats stats = GameManager.Instance.PlayerStats;
@@ -46,5 +53,6 @@ public class SaveHandler : MonoBehaviour
         stats.OnSkinChange -= SaveCurrentSkin;
         stats.OnUnlockedSkinsChange -= SaveUnlockedSkins;
         stats.OnKnownSpellChange -= SaveKnownSpells;
+        stats.OnElementLevelUp -= SaveLevels;
     }
 }

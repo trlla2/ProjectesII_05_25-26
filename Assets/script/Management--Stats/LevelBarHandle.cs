@@ -83,24 +83,28 @@ public class LevelBarHandle : MonoBehaviour
 
         float interpolateValue = interpolationCurve.Evaluate(interpolationTime / interpolationDuration);
 
-        float currentExp = GameManager.Instance.PlayerStats.ExperiencePoints - GameManager.Instance.PlayerStats.GetEXPForLastLevel();
-        float nextLevelExp = GameManager.Instance.PlayerStats.GetEXPForNextLevel() - GameManager.Instance.PlayerStats.GetEXPForLastLevel();
-
-        if (nextLevelExp > 0)
-        {
-            expSlider.value = (currentExp * interpolateValue) / nextLevelExp;
-        }
+        expSlider.value = GetExpBarTarget() * interpolateValue;
 
         if (interpolationTime >= interpolationDuration)
         {
             interpolationTime = 0.0f;
             isInterpolating = false;
-
-            if (nextLevelExp > 0)
-            {
-                expSlider.value = (float)currentExp / (float)nextLevelExp;
-            }
+            expSlider.value = GetExpBarTarget();
         }
+    }
+
+    private float GetExpBarTarget()
+    {
+        if (GameManager.Instance.PlayerStats.IsMaxLevel)
+            return 1f;
+
+        float currentExp = GameManager.Instance.PlayerStats.ExperiencePoints - GameManager.Instance.PlayerStats.GetEXPForLastLevel();
+        float nextLevelExp = GameManager.Instance.PlayerStats.GetEXPForNextLevel() - GameManager.Instance.PlayerStats.GetEXPForLastLevel();
+
+        if (nextLevelExp <= 0f)
+            return 1f;
+
+        return currentExp / nextLevelExp;
     }
 
     private void HandleLevelUpAnimation()

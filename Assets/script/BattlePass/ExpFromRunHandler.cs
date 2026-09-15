@@ -17,7 +17,7 @@ public class ExpFromRunHandler : MonoBehaviour
         }
 
         
-        if(GameManager.Instance.PlayerStats.ExperiencePoints > 0)
+        if(GameManager.Instance.PlayerStats.RunExp > 0)
         {
             uiExplosionToTarget.TriggerEffect();
         }
@@ -26,8 +26,6 @@ public class ExpFromRunHandler : MonoBehaviour
 
     public void AddEXPAmountToBattlePass()
     {
-        
-        battlePassBarHandler.UpdateBattlePass(GameManager.Instance.PlayerStats.ExperiencePoints);
-        //GameManager.Instance.PlayerStats.ResetLevelStats();
+        battlePassBarHandler.UpdateBattlePass(GameManager.Instance.PlayerStats.ConsumeRunExp());
     }
 }

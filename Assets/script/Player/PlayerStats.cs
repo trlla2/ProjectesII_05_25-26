@@ -36,18 +36,23 @@ public class PlayerStats
     private int spikeDamage;
     public int SpikeDamage => spikeDamage;
 
+    public const int MaxElementLevel = 4;
+
+    private static readonly int[] ElementBaseDamage = { 0, 4, 6, 8, 12 };
+
     // Combay Stats
     private int experiencePoints;
     public int ExperiencePoints => experiencePoints;
+    private int runExp;
+    public int RunExp => runExp;
     private int level;
     public int Level => level;
     private Dictionary<ElementType, int> elementalLevels;
     private Dictionary<ElementType, int> elementalUpgrades;
-    private int elementalLevelMultiplyer;
 
-    // Persisted elemental data saved on HallOfEgress entry
-    private Dictionary<ElementType, int> _savedElementalLevels;
-    private Dictionary<ElementType, int> _savedElementalUpgrades;
+    public bool IsMaxLevel => !CanUpgradeAnyElement();
+    public int MaxLevel => 1 + elementalLevels.Count * (MaxElementLevel - 1);
+    public IEnumerable<ElementType> UpgradableElements => new List<ElementType>(elementalLevels.Keys);
 
     // currency 
     private Dictionary<CurrencyType, int> currencyAmounts = new Dictionary<CurrencyType, int>()
@@ -81,6 +86,7 @@ public class PlayerStats
     //Events
     public event System.Action OnEXPChange;
     public event System.Action OnLevelUp;
+    public event System.Action OnElementLevelUp;
     public event System.Action<CurrencyType, int> OnCurrencyChange;
     public event System.Action OnInventoryChange;
     public event System.Action OnSpellBookChange;
@@ -131,8 +137,6 @@ public class PlayerStats
             { ElementType.Yellow, 0},
             { ElementType.Blue, 0}
         };
-
-        elementalLevelMultiplyer = 4;
     }
     private void ResetCombatStats()
     {
@@ -157,21 +161,33 @@ public class PlayerStats
     {
         RemoveAllItems();
         ResetCombatStats();
-        ResetLevelStats();
-        RestoreElementalProgress();
+        ResetRunExp();
         hasDied = false;
     }
 
     public void ResetStatsOnFinishRun()
     {
         ResetCombatStats();
-        ResetLevelStats();
+    }
+
+    public void ResetRunExp()
+    {
+        experiencePoints = GetEXPForLastLevel();
+        runExp = 0;
+        OnEXPChange?.Invoke();
+    }
+
+    public int ConsumeRunExp()
+    {
+        int exp = runExp;
+        runExp = 0;
+        return exp;
     }
 
 
     public DamageType AttackWithElement(ElementType elementType)
     {
-        DamageType totalDamage = new DamageType(elementType, elementalLevelMultiplyer * elementalLevels[elementType]);
+        DamageType totalDamage = new DamageType(elementType, ElementBaseDamage[elementalLevels[elementType]]);
         totalDamage.damage += extraDamage;
 
         if (UnityEngine.Random.Range(0f, 100f) < critPercentage)
@@ -255,31 +271,37 @@ public class PlayerStats
     public void AddExp(int amount)
     {
         experiencePoints += amount;
+        runExp += amount;
+
+        if (CanUpgradeAnyElement() && CanLevelUp())
+            OnLevelUp?.Invoke();
 
         OnEXPChange?.Invoke();
-        if (CanLevelUp())
-            OnLevelUp.Invoke();
-            
     }
     
 
     private void LevelUp()
     {
+        if (level >= MaxLevel) return;
         level++;
     }
 
     public void UpgradeElementalLevel(ElementType elementType)
     {
+        if (IsElementMaxLevel(elementType))
+            return;
+
         elementalUpgrades[elementType]++;
 
         int currentLevel = elementalLevels[elementType];
-        int upgradesRequired = (int)Math.Pow(2, currentLevel - 1);
+        int upgradesRequired = currentLevel;
 
         if (elementalUpgrades[elementType] >= upgradesRequired)
         {
             elementalLevels[elementType]++;
             elementalUpgrades[elementType] = 0;
             LevelUp();
+            OnElementLevelUp?.Invoke();
         }
     }
 
@@ -400,10 +422,7 @@ public class PlayerStats
 
     public int GetEXPForLastLevel()
     {
-        if (level - 1 > 0)
-            return (int)Math.Pow(4, level - 1);
-
-        return 0;
+        return 2 * level * (level - 1);
     }
 
     public bool AddNewSkin(SkinType skinType)
@@ -428,8 +447,21 @@ public class PlayerStats
 
     public int GetElementLevel(ElementType t) { return elementalLevels[t]; }
     public int GetElementUpgradeLevel(ElementType t) { return elementalUpgrades[t]; }
-    public int GetEXPForNextLevel() { return (int)Math.Pow(4, level); }
+    public bool IsElementMaxLevel(ElementType t) { return elementalLevels[t] >= MaxElementLevel; }
+    public bool CanUpgradeAnyElement()
+    {
+        foreach (ElementType element in UpgradableElements)
+        {
+            if (!IsElementMaxLevel(element))
+                return true;
+        }
+        return false;
+    }
+    public int GetEXPForNextLevel() { return 2 * level * (level + 1); }
     public bool CanLevelUp() { return experiencePoints >= GetEXPForNextLevel(); }
+
+    public void SetLevel(int value) { level = Mathf.Clamp(value, 1, MaxLevel); }
+    public void SetElementLevel(ElementType t, int value) { elementalLevels[t] = Mathf.Clamp(value, 1, MaxElementLevel); }
     public bool IsAlive() { return hp > 0 || !hasDied; }
     public float GetHPPercentage() => Hp / (MaxHp + extraHealth);
     public void ModifyExtraHealth(float amount) { _maxHealthModifier += amount; }
@@ -454,18 +486,6 @@ public class PlayerStats
         OnCurrencyChange?.Invoke(currencyType, delta);
     }
 
-    public void SaveElementalProgress()
-    {
-        _savedElementalLevels = new Dictionary<ElementType, int>(elementalLevels);
-        _savedElementalUpgrades = new Dictionary<ElementType, int>(elementalUpgrades);
-    }
-
-    private void RestoreElementalProgress()
-    {
-        if (_savedElementalLevels == null) return;
-        elementalLevels = new Dictionary<ElementType, int>(_savedElementalLevels);
-        elementalUpgrades = new Dictionary<ElementType, int>(_savedElementalUpgrades);
-    }
     public int GetCurrentElementUpgrades(ElementType elementType) { return elementalUpgrades[elementType]; }
     public int GetCurrentElementLevels(ElementType elementType) { return elementalLevels[elementType]; }
 

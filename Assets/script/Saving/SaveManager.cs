@@ -27,6 +27,10 @@ public class SaveManager : MonoBehaviour
 
         SaveBattlePassLevel();
 
+        SavePlayerLevel();
+
+        SaveElementLevels();
+
         SaveKnownSpells();
 
         SaveUnlockedSkins();
@@ -95,6 +99,22 @@ public class SaveManager : MonoBehaviour
         PlayerPrefs.Save();
     }
 
+    public void SavePlayerLevel()
+    {
+        PlayerPrefs.SetInt("PlayerLevel", GameManager.Instance.PlayerStats.Level);
+        PlayerPrefs.Save();
+    }
+
+    public void SaveElementLevels()
+    {
+        PlayerStats stats = GameManager.Instance.PlayerStats;
+        foreach (ElementType element in stats.UpgradableElements)
+        {
+            PlayerPrefs.SetInt("ElementLevel_" + (int)element, stats.GetElementLevel(element));
+        }
+        PlayerPrefs.Save();
+    }
+
     public void LoadPlayerStats()
     {
         if (!PlayerPrefs.HasKey("CurrentSkin")) return;
@@ -107,6 +127,10 @@ public class SaveManager : MonoBehaviour
             stats.UseCurrency(currency, currentAmount);
             stats.AddCurrency(currency, PlayerPrefs.GetInt("Currency_" + currency.ToString(), 0));
         }
+
+        LoadPlayerLevel();
+
+        LoadElementLevels();
 
         int savedBattlePassLevel = PlayerPrefs.GetInt("BattlePassLevel", 0);
         while (stats.BattlePassLevel < savedBattlePassLevel)
@@ -156,6 +180,22 @@ public class SaveManager : MonoBehaviour
         GameManager.Instance.SetMaxUnlockedStage(savedMax);
     }
 
+    public void LoadPlayerLevel()
+    {
+        int savedLevel = PlayerPrefs.GetInt("PlayerLevel", 1);
+        GameManager.Instance.PlayerStats.SetLevel(savedLevel);
+    }
+
+    public void LoadElementLevels()
+    {
+        PlayerStats stats = GameManager.Instance.PlayerStats;
+        foreach (ElementType element in stats.UpgradableElements)
+        {
+            int savedLevel = PlayerPrefs.GetInt("ElementLevel_" + (int)element, 1);
+            stats.SetElementLevel(element, savedLevel);
+        }
+    }
+
     private Spell[] spellCatalog;
 
     private Spell FindSpellById(string id)
@@ -186,6 +226,12 @@ public class SaveManager : MonoBehaviour
         PlayerPrefs.DeleteKey("UsedSpells");
         PlayerPrefs.DeleteKey("StageLevel");
         PlayerPrefs.DeleteKey("MaxUnlockedStage");
+        PlayerPrefs.DeleteKey("PlayerLevel");
+
+        foreach (ElementType element in GameManager.Instance.PlayerStats.UpgradableElements)
+        {
+            PlayerPrefs.DeleteKey("ElementLevel_" + (int)element);
+        }
 
         PlayerPrefs.Save();
     }
